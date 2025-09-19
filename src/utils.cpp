@@ -70,7 +70,7 @@ void Utils::checkExistPatientID(const std::unordered_set<int> &patientIDs, int p
 
 void Utils::checkExistSpecialization(const std::string &specialization_){
     std::unordered_set<std::string> specializationTable;
-    std::ifstream file("C:\\Users\\Bao\\Documents\\PBL2_Patient_Management_System\\data\\doctorSpecializations.txt");
+    std::ifstream file("data\\doctorSpecializations.txt");
     if (!file.is_open()){
         throw std::runtime_error("Failed to open doctorSpecializations.txt");
     }
@@ -87,7 +87,7 @@ void Utils::checkExistSpecialization(const std::string &specialization_){
 
 void Utils::checkValidBloodType(const std::string &bloodType_){
     std::unordered_set<std::string> bloodTypeTable;
-    std::ifstream file("C:\\Users\\Bao\\Documents\\PBL2_Patient_Management_System\\data\\bloodType.txt");
+    std::ifstream file("data\\bloodType.txt");
     if (!file.is_open()){
         throw std::runtime_error("Failed to open bloodType.txt");
     }
