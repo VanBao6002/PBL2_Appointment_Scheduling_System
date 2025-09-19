@@ -11,6 +11,9 @@ Hãy hình dung PMS giống như một phần mềm trợ lý cho bệnh viện/
 - Lớp Appointment
 - Lớp AppointmentManager
 - Lớp Utils
+- Lớp MedicalRecord (Hồ sơ bệnh án)
+- Lớp Prescription (đơn thuốc)
+- Lớp User và Role (liên quan đến bảo mật & phân quyền)
 
 1. Lớp Person
 - Thuộc tính:
@@ -79,6 +82,26 @@ Hãy hình dung PMS giống như một phần mềm trợ lý cho bệnh viện/
 - Hủy lịch hẹn.
 
 - (Nâng cao) Kiểm tra xung đột thời gian khi đặt lịch.
+
+5. MedicalRecord (Hồ sơ bệnh án)
+
+- Lưu trữ chi tiết lịch sử khám chữa bệnh: ngày khám, chẩn đoán, điều trị, kết quả xét nghiệm.
+
+- Gắn với Patient.
+
+6. Prescription (Đơn thuốc)
+
+- Tách riêng đơn thuốc thay vì để lẫn trong Patient.
+
+- Thuộc về một MedicalRecord, chứa danh sách thuốc, liều lượng, hướng dẫn.
+
+7. User và Role (liên quan đến bảo mật & phân quyền)
+
+- User: Tài khoản đăng nhập (username, password).
+
+- Role: Phân quyền (Admin, Doctor, Nurse, Patient).
+
+- Điều này giúp tách biệt thông tin cá nhân (Person) và tài khoản hệ thống (User).
 
 5. Tìm kiếm & Truy vấn
 

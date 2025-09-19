@@ -13,8 +13,8 @@ class Appointment{
     };
 
     private:    
-        Doctor doctor; // Bác sĩ (ID bác sĩ, tên bác sĩ, chuyên khoa)
-        Patient patient; // Bệnh nhân (ID bệnh nhân, tên bệnh nhân)
+        Doctor *doctor; // Bác sĩ (ID bác sĩ, tên bác sĩ, chuyên khoa)
+        Patient *patient; // Bệnh nhân (ID bệnh nhân, tên bệnh nhân)
         std::string id; // Mã lịch hẹn (ID, duy nhất)
         Date date; // Ngày tháng năm của lịch hẹn
         std::string room; // Phòng khám (số phòng hoặc khoa)
@@ -27,9 +27,10 @@ class Appointment{
         Appointment();
         //setters
         void setDateTime(Date date_, const std::string &time_);
-        void status(Status status_);
+        void setStatus(Status status_);
 
         //getters
+    
 
 
 };
