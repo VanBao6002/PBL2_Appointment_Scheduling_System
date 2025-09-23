@@ -16,8 +16,8 @@ $(TARGET): $(OBJ)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 # Clean build files
-clean:
-	rm -f $(OBJ) $(TARGET)
+clean: 
+	rm -f $(OBJ) $(TARGET) test* test*.exe
 
 # Add test target
 test: src/person.cpp src/utils.cpp tests/test.cpp

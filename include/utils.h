@@ -16,6 +16,7 @@ public:
     static void checkExistPatientID(const std::unordered_set<int> &patientIDs, int patientID_);
     static void checkExistSpecialization(const std::string &specialization_);
     static void checkValidBloodType(const std::string &bloodType_);
+    static void checkDuplicateID();
 };
 
 #endif 
