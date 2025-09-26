@@ -14,8 +14,8 @@ class DoctorManager{
 
         // modifiers
         void addDoctor(const Doctor &doctor_);
-        bool editDoctor(const std::string &ID_, const Doctor& updatedDoctor);
-        bool removeDoctor(const std::string &ID_);
+        void editDoctor(const std::string &ID_, const Doctor& updatedDoctor);
+        void removeDoctor(const std::string &ID_);
 
         // getters
         Doctor* getDoctorByID(const std::string &ID_) const;
