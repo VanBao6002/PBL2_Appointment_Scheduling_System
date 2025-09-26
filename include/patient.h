@@ -1,5 +1,4 @@
-#ifndef PATIENT_H
-#define PATIENT_H
+#pragma once
 
 #include "person.h"
 #include <string>
@@ -26,4 +25,3 @@ class Patient : public Person{
         void setNameFather(const std::string &nameFather_);
 };
 
-#endif

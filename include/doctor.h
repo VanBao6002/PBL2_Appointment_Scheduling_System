@@ -1,5 +1,4 @@
-#ifndef DOCTOR_H
-#define DOCTOR_H
+#pragma once
 
 #include "person.h"
 #include <string>
@@ -32,4 +31,3 @@ class Doctor : public Person {
         void addPatientID(int patientID_);
         void removePatientID(int patientID_);
 };        
-#endif
