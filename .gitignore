@@ -20,7 +20,6 @@
 build/
 CMakeFiles/
 CMakeCache.txt
-Makefile
 
 # User-specific files
 *.log

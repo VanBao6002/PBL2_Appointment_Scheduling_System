@@ -19,7 +19,7 @@ class Person {
         //virtual destructor
         virtual ~Person();
 
-        //pure virtual func, must be overridden by derived classes
+        //pure virtual func, must be overridden by derived classes, person class now cannot be instantiated
         virtual void displayInfo() const = 0;
 
         //getters

@@ -13,8 +13,9 @@ public:
     static bool isLeapYear(int year);
     static void validBirthday(const Date &birthday);
     static void validID(int ID);
-    static void checkExistPatientID(std::unordered_set<int> patientIDs, int patientID_);
-    static void checkExistSpecialization(std::string specialization_);
+    static void checkExistPatientID(const std::unordered_set<int> &patientIDs, int patientID_);
+    static void checkExistSpecialization(const std::string &specialization_);
+    static void checkValidBloodType(const std::string &bloodType_);
 };
 
 #endif 

@@ -11,6 +11,7 @@ Patient::Patient(const std::string &name_, char gender_, const Date &birthday_, 
 Patient::~Patient() {}
 
 void Patient::setBloodType(const std::string &bloodType_){
+    Utils::checkValidBloodType(bloodType_);
     bloodType = bloodType_;
 }
 

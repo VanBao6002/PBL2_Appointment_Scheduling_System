@@ -1,0 +1,22 @@
+General Practitioner (GP) / Family Medicine
+Internal Medicine Physician
+Pediatrician
+General Surgeon
+Orthopedic Surgeon
+Neurosurgeon
+Cardiothoracic Surgeon
+Plastic Surgeon
+Cardiologist
+Endocrinologist
+Gastroenterologist
+Nephrologist
+Pulmonologist
+Rheumatologist
+Oncologist
+Dermatologist
+Ophthalmologist
+Otolaryngologist (ENT)
+Neurologist
+Psychiatrist
+Obstetrician & Gynecologist (OB-GYN)
+Urologist

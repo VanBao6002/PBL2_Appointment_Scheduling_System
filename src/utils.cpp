@@ -3,6 +3,7 @@
 #include <unordered_set>
 #include <string>
 #include <ctime>
+#include <fstream>
 
 void Utils::validName(const std::string &name_) {
     if (name_.empty()) {
@@ -61,15 +62,42 @@ void Utils::validID(int ID) {
     }
 }
 
-void Utils::checkExistPatientID(std::unordered_set<int> patientIDs, int patientID_){
+void Utils::checkExistPatientID(const std::unordered_set<int> &patientIDs, int patientID_){
     if (patientIDs.find(patientID_) == patientIDs.end()){
         throw std::invalid_argument("patientID: " + std::to_string(patientID_) +  " is not found in doctor's list");
     }
 }
 
-void Utils::checkExistSpecialization(std::string specialization_){
-    std::unordered_set<std::string> specializationTable = {"Cardiology", "Neurology", "Pediatrics", "Orthopedics"};
+void Utils::checkExistSpecialization(const std::string &specialization_){
+    std::unordered_set<std::string> specializationTable;
+    std::ifstream file("data\\doctorSpecializations.txt");
+    if (!file.is_open()){
+        throw std::runtime_error("Failed to open doctorSpecializations.txt");
+    }
+    std::string line;
+    while (std::getline(file, line)) {
+        specializationTable.insert(line);
+    }
+    file.close();
+
     if (specializationTable.find(specialization_) == specializationTable.end()){
         throw std::invalid_argument("specializatio: " + specialization_ + " is not found");
+    }
+}
+
+void Utils::checkValidBloodType(const std::string &bloodType_){
+    std::unordered_set<std::string> bloodTypeTable;
+    std::ifstream file("data\\bloodType.txt");
+    if (!file.is_open()){
+        throw std::runtime_error("Failed to open bloodType.txt");
+    }
+    std::string line;
+    while (std::getline(file, line)) {
+        bloodTypeTable.insert(line);
+    }
+    file.close();
+
+    if (bloodTypeTable.find(bloodType_) == bloodTypeTable.end()){
+        throw std::invalid_argument("specializatio: " + bloodType_ + " is not found");
     }
 }
