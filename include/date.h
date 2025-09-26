@@ -1,10 +1,7 @@
-#ifndef DATE_H
-#define DATE_H
+#pragma once
 
 struct Date{
     int day;
     int month;
     int year;
 };
-
-#endif

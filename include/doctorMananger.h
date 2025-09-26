@@ -1,5 +1,5 @@
-#ifndef DOCTORMANAGER_H
-#define DOCTORMANAGER_H
+#pragma once
+
 #include <string>
 #include <vector>
 #include <unordered_set>
@@ -22,4 +22,3 @@ class DoctorManager{
         std::vector<Doctor> getAllDoctors() const; // return list of all doctors
         std::unordered_set<int> getPatientsByDoctorID(const std::string &ID_) const; // return list of patients that being cared by that doctor
 };
-#endif

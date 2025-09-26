@@ -1,5 +1,4 @@
-#ifndef APPOINTMENT_H
-#define APPOINTMENT_H
+#pragma once
 
 #include"date.h"
 #include"doctor.h"
@@ -34,4 +33,3 @@ class Appointment{
 
 
 };
-#endif
