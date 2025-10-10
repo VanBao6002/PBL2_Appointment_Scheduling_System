@@ -5,7 +5,7 @@
 
 Doctor::Doctor() : Person(), specialization(""), patientIDs(std::unordered_set<int>()), doctorStatus(Available){}
 
-Doctor::Doctor(const std::string &name_, char gender_, const Date &birthday_, int ID_, const std::string specialization_, status doctorStatus_) 
+Doctor::Doctor(const std::string& name_, char gender_, const Date& birthday_, int ID_, const std::string& specialization_, status doctorStatus_) 
     : Person(name_, gender_, birthday_, ID_), specialization(specialization_), patientIDs(), doctorStatus(doctorStatus_){}
 
 void Doctor::setSpecialization(const std::string &specialization_){
