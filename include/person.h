@@ -1,5 +1,4 @@
-#ifndef PERSON_H
-#define PERSON_H
+#pragma once
 
 #include <string>
 #include "date.h"
@@ -35,4 +34,4 @@ class Person {
         void setID(int ID_); 
 };
 
-#endif
+

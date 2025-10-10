@@ -1,4 +1,5 @@
 #include "utils.h"
+#include "config.h"
 #include <stdexcept>
 #include <unordered_set>
 #include <string>
@@ -70,7 +71,7 @@ void Utils::checkExistPatientID(const std::unordered_set<int> &patientIDs, int p
 
 void Utils::checkExistSpecialization(const std::string &specialization_){
     std::unordered_set<std::string> specializationTable;
-    std::ifstream file("data\\doctorSpecializations.txt");
+    std::ifstream file(Config::SPECIALIZATION_FILE);
     if (!file.is_open()){
         throw std::runtime_error("Failed to open doctorSpecializations.txt");
     }
@@ -87,7 +88,7 @@ void Utils::checkExistSpecialization(const std::string &specialization_){
 
 void Utils::checkValidBloodType(const std::string &bloodType_){
     std::unordered_set<std::string> bloodTypeTable;
-    std::ifstream file("data\\bloodType.txt");
+    std::ifstream file(Config::BLOOD_TYPE_FILE);
     if (!file.is_open()){
         throw std::runtime_error("Failed to open bloodType.txt");
     }
