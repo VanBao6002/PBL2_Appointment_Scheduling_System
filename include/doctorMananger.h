@@ -11,7 +11,6 @@ class DoctorManager{
         DoctorManager() = default;
         ~DoctorManager() = default;
 
-
         // modifiers
         void addDoctor(const Doctor &doctor_);
         void editDoctor(const std::string &ID_, const Doctor& updatedDoctor);
