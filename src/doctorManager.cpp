@@ -1,30 +1,30 @@
 #include "doctor.h"
 #include "utils.h"
-#include "doctorMananger.h"
+#include "doctorManager.h"
 #include <algorithm>
 #include <unordered_set>
 
-void DoctorManager::addDoctor(const Doctor &doctor_){
+void DoctorManager::addDoctor(int ID_){
 
 }
 
-void DoctorManager::editDoctor(const std::string &ID_, const Doctor& updatedDoctor){
+void DoctorManager::editDoctor(int ID_){
     
 }
                                                                                                                                                
-void DoctorManager::removeDoctor(const std::string &ID_){
+void DoctorManager::removeDoctor(int ID_){
 
 }
 
 
-Doctor* DoctorManager::getDoctorByID(const std::string &ID_) const{
+int DoctorManager::getDoctorByID(int ID_) const{
 
 }
 
-std::vector<Doctor> DoctorManager::getAllDoctors() const{
+std::vector<int> DoctorManager::getAllDoctors() const{
 
 }
 
-std::unordered_set<int> DoctorManager::getPatientsByDoctorID(const std::string &ID_) const{
+std::unordered_set<int> DoctorManager::getPatientsByDoctorID(int ID_) const{
     
 }
