@@ -27,9 +27,8 @@ class Appointment{
         //setters
         void setDateTime(Date date_, const std::string &time_);
         void setStatus(Status status_);
-
         //getters
-    
-
+        std::string getDateTime();
+        Status getStatus();
 
 };

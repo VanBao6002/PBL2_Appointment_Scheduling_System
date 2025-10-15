@@ -69,6 +69,11 @@ Hãy hình dung PMS giống như một phần mềm trợ lý cho bệnh viện/
 - Kiểm tra thông tin bệnh nhân được bác sĩ đảm nhận
 
 4.0 Lớp Appointment
+- Trạng thái lịch hẹn
+
+- Ngày giờ lịch hẹn 
+
+- Phòng hẹn
 
 4.1. Lớp AppointmentManager
 - Đặt lịch hẹn (gồm bệnh nhân + bác sĩ + ngày/giờ + lý do khám).

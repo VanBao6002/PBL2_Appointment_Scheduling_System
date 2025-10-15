@@ -15,9 +15,9 @@ class Doctor : public Person {
     public:
         Doctor();
 
-        Doctor(const std::string &name_, char gender_, const Date &birthday_, int ID_, const std::string specialization_, status doctorStatus_);
+        Doctor(const std::string& name_, char gender_, const Date& birthday_, int ID_, const std::string& specialization_, status doctorStatus_);
 
-        ~Doctor() = default;
+        virtual ~Doctor() = default;
 
         void displayInfo() const override;
         //getters

@@ -8,11 +8,11 @@ void DoctorManager::addDoctor(const Doctor &doctor_){
 
 }
 
-bool DoctorManager::editDoctor(const std::string &ID_, const Doctor& updatedDoctor){
-
+void DoctorManager::editDoctor(const std::string &ID_, const Doctor& updatedDoctor){
+    
 }
-
-bool DoctorManager::removeDoctor(const std::string &ID_){
+                                                                                                                                               
+void DoctorManager::removeDoctor(const std::string &ID_){
 
 }
 
