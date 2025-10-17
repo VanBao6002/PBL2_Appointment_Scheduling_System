@@ -4,12 +4,21 @@
 #include <algorithm>
 #include <unordered_set>
 
-void DoctorManager::addDoctor(int ID_){
-
+void DoctorManager::addDoctor(int ID_, Doctor doc_) {
+    if (Utils::checkValidDoctorID(doctorTable, ID_)) {
+        doctorTable.insert({ID_, doc_});
+        log.insert({ID_, Utils::getDate()});
+        return;
+    }
+    throw std::invalid_argument("Failed adding doctor.");
 }
 
 void DoctorManager::editDoctor(int ID_){
-    
+    if (Utils::checkValidDoctorID(doctorTable, ID_)) {
+        
+        return;
+    }
+    throw std::invalid_argument("Failed adding doctor.");
 }
                                                                                                                                                
 void DoctorManager::removeDoctor(int ID_){

@@ -2,9 +2,15 @@
 #include "config.h"
 #include <stdexcept>
 #include <unordered_set>
+#include <vector>
 #include <string>
 #include <ctime>
 #include <fstream>
+#include <algorithm>
+
+bool Utils::isLeapYear(int year) {
+    return (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
+}
 
 void Utils::validName(const std::string &name_) {
     if (name_.empty()) {
@@ -17,11 +23,8 @@ void Utils::validGender(char gender) {
         throw std::invalid_argument("Invalid gender, must be 'M' or 'F'");
     }
 }
-bool Utils::isLeapYear(int year) {
-    return (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
-}
 
-void Utils::validBirthday(const Date &birthday) {
+void Utils::validDate(const Date &birthday) {
     std::time_t t = std::time(nullptr);
     std::tm* currentTime = std::localtime(&t);
     int currentYear = currentTime->tm_year + 1900;
@@ -63,13 +66,24 @@ void Utils::validID(int ID) {
     }
 }
 
-void Utils::checkExistPatientID(const std::unordered_set<int> &patientIDs, int patientID_){
+bool Utils::checkValidPatientID(const std::unordered_set<int> &patientIDs, int patientID_){
     if (patientIDs.find(patientID_) == patientIDs.end()){
-        throw std::invalid_argument("patientID: " + std::to_string(patientID_) +  " is not found in doctor's list");
+        throw std::invalid_argument("patient 's ID: " + std::to_string(patientID_) +  " is not found in doctor's list");
+        return true;
     }
+    return false;
 }
 
-void Utils::checkExistSpecialization(const std::string &specialization_){
+bool Utils::checkValidDoctorID(const std::unordered_map<int, Doctor> &doctorTable, int ID_){
+    auto it = doctorTable.find(ID_);
+    if (it == doctorTable.end()) {
+        throw std::invalid_argument("Doctor ID not found.");
+        return true;
+    }
+    return false;
+}
+
+bool Utils::checkValidSpecialization(const std::string &specialization_){
     std::unordered_set<std::string> specializationTable;
     std::ifstream file(Config::SPECIALIZATION_FILE);
     if (!file.is_open()){
@@ -83,10 +97,12 @@ void Utils::checkExistSpecialization(const std::string &specialization_){
 
     if (specializationTable.find(specialization_) == specializationTable.end()){
         throw std::invalid_argument("specializatio: " + specialization_ + " is not found");
+        return true;
     }
+    return false;
 }
 
-void Utils::checkValidBloodType(const std::string &bloodType_){
+bool Utils::checkValidBloodType(const std::string &bloodType_){
     std::unordered_set<std::string> bloodTypeTable;
     std::ifstream file(Config::BLOOD_TYPE_FILE);
     if (!file.is_open()){
@@ -100,5 +116,17 @@ void Utils::checkValidBloodType(const std::string &bloodType_){
 
     if (bloodTypeTable.find(bloodType_) == bloodTypeTable.end()){
         throw std::invalid_argument("specializatio: " + bloodType_ + " is not found");
+        return true;
     }
+
+    return false;
+}
+
+std::string Utils::getDate(){
+    char buffer[11];
+
+    std::time_t t = std::time(nullptr);
+    std::tm* currentTime = std::localtime(&t);
+    std::strftime(buffer, sizeof(buffer), "%Y-%m-%d", currentTime);
+    return std::string(buffer);
 }
