@@ -16,12 +16,13 @@ class DoctorManager{
         ~DoctorManager() = default;
 
         // modifiers
-        void addDoctor(int ID_, Doctor doc_);
-        void editDoctor(int ID_);
+        void addDoctor(int ID_, const Doctor  &doc_);
+        void editDoctor(int ID_, const Doctor &newDoctor);
         void removeDoctor(int ID_);
 
         // getters
-        int getDoctorByID(int ID_) const;
-        std::vector<int> getAllDoctors() const; // return list of all doctors
-        std::unordered_set<int> getPatientsByDoctorID(int ID_) const; // return list of patients that being cared by that doctor
+        Doctor getDoctorByID(int ID_) const;
+        std::vector<Doctor> findDoctorsByName(const std::string& name) const;
+        const std::unordered_map<int, Doctor>& getAllDoctors() const; // return list of all doctors
+        const std::unordered_set<int>& getPatientsByDoctorID(int ID_) const; // return list of patients that being cared by that doctor
 };

@@ -4,10 +4,10 @@
 #include "date.h"
 class Person {
     protected:
+        int ID;
         std::string name;
         char gender;
         Date birthday;
-        int ID;
     public:
         //default constructor
         Person();
@@ -18,14 +18,12 @@ class Person {
         //virtual destructor
         virtual ~Person();
 
-        //pure virtual func, must be overridden by derived classes, person class now cannot be instantiated
-        virtual void displayInfo() const = 0;
-
         //getters
         std::string getName() const {return name;}
         char getGender() const {return gender;}
         Date getBirthday() const {return birthday;}
         int getID() const {return ID;}
+        virtual std::string getInfo() const = 0;
 
         //setters
         void setName(const std::string &name_);
