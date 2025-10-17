@@ -12,7 +12,7 @@ class Appointment{
         enum class Status{DaDat, DaKham, Huy};
 
     private:    
-        std::string id; // Mã lịch hẹn (ID, duy nhất)
+        std::string ID; // Mã lịch hẹn (ID, duy nhất)
         int doctorID; // Bác sĩ (ID bác sĩ, tên bác sĩ, chuyên khoa)
         int patientID; // Bệnh nhân (ID bệnh nhân, tên bệnh nhân)
         Date date; // Ngày tháng năm của lịch hẹn
@@ -27,6 +27,6 @@ class Appointment{
         //getters
         std::string getDateTime();
         Status getStatus();
-        Doctor* getDoctor(const DoctorManager& mgr) const;
+        Doctor getDoctor(const DoctorManager& mgr) const;
     
 };

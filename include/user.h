@@ -5,7 +5,6 @@ class User {
         enum class Role {ADMIN, DOCTOR, PATIENT};
 
     private:
-        enum Role {ADMIN, DOCTOR, PATIENT};
         Role userRole;
         std::string userName;
         std::string passwordHash;

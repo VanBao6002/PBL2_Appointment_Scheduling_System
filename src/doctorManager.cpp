@@ -4,36 +4,45 @@
 #include <algorithm>
 #include <unordered_set>
 
-void DoctorManager::addDoctor(int ID_, Doctor doc_) {
-    if (Utils::checkValidDoctorID(doctorTable, ID_)) {
-        doctorTable.insert({ID_, doc_});
-        log.insert({ID_, Utils::getDate()});
-        return;
+void DoctorManager::addDoctor(int ID_, const Doctor &doc_) {
+    if (doctorTable.find(ID_) != doctorTable.end()) {
+        throw std::invalid_argument("Doctor ID already exists.");
     }
-    throw std::invalid_argument("Failed adding doctor.");
+    doctorTable[ID_] = doc_;
+    log[ID_] = "Added on " + Utils::getDateTime();
 }
 
-void DoctorManager::editDoctor(int ID_){
-    if (Utils::checkValidDoctorID(doctorTable, ID_)) {
-        
-        return;
-    }
-    throw std::invalid_argument("Failed adding doctor.");
+void DoctorManager::editDoctor(int ID_, const Doctor &newDoctor){
+    Utils::checkValidDoctorID(doctorTable, ID_);
+    doctorTable[ID_] = newDoctor;
+    log[ID_] = "Edited on " + Utils::getDateTime();
 }
                                                                                                                                                
 void DoctorManager::removeDoctor(int ID_){
-
+    Utils::checkValidDoctorID(doctorTable, ID_);
+    doctorTable.erase(ID_);
+    log.erase(ID_);
 }
 
-
-int DoctorManager::getDoctorByID(int ID_) const{
-
+Doctor DoctorManager::getDoctorByID(int ID_) const{
+    Utils::checkValidDoctorID(doctorTable, ID_);
+    return doctorTable.at(ID_);
 }
 
-std::vector<int> DoctorManager::getAllDoctors() const{
-
+const std::unordered_map<int, Doctor>& DoctorManager::getAllDoctors() const{
+    return doctorTable;
 }
 
-std::unordered_set<int> DoctorManager::getPatientsByDoctorID(int ID_) const{
-    
+const std::unordered_set<int>& DoctorManager::getPatientsByDoctorID(int ID_) const{
+    return doctorTable.at(ID_).getPatientIDs();
+}
+
+std::vector<Doctor> DoctorManager::findDoctorsByName(const std::string& name) const {
+    std::vector<Doctor> result;
+    for (const auto& pair : doctorTable) {
+        if (pair.second.getName() == name) {
+            result.push_back(pair.second);
+        }
+    }
+    return result;
 }
