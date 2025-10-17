@@ -3,17 +3,20 @@
 #include <string>
 #include <vector>
 #include <unordered_set>
+#include <unordered_map>
 #include "doctor.h"
 
 class DoctorManager{
     private:    
-        std::vector<int> doctorsList;
+        std::unordered_map<int, std::string> log;
+        std::unordered_map<int, Doctor> doctorTable;
+
     public:
         DoctorManager() = default;
         ~DoctorManager() = default;
 
         // modifiers
-        void addDoctor(int ID_);
+        void addDoctor(int ID_, Doctor doc_);
         void editDoctor(int ID_);
         void removeDoctor(int ID_);
 
