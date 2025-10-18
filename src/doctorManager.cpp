@@ -9,23 +9,29 @@ void DoctorManager::addDoctor(int ID_, const Doctor &doc_) {
         throw std::invalid_argument("Doctor ID already exists.");
     }
     doctorTable[ID_] = doc_;
-    log[ID_] = "Added on " + Utils::getDateTime();
+    log[ID_] += " Added on " + Utils::getDateTime();
 }
 
 void DoctorManager::editDoctor(int ID_, const Doctor &newDoctor){
-    Utils::checkValidDoctorID(doctorTable, ID_);
+    Utils::validDoctorID(doctorTable, ID_);
     doctorTable[ID_] = newDoctor;
-    log[ID_] = "Edited on " + Utils::getDateTime();
+    log[ID_] += " Edited on " + Utils::getDateTime();
 }
                                                                                                                                                
 void DoctorManager::removeDoctor(int ID_){
-    Utils::checkValidDoctorID(doctorTable, ID_);
+    Utils::validDoctorID(doctorTable, ID_);
     doctorTable.erase(ID_);
     log.erase(ID_);
 }
 
-Doctor DoctorManager::getDoctorByID(int ID_) const{
-    Utils::checkValidDoctorID(doctorTable, ID_);
+void DoctorManager::changeStatus(int ID_, Doctor::Status status_){
+    Utils::validDoctorID(doctorTable, ID_);
+    doctorTable[ID_].setStatus(status_);
+    log[ID_] += " Status changed on " + Utils::getDateTime();
+}
+
+const Doctor& DoctorManager::getDoctorByID(int ID_) const{
+    Utils::validDoctorID(doctorTable, ID_);
     return doctorTable.at(ID_);
 }
 
@@ -45,4 +51,13 @@ std::vector<Doctor> DoctorManager::findDoctorsByName(const std::string& name) co
         }
     }
     return result;
+}
+
+const std::unordered_map<int, std::string>& DoctorManager::getAllLog() const {
+    return log;
+}
+
+const std::string& DoctorManager::getIDLog(int ID_) const {
+    Utils::validDoctorID(doctorTable, ID_);
+    return log.at(ID_);
 }
