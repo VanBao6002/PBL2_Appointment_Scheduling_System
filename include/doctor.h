@@ -15,7 +15,7 @@ class Doctor : public Person {
     public:
         Doctor();
 
-        Doctor(const std::string& name_, char gender_, const Date& birthday_, int ID_, const std::string& specialization_, Status doctorStatus_);
+        Doctor(int ID_, const std::string& name_, char gender_, const Date& birthday_, const std::string& specialization_, Status doctorStatus_);
 
         virtual ~Doctor() = default;
 

@@ -7,11 +7,11 @@
 
 Doctor::Doctor() : Person(), specialization(""), patientIDs(std::unordered_set<int>()), doctorStatus(Status::Available){}
 
-Doctor::Doctor(const std::string& name_, char gender_, const Date& birthday_, int ID_, const std::string& specialization_, Status doctorStatus_) 
-    : Person(name_, gender_, birthday_, ID_), specialization(specialization_), patientIDs(), doctorStatus(doctorStatus_){}
+Doctor::Doctor(int ID_, const std::string& name_, char gender_, const Date& birthday_, const std::string& specialization_, Status doctorStatus_) 
+    : Person(ID_, name_, gender_, birthday_), specialization(specialization_), patientIDs(), doctorStatus(doctorStatus_){}
 
 void Doctor::setSpecialization(const std::string &specialization_){
-    Utils::checkValidSpecialization(specialization_);
+    Utils::validSpecialization(specialization_);
     specialization = specialization_;
 }
 
@@ -20,13 +20,13 @@ void Doctor::setStatus(Status doctorStatus_){
 }
 // Add patient ID
 void Doctor::addPatientID(int patientID_){
-    Utils::checkValidPatientID(patientIDs, patientID_);
+    Utils::validPatientID(patientIDs, patientID_);
     patientIDs.insert(patientID_);
 }
 
 // Remove patient ID
 void Doctor::removePatientID(int patientID_) {
-    Utils::checkValidPatientID(patientIDs, patientID_);
+    Utils::validPatientID(patientIDs, patientID_);
     patientIDs.erase(patientID_);
 }
 

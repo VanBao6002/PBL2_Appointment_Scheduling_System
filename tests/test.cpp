@@ -1,36 +1,30 @@
-#include<iostream>
-#include"../include/person.h"
-using namespace std;
-class Gay : public Person{
-    public:
-      int count;
-      bool isGay;
-      bool hiv;
+#include <iostream>
+#include <cassert>
+#include "userManager.h"
+#include "user.h"
 
-      Gay() : Person(), count(0), isGay(false), hiv(false) {}
-      void displayInfo() const override {
-    cout << "Name: " << name 
-         << ", Gender: " << gender 
-         << ", Birthday: " 
-         << birthday.day << "/" 
-         << birthday.month << "/" 
-         << birthday.year
-         << ", ID: " << ID << endl;
-    cout << "Count: " << count
-         << ", isGay: " << isGay
-         << ", HIV: " << hiv << endl;
-}
-
-};
 int main() {
-    Gay g;
-    g.setName("Alice");
-    g.setGender('F');
-    g.setID(1);
-    g.count = 1;
-    g.isGay = true;
-    g.hiv = false;
+    UserManager um;
+    User u;
+    u.setID(1);
+    u.setUsername("testuser");
+    u.setRole(User::Role::ADMIN);
+    u.setPassword("password123");
 
-    g.displayInfo();
+    // Test addUser
+    um.addUser(1, u);
+    assert(um.getUserByID(1).getUsername() == "testuser");
+
+    // Test editUser
+    User u2 = u;
+    u2.setUsername("newuser");
+    um.editUser(1, u2);
+    assert(um.getUserByID(1).getUsername() == "newuser");
+
+    // Test changeRole
+    um.changeRole(1, User::Role::DOCTOR);
+    assert(um.getUserByID(1).getRole() == User::Role::DOCTOR);
+
+    std::cout << "All UserManager tests passed!" << std::endl;
     return 0;
 }

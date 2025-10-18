@@ -4,10 +4,10 @@
 #include <stdexcept>
 
 //default constructor
-Person::Person() : name(""), gender('M'), birthday(Date()), ID(0) {}
+Person::Person() :  ID(0), name(""), gender('M'), birthday(Date()) {}
 
 //parameterized constructor
-Person::Person(const std::string &name_, char gender_, const Date &birthday_, int ID_) : name(name_), gender(gender_), birthday(birthday_), ID(ID_) {
+Person::Person(int ID_, const std::string &name_, char gender_, const Date &birthday_) : ID(ID_), name(name_), gender(gender_), birthday(birthday_) {
     Utils::validName(name_);
     Utils::validGender(gender_);
     Utils::validDate(birthday_);
