@@ -4,27 +4,60 @@
 #include <algorithm>
 #include <unordered_set>
 
-void DoctorManager::addDoctor(int ID_){
-
+void DoctorManager::addDoctor(int ID_, const Doctor &doc_) {
+    if (doctorTable.find(ID_) != doctorTable.end()) {
+        throw std::invalid_argument("Doctor ID already exists.");
+    }
+    doctorTable[ID_] = doc_;
+    log[ID_] += " Added on " + Utils::getDateTime();
 }
 
-void DoctorManager::editDoctor(int ID_){
-    
+void DoctorManager::editDoctor(int ID_, const Doctor &newDoctor){
+    Utils::validDoctorID(doctorTable, ID_);
+    doctorTable[ID_] = newDoctor;
+    log[ID_] += " Edited on " + Utils::getDateTime();
 }
                                                                                                                                                
 void DoctorManager::removeDoctor(int ID_){
-
+    Utils::validDoctorID(doctorTable, ID_);
+    doctorTable.erase(ID_);
+    log.erase(ID_);
 }
 
-
-int DoctorManager::getDoctorByID(int ID_) const{
-
+void DoctorManager::changeStatus(int ID_, Doctor::Status status_){
+    Utils::validDoctorID(doctorTable, ID_);
+    doctorTable[ID_].setStatus(status_);
+    log[ID_] += " Status changed on " + Utils::getDateTime();
 }
 
-std::vector<int> DoctorManager::getAllDoctors() const{
-
+const Doctor& DoctorManager::getDoctorByID(int ID_) const{
+    Utils::validDoctorID(doctorTable, ID_);
+    return doctorTable.at(ID_);
 }
 
-std::unordered_set<int> DoctorManager::getPatientsByDoctorID(int ID_) const{
-    
+const std::unordered_map<int, Doctor>& DoctorManager::getAllDoctors() const{
+    return doctorTable;
+}
+
+const std::unordered_set<int>& DoctorManager::getPatientsByDoctorID(int ID_) const{
+    return doctorTable.at(ID_).getPatientIDs();
+}
+
+std::vector<Doctor> DoctorManager::findDoctorsByName(const std::string& name) const {
+    std::vector<Doctor> result;
+    for (const auto& pair : doctorTable) {
+        if (pair.second.getName() == name) {
+            result.push_back(pair.second);
+        }
+    }
+    return result;
+}
+
+const std::unordered_map<int, std::string>& DoctorManager::getAllLog() const {
+    return log;
+}
+
+const std::string& DoctorManager::getIDLog(int ID_) const {
+    Utils::validDoctorID(doctorTable, ID_);
+    return log.at(ID_);
 }

@@ -2,9 +2,31 @@
 #include "config.h"
 #include <stdexcept>
 #include <unordered_set>
+#include <vector>
 #include <string>
 #include <ctime>
 #include <fstream>
+#include <algorithm>
+
+bool Utils::isLeapYear(int year) {
+    return (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
+}
+
+std::string Utils::getDateTime() {
+    char buffer[17]; // "YYYY-MM-DD HH:MM" + null terminator
+    std::time_t t = std::time(nullptr);
+    std::tm* currentDateTime = std::localtime(&t);
+    std::strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M", currentDateTime);
+    return std::string(buffer);
+}
+
+std::string Utils::hashFunc(const std::string &password_){
+    std::string result;
+    for (auto c : password_){
+        result += std::to_string(c % password_.size());
+    } 
+    return result;
+}
 
 void Utils::validName(const std::string &name_) {
     if (name_.empty()) {
@@ -17,28 +39,25 @@ void Utils::validGender(char gender) {
         throw std::invalid_argument("Invalid gender, must be 'M' or 'F'");
     }
 }
-bool Utils::isLeapYear(int year) {
-    return (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
-}
 
-void Utils::validBirthday(const Date &birthday) {
+void Utils::validDate(const Date &date_) {
     std::time_t t = std::time(nullptr);
     std::tm* currentTime = std::localtime(&t);
     int currentYear = currentTime->tm_year + 1900;
     int lowerYearLimit = currentYear - 200;
 
-    if (birthday.month < 1 || birthday.month > 12){
+    if (date_.month < 1 || date_.month > 12){
         throw std::invalid_argument("Invalid month");
     }
 
     int maxDay = 0;
-    switch(birthday.month){
+    switch(date_.month){
         case 1: case 3: case 5: case 7: case 8: case 10: case 12: 
             maxDay = 31; break;
         case 4: case 6: case 9: case 11: 
             maxDay = 30; break;
         case 2:
-            if (isLeapYear(birthday.year)) {
+            if (isLeapYear(date_.year)) {
                 maxDay = 29; 
             } else {
                 maxDay = 28; 
@@ -48,11 +67,11 @@ void Utils::validBirthday(const Date &birthday) {
             throw std::invalid_argument("Invalid month");
     }
 
-    if (birthday.day < 1 || birthday.day > maxDay){
+    if (date_.day < 1 || date_.day > maxDay){
         throw std::invalid_argument("Invalid day");
     }
 
-    if (birthday.year < lowerYearLimit || birthday.year > currentYear){
+    if (date_.year < lowerYearLimit || date_.year > currentYear){
         throw std::invalid_argument("Invalid year, out of range");
     }
 }
@@ -63,13 +82,25 @@ void Utils::validID(int ID) {
     }
 }
 
-void Utils::checkExistPatientID(const std::unordered_set<int> &patientIDs, int patientID_){
+void Utils::validPatientID(const std::unordered_set<int> &patientIDs, int patientID_){
     if (patientIDs.find(patientID_) == patientIDs.end()){
-        throw std::invalid_argument("patientID: " + std::to_string(patientID_) +  " is not found in doctor's list");
+        throw std::invalid_argument("patient 's ID: " + std::to_string(patientID_) +  " is not found");
     }
 }
 
-void Utils::checkExistSpecialization(const std::string &specialization_){
+void Utils::validDoctorID(const std::unordered_map<int, Doctor> &doctorTable, int ID_){
+    if (doctorTable.find(ID_) == doctorTable.end()) {
+        throw std::invalid_argument("Doctor ID not found.");
+    }
+}
+
+void Utils::validUserID(const std::unordered_map<int, User> &userTable, int ID_){
+    if (userTable.find(ID_) == userTable.end()) {
+        throw std::invalid_argument("User ID not found.");
+    }
+}
+
+void Utils::validSpecialization(const std::string &specialization_){
     std::unordered_set<std::string> specializationTable;
     std::ifstream file(Config::SPECIALIZATION_FILE);
     if (!file.is_open()){
@@ -82,11 +113,11 @@ void Utils::checkExistSpecialization(const std::string &specialization_){
     file.close();
 
     if (specializationTable.find(specialization_) == specializationTable.end()){
-        throw std::invalid_argument("specializatio: " + specialization_ + " is not found");
+        throw std::invalid_argument("Specialization: " + specialization_ + " is not valid");
     }
 }
 
-void Utils::checkValidBloodType(const std::string &bloodType_){
+void Utils::validBloodType(const std::string &bloodType_){
     std::unordered_set<std::string> bloodTypeTable;
     std::ifstream file(Config::BLOOD_TYPE_FILE);
     if (!file.is_open()){
@@ -99,6 +130,18 @@ void Utils::checkValidBloodType(const std::string &bloodType_){
     file.close();
 
     if (bloodTypeTable.find(bloodType_) == bloodTypeTable.end()){
-        throw std::invalid_argument("specializatio: " + bloodType_ + " is not found");
+        throw std::invalid_argument("BloodType: " + bloodType_ + " is not valid");
+    }
+}
+
+void Utils::validUserName(const std::string &username_){
+    if (username_.size() < 4 || username_.size() > 20){
+        throw std::invalid_argument("Username: " + username_ + " is not valid");
+    }
+}
+
+void Utils::validPassword(const std::string &password_){
+    if (password_.size() < 8 || password_.size() > 64){
+        throw std::invalid_argument("Password: " + password_ + " is not valid");
     }
 }
