@@ -4,6 +4,8 @@
 #include "doctor.h"
 #include "doctorManager.h"
 #include "user.h"
+#include "medicalRecord.h"
+#include "prescription.h"
 #include <string>
 #include <stdexcept>
 #include <unordered_set>
@@ -12,9 +14,13 @@
 class Utils {
 public:
     static bool isLeapYear(int year);
+    static bool isExpired();
+
+    static int calculateTotalDays();
+    static double calculateTotalCost();
     static std::string getDateTime();
     static std::string hashFunc(const std::string&);
-
+    static std::string generatePrescriptionText();
 
     static void validName(const std::string &name);
     static void validGender(char gender);
@@ -22,14 +28,20 @@ public:
     static void validID(int ID);
     static void validTime(const std::string &time);
 
-
     static void validPatientID(const std::unordered_map<int, Patient> &patientIDs, int patientID_);
     static void validDoctorID(const std::unordered_map<int, Doctor> &doctorsList_, int ID_);
-    static void validUserID(const std::unordered_map<int, User> &userTable, int ID_);
+    static void validUserID(const std::unordered_map<int, User> &userTable_, int ID_);
     static void validSpecialization(const std::string &specialization_);
     static void validBloodType(const std::string &bloodType_);
     static void validUserName(const std::string &username_);
     static void validPassword(const std::string &password_);
+    static void ValidPrescription();
+    static void ValidMedicalRecord();
 
+    template<typename T>
+    static bool saveToFile(const T& obj, int ID);
+
+    template<typename T>
+    static T loadFromFile(int ID);
 };
 
