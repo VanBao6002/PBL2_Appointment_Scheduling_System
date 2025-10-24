@@ -101,7 +101,7 @@ void Utils::validTime(const std::string &time){
     }
 }
 
-void Utils::validPatientID(const std::unordered_set<int> &patientIDs, int patientID_){
+void Utils::validPatientID(const std::unordered_map<int, Patient> &patientIDs, int patientID_){
     if (patientIDs.find(patientID_) == patientIDs.end()){
         throw std::invalid_argument("patient 's ID: " + std::to_string(patientID_) +  " is not found");
     }
@@ -121,7 +121,7 @@ void Utils::validUserID(const std::unordered_map<int, User> &userTable, int ID_)
 
 void Utils::validSpecialization(const std::string &specialization_){
     std::unordered_set<std::string> specializationTable;
-    std::ifstream file(Config::SPECIALIZATION_FILE);
+    std::ifstream file(Config::SPECIALIZATION_PATH);
     if (!file.is_open()){
         throw std::runtime_error("Failed to open doctorSpecializations.txt");
     }
@@ -138,7 +138,7 @@ void Utils::validSpecialization(const std::string &specialization_){
 
 void Utils::validBloodType(const std::string &bloodType_){
     std::unordered_set<std::string> bloodTypeTable;
-    std::ifstream file(Config::BLOOD_TYPE_FILE);
+    std::ifstream file(Config::BLOOD_TYPE_PATH);
     if (!file.is_open()){
         throw std::runtime_error("Failed to open bloodType.txt");
     }
@@ -162,5 +162,22 @@ void Utils::validUserName(const std::string &username_){
 void Utils::validPassword(const std::string &password_){
     if (password_.size() < 8 || password_.size() > 64){
         throw std::invalid_argument("Password: " + password_ + " is not valid");
+    }
+}
+
+static void validRoom(const std::string room_){
+    std::unordered_set<std::string> roomTable;
+    std::ifstream file(Config::ROOM_PATH);
+    if (!file.is_open()){
+        throw std::runtime_error("Failed to open room.txt");
+    }
+    std::string line;
+    while (std::getline(file, line)) {
+        roomTable.insert(line);
+    }
+    file.close();
+
+    if (roomTable.find(room_) == roomTable.end()){
+        throw std::invalid_argument("Room: " + room_ + " is not valid");
     }
 }

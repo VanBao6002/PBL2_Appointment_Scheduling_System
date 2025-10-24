@@ -3,6 +3,8 @@
 #include "date.h"
 #include "doctor.h"
 #include "doctorManager.h"
+#include "patient.h"
+#include "patientManager.h"
 #include "user.h"
 #include "medicalRecord.h"
 #include "prescription.h"

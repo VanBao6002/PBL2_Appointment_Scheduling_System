@@ -6,7 +6,7 @@ struct Date{
     int month;
     int year;
 
-    std::string toString(){
+    std::string toString() const{
         char buffer[17]; // "YYYY-MM-DD HH:MM" + null terminator
         std::snprintf(buffer, sizeof(buffer), "%04d-%02d-%02d", year, month, day);
         return std::string(buffer);
