@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 #include "date.h"
-class medicalRecord{
+class MedicalRecord{
     private:
         // Thông tin cơ bản
         int recordID;
@@ -26,8 +26,8 @@ class medicalRecord{
         std::vector<Date> followUpDates;  // Lịch tái khám
 
     public:
-        medicalRecord();
-        medicalRecord(int recordID_, int patientID_, int doctorID_);
+        MedicalRecord();
+        MedicalRecord(int recordID_, int patientID_, int doctorID_);
 
         // Getters
         int getRecordID() const;
@@ -55,4 +55,12 @@ class medicalRecord{
         void setTreatment(const std::string& treatment);
         void setDoctorNotes(const std::string& notes);
         void addFollowUpDate(const Date& date);
+
+        // Các hàm tiện ích
+        void updateLastModified(); // Cập nhật lần cuối sửa đổi
+        bool isValidRecord() const;
+
+        // Các thao tác với file
+        bool saveToFile() const;
+        static MedicalRecord loadFromFile(int recordID);
 };
