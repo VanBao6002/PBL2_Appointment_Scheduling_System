@@ -8,8 +8,8 @@ class Doctor : public Person {
         enum class Status {Unavailable, Available}; //encapsulate enum inside doctor class
 
     private:
-        std::string specialization; // chuyen khoa
-        std::unordered_set<int> patientIDs; // ID benh nhan duoc bac si dam nhan
+        std::string specialization; // Chuyển Khoa
+        std::unordered_set<int> patientIDs; // ID bệnh nhân được bác sĩ đảm nhận
         Status doctorStatus;
     
     public:
