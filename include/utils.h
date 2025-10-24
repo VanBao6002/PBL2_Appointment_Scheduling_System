@@ -30,6 +30,6 @@ public:
     static void validBloodType(const std::string &bloodType_);
     static void validUserName(const std::string &username_);
     static void validPassword(const std::string &password_);
-
+    
 };
 
