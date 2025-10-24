@@ -21,12 +21,19 @@ class Appointment{
         Status status; // Trạng thái lịch hẹn (đã đặt, đã khám, hủy)
 
     public: 
+        Appointment() = default;
+        ~Appointment() = default;
+
         //setters
         void setDateTime(Date date_, const std::string &time_);
         void setStatus(Status status_);
+        void setDoctor(const DoctorManager& mgr, int doctorID_);
+        void setPatient(const PatientManager& mgr, int patientID_);
+
         //getters
         std::string getDateTime();
         Status getStatus();
         Doctor getDoctor(const DoctorManager& mgr) const;
-    
+        Patient getPatient(const PatientManager& mgr) const;
+
 };

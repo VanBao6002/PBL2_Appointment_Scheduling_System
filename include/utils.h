@@ -26,8 +26,9 @@ public:
     static void validGender(char gender);
     static void validDate(const Date &date_);
     static void validID(int ID);
+    static void validTime(const std::string &time);
 
-    static void validPatientID(const std::unordered_set<int> &patientIDs, int patientID_);
+    static void validPatientID(const std::unordered_map<int, Patient> &patientIDs, int patientID_);
     static void validDoctorID(const std::unordered_map<int, Doctor> &doctorsList_, int ID_);
     static void validUserID(const std::unordered_map<int, User> &userTable_, int ID_);
     static void validSpecialization(const std::string &specialization_);
