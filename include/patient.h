@@ -9,12 +9,8 @@ class Patient : public Person{
         std::string bloodType;
         std::string nameMother;
         std::string nameFather;
-<<<<<<< HEAD
         MedicalRecord medicalRecord;
         Prescription prescription;
-=======
-        
->>>>>>> b59bb7934cffd7e9b48d2daecb93496762ab1ac5
     public:
         Patient();
 

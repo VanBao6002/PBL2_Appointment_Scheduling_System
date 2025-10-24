@@ -18,7 +18,7 @@ void Patient::setBloodType(const std::string &bloodType_){
     bloodType = bloodType_;
 }
 
-void Patient::setNameFather(const std::string &nameMother_){
+void Patient::setNameMother(const std::string &nameMother_){
     nameMother = nameMother_;
 }
 
