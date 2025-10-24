@@ -1,12 +1,16 @@
 #pragma once
 
 #include "person.h"
+#include "medicalRecord.h"
+#include "prescription.h"
 #include <string>
 class Patient : public Person{
     private:
         std::string bloodType;
         std::string nameMother;
         std::string nameFather;
+        MedicalRecord medicalRecord;
+        Prescription prescription;
     public:
         Patient();
 

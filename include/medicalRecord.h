@@ -55,12 +55,4 @@ class MedicalRecord{
         void setTreatment(const std::string& treatment);
         void setDoctorNotes(const std::string& notes);
         void addFollowUpDate(const Date& date);
-
-        // Các hàm tiện ích
-        void updateLastModified(); // Cập nhật lần cuối sửa đổi
-        bool isValidRecord() const;
-
-        // Các thao tác với file
-        bool saveToFile() const;
-        static MedicalRecord loadFromFile(int recordID);
 };
