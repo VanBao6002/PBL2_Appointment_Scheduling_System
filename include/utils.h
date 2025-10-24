@@ -35,13 +35,6 @@ public:
     static void validBloodType(const std::string &bloodType_);
     static void validUserName(const std::string &username_);
     static void validPassword(const std::string &password_);
-    static void ValidPrescription();
-    static void ValidMedicalRecord();
-
-    template<typename T>
-    static bool saveToFile(const T& obj, int ID);
-
-    template<typename T>
-    static T loadFromFile(int ID);
+    
 };
 
