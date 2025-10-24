@@ -34,7 +34,7 @@ class Prescription {
         int getPatientID() const;
         int getDoctorID() const;
         Date getPrescriptionDate() const;
-        std::vector<Medicine> getMedicines() const;
+        const std::vector<Medicine> &getMedicines() const;
         std::string getDiagnosis() const;
         std::string getAdditionalNotes() const;
         bool getIsActive() const;

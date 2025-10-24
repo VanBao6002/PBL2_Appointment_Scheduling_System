@@ -35,6 +35,11 @@ public:
     static void validBloodType(const std::string &bloodType_);
     static void validUserName(const std::string &username_);
     static void validPassword(const std::string &password_);
-    
+
+    template<typename T>
+    static T loadFromFile(const std::string &filename, std::unordered_map<int, T> &dataMap);
+
+    template<typename U>
+    static void saveToFile(const std::string &filename, const std::unordered_map<int, U> &dataMap);
 };
 
