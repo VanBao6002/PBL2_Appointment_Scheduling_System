@@ -19,15 +19,17 @@ class Doctor : public Person {
 
         virtual ~Doctor() = default;
 
-        //getters
-        std::string getSpecialization() const {return specialization;}
-        const std::unordered_set<int>& getPatientIDs() const {return patientIDs;}
-        std::string getInfo() const override;
-
         //setters
         void setSpecialization(const std::string &specialization_);
         void setStatus(Status doctorStatus_);
 
         void addPatientID(int patientID_);
         void removePatientID(int patientID_);
+
+        //getters
+        std::string getSpecialization() const {return specialization;}
+        Status getStatus() const {return doctorStatus;}
+        const std::unordered_set<int>& getPatientIDs() const {return patientIDs;}
+        std::string getInfo() const override;
+
 };        

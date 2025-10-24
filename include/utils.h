@@ -3,6 +3,8 @@
 #include "date.h"
 #include "doctor.h"
 #include "doctorManager.h"
+#include "patient.h"
+#include "patientManager.h"
 #include "user.h"
 #include "medicalRecord.h"
 #include "prescription.h"
@@ -35,6 +37,6 @@ public:
     static void validBloodType(const std::string &bloodType_);
     static void validUserName(const std::string &username_);
     static void validPassword(const std::string &password_);
-    
+    static void validRoom(const std::string room_);
 };
 

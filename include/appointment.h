@@ -12,7 +12,7 @@ class Appointment{
         enum class Status{DaDat, DaKham, Huy};
 
     private:    
-        std::string ID; // Mã lịch hẹn (ID, duy nhất)
+        int ID; // Mã lịch hẹn (ID, duy nhất)
         int doctorID; // Bác sĩ (ID bác sĩ, tên bác sĩ, chuyên khoa)
         int patientID; // Bệnh nhân (ID bệnh nhân, tên bệnh nhân)
         Date date; // Ngày tháng năm của lịch hẹn
@@ -25,14 +25,16 @@ class Appointment{
         ~Appointment() = default;
 
         //setters
+        void setID(int ID_);
         void setDateTime(Date date_, const std::string &time_);
         void setStatus(Status status_);
         void setDoctor(const DoctorManager& mgr, int doctorID_);
         void setPatient(const PatientManager& mgr, int patientID_);
-
+        void setRoom(const std::string room_);
         //getters
-        std::string getDateTime();
-        Status getStatus();
+        int getID() const;
+        std::string getDateTime() const;
+        Status getStatus() const;
         Doctor getDoctor(const DoctorManager& mgr) const;
         Patient getPatient(const PatientManager& mgr) const;
 
