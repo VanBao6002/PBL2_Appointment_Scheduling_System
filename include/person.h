@@ -31,5 +31,3 @@ class Person {
         void setBirthday(const Date &birthday_); 
         void setID(int ID_); 
 };
-
-
