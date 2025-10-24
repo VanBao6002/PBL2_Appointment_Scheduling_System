@@ -40,24 +40,24 @@ void Utils::validGender(char gender) {
     }
 }
 
-void Utils::validDate(const Date &date_) {
+void Utils::validDate(const Date &date) {
     std::time_t t = std::time(nullptr);
     std::tm* currentTime = std::localtime(&t);
     int currentYear = currentTime->tm_year + 1900;
     int lowerYearLimit = currentYear - 200;
 
-    if (date_.month < 1 || date_.month > 12){
+    if (date.month < 1 || date.month > 12){
         throw std::invalid_argument("Invalid month");
     }
 
     int maxDay = 0;
-    switch(date_.month){
+    switch(date.month){
         case 1: case 3: case 5: case 7: case 8: case 10: case 12: 
             maxDay = 31; break;
         case 4: case 6: case 9: case 11: 
             maxDay = 30; break;
         case 2:
-            if (isLeapYear(date_.year)) {
+            if (isLeapYear(date.year)) {
                 maxDay = 29; 
             } else {
                 maxDay = 28; 
@@ -67,11 +67,11 @@ void Utils::validDate(const Date &date_) {
             throw std::invalid_argument("Invalid month");
     }
 
-    if (date_.day < 1 || date_.day > maxDay){
+    if (date.day < 1 || date.day > maxDay){
         throw std::invalid_argument("Invalid day");
     }
 
-    if (date_.year < lowerYearLimit || date_.year > currentYear){
+    if (date.year < lowerYearLimit || date.year > currentYear){
         throw std::invalid_argument("Invalid year, out of range");
     }
 }
@@ -79,6 +79,25 @@ void Utils::validDate(const Date &date_) {
 void Utils::validID(int ID) {
     if (ID < 0){
         throw std::invalid_argument("Invalid ID, ID must be non-negative");
+    }
+}
+
+void Utils::validTime(const std::string &time){
+    if (time.size() != 5 || time[2] != ':') {
+        throw std::invalid_argument("Time format must be HH:MM");
+    }
+    int hour, minute;
+    try {
+        hour = std::stoi(time.substr(0, 2));
+        minute = std::stoi(time.substr(3, 2));
+    } catch (...) {
+        throw std::invalid_argument("Time contains invalid numbers");
+    }
+    if (hour < 0 || hour > 23) {
+        throw std::invalid_argument("Hour must be between 00 and 23");
+    }
+    if (minute < 0 || minute > 59) {
+        throw std::invalid_argument("Minute must be between 00 and 59");
     }
 }
 

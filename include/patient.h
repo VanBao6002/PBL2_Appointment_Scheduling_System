@@ -7,6 +7,7 @@ class Patient : public Person{
         std::string bloodType;
         std::string nameMother;
         std::string nameFather;
+        
     public:
         Patient();
 
