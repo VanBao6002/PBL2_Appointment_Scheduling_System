@@ -6,10 +6,76 @@
 #include <string>
 #include <ctime>
 #include <fstream>
+#include <sstream>
 #include <algorithm>
 
-bool Utils::isLeapYear(int year) {
-    return (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
+bool Utils::isExpired(const Date& prescriptionDate, int duration) {
+    std::time_t t = std::time(nullptr);
+    std::tm* currentTime = std::localtime(&t);
+    Date currentDate(currentTime->tm_year + 1900, 
+                    currentTime->tm_mon + 1, 
+                    currentTime->tm_mday);
+    Date expiryDate = prescriptionDate;
+    expiryDate.addDays(duration);
+    return currentDate > expiryDate;
+}
+
+int Utils::calculateTotalDays() {
+    std::ifstream file(Config::PRESCRIPTION_PATH);
+    if (!file.is_open()) {
+        throw std::runtime_error("Cannot open prescription file");
+    }
+
+    int maxDuration = 0;
+    std::string line;
+    while (std::getline(file, line)) {
+        std::istringstream iss(line);
+        std::string name;
+        int frequency, duration;
+        if (iss >> name >> frequency >> duration) {
+            if (duration > maxDuration) {
+                maxDuration = duration;
+            }
+        }
+    }
+    file.close();
+    return maxDuration;
+}
+
+double Utils::calculateTotalCost() {
+    std::ifstream priceFile(Config::MEDICINE_PRICE_PATH);
+    if (!priceFile.is_open()) {
+        throw std::runtime_error("Cannot open medicine price file");
+    }
+
+    std::unordered_map<std::string, double> medicinePrice;
+    std::string name;
+    double price;
+    while (priceFile >> name >> price) {
+        medicinePrice[name] = price;
+    }
+    priceFile.close();
+
+    std::ifstream prescFile(Config::PRESCRIPTION_PATH);
+    if (!prescFile.is_open()) {
+        throw std::runtime_error("Cannot open prescription file");
+    }
+
+    double totalCost = 0.0;
+    std::string line;
+    while (std::getline(prescFile, line)) {
+        std::istringstream iss(line);
+        std::string medicineName;
+        int frequency, duration;
+        if (iss >> medicineName >> frequency >> duration) {
+            if (medicinePrice.find(medicineName) != medicinePrice.end()) {
+                totalCost += medicinePrice[medicineName] * frequency * duration;
+            }
+        }
+    }
+    prescFile.close();
+
+    return totalCost;
 }
 
 std::string Utils::getDateTime() {
@@ -26,6 +92,43 @@ std::string Utils::hashFunc(const std::string &password_){
         result += std::to_string(c % password_.size());
     } 
     return result;
+}
+
+std::string Utils::generatePrescriptionText(int prescriptionID, const Date& prescriptionDate, 
+    int patientID, int doctorID, const std::string& diagnosis,
+    const std::vector<std::pair<std::string, std::pair<int, int>>>& medicines,
+    const std::string& additionalNotes) {
+    
+    std::stringstream ss;
+    
+    ss << "=============================================\n";
+    ss << "              ĐƠN THUỐC                    \n";
+    ss << "=============================================\n\n";
+
+    ss << "Mã đơn thuốc: " << prescriptionID << "\n";
+    ss << "Ngày kê đơn: " << prescriptionDate.toString() << "\n";
+    ss << "Mã bệnh nhân: " << patientID << "\n";
+    ss << "Mã bác sĩ: " << doctorID << "\n\n";
+
+    ss << "Chẩn đoán: " << diagnosis << "\n\n";
+
+    ss << "DANH SÁCH THUỐC:\n";
+    ss << "---------------------------------------------\n";
+    for (const auto& med : medicines) {
+        ss << "- " << med.first << "\n";  // Tên thuốc
+        ss << "  Số lần uống: " << med.second.first << " lần/ngày\n";  // Tần suất
+        ss << "  Thời gian điều trị: " << med.second.second << " ngày\n\n";  // Thời gian
+    }
+
+    if (!additionalNotes.empty()) {
+        ss << "Ghi chú: " << additionalNotes << "\n";
+    }
+
+    ss << "=============================================\n";
+    ss << "Ngày kê đơn: " << getDateTime() << "\n";
+    ss << "Chữ ký bác sĩ:\n\n";
+
+    return ss.str();
 }
 
 void Utils::validName(const std::string &name_) {
@@ -50,22 +153,7 @@ void Utils::validDate(const Date &date) {
         throw std::invalid_argument("Invalid month");
     }
 
-    int maxDay = 0;
-    switch(date.month){
-        case 1: case 3: case 5: case 7: case 8: case 10: case 12: 
-            maxDay = 31; break;
-        case 4: case 6: case 9: case 11: 
-            maxDay = 30; break;
-        case 2:
-            if (isLeapYear(date.year)) {
-                maxDay = 29; 
-            } else {
-                maxDay = 28; 
-            }
-            break;
-        default:
-            throw std::invalid_argument("Invalid month");
-    }
+    int maxDay = date.getDaysInMonth(date.month, date.year);
 
     if (date.day < 1 || date.day > maxDay){
         throw std::invalid_argument("Invalid day");
@@ -165,7 +253,7 @@ void Utils::validPassword(const std::string &password_){
     }
 }
 
-static void validRoom(const std::string room_){
+void Utils::validRoom(const std::string &room_){
     std::unordered_set<std::string> roomTable;
     std::ifstream file(Config::ROOM_PATH);
     if (!file.is_open()){
@@ -179,5 +267,48 @@ static void validRoom(const std::string room_){
 
     if (roomTable.find(room_) == roomTable.end()){
         throw std::invalid_argument("Room: " + room_ + " is not valid");
+    }
+}
+
+void Utils::validPrescription(const Prescription &prescription_) {
+    // Kiểm tra ID
+    if (prescription_.getPrescriptionID() <= 0) {
+        throw std::invalid_argument("Invalid prescription ID");
+    }
+    validID(prescription_.getPatientID());
+    validID(prescription_.getDoctorID());
+
+    // Kiểm tra ngày kê đơn
+    validDate(prescription_.getPrescriptionDate());
+
+    if (prescription_.getDiagnosis().empty()) {
+        throw std::invalid_argument("Diagnosis cannot be empty");
+    }
+
+    const auto& medicines = prescription_.getMedicines();
+    if (medicines.empty()) {
+        throw std::invalid_argument("Prescription must have at least one medicine");
+    }
+
+    for (const auto& medicine : medicines) {
+        if (medicine.name.empty()) {
+            throw std::invalid_argument("Medicine name cannot be empty");
+        }
+
+        if (medicine.dosage.empty()) {
+            throw std::invalid_argument("Medicine dosage cannot be empty");
+        }
+
+        if (medicine.frequency <= 0 || medicine.frequency > 6) {
+            throw std::invalid_argument("Invalid frequency: must be between 1 and 6 times per day");
+        }
+
+        if (medicine.duration <= 0 || medicine.duration > 90) {
+            throw std::invalid_argument("Invalid duration: must be between 1 and 90 days");
+        }
+
+        if (medicine.instruction.empty()) {
+            throw std::invalid_argument("Medicine instruction cannot be empty");
+        }
     }
 }
