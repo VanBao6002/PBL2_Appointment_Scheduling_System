@@ -12,17 +12,24 @@
 #include <stdexcept>
 #include <unordered_set>
 #include <vector>
+#include <fstream>
 
 class Utils {
 public:
-    static bool isLeapYear(int year);
-    static bool isExpired();
+    static bool isExpired(const Date& prescriptionDate, int duration);
 
     static int calculateTotalDays();
     static double calculateTotalCost();
     static std::string getDateTime();
     static std::string hashFunc(const std::string&);
-    static std::string generatePrescriptionText();
+    static std::string generatePrescriptionText(
+        int prescriptionID, 
+        const Date& prescriptionDate,
+        int patientID, 
+        int doctorID, 
+        const std::string& diagnosis,
+        const std::vector<std::pair<std::string, std::pair<int, int>>>& medicines,
+        const std::string& additionalNotes = "");
 
     static void validName(const std::string &name);
     static void validGender(char gender);
@@ -38,7 +45,9 @@ public:
     static void validUserName(const std::string &username_);
     static void validPassword(const std::string &password_);
     static void validRoom(const std::string &room_);
-
+    static void validPrescription(const Prescription &prescription_);
+    static void validMedicalRecord(const MedicalRecord &medicalrecord_);
+    
     template<typename T>
     static T loadFromFile(const std::string &filename, std::unordered_map<int, T> &dataMap);
 
