@@ -102,31 +102,31 @@ std::string Utils::generatePrescriptionText(int prescriptionID, const Date& pres
     std::stringstream ss;
     
     ss << "=============================================\n";
-    ss << "              ĐƠN THUỐC                    \n";
+    ss << "                 PRESCRIPTION                    \n";
     ss << "=============================================\n\n";
 
-    ss << "Mã đơn thuốc: " << prescriptionID << "\n";
-    ss << "Ngày kê đơn: " << prescriptionDate.toString() << "\n";
-    ss << "Mã bệnh nhân: " << patientID << "\n";
-    ss << "Mã bác sĩ: " << doctorID << "\n\n";
+    ss << "Prescription ID: " << prescriptionID << "\n";
+    ss << "Prescription date: " << prescriptionDate.toString() << "\n";
+    ss << "Patient ID: " << patientID << "\n";
+    ss << "Doctor ID: " << doctorID << "\n\n";
 
-    ss << "Chẩn đoán: " << diagnosis << "\n\n";
+    ss << "Diagnosis: " << diagnosis << "\n\n";
 
-    ss << "DANH SÁCH THUỐC:\n";
+    ss << "Medication list:\n";
     ss << "---------------------------------------------\n";
     for (const auto& med : medicines) {
         ss << "- " << med.first << "\n";  // Tên thuốc
-        ss << "  Số lần uống: " << med.second.first << " lần/ngày\n";  // Tần suất
-        ss << "  Thời gian điều trị: " << med.second.second << " ngày\n\n";  // Thời gian
+        ss << "  Dosage frequency: " << med.second.first << " times per day\n";  // Tần suất
+        ss << "  Duration of treatment: " << med.second.second << " days\n\n";  // Thời gian
     }
 
     if (!additionalNotes.empty()) {
-        ss << "Ghi chú: " << additionalNotes << "\n";
+        ss << "Note: " << additionalNotes << "\n";
     }
 
     ss << "=============================================\n";
-    ss << "Ngày kê đơn: " << getDateTime() << "\n";
-    ss << "Chữ ký bác sĩ:\n\n";
+    ss << "Printed on: " << getDateTime() << "\n"; // Ngày in đơn
+    ss << "Doctor's signature:\n\n"; // Chữ ký bác sĩ
 
     return ss.str();
 }
@@ -271,14 +271,12 @@ void Utils::validRoom(const std::string &room_){
 }
 
 void Utils::validPrescription(const Prescription &prescription_) {
-    // Kiểm tra ID
     if (prescription_.getPrescriptionID() <= 0) {
         throw std::invalid_argument("Invalid prescription ID");
     }
     validID(prescription_.getPatientID());
     validID(prescription_.getDoctorID());
 
-    // Kiểm tra ngày kê đơn
     validDate(prescription_.getPrescriptionDate());
 
     if (prescription_.getDiagnosis().empty()) {

@@ -1,0 +1,41 @@
+# Thuốc giảm đau, hạ sốt
+Paracetamol 5000        # Giảm đau, hạ sốt thông thường
+Ibuprofen 8000          # Giảm đau, kháng viêm
+Aspirin 6000            # Giảm đau, chống đông máu
+
+# Kháng sinh
+Amoxicillin 12000       # Kháng sinh phổ rộng, điều trị nhiễm khuẩn đường hô hấp
+Azithromycin 25000      # Kháng sinh nhóm macrolide, điều trị viêm phổi, viêm phế quản
+Cefuroxime 30000        # Kháng sinh nhóm Cephalosporin, điều trị nhiễm trùng nặng
+
+# Thuốc dạ dày
+Omeprazole 15000        # Điều trị trào ngược dạ dày, loét dạ dày
+Famotidine 12000        # Giảm tiết acid dạ dày
+Maalox 8000             # Thuốc kháng acid, giảm đau dạ dày
+
+# Vitamin và khoáng chất
+Vitamin_C 3000          # Tăng cường miễn dịch
+Vitamin_B_Complex 7000  # Bổ sung vitamin nhóm B, tăng cường năng lượng
+Calcium_D3 10000        # Bổ sung canxi và vitamin D3, phòng loãng xương
+
+# Thuốc điều trị dị ứng
+Cetirizine 9000         # Kháng histamine, điều trị dị ứng, ngứa
+Loratadine 11000        # Điều trị viêm mũi dị ứng, mề đay
+
+# Thuốc ho và đường hô hấp
+Bromhexine 7000         # Long đờm, điều trị ho có đờm
+Dextromethorphan 8500   # Giảm ho khan
+Terbutaline 15000       # Giãn phế quản, điều trị hen suyễn
+
+# Thuốc tim mạch
+Amlodipine 20000        # Điều trị cao huyết áp
+Atenolol 18000          # Điều trị cao huyết áp, đau thắt ngực
+Losartan 25000          # Điều trị cao huyết áp, bảo vệ thận
+
+# Thuốc điều trị tiểu đường
+Metformin 15000         # Điều trị đái tháo đường type 2
+Gliclazide 22000        # Kích thích tiết insulin
+
+# Thuốc an thần, giảm lo âu
+Alprazolam 30000        # Điều trị rối loạn lo âu, hoảng loạn
+Diazepam 25000          # Giảm lo âu, giãn cơ
