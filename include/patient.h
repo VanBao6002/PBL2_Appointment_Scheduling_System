@@ -4,6 +4,8 @@
 #include "medicalRecord.h"
 #include "prescription.h"
 #include <string>
+#include <iostream>
+#include <sstream>
 class Patient : public Person{
     private:
         std::string bloodType;
@@ -27,5 +29,8 @@ class Patient : public Person{
         void setBloodType(const std::string &bloodType_);
         void setNameMother(const std::string &nameMother_);
         void setNameFather(const std::string &nameFather_);
+
+        bool loadFromStream(std::istream& is);
+        void saveToStream(std::ostream& os) const;
 };
 

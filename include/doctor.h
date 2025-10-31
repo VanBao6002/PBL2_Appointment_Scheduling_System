@@ -1,8 +1,10 @@
 #pragma once
 
 #include "person.h"
+#include "patient.h"
 #include <string>
 #include <unordered_set>
+#include <unordered_map>
 class Doctor : public Person {
     public:
         enum class Status {Unavailable, Available};
@@ -25,7 +27,6 @@ class Doctor : public Person {
         void addPatientID(const Patient &patientID_);
         void removePatientID(int patientID_);
 
-        //getters
         std::string getSpecialization() const {return specialization;}
         Status getStatus() const {return doctorStatus;}
         const std::unordered_map<int, Patient>& getPatientIDs() const {return patientIDs;}

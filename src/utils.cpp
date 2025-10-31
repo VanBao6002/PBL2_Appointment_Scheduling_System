@@ -395,3 +395,4 @@ void Utils::validMedicalRecord(const MedicalRecord &medicalRecord_) {
         throw std::invalid_argument("Change history cannot be empty - at least creation record needed");
     }
 }
+

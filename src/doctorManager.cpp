@@ -3,6 +3,7 @@
 #include "doctorManager.h"
 #include <algorithm>
 #include <unordered_set>
+#include <unordered_map>
 
 void DoctorManager::addDoctor(int ID_, const Doctor &doc_) {
     if (doctorTable.find(ID_) != doctorTable.end()) {
