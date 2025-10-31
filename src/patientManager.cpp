@@ -52,3 +52,16 @@ const std::string& PatientManager::getIDLog(int ID_) const {
     Utils::validPatientID(patientTable, ID_);
     return log.at(ID_);
 }
+
+const std::string& PatientManager::getIDLog(int ID_) const {
+    Utils::validPatientID(patientTable, ID_);
+    return log.at(ID_);
+}
+
+void PatientManager::loadFromFile(const std::string& filename) {
+    Utils::loadFromFile(filename, patientTable);
+}
+
+void PatientManager::saveToFile(const std::string& filename) const {
+    Utils::saveToFile(filename, patientTable);
+}

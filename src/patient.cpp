@@ -43,7 +43,6 @@ bool Patient::loadFromStream(std::istream& is) {
     char gender;
     std::string dateStr;
     
-    // Read base class (Person) data
     if (!(iss >> id >> name >> gender >> dateStr)) return false;
     
     Date birthday;
@@ -53,11 +52,9 @@ bool Patient::loadFromStream(std::istream& is) {
     dateStream >> day >> delimiter >> month >> delimiter >> year;
     birthday = Date(day, month, year);
     
-    // Read Patient specific data
     std::string bloodType, motherName, fatherName;
     if (!(iss >> bloodType >> motherName >> fatherName)) return false;
     
-    // Set all the values
     setID(id);
     setName(name);
     setGender(gender);
@@ -70,7 +67,6 @@ bool Patient::loadFromStream(std::istream& is) {
 }
 
 void Patient::saveToStream(std::ostream& os) const {
-    // Format: ID Name Gender Birthday BloodType MotherName FatherName
     os << getID() << " "
        << getName() << " "
        << getGender() << " "

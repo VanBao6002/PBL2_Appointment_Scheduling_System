@@ -60,3 +60,43 @@ Doctor::Status getStatus(const Doctor::Status &doctorStatus_){
 const std::unordered_map<int, Patient> getPatientIDs(const std::unordered_map<int, Patient> &patientIDs_){
     return patientIDs_;
 }
+
+bool Doctor::loadFromStream(std::istream& is) {
+    std::string line;
+    if (!std::getline(is, line)) return false;
+    
+    std::istringstream iss(line);
+    int id;
+    std::string name;
+    char gender;
+    std::string dateStr;
+    std::string spec;
+    int status;
+    
+    if (!(iss >> id >> name >> gender >> dateStr >> spec >> status)) return false;
+    
+    Date birthday;
+    std::istringstream dateStream(dateStr);
+    int year, month, day;
+    char delimiter;
+    dateStream >> year >> delimiter >> month >> delimiter >> day;
+    birthday = Date(year, month, day);
+    
+    setID(id);
+    setName(name);
+    setGender(gender);
+    setBirthday(birthday);
+    setSpecialization(spec);
+    setStatus(static_cast<Status>(status));
+    
+    return true;
+}
+
+void Doctor::saveToStream(std::ostream& os) const {
+    os << getID() << " "
+       << getName() << " "
+       << getGender() << " "
+       << getBirthday().toString() << " "
+       << specialization << " "
+       << static_cast<int>(doctorStatus);
+}

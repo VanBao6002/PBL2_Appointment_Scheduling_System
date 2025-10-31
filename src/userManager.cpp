@@ -57,3 +57,11 @@ const std::string& UserManager::getIDLog(int ID_) const {
     Utils::validUserID(userTable, ID_);
     return log.at(ID_);
 }
+
+void UserManager::loadFromFile(const std::string& filename) {
+    Utils::loadFromFile(filename, userTable);
+}
+
+void UserManager::saveToFile(const std::string& filename) const {
+    Utils::saveToFile(filename, userTable);
+}

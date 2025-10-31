@@ -1,6 +1,9 @@
 #pragma once
 #include <string>
-class User { 
+#include <sstream>
+#include "serializable.h"
+
+class User : public ISerializable { 
     public: 
         enum class Role {ADMIN, DOCTOR, PATIENT};
 
@@ -23,5 +26,8 @@ class User {
         Role getRole() const {return userRole;}
         const std::string& getUsername() const {return username;}
         const std::string& getPassword() const {return passwordHash;}
-        
+
+        // ISerializable interface
+        bool loadFromStream(std::istream& is) override;
+        void saveToStream(std::ostream& os) const override;
 };
