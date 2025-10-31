@@ -14,13 +14,11 @@ class User {
         User() = default;
         ~User() = default;
 
-    //setter
         void setID(int ID_);
         void setRole(User::Role role_);
         void setUsername(const std::string &username_);
         void setPassword(const std::string &passwordHash_);
     
-    //getter
         int getID() const {return ID;}
         Role getRole() const {return userRole;}
         const std::string& getUsername() const {return username;}

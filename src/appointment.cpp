@@ -39,7 +39,6 @@ void Appointment::setRoom(const std::string room_){
     room = room_;
 }
 
-//getters
 int Appointment::getID() const{
     return ID;
 }

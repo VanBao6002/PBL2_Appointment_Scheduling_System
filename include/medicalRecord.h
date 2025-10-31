@@ -3,9 +3,9 @@
 #include <string>
 #include <vector>
 #include "date.h"
+#include "prescription.h"
 class MedicalRecord{
     private:
-        // Thông tin cơ bản
         int recordID;
         int patientID;
         int doctorID;
@@ -24,12 +24,13 @@ class MedicalRecord{
         std::string treatment;        // Phương pháp điều trị
         std::string doctorNotes;      // Ghi chú của bác sĩ
         std::vector<Date> followUpDates;  // Lịch tái khám
+        std::vector<Prescription> prescriptions; // Danh sách đơn thuốc
+        std::vector<std::string> changeHistory; // Lịch sử thay đổi
 
     public:
         MedicalRecord();
         MedicalRecord(int recordID_, int patientID_, int doctorID_);
 
-        // Getters
         int getRecordID() const;
         int getPatientID() const;
         int getDoctorID() const;
@@ -44,8 +45,9 @@ class MedicalRecord{
         std::string getTreatment() const;
         std::string getDoctorNotes() const;
         std::vector<Date> getFollowUpDates() const;
+        const std::vector<Prescription> &getPrescriptions() const;
+        const std::vector<std::string> &getChangeHistory() const;
 
-        // Setters
         void setDiagnosis(const std::string& diagnosis);
         void setSymptoms(const std::string& symptoms);
         void setTestResults(const std::string& results);

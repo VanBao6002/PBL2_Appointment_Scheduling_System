@@ -5,11 +5,11 @@
 #include <unordered_set>
 class Doctor : public Person {
     public:
-        enum class Status {Unavailable, Available}; //encapsulate enum inside doctor class
+        enum class Status {Unavailable, Available};
 
     private:
-        std::string specialization; // Chuyển Khoa
-        std::unordered_set<int> patientIDs; // ID bệnh nhân được bác sĩ đảm nhận
+        std::string specialization; // Chuyên Khoa
+        std::unordered_map<int, Patient> patientIDs; // ID bệnh nhân được bác sĩ đảm nhận
         Status doctorStatus;
     
     public:
@@ -19,17 +19,16 @@ class Doctor : public Person {
 
         virtual ~Doctor() = default;
 
-        //setters
         void setSpecialization(const std::string &specialization_);
         void setStatus(Status doctorStatus_);
 
-        void addPatientID(int patientID_);
+        void addPatientID(const Patient &patientID_);
         void removePatientID(int patientID_);
 
         //getters
         std::string getSpecialization() const {return specialization;}
         Status getStatus() const {return doctorStatus;}
-        const std::unordered_set<int>& getPatientIDs() const {return patientIDs;}
+        const std::unordered_map<int, Patient>& getPatientIDs() const {return patientIDs;}
         std::string getInfo() const override;
 
 };        

@@ -24,14 +24,14 @@ class Appointment{
         Appointment() = default;
         ~Appointment() = default;
 
-        //setters
         void setID(int ID_);
         void setDateTime(Date date_, const std::string &time_);
         void setStatus(Status status_);
         void setDoctor(const DoctorManager& mgr, int doctorID_);
         void setPatient(const PatientManager& mgr, int patientID_);
         void setRoom(const std::string room_);
-        //getters
+
+        
         int getID() const;
         std::string getDateTime() const;
         Status getStatus() const;

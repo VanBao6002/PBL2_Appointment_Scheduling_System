@@ -39,7 +39,7 @@ const std::unordered_map<int, Doctor>& DoctorManager::getAllDoctors() const{
     return doctorTable;
 }
 
-const std::unordered_set<int>& DoctorManager::getPatientsByDoctorID(int ID_) const{
+const std::unordered_map<int, Patient>& DoctorManager::getPatientsByDoctorID(int ID_) const{
     return doctorTable.at(ID_).getPatientIDs();
 }
 

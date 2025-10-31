@@ -15,13 +15,11 @@ class AppointmentManager{
         AppointmentManager() = default;
         ~AppointmentManager() = default;
 
-        // modifiers
         void addAppointment(int ID_, const Appointment  &doc_);
         void editAppointment(int ID_, const Appointment &newAppointment);
         void removeAppointment(int ID_);
         void changeStatus(int ID_, Appointment::Status status_);
 
-        // getters
         const Appointment& getAppointmentByID(int ID_) const;
         std::vector<Appointment> findAppointmentsByName(const std::string& name) const;
         const std::unordered_map<int, Appointment>& getAllAppointments() const; 

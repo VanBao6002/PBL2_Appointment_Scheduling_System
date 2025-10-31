@@ -10,7 +10,6 @@ MedicalRecord::MedicalRecord(int recordID_, int patientID_, int doctorID_):
     lastUpdated(Date()), diagnosis(""), symptoms(""), testResults(""), bloodPressure(""),
     heartRate(0), bodyTemperature(0.0f), treatment(""), doctorNotes(""), followUpDates() {}
 
-// Getters
 int MedicalRecord::getRecordID() const {
     return recordID;
 }
@@ -53,8 +52,13 @@ std::string MedicalRecord::getDoctorNotes() const {
 std::vector<Date> MedicalRecord::getFollowUpDates() const {
     return followUpDates;
 }
+const std::vector<Prescription> &MedicalRecord::getPrescriptions() const {
+    return prescriptions;
+}
+const std::vector<std::string> &MedicalRecord::getChangeHistory() const {
+    return changeHistory;
+}
 
-// Setters
 void MedicalRecord::setDiagnosis(const std::string& diagnosis_) {
     diagnosis = diagnosis_;
 }

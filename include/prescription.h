@@ -29,7 +29,6 @@ class Prescription {
         Prescription();
         Prescription(int prescriptionID, int patientID, int doctorID);
 
-        // Getters
         int getPrescriptionID() const;
         int getPatientID() const;
         int getDoctorID() const;
@@ -39,7 +38,6 @@ class Prescription {
         std::string getAdditionalNotes() const;
         bool getIsActive() const;
 
-        // Setters
         void setPrescriptionDate(const Date& date);
         void setDiagnosis(const std::string& diagnosis);
         void setAdditionalNotes(const std::string& notes);

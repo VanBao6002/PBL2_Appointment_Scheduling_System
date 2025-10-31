@@ -2,7 +2,6 @@
 #include "user.h"
 #include "utils.h"
 
-// modifiers
 void UserManager::addUser(int ID_, const User  &user_){
     if (userTable.find(ID_) != userTable.end()) {
         throw std::invalid_argument("user ID already exists.");
@@ -41,7 +40,6 @@ void UserManager::changePassword(int ID_, const std::string& newPassword){
     log[ID_] += " Password changed on " + Utils::getDateTime();
 }
 
-// getters
 const User& UserManager::getUserByID(int ID_) const {
     Utils::validUserID(userTable, ID_);
     return userTable.at(ID_);
