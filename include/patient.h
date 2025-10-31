@@ -20,12 +20,10 @@ class Patient : public Person{
 
         virtual std::string getInfo() const override;
 
-        //getters
         std::string getBloodType() const {return bloodType;}
         std::string getNameMother() const {return nameMother;}
         std::string getNameFather() const {return nameFather;}
 
-        //setters
         void setBloodType(const std::string &bloodType_);
         void setNameMother(const std::string &nameMother_);
         void setNameFather(const std::string &nameFather_);

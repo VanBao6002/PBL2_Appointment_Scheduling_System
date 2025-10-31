@@ -6,10 +6,8 @@ struct Date {
     int month;
     int year;
     public:
-    // Constructor mặc định
     Date() : day(1), month(1), year(2000) {}
     
-    // Constructor với 3 tham số
     Date(int y, int m, int d) : year(y), month(m), day(d) {}
 
     std::string toString() const {
@@ -36,14 +34,25 @@ struct Date {
         }
     }
 
-    // Toán tử so sánh
     bool operator>(const Date& other) const {
         if (year != other.year) return year > other.year;
         if (month != other.month) return month > other.month;
         return day > other.day;
     }
+    bool operator<(const Date& other) const {
+        if (year != other.year) return year < other.year;
+        if (month != other.month) return month < other.month;
+        return day < other.day;
+    }
 
-    // Hàm phụ trợ để tính số ngày trong tháng
+    bool operator<=(const Date& other) const {
+        return *this < other || *this == other;
+    }
+
+    bool operator==(const Date& other) const {
+        return year == other.year && month == other.month && day == other.day;
+    }
+
     static int getDaysInMonth(int month, int year) {
         static const int daysPerMonth[] = {
             31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31

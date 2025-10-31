@@ -10,7 +10,6 @@ Prescription::Prescription(int prescriptionID_, int patientID_, int doctorID_):
     prescriptionID(prescriptionID_), patientID(patientID_), doctorID(doctorID_), 
     prescriptionDate(Date()), diagnosis(""), additionalNotes(""), isActive(true) {}
 
-// Getters
 int Prescription::getPrescriptionID() const {
     return prescriptionID;
 }
@@ -36,7 +35,6 @@ bool Prescription::getIsActive() const {
     return isActive;
 }
 
-// Setters
 void Prescription::setPrescriptionDate(const Date& date) {
     prescriptionDate = date;
 }
