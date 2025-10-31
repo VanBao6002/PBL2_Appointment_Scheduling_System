@@ -3,6 +3,7 @@
 #include "date.h"
 #include <algorithm>
 #include <unordered_set>
+#include <unordered_map>
 #include <string>
 
 Doctor::Doctor() : Person(), specialization(""), patientIDs(std::unordered_map<int, Patient>()), doctorStatus(Status::Available){}
@@ -46,4 +47,16 @@ std::string Doctor::getInfo() const{
     }
     info += "\n";
     return info;
+}
+
+std::string getSpecialization(const std::string &specialization_){
+    return specialization_;
+}
+
+Doctor::Status getStatus(const Doctor::Status &doctorStatus_){
+    return doctorStatus_;
+}
+
+const std::unordered_map<int, Patient> getPatientIDs(const std::unordered_map<int, Patient> &patientIDs_){
+    return patientIDs_;
 }

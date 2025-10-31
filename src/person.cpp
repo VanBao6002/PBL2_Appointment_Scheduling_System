@@ -33,3 +33,10 @@ void Person::setID(int ID_){
     Utils::validID(ID_);
     ID = ID_;   
 }
+
+std::string Person::getInfo() const {
+    return "ID: " + std::to_string(ID) + 
+           "\nName: " + name + 
+           "\nGender: " + std::string(1, gender) + 
+           "\nBirthday: " + birthday.toString();
+}

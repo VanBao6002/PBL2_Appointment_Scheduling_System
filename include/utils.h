@@ -49,9 +49,48 @@ public:
     static void validMedicalRecord(const MedicalRecord &medicalrecord_);
     
     template<typename T>
-    static T loadFromFile(const std::string &filename, std::unordered_map<int, T> &dataMap);
+    static T loadFromFile(const std::string &filename, std::unordered_map<int, T> &dataMap) {
+        std::ifstream file(filename);
+        if (!file.is_open()) {
+            throw std::runtime_error("Cannot open file: " + filename);
+        }
+        T temp;
+        std::string line;
+        dataMap.clear();  // Clear existing data
+
+        while (std::getline(file, line)) {
+            if (line.empty() || line[0] == '#') {  // Skip empty lines and comments
+                continue;
+            }
+
+            std::istringstream iss(line);
+            if (temp.loadFromStream(iss)) {  // Assume each class has loadFromStream method
+                dataMap[temp.getID()] = temp;  // Assume each class has getID method
+            }
+        }
+
+        file.close();
+        return T();  // Return default object
+    }
 
     template<typename U>
-    static void saveToFile(const std::string &filename, const std::unordered_map<int, U> &dataMap);
+    static void saveToFile(const std::string &filename, const std::unordered_map<int, U> &dataMap) {
+        std::ofstream file(filename);
+        if (!file.is_open()) {
+            throw std::runtime_error("Cannot open file for writing: " + filename);
+        }
+        // Write file header/metadata
+        file << "# Auto-generated file - " << Utils::getDateTime() << "\n";
+        file << "# Format: <Class-specific format>\n\n";
+
+        // Write each object
+        for (const auto& pair : dataMap) {
+            const U& obj = pair.second;
+            obj.saveToStream(file);  // Assume each class has saveToStream method
+            file << "\n";
+        }
+
+        file.close();
+    }
 };
 
