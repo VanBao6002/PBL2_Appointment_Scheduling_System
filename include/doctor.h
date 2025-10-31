@@ -2,10 +2,13 @@
 
 #include "person.h"
 #include "patient.h"
+#include "serializable.h"
 #include <string>
 #include <unordered_set>
 #include <unordered_map>
-class Doctor : public Person {
+#include <sstream>
+
+class Doctor : public Person, public ISerializable {
     public:
         enum class Status {Unavailable, Available};
 
@@ -32,4 +35,6 @@ class Doctor : public Person {
         const std::unordered_map<int, Patient>& getPatientIDs() const {return patientIDs;}
         std::string getInfo() const override;
 
+        bool loadFromStream(std::istream& is) override;
+        void saveToStream(std::ostream& os) const override;
 };        

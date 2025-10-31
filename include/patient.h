@@ -3,10 +3,12 @@
 #include "person.h"
 #include "medicalRecord.h"
 #include "prescription.h"
+#include "serializable.h"
 #include <string>
 #include <iostream>
 #include <sstream>
-class Patient : public Person{
+
+class Patient : public Person, public ISerializable {
     private:
         std::string bloodType;
         std::string nameMother;
