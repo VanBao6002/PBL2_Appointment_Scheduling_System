@@ -65,3 +65,11 @@ void UserManager::loadFromFile(const std::string& filename) {
 void UserManager::saveToFile(const std::string& filename) const {
     Utils::saveToFile(filename, userTable);
 }
+
+bool UserManager::loadFromStream(std::istream& is) {
+    return Utils::loadFromStream(is, userTable);
+}
+
+void UserManager::saveToStream(std::ostream& os) const {
+    Utils::saveToStream(os, userTable);
+}
