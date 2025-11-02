@@ -70,3 +70,11 @@ void DoctorManager::loadFromFile(const std::string& filename) {
 void DoctorManager::saveToFile(const std::string& filename) const {
     Utils::saveToFile(filename, doctorTable);
 }
+
+bool DoctorManager::loadFromStream(std::istream& is) {
+    return Utils::loadFromStream(is, doctorTable);
+}
+
+void DoctorManager::saveToStream(std::ostream& os) const {
+    Utils::saveToStream(os, doctorTable);
+}

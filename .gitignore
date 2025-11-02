@@ -30,3 +30,15 @@ CMakeCache.txt
 
 # Copilot insturctions
 *.github/*
+
+# Qt Creator files
+*.user
+*.user.*  
+
+# Build folder
+build-*/
+
+# Qt auto-generated files
+ui_*.h
+qrc_*.cpp
+moc_*.cpp
