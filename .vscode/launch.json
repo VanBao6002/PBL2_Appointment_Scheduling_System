@@ -18,7 +18,8 @@
           "text": "-enable-pretty-printing",
           "ignoreFailures": true
         }
-      ]
+      ],
+      "visualizerFile": "c:\\Users\\ASUS\\AppData\\Roaming\\Code\\User\\workspaceStorage\\e29fcf784f43597d7e6dc187d8c08a31\\tonka3000.qtvsctools\\qt.natvis.xml"
     }
   ]
 }

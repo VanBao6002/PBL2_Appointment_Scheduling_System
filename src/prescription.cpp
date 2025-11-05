@@ -1,5 +1,9 @@
 #include "prescription.h"
 #include <algorithm>
+#include <fstream>
+#include <vector>
+#include <string>
+#include <limits>
 #include <iostream>
 
 Prescription::Prescription():
@@ -101,3 +105,23 @@ void Prescription::updateMedicineInstruction(const std::string& name, const std:
         throw std::runtime_error("Medicine not found");
     }
 }
+
+void Prescription::saveToFile(const std::string& filename) const {
+    std::ofstream ofs(filename);
+    if (!ofs.is_open()) throw std::runtime_error("Cannot open file for writing");
+    for (const auto& [id, prescription] : prescriptionTable) {
+        prescription.serialize(ofs);
+    }
+}
+
+void Prescription::loadFromFile(const std::string& filename) {
+    std::ifstream ifs(filename);
+    if (!ifs.is_open()) throw std::runtime_error("Cannot open file for reading");
+    prescriptionTable.clear();
+    while (ifs.peek() != EOF) {
+        Prescription p;
+        p.deserialize(ifs);
+        prescriptionTable[p.getPrescriptionID()] = p;
+    }
+}
+

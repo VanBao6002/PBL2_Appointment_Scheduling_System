@@ -53,18 +53,14 @@ const std::string& PatientManager::getIDLog(int ID_) const {
     return log.at(ID_);
 }
 
+void PatientManager::saveToFile(const std::string& filename) const{
+        std::ofstream ofs(filename, std::ios::binary);
+        if (!ofs) throw std::runtime_error("Cannot open file for writing.");
+        Utils::saveToFileText(ofs, patientTable);
+    }
+
 void PatientManager::loadFromFile(const std::string& filename) {
-    Utils::loadFromFile(filename, patientTable);
-}
-
-void PatientManager::saveToFile(const std::string& filename) const {
-    Utils::saveToFile(filename, patientTable);
-}
-
-bool PatientManager::loadFromStream(std::istream& is) {
-    return Utils::loadFromStream(is, patientTable);
-}
-
-void PatientManager::saveToStream(std::ostream& os) const {
-    Utils::saveToStream(os, patientTable);
+        std::ifstream ifs(filename, std::ios::binary);
+        if (!ifs) throw std::runtime_error("Cannot open file for reading.");
+        Utils::loadFromFileText(ifs, patientTable);    
 }

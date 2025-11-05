@@ -1,6 +1,9 @@
 #pragma once
 
 #include <string>
+#include <sstream>
+#include <iostream>
+#include <stdexcept>
 struct Date {
     int day;
     int month;
@@ -14,6 +17,15 @@ struct Date {
         char buffer[17]; // "YYYY-MM-DD HH:MM" + null terminator
         std::snprintf(buffer, sizeof(buffer), "%04d-%02d-%02d", year, month, day);
         return std::string(buffer);
+    }
+
+    static Date fromString(const std::string& str) {
+        int y, m, d;
+        char sep1, sep2;
+        std::istringstream iss(str);
+        iss >> y >> sep1 >> m >> sep2 >> d;
+        if (sep1 != '-' || sep2 != '-') throw std::runtime_error("Invalid date format");
+        return Date(y, m, d);
     }
 
     void addDays(int days) {
@@ -32,6 +44,16 @@ struct Date {
                 }
             }
         }
+    }
+
+    friend std::ostream& operator<<(std::ostream& os, const Date& d) {
+        os << d.day << ' ' << d.month << ' ' << d.year;
+        return os;
+    }
+    
+    friend std::istream& operator>>(std::istream& is, Date& d) {
+        is >> d.day >> d.month >> d.year;
+        return is;
     }
 
     bool operator>(const Date& other) const {

@@ -5,9 +5,10 @@
 #include "doctorManager.h"
 #include "patient.h"
 #include "patientManager.h"
+#include "serializable.h"
 #include <string>
 
-class Appointment{
+class Appointment : public ISerializable {
     public:
         enum class Status{DaDat, DaKham, Huy};
 
@@ -35,7 +36,10 @@ class Appointment{
         int getID() const;
         std::string getDateTime() const;
         Status getStatus() const;
-        Doctor getDoctor(const DoctorManager& mgr) const;
-        Patient getPatient(const PatientManager& mgr) const;
+        const Doctor& getDoctor(const DoctorManager& mgr) const;
+        const Patient& getPatient(const PatientManager& mgr) const;
+
+        void serialize(std::ostream& os) const override;
+        void deserialize(std::istream& is) override;
 
 };

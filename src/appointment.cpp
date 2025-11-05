@@ -6,6 +6,7 @@
 #include "patientManager.h"
 #include "utils.h"
 #include <string>
+#include <limits>
 
 
 void Appointment::setID(int ID_){
@@ -51,10 +52,27 @@ Appointment::Status Appointment::getStatus() const{
     return status;
 }
 
-Doctor Appointment::getDoctor(const DoctorManager& mgr) const{
+const Doctor& Appointment::getDoctor(const DoctorManager& mgr) const{
     return mgr.getDoctorByID(doctorID);
 }
 
-Patient Appointment::getPatient(const PatientManager& mgr) const{
+const Patient& Appointment::getPatient(const PatientManager& mgr) const{
     return mgr.getPatientByID(patientID);
+}
+
+void Appointment::serialize(std::ostream& os) const {
+    os << ID << ' ' << doctorID << ' ' << patientID << ' '
+       << date.toString() << ' ' << time << ' '
+       << static_cast<int>(status) << ' ' << room << '\n';
+}
+
+void Appointment::deserialize(std::istream& is) {
+    int statusInt;
+    std::string dateStr;
+    is >> ID >> doctorID >> patientID >> dateStr >> time >> statusInt;
+    is.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // bỏ newline
+
+    date = Date::fromString(dateStr); // cần implement Date::fromString
+    status = static_cast<Status>(statusInt);
+    std::getline(is, room);
 }
