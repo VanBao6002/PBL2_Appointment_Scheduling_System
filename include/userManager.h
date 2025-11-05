@@ -30,8 +30,4 @@ class UserManager : public ISerializable {
         // File operations
         void loadFromFile(const std::string& filename);
         void saveToFile(const std::string& filename) const;
-
-        // Stream operations
-        bool loadFromStream(std::istream& is) override;
-        void saveToStream(std::ostream& os) const override;
 };

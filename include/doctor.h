@@ -35,6 +35,6 @@ class Doctor : public Person, public ISerializable {
         const std::unordered_map<int, Patient>& getPatientIDs() const {return patientIDs;}
         std::string getInfo() const override;
 
-        bool loadFromStream(std::istream& is) override;
-        void saveToStream(std::ostream& os) const override;
+        void serialize(std::ostream& os) const override;
+        void deserialize(std::istream& is) override;
 };        

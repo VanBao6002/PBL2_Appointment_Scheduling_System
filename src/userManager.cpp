@@ -58,18 +58,14 @@ const std::string& UserManager::getIDLog(int ID_) const {
     return log.at(ID_);
 }
 
+void UserManager::saveToFile(const std::string& filename) const{
+        std::ofstream ofs(filename, std::ios::binary);
+        if (!ofs) throw std::runtime_error("Cannot open file for writing.");
+        Utils::saveToFileText(ofs, userTable);
+}
+
 void UserManager::loadFromFile(const std::string& filename) {
-    Utils::loadFromFile(filename, userTable);
-}
-
-void UserManager::saveToFile(const std::string& filename) const {
-    Utils::saveToFile(filename, userTable);
-}
-
-bool UserManager::loadFromStream(std::istream& is) {
-    return Utils::loadFromStream(is, userTable);
-}
-
-void UserManager::saveToStream(std::ostream& os) const {
-    Utils::saveToStream(os, userTable);
+        std::ifstream ifs(filename, std::ios::binary);
+        if (!ifs) throw std::runtime_error("Cannot open file for reading.");
+        Utils::loadFromFileText(ifs, userTable);    
 }

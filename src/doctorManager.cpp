@@ -41,6 +41,7 @@ const std::unordered_map<int, Doctor>& DoctorManager::getAllDoctors() const{
 }
 
 const std::unordered_map<int, Patient>& DoctorManager::getPatientsByDoctorID(int ID_) const{
+    Utils::validDoctorID(doctorTable, ID_);
     return doctorTable.at(ID_).getPatientIDs();
 }
 
@@ -63,18 +64,14 @@ const std::string& DoctorManager::getIDLog(int ID_) const {
     return log.at(ID_);
 }
 
+void DoctorManager::saveToFile(const std::string& filename) const{
+        std::ofstream ofs(filename, std::ios::binary);
+        if (!ofs) throw std::runtime_error("Cannot open file for writing.");
+        Utils::saveToFileText(ofs, doctorTable);
+    }
+
 void DoctorManager::loadFromFile(const std::string& filename) {
-    Utils::loadFromFile(filename, doctorTable);
-}
-
-void DoctorManager::saveToFile(const std::string& filename) const {
-    Utils::saveToFile(filename, doctorTable);
-}
-
-bool DoctorManager::loadFromStream(std::istream& is) {
-    return Utils::loadFromStream(is, doctorTable);
-}
-
-void DoctorManager::saveToStream(std::ostream& os) const {
-    Utils::saveToStream(os, doctorTable);
+        std::ifstream ifs(filename, std::ios::binary);
+        if (!ifs) throw std::runtime_error("Cannot open file for reading.");
+        Utils::loadFromFileText(ifs, doctorTable);    
 }

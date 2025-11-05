@@ -52,55 +52,29 @@ public:
     static void validMedicalRecord(const MedicalRecord &medicalrecord_);
     
     template<typename T>
-        requires std::is_base_of_v<ISerializable, T>
-    static void saveToFile(const std::string& filename, const std::unordered_map<int, T>& data) {
-        std::ofstream ofs(filename, std::ios::binary);
+    requires std::is_base_of_v<ISerializable, T>
+    static void saveToFileText(std::ostream& os, const std::unordered_map<int, T>& data) {
+        os << data.size() << '\n';
         for (const auto& [id, obj] : data) {
-            obj.serialize(ofs);
+            os << id << '\n';
+            obj.serialize(os);
         }
     }
 
     template<typename T>
-        requires std::is_base_of_v<ISerializable, T>
-    static void loadFromFile(const std::string& filename, std::unordered_map<int, T>& data) {
-        std::ifstream ifs(filename, std::ios::binary);
-        while (ifs.peek() != EOF) {
+    requires std::is_base_of_v<ISerializable, T>
+    static void loadFromFileText(std::istream& is, std::unordered_map<int, T>& data) {
+        size_t n;
+        is >> n;
+        is.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        data.clear();
+        for (size_t i = 0; i < n; ++i) {
+            int id;
+            is >> id;
+            is.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             T obj;
-            obj.deserialize(ifs);
-            // Giả sử obj có member 'id'
-            data[obj.id] = obj;
-        }
-    }
-
-    template<typename T>
-    static bool loadFromStream(std::istream &is, std::unordered_map<int, T> &dataMap) {
-        requires std::is_base_of_v<ISerializable, T> 
-        {
-            T temp;
-            std::string line;
-            dataMap.clear();
-            while (std::getline(is, line)) {
-                if (line.empty() || line[0] == '#') continue; // Bỏ qua comment và dòng trống
-                std::istringstream iss(line);
-                if (temp.loadFromStream(iss)) {
-                    dataMap[temp.getID()] = temp;
-                }
-            }
-            return !dataMap.empty(); // Trả về true nếu có ít nhất 1 object được load
-        }
-    }
-
-    template<typename T>
-    static void saveToStream(std::ostream &os, const std::unordered_map<int, T> &dataMap) {
-        requires std::is_base_of_v<ISerializable, T> 
-        {
-            os << "# Auto-generated stream - " << Utils::getDateTime() << "\n";
-            os << "# Format: <Class-specific format>\n\n";
-            for (const auto& pair : dataMap) {
-                const T& obj = pair.second;
-                obj.saveToStream(os);
-                os << "\n";
-            }
+            obj.deserialize(is);
+            data[id] = obj;
         }
     }
 };

@@ -1,7 +1,7 @@
 #include "appointmentManager.h"
-#include "appointment.h"
 #include "utils.h"
 #include <algorithm>
+#include <stdexcept>
 
 void AppointmentManager::addAppointment(int ID_, const Appointment &apt_) {
     if (AppointmentTable.find(ID_) != AppointmentTable.end()) {
@@ -44,7 +44,10 @@ const Appointment& AppointmentManager::getAppointmentByID(int ID_) const {
 
 std::vector<Appointment> AppointmentManager::findAppointmentsByName(const std::string& name) const {
     std::vector<Appointment> result;
-    // Implementation depends on how you want to search by name
+    for (const auto& [id, apt] : AppointmentTable) {
+        // giả sử tìm theo tên bệnh nhân, cần PatientManager để lấy tên
+        result.push_back(apt);
+    }
     return result;
 }
 
@@ -64,9 +67,15 @@ const std::string& AppointmentManager::getIDLog(int ID_) const {
 }
 
 void AppointmentManager::loadFromFile(const std::string& filename) {
-    Utils::loadFromFile(filename, AppointmentTable);
+    std::ifstream ifs(filename);
+    if (!ifs.is_open())
+        throw std::runtime_error("Cannot open file: " + filename);
+    Utils::loadFromFileText(ifs, AppointmentTable);
 }
 
 void AppointmentManager::saveToFile(const std::string& filename) const {
-    Utils::saveToFile(filename, AppointmentTable);
+    std::ofstream ofs(filename);
+    if (!ofs.is_open())
+        throw std::runtime_error("Cannot open file: " + filename);
+    Utils::saveToFileText(ofs, AppointmentTable);
 }

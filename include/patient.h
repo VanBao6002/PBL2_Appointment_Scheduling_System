@@ -32,7 +32,7 @@ class Patient : public Person, public ISerializable {
         void setNameMother(const std::string &nameMother_);
         void setNameFather(const std::string &nameFather_);
 
-        bool loadFromStream(std::istream& is);
-        void saveToStream(std::ostream& os) const;
+        void serialize(std::ostream& os) const override;
+        void deserialize(std::istream& is) override;
 };
 

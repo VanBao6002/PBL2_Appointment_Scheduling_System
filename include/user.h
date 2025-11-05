@@ -28,6 +28,6 @@ class User : public ISerializable {
         const std::string& getPassword() const {return passwordHash;}
 
         // ISerializable interface
-        bool loadFromStream(std::istream& is) override;
-        void saveToStream(std::ostream& os) const override;
+        void serialize(std::ostream& os) const override;
+        void deserialize(std::istream& is) override;
 };

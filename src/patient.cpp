@@ -33,45 +33,33 @@ std::string Patient::getInfo() const {
     return info;
 }
 
-bool Patient::loadFromStream(std::istream& is) {
-    std::string line;
-    if (!std::getline(is, line)) return false;
-    
-    std::istringstream iss(line);
+void Patient::serialize(std::ostream& os) const {
+    os << getID() << ' ' 
+       << getName() << ' ' 
+       << getGender() << ' ' 
+       << getBirthday().toString() << ' ' 
+       << bloodType << ' ' 
+       << nameMother << ' ' 
+       << nameFather << '\n';
+}
+
+void Patient::deserialize(std::istream& is) {
     int id;
-    std::string name;
+    std::string name, blood, mother, father, dateStr;
     char gender;
-    std::string dateStr;
+
+    is >> id >> name >> gender >> dateStr >> blood >> mother >> father;
     
-    if (!(iss >> id >> name >> gender >> dateStr)) return false;
-    
-    Date birthday;
     std::istringstream dateStream(dateStr);
     int day, month, year;
     char delimiter;
     dateStream >> day >> delimiter >> month >> delimiter >> year;
-    birthday = Date(day, month, year);
-    
-    std::string bloodType, motherName, fatherName;
-    if (!(iss >> bloodType >> motherName >> fatherName)) return false;
-    
+
     setID(id);
     setName(name);
     setGender(gender);
-    setBirthday(birthday);
-    setBloodType(bloodType);
-    setNameMother(motherName);
-    setNameFather(fatherName);
-    
-    return true;
-}
-
-void Patient::saveToStream(std::ostream& os) const {
-    os << getID() << " "
-       << getName() << " "
-       << getGender() << " "
-       << getBirthday().toString() << " "
-       << bloodType << " "
-       << nameMother << " "
-       << nameFather;
+    setBirthday(Date(day, month, year));
+    setBloodType(blood);
+    setNameMother(mother);
+    setNameFather(father);
 }
