@@ -8,7 +8,7 @@ void AppointmentManager::addAppointment(int ID_, const Appointment &apt_) {
         throw std::invalid_argument("Appointment ID already exists.");
     }
     AppointmentTable[ID_] = apt_;
-    log[ID_] += " Added on " + Utils::getDateTime();
+    log[ID_] += " Added on: " + Utils::getDateTime();
 }
 
 void AppointmentManager::editAppointment(int ID_, const Appointment &newAppointment) {
@@ -16,7 +16,7 @@ void AppointmentManager::editAppointment(int ID_, const Appointment &newAppointm
         throw std::invalid_argument("Appointment ID not found.");
     }
     AppointmentTable[ID_] = newAppointment;
-    log[ID_] += " Edited on " + Utils::getDateTime();
+    log[ID_] += " Edited on: " + Utils::getDateTime();
 }
 
 void AppointmentManager::removeAppointment(int ID_) {
@@ -32,7 +32,7 @@ void AppointmentManager::changeStatus(int ID_, Appointment::Status status_) {
         throw std::invalid_argument("Appointment ID not found.");
     }
     AppointmentTable[ID_].setStatus(status_);
-    log[ID_] += " Status changed on " + Utils::getDateTime();
+    log[ID_] += " Status changed on: " + Utils::getDateTime();
 }
 
 const Appointment& AppointmentManager::getAppointmentByID(int ID_) const {
@@ -42,14 +42,6 @@ const Appointment& AppointmentManager::getAppointmentByID(int ID_) const {
     return AppointmentTable.at(ID_);
 }
 
-std::vector<Appointment> AppointmentManager::findAppointmentsByName(const std::string& name) const {
-    std::vector<Appointment> result;
-    for (const auto& [id, apt] : AppointmentTable) {
-        // giả sử tìm theo tên bệnh nhân, cần PatientManager để lấy tên
-        result.push_back(apt);
-    }
-    return result;
-}
 
 const std::unordered_map<int, Appointment>& AppointmentManager::getAllAppointments() const {
     return AppointmentTable;

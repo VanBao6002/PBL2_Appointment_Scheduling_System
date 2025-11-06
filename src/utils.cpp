@@ -189,9 +189,9 @@ void Utils::validTime(const std::string &time){
     }
 }
 
-void Utils::validPatientID(const std::unordered_map<int, Patient> &patientIDs, int patientID_){
-    if (patientIDs.find(patientID_) == patientIDs.end()){
-        throw std::invalid_argument("patient 's ID: " + std::to_string(patientID_) +  " is not found");
+void Utils::validPatientID(const std::unordered_map<int, Patient> &patientIDs, int ID_){
+    if (patientIDs.find(ID_) == patientIDs.end()){
+        throw std::invalid_argument("patient 's ID: " + std::to_string(ID_) +  " is not found");
     }
 }
 
