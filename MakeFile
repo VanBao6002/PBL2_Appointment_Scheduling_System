@@ -3,29 +3,31 @@ CXX = g++
 CXXFLAGS = -Wall -Wextra -std=c++17 -Iinclude
 
 # Source and build setup
-SRC = src/person.cpp main.cpp
+SRC = $(wildcard src/*.cpp) main.cpp
 OBJ = $(SRC:.cpp=.o)
-TARGET = my_program
+TARGET = main
 
 # Build target
 $(TARGET): $(OBJ)
 	$(CXX) $(OBJ) -o $(TARGET)
 
 # Compile .cpp -> .o
-%.o: %.cpp
+build/%.o: src/%.cpp
+	@mkdir -p build
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+build/main.o: main.cpp
+	@mkdir -p build
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 # Clean build files
-clean: 
-	rm -f $(OBJ) $(TARGET) test test.exe test.*
+clean:
+	rm -f build/*.o $(TARGET) tests/*.o tests/test*
 
-# Add test target
-tests/test_%: src/person.cpp src/utils.cpp src/doctor.cpp src/doctorManager.cpp src/user.cpp src/userManager.cpp tests/test_%.cpp
+# Test target (compiles all src/*.cpp + test file)
+tests/test%: $(SRC) tests/test%.cpp
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
 TESTS := $(patsubst %.cpp,%,$(wildcard tests/*.cpp))
 
 alltests: $(TESTS)
-
-tests/%: src/person.cpp src/utils.cpp src/doctor.cpp src/doctorManager.cpp src/user.cpp src/userManager.cpp tests/%.cpp
-	$(CXX) $(CXXFLAGS) $^ -o $@

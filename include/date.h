@@ -9,10 +9,8 @@ struct Date {
     int month;
     int year;
     public:
-    Date() : day(1), month(1), year(2000) {}
+    Date(int day_ = 1, int month_ = 1, int year_ = 2000) : day(day_), month(month_), year(year_) {}
     
-    Date(int y, int m, int d) : year(y), month(m), day(d) {}
-
     std::string toString() const {
         char buffer[17]; // "YYYY-MM-DD HH:MM" + null terminator
         std::snprintf(buffer, sizeof(buffer), "%04d-%02d-%02d", year, month, day);
