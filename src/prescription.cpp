@@ -106,22 +106,3 @@ void Prescription::updateMedicineInstruction(const std::string& name, const std:
     }
 }
 
-void Prescription::saveToFile(const std::string& filename) const {
-    std::ofstream ofs(filename);
-    if (!ofs.is_open()) throw std::runtime_error("Cannot open file for writing");
-    for (const auto& [id, prescription] : prescriptionTable) {
-        prescription.serialize(ofs);
-    }
-}
-
-void Prescription::loadFromFile(const std::string& filename) {
-    std::ifstream ifs(filename);
-    if (!ifs.is_open()) throw std::runtime_error("Cannot open file for reading");
-    prescriptionTable.clear();
-    while (ifs.peek() != EOF) {
-        Prescription p;
-        p.deserialize(ifs);
-        prescriptionTable[p.getPrescriptionID()] = p;
-    }
-}
-

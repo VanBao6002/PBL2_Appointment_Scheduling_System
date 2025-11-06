@@ -32,34 +32,3 @@ std::string Patient::getInfo() const {
     info += "\nFather's Name: " + nameFather;
     return info;
 }
-
-void Patient::serialize(std::ostream& os) const {
-    os << getID() << ' ' 
-       << getName() << ' ' 
-       << getGender() << ' ' 
-       << getBirthday().toString() << ' ' 
-       << bloodType << ' ' 
-       << nameMother << ' ' 
-       << nameFather << '\n';
-}
-
-void Patient::deserialize(std::istream& is) {
-    int id;
-    std::string name, blood, mother, father, dateStr;
-    char gender;
-
-    is >> id >> name >> gender >> dateStr >> blood >> mother >> father;
-    
-    std::istringstream dateStream(dateStr);
-    int day, month, year;
-    char delimiter;
-    dateStream >> day >> delimiter >> month >> delimiter >> year;
-
-    setID(id);
-    setName(name);
-    setGender(gender);
-    setBirthday(Date(day, month, year));
-    setBloodType(blood);
-    setNameMother(mother);
-    setNameFather(father);
-}

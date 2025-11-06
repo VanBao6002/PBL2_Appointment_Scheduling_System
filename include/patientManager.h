@@ -4,9 +4,8 @@
 #include <vector>
 #include <unordered_map>
 #include "patient.h"
-#include "serializable.h"
 
-class PatientManager : public ISerializable {
+class PatientManager{
     private:
         std::unordered_map<int, std::string> log;
         std::unordered_map<int, Patient> patientTable;
@@ -24,6 +23,4 @@ class PatientManager : public ISerializable {
         const std::unordered_map<int, std::string>& getAllLog() const;
         const std::string& getIDLog(int ID_) const;
 
-        void loadFromFile(const std::string& filename);
-        void saveToFile(const std::string& filename) const;
 };

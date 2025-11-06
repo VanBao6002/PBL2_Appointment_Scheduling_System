@@ -5,21 +5,20 @@
 #include "doctorManager.h"
 #include "patient.h"
 #include "patientManager.h"
-#include "serializable.h"
 #include <string>
 
-class Appointment : public ISerializable {
+class Appointment{
     public:
         enum class Status{DaDat, DaKham, Huy};
 
     private:    
-        int ID; // Mã lịch hẹn (ID, duy nhất)
-        int doctorID; // Bác sĩ (ID bác sĩ, tên bác sĩ, chuyên khoa)
-        int patientID; // Bệnh nhân (ID bệnh nhân, tên bệnh nhân)
-        Date date; // Ngày tháng năm của lịch hẹn
-        std::string time; // Giờ của lịch hẹn
-        std::string room; // Phòng khám (số phòng hoặc khoa)
-        Status status; // Trạng thái lịch hẹn (đã đặt, đã khám, hủy)
+        int ID;
+        int doctorID;
+        int patientID;
+        Date date;
+        std::string time;
+        std::string room;
+        Status status;
 
     public: 
         Appointment() = default;
@@ -38,8 +37,4 @@ class Appointment : public ISerializable {
         Status getStatus() const;
         const Doctor& getDoctor(const DoctorManager& mgr) const;
         const Patient& getPatient(const PatientManager& mgr) const;
-
-        void serialize(std::ostream& os) const override;
-        void deserialize(std::istream& is) override;
-
 };
