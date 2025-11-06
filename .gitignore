@@ -42,3 +42,6 @@ build-*/
 ui_*.h
 qrc_*.cpp
 moc_*.cpp
+
+#environment
+.vscode/

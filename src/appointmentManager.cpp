@@ -65,17 +65,3 @@ const std::string& AppointmentManager::getIDLog(int ID_) const {
     }
     return log.at(ID_);
 }
-
-void AppointmentManager::loadFromFile(const std::string& filename) {
-    std::ifstream ifs(filename);
-    if (!ifs.is_open())
-        throw std::runtime_error("Cannot open file: " + filename);
-    Utils::loadFromFileText(ifs, AppointmentTable);
-}
-
-void AppointmentManager::saveToFile(const std::string& filename) const {
-    std::ofstream ofs(filename);
-    if (!ofs.is_open())
-        throw std::runtime_error("Cannot open file: " + filename);
-    Utils::saveToFileText(ofs, AppointmentTable);
-}

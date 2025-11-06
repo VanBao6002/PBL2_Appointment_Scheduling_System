@@ -3,9 +3,8 @@
 #include <string>
 #include <vector>
 #include "date.h"
-#include "serializable.h"
 
-class Prescription : public ISerializable {
+class Prescription{
     private:
         // Thông tin cơ bản của đơn thuốc
         int prescriptionID;
@@ -55,7 +54,4 @@ class Prescription : public ISerializable {
         void updateMedicineFrequency(const std::string& name, int newFrequency);
         void updateMedicineDuration(const std::string& name, int newDuration);
         void updateMedicineInstruction(const std::string& name, const std::string& newInstruction);
-
-        void saveToFile(const std::string& filename) const;
-        void loadFromFile(const std::string& filename);
 };

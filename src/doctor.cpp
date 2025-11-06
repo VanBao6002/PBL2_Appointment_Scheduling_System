@@ -62,37 +62,3 @@ Doctor::Status getStatus(const Doctor::Status &doctorStatus_){
 const std::unordered_map<int, Patient> getPatientIDs(const std::unordered_map<int, Patient> &patientIDs_){
     return patientIDs_;
 }
-
-void Doctor::serialize(std::ostream& os) const{
-        os << getID() << ' ' << getName() << ' ' << getGender() << ' ' 
-           << getBirthday().toString() << ' ' << specialization << ' ' 
-           << static_cast<int>(doctorStatus) << ' ' << patientIDs.size() << '\n';
-        for (const auto& [pid, patient] : patientIDs) {
-            patient.serialize(os);
-        }
-    }
-
-void Doctor::deserialize(std::istream& is){
-        int statusInt;
-        size_t numPatients;
-        std::string birthdayStr;
-        int id;
-        char gender;
-        std::string name;
-
-        is >> id >> name >> gender >> birthdayStr >> specialization >> statusInt >> numPatients;
-        is.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-
-        setID(id);
-        setName(name);
-        setGender(gender);
-        setBirthday(Date::fromString(birthdayStr));
-        doctorStatus = static_cast<Status>(statusInt);
-
-        patientIDs.clear();
-        for (size_t i = 0; i < numPatients; ++i) {
-            Patient p;
-            p.deserialize(is);
-            patientIDs[p.getID()] = p;
-        }
-}

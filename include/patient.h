@@ -3,12 +3,12 @@
 #include "person.h"
 #include "medicalRecord.h"
 #include "prescription.h"
-#include "serializable.h"
 #include <string>
 #include <iostream>
 #include <sstream>
 
-class Patient : public Person, public ISerializable {
+
+class Patient : public Person{
     private:
         std::string bloodType;
         std::string nameMother;
@@ -31,8 +31,5 @@ class Patient : public Person, public ISerializable {
         void setBloodType(const std::string &bloodType_);
         void setNameMother(const std::string &nameMother_);
         void setNameFather(const std::string &nameFather_);
-
-        void serialize(std::ostream& os) const override;
-        void deserialize(std::istream& is) override;
 };
 
