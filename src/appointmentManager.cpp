@@ -1,18 +1,20 @@
 #include "appointmentManager.h"
 #include "utils.h"
+#include "IDHandler.h"
 #include <algorithm>
 #include <stdexcept>
 
-void AppointmentManager::addAppointment(int ID_, const Appointment &apt_) {
-    if (appointmentTable.find(ID_) != appointmentTable.end()) {
-        throw std::invalid_argument("Appointment ID already exists.");
+void AppointmentManager::addAppointment(const Appointment &apt_) {
+    int ID_ = apt_.getID();
+    if (IDHandler<Appointment>::checkDuplicate(ID_)) {
+        throw std::invalid_argument("Doctor ID already existed.");
     }
     appointmentTable[ID_] = apt_;
     log[ID_] += " Added on: " + Utils::getDateTime();
 }
 
 void AppointmentManager::editAppointment(int ID_, const Appointment &newAppointment) {
-    if (appointmentTable.find(ID_) == appointmentTable.end()) {
+    if (!IDHandler<Appointment>::checkDuplicate(ID_)) {
         throw std::invalid_argument("Appointment ID not found.");
     }
     appointmentTable[ID_] = newAppointment;
@@ -20,11 +22,12 @@ void AppointmentManager::editAppointment(int ID_, const Appointment &newAppointm
 }
 
 void AppointmentManager::removeAppointment(int ID_) {
-    if (appointmentTable.find(ID_) == appointmentTable.end()) {
+    if (!IDHandler<Appointment>::checkDuplicate(ID_)) {
         throw std::invalid_argument("Appointment ID not found.");
     }
     appointmentTable.erase(ID_);
     log.erase(ID_);
+    IDHandler<Appointment>::unregisterID(ID_);
 }
 
 void AppointmentManager::changeStatus(int ID_, Appointment::Status status_) {
@@ -36,7 +39,7 @@ void AppointmentManager::changeStatus(int ID_, Appointment::Status status_) {
 }
 
 const Appointment& AppointmentManager::getAppointmentByID(int ID_) const {
-    if (appointmentTable.find(ID_) == appointmentTable.end()) {
+    if (!IDHandler<Appointment>::checkDuplicate(ID_)) {
         throw std::invalid_argument("Appointment ID not found.");
     }
     return appointmentTable.at(ID_);
@@ -52,7 +55,7 @@ const std::unordered_map<int, std::string>& AppointmentManager::getAllLog() cons
 }
 
 const std::string& AppointmentManager::getIDLog(int ID_) const {
-    if (appointmentTable.find(ID_) == appointmentTable.end()) {
+    if (!IDHandler<Appointment>::checkDuplicate(ID_)) {
         throw std::invalid_argument("Appointment ID not found.");
     }
     return log.at(ID_);

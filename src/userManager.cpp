@@ -1,47 +1,62 @@
 #include "userManager.h"
 #include "user.h"
 #include "utils.h"
+#include "IDHandler.h"
 
-void UserManager::addUser(int ID_, const User  &user_){
-    if (userTable.find(ID_) != userTable.end()) {
-        throw std::invalid_argument("user ID already exists.");
+void UserManager::addUser(const User  &user){
+    int ID_ = user.getID();
+    if (IDHandler<User>::checkDuplicate(ID_)){
+        throw std::invalid_argument("User ID already exists.");
     }
-    userTable[ID_] = user_;
+    userTable[ID_] = user;
     log[ID_] += " Added on " + Utils::getDateTime();
 }
 
 void UserManager::editUser(int ID_, const User &newUser){
-    Utils::validUserID(userTable, ID_);
+    if (!IDHandler<User>::checkDuplicate(ID_)){
+        throw std::invalid_argument("User ID not found.");
+    }
     userTable[ID_] = newUser;
     log[ID_] += " Edited on " + Utils::getDateTime();
 }
 
 void UserManager::removeUser(int ID_){
-    Utils::validUserID(userTable, ID_);
+    if (!IDHandler<User>::checkDuplicate(ID_)){
+        throw std::invalid_argument("User ID not found.");
+    }
     userTable.erase(ID_);
     log.erase(ID_);
+    IDHandler<User>::unregisterID(ID_);
 }
 
 void UserManager::changeRole(int ID_, User::Role newRole){
-    Utils::validUserID(userTable, ID_); // Validate user exists
-    userTable[ID_].setRole(newRole);    // Change role using User's setter
+    if (!IDHandler<User>::checkDuplicate(ID_)){
+        throw std::invalid_argument("User ID not found.");
+    } 
+    userTable[ID_].setRole(newRole);   
     log[ID_] += " Role changed on " + Utils::getDateTime();
 }
 
 void UserManager::changeUsername(int ID_, const std::string& newUsername){
-    Utils::validUserID(userTable, ID_);
+    if (!IDHandler<User>::checkDuplicate(ID_)){
+        throw std::invalid_argument("User ID not found.");
+    }
     userTable[ID_].setUsername(newUsername);
     log[ID_] += " Username changed on " + Utils::getDateTime();
 }
 
 void UserManager::changePassword(int ID_, const std::string& newPassword){
-    Utils::validUserID(userTable, ID_);
+    if (!IDHandler<User>::checkDuplicate(ID_)){
+        throw std::invalid_argument("User ID not found.");
+    }
     userTable[ID_].setPassword(Utils::hashFunc(newPassword)); // Consider hashing here
     log[ID_] += " Password changed on " + Utils::getDateTime();
 }
 
 const User& UserManager::getUserByID(int ID_) const {
-    Utils::validUserID(userTable, ID_);
+    if (!IDHandler<User>::checkDuplicate(ID_)){
+        throw std::invalid_argument("User ID not found.");
+    }
     return userTable.at(ID_);
 }
 
@@ -54,7 +69,9 @@ const std::unordered_map<int, std::string>& UserManager::getAllLog() const {
 }
 
 const std::string& UserManager::getIDLog(int ID_) const {
-    Utils::validUserID(userTable, ID_);
+    if (!IDHandler<User>::checkDuplicate(ID_)){
+        throw std::invalid_argument("User ID not found.");
+    }
     return log.at(ID_);
 }
 

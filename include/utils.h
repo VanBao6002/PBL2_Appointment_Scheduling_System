@@ -42,12 +42,6 @@ public:
     static void validDate(const Date &date);
     static void validID(int ID);
     static void validTime(const std::string &time);
-
-    static void validPatientID(const std::unordered_map<int, Patient> &patientTable, int ID);
-    static void validDoctorID(const std::unordered_map<int, Doctor> &doctorsTable, int ID);
-    static void validUserID(const std::unordered_map<int, User> &userTable, int ID);
-    static void validAppointmentID(const std::unordered_map<int, Appointment> &appointmentTable_, int ID_);
-    
     static void validSpecialization(const std::string &specialization_);
     static void validBloodType(const std::string &bloodType_);
     static void validUserName(const std::string &username_);

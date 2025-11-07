@@ -5,14 +5,11 @@
 
 Person::Person() :  ID(0), name(""), gender('M'), birthday(Date()) {}
 
-Person::Person(int ID_, const std::string &name_, char gender_, const Date &birthday_) : ID(ID_), name(name_), gender(gender_), birthday(birthday_) {
+Person::Person(const std::string &name_, char gender_, const Date &birthday_) : ID(0), name(name_), gender(gender_), birthday(birthday_) {
     Utils::validName(name_);
     Utils::validGender(gender_);
     Utils::validDate(birthday_);
-    Utils::validID(ID_);
 }
-
-Person::~Person() {}
 
 void Person::setName(const std::string &name_){
     Utils::validName(name_);
@@ -30,7 +27,6 @@ void Person::setBirthday(const Date &birthday_){
 }
 
 void Person::setID(int ID_){
-    Utils::validID(ID_);
     ID = ID_;   
 }
 

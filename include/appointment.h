@@ -21,14 +21,16 @@ class Appointment{
         Status status;
 
     public: 
-        Appointment() = default;
-        ~Appointment() = default;
+        Appointment();
 
-        void setID(int ID_);
+        Appointment(int doctorID_, int patientID_, const Date& date_, const std::string& time_, const std::string& room_, Status status_);
+
+        ~Appointment();
+
         void setDateTime(Date date_, const std::string &time_);
         void setStatus(Status status_);
-        void setDoctor(const DoctorManager& mgr, int doctorID_);
-        void setPatient(const PatientManager& mgr, int patientID_);
+        void setDoctor(int doctorID_);
+        void setPatient(int patientID_);
         void setRoom(const std::string room_);
 
         

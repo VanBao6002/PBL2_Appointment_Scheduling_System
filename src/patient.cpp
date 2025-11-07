@@ -1,16 +1,25 @@
 #include "person.h"
 #include "utils.h"
 #include "patient.h"
+#include "IDHandler.h"
 #include <iostream>
 #include <sstream>
 
-Patient::Patient(): Person(), bloodType(""), nameMother(""), nameFather(""){}
+Patient::Patient(): Person(), bloodType(""), nameMother(""), nameFather(""){
+    int ID = static_cast<int>(IDHandler<Patient>::generateID());
+    setID(ID);
+    IDHandler<Patient>::registerID(ID);
+}
 
-Patient::Patient(const std::string &name_, char gender_, 
-                 const Date &birthday_, int ID_, const std::string &bloodType_, 
-                 const std::string &nameMother_, const std::string &nameFather_) 
-                : Person(ID_, name_, gender_, birthday_), bloodType(bloodType_), 
-                nameMother(nameMother_), nameFather(nameFather_){} 
+Patient::Patient(const std::string &name_, char gender_, const Date &birthday_, const std::string &bloodType_, const std::string &nameMother_, const std::string &nameFather_) : Person(name_, gender_, birthday_), bloodType (bloodType_), nameMother(nameMother_), nameFather(nameFather_){
+    int ID = static_cast<int>(IDHandler<Patient>::generateID());
+    setID(ID);
+    IDHandler<Patient>::registerID(ID);
+} 
+
+Patient::~Patient() {
+    IDHandler<Patient>::unregisterID(ID);
+}
 
 void Patient::setBloodType(const std::string &bloodType_){
     Utils::validBloodType(bloodType_);

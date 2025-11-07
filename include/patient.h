@@ -18,9 +18,9 @@ class Patient : public Person{
     public:
         Patient();
 
-        Patient(const std::string &name_, char gender_, const Date &birthday_, int ID_, const std::string &bloodType, const std::string &nameMother,const std::string &nameFather);
+        Patient(const std::string &name_, char gender_, const Date &birthday_, const std::string &bloodType, const std::string &nameMother,const std::string &nameFather);
         
-        virtual ~Patient() = default;
+        ~Patient();
 
         virtual std::string getInfo() const override;
 
