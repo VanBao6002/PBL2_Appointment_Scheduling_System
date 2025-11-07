@@ -9,7 +9,7 @@
 class AppointmentManager{
     private:    
         std::unordered_map<int, std::string> log;
-        std::unordered_map<int, Appointment> AppointmentTable;
+        std::unordered_map<int, Appointment> appointmentTable;
 
     public:
         AppointmentManager() = default;
@@ -21,7 +21,6 @@ class AppointmentManager{
         void changeStatus(int ID_, Appointment::Status status_);
 
         const Appointment& getAppointmentByID(int ID_) const;
-        std::vector<Appointment> findAppointmentsByName(const std::string& name) const;
         const std::unordered_map<int, Appointment>& getAllAppointments() const; 
         const std::unordered_set<int>& getPatientsByAppointmentID(int ID_) const; 
         const std::unordered_map<int, std::string>& getAllLog() const;

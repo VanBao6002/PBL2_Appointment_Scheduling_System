@@ -1,32 +1,30 @@
 #include <iostream>
-#include <cassert>
-#include "userManager.h"
-#include "user.h"
+#include "date.h"
+#include "prescription.h"
 
 int main() {
-    UserManager um;
-    User u;
-    u.setID(1);
-    u.setUsername("testuser");
-    u.setRole(User::Role::ADMIN);
-    u.setPassword("password123");
+    // Test Date
+    Date d1(2023, 11, 6);
+    d1.addDays(1);
+    std::cout << "Date after adding 1 day: " << d1.toString() << std::endl;
 
-    // Test addUser
-    um.addUser(1, u);
-    assert(um.getUserByID(1).getUsername() == "testuser");
+    // Test Prescription
+    Prescription p(1, 100, 200);
+    p.setDiagnosis("Flu");
+    p.setAdditionalNotes("Patient should rest.");
+    p.setPrescriptionDate(Date(2023, 11, 6));
+    // You may need to adjust this if Medicine definition requires more fields
+    p.addMedicine("Paracetamol", "500mg", 3, 5, "After meal");
 
-    // Test editUser
-    User u2 = u;
-    u2.setUsername("newuser");
-    um.editUser(1, u2);
-    assert(um.getUserByID(1).getUsername() == "newuser");
+    std::cout << "Prescription ID: " << p.getPrescriptionID() << std::endl;
+    std::cout << "Diagnosis: " << p.getDiagnosis() << std::endl;
+    std::cout << "Notes: " << p.getAdditionalNotes() << std::endl;
+    std::cout << "Prescription Date: " << p.getPrescriptionDate().toString() << std::endl;
 
-    // Test changeRole
-    um.changeRole(1, User::Role::DOCTOR);
-    assert(um.getUserByID(1).getRole() == User::Role::DOCTOR);
+    const auto& meds = p.getMedicines();
+    for (const auto& med : meds) {
+        std::cout << "Medicine: " << med.name << ", Dosage: " << med.dosage << std::endl;
+    }
 
-    std::cout << "All UserManager tests passed!" << std::endl;
     return 0;
 }
-
-

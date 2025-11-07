@@ -41,18 +41,3 @@ std::string Person::getInfo() const {
            "\nBirthday: " + birthday.toString();
 }
 
-std::string Person::getName() const {
-    return name;
-}
-
-char Person::getGender() const {
-    return gender;
-}
-
-Date Person::getBirthday() const {
-    return birthday;
-}
-
-int Person::getID() const {
-    return ID;
-}
