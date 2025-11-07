@@ -3,6 +3,7 @@
 #include "person.h"
 #include "medicalRecord.h"
 #include "prescription.h"
+#include "json.hpp"
 #include <string>
 #include <iostream>
 #include <sstream>
@@ -31,5 +32,8 @@ class Patient : public Person{
         void setBloodType(const std::string &bloodType_);
         void setNameMother(const std::string &nameMother_);
         void setNameFather(const std::string &nameFather_);
+
+        nlohmann::json toJson() const;
+        void fromJson(const nlohmann::json &j);
 };
 
