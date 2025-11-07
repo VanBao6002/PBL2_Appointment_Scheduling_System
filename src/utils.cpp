@@ -189,20 +189,20 @@ void Utils::validTime(const std::string &time){
     }
 }
 
-void Utils::validPatientID(const std::unordered_map<int, Patient> &patientIDs, int ID_){
-    if (patientIDs.find(ID_) == patientIDs.end()){
-        throw std::invalid_argument("patient 's ID: " + std::to_string(ID_) +  " is not found");
+void Utils::validPatientID(const std::unordered_map<int, Patient> &patientTable, int ID){
+    if (patientTable.find(ID) == patientTable.end()){
+        throw std::invalid_argument("patient 's ID: " + std::to_string(ID) +  " is not found");
     }
 }
 
-void Utils::validDoctorID(const std::unordered_map<int, Doctor> &doctorTable, int ID_){
-    if (doctorTable.find(ID_) == doctorTable.end()) {
+void Utils::validDoctorID(const std::unordered_map<int, Doctor> &doctorTable, int ID){
+    if (doctorTable.find(ID) == doctorTable.end()) {
         throw std::invalid_argument("Doctor ID not found.");
     }
 }
 
-void Utils::validUserID(const std::unordered_map<int, User> &userTable, int ID_){
-    if (userTable.find(ID_) == userTable.end()) {
+void Utils::validUserID(const std::unordered_map<int, User> &userTable, int ID){
+    if (userTable.find(ID) == userTable.end()) {
         throw std::invalid_argument("User ID not found.");
     }
 }

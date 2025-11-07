@@ -9,7 +9,7 @@
 class AppointmentManager{
     private:    
         std::unordered_map<int, std::string> log;
-        std::unordered_map<int, Appointment> AppointmentTable;
+        std::unordered_map<int, Appointment> appointmentTable;
 
     public:
         AppointmentManager() = default;
