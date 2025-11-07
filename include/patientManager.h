@@ -13,7 +13,7 @@ class PatientManager{
         PatientManager() = default;
         ~PatientManager() = default;
 
-        void addPatient(int ID_, const Patient &pat_);
+        void addPatient(const Patient &pat_);
         void editPatient(int ID_, const Patient &newPatient);
         void removePatient(int ID_);
 

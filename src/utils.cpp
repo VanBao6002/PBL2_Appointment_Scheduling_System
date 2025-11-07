@@ -189,53 +189,27 @@ void Utils::validTime(const std::string &time){
     }
 }
 
-void Utils::validPatientID(const std::unordered_map<int, Patient> &patientTable, int ID){
-    if (patientTable.find(ID) == patientTable.end()){
-        throw std::invalid_argument("patient 's ID: " + std::to_string(ID) +  " is not found");
-    }
-}
-
-void Utils::validDoctorID(const std::unordered_map<int, Doctor> &doctorTable, int ID){
-    if (doctorTable.find(ID) == doctorTable.end()) {
-        throw std::invalid_argument("Doctor ID not found.");
-    }
-}
-
-void Utils::validUserID(const std::unordered_map<int, User> &userTable, int ID){
-    if (userTable.find(ID) == userTable.end()) {
-        throw std::invalid_argument("User ID not found.");
-    }
-}
-
 void Utils::validSpecialization(const std::string &specialization_){
-    std::unordered_set<std::string> specializationTable;
-    std::ifstream file(Config::SPECIALIZATION_PATH);
-    if (!file.is_open()){
-        throw std::runtime_error("Failed to open doctorSpecializations.txt");
-    }
-    std::string line;
-    while (std::getline(file, line)) {
-        specializationTable.insert(line);
-    }
-    file.close();
-
+    static std::unordered_set<std::string> specializationTable = []{
+        std::unordered_set<std::string> set;
+        std::ifstream file(Config::SPECIALIZATION_PATH);
+        std::string line;
+        while (std::getline(file, line)) set.insert(line);
+        return set;
+    }();
     if (specializationTable.find(specialization_) == specializationTable.end()){
         throw std::invalid_argument("Specialization: " + specialization_ + " is not valid");
     }
 }
 
 void Utils::validBloodType(const std::string &bloodType_){
-    std::unordered_set<std::string> bloodTypeTable;
-    std::ifstream file(Config::BLOOD_TYPE_PATH);
-    if (!file.is_open()){
-        throw std::runtime_error("Failed to open bloodType.txt");
-    }
-    std::string line;
-    while (std::getline(file, line)) {
-        bloodTypeTable.insert(line);
-    }
-    file.close();
-
+    static std::unordered_set<std::string> bloodTypeTable = []{
+        std::unordered_set<std::string> set;
+        std::ifstream file(Config::BLOOD_TYPE_PATH);
+        std::string line;
+        while (std::getline(file, line)) set.insert(line);
+        return set;
+    }();
     if (bloodTypeTable.find(bloodType_) == bloodTypeTable.end()){
         throw std::invalid_argument("BloodType: " + bloodType_ + " is not valid");
     }
@@ -254,17 +228,13 @@ void Utils::validPassword(const std::string &password_){
 }
 
 void Utils::validRoom(const std::string &room_){
-    std::unordered_set<std::string> roomTable;
-    std::ifstream file(Config::ROOM_PATH);
-    if (!file.is_open()){
-        throw std::runtime_error("Failed to open room.txt");
-    }
-    std::string line;
-    while (std::getline(file, line)) {
-        roomTable.insert(line);
-    }
-    file.close();
-
+    static std::unordered_set<std::string> roomTable = []{
+        std::unordered_set<std::string> set;
+        std::ifstream file(Config::ROOM_PATH);
+        std::string line;
+        while (std::getline(file, line)) set.insert(line);
+        return set;
+    }();
     if (roomTable.find(room_) == roomTable.end()){
         throw std::invalid_argument("Room: " + room_ + " is not valid");
     }

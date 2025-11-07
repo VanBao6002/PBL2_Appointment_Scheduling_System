@@ -11,9 +11,9 @@ class Person {
     public:
         Person();
 
-        Person(int ID_, const std::string &name_, char gender_, const Date &birthday_);
+        Person(const std::string &name_, char gender_, const Date &birthday_);
 
-        virtual ~Person();
+        virtual ~Person() = default;
 
         std::string getName() const;
         char getGender() const;
@@ -24,5 +24,7 @@ class Person {
         void setName(const std::string &name_);
         void setGender(const char gender_);
         void setBirthday(const Date &birthday_); 
+    
+    protected:
         void setID(int ID_); 
 };

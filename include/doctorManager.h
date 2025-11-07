@@ -16,7 +16,7 @@ class DoctorManager{
         DoctorManager() = default;
         ~DoctorManager() = default;
 
-        void addDoctor(int ID_, const Doctor  &doc_);
+        void addDoctor(const Doctor  &doc_);
         void editDoctor(int ID_, const Doctor &newDoctor);
         void removeDoctor(int ID_);
         void changeStatus(int ID_, Doctor::Status status_);

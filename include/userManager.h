@@ -13,7 +13,7 @@ class UserManager{
         UserManager() = default;
         ~UserManager() = default;
 
-        void addUser(int ID_, const User  &user_);
+        void addUser(const User  &user);
         void editUser(int ID_, const User &newUser);
         void removeUser(int ID_);
 
