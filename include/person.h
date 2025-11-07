@@ -15,10 +15,10 @@ class Person {
 
         virtual ~Person();
 
-        std::string getName() const {return name;}
-        char getGender() const {return gender;}
-        Date getBirthday() const {return birthday;}
-        int getID() const {return ID;}
+        std::string getName() const;
+        char getGender() const;
+        Date getBirthday() const;
+        int getID() const;
         virtual std::string getInfo() const = 0;
 
         void setName(const std::string &name_);
