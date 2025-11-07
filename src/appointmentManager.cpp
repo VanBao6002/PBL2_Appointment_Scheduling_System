@@ -4,47 +4,47 @@
 #include <stdexcept>
 
 void AppointmentManager::addAppointment(int ID_, const Appointment &apt_) {
-    if (AppointmentTable.find(ID_) != AppointmentTable.end()) {
+    if (appointmentTable.find(ID_) != appointmentTable.end()) {
         throw std::invalid_argument("Appointment ID already exists.");
     }
-    AppointmentTable[ID_] = apt_;
+    appointmentTable[ID_] = apt_;
     log[ID_] += " Added on: " + Utils::getDateTime();
 }
 
 void AppointmentManager::editAppointment(int ID_, const Appointment &newAppointment) {
-    if (AppointmentTable.find(ID_) == AppointmentTable.end()) {
+    if (appointmentTable.find(ID_) == appointmentTable.end()) {
         throw std::invalid_argument("Appointment ID not found.");
     }
-    AppointmentTable[ID_] = newAppointment;
+    appointmentTable[ID_] = newAppointment;
     log[ID_] += " Edited on: " + Utils::getDateTime();
 }
 
 void AppointmentManager::removeAppointment(int ID_) {
-    if (AppointmentTable.find(ID_) == AppointmentTable.end()) {
+    if (appointmentTable.find(ID_) == appointmentTable.end()) {
         throw std::invalid_argument("Appointment ID not found.");
     }
-    AppointmentTable.erase(ID_);
+    appointmentTable.erase(ID_);
     log.erase(ID_);
 }
 
 void AppointmentManager::changeStatus(int ID_, Appointment::Status status_) {
-    if (AppointmentTable.find(ID_) == AppointmentTable.end()) {
+    if (appointmentTable.find(ID_) == appointmentTable.end()) {
         throw std::invalid_argument("Appointment ID not found.");
     }
-    AppointmentTable[ID_].setStatus(status_);
+    appointmentTable[ID_].setStatus(status_);
     log[ID_] += " Status changed on: " + Utils::getDateTime();
 }
 
 const Appointment& AppointmentManager::getAppointmentByID(int ID_) const {
-    if (AppointmentTable.find(ID_) == AppointmentTable.end()) {
+    if (appointmentTable.find(ID_) == appointmentTable.end()) {
         throw std::invalid_argument("Appointment ID not found.");
     }
-    return AppointmentTable.at(ID_);
+    return appointmentTable.at(ID_);
 }
 
 
 const std::unordered_map<int, Appointment>& AppointmentManager::getAllAppointments() const {
-    return AppointmentTable;
+    return appointmentTable;
 }
 
 const std::unordered_map<int, std::string>& AppointmentManager::getAllLog() const {
@@ -52,7 +52,7 @@ const std::unordered_map<int, std::string>& AppointmentManager::getAllLog() cons
 }
 
 const std::string& AppointmentManager::getIDLog(int ID_) const {
-    if (AppointmentTable.find(ID_) == AppointmentTable.end()) {
+    if (appointmentTable.find(ID_) == appointmentTable.end()) {
         throw std::invalid_argument("Appointment ID not found.");
     }
     return log.at(ID_);

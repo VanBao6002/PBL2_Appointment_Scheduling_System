@@ -4,14 +4,17 @@ CXXFLAGS = -Wall -Wextra -std=c++17 -Iinclude
 
 # Source and build setup
 SRC = $(wildcard src/*.cpp) main.cpp
-OBJ = $(SRC:.cpp=.o)
+OBJ = $(patsubst %.cpp,build/%.o,$(notdir $(SRC)))
 TARGET = main
 
-# Build target
-$(TARGET): $(OBJ)
-	$(CXX) $(OBJ) -o $(TARGET)
+# Build all object files
+build: $(OBJ)
 
-# Compile .cpp -> .o
+# Build target (main executable)
+$(TARGET): $(OBJ)
+	$(CXX) $(OBJ) -o $(TARGET) -mconsole
+
+# Compile .cpp -> build/.o
 build/%.o: src/%.cpp
 	@mkdir -p build
 	$(CXX) $(CXXFLAGS) -c $< -o $@
@@ -22,10 +25,10 @@ build/main.o: main.cpp
 
 # Clean build files
 clean:
-	rm -f build/*.o $(TARGET) tests/*.o tests/test*
+	rm -f build/*.o $(TARGET) tests/*.o tests/*.exe tests/test*.exe
 
-# Test target (compiles all src/*.cpp + test file)
-tests/test%: $(SRC) tests/test%.cpp
+# Pattern rule for other tests (optional)
+tests/test%: $(OBJ) tests/test%.cpp
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
 TESTS := $(patsubst %.cpp,%,$(wildcard tests/*.cpp))

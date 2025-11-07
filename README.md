@@ -1,6 +1,6 @@
-How to run test:
+make build
 
-make tests/<testname>
+make tests/
 
 make 
 
