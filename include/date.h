@@ -4,15 +4,24 @@
 #include <sstream>
 #include <iostream>
 #include <stdexcept>
+
 struct Date {
     int day;
     int month;
     int year;
-    public:
-    Date(int day_ = 1, int month_ = 1, int year_ = 2000) : day(day_), month(month_), year(year_) {}
+
+public:
+    Date() : day(1), month(1), year(2000) {}
     
+    // Thứ tự: day, month, year
+    Date(int d, int m, int y) : day(d), month(m), year(y) {}
+
+    int getDay() const { return day; }
+    int getMonth() const { return month; }
+    int getYear() const { return year; }
+
     std::string toString() const {
-        char buffer[17]; // "YYYY-MM-DD HH:MM" + null terminator
+        char buffer[11]; // "YYYY-MM-DD" + null terminator
         std::snprintf(buffer, sizeof(buffer), "%04d-%02d-%02d", year, month, day);
         return std::string(buffer);
     }
@@ -23,7 +32,7 @@ struct Date {
         std::istringstream iss(str);
         iss >> y >> sep1 >> m >> sep2 >> d;
         if (sep1 != '-' || sep2 != '-') throw std::runtime_error("Invalid date format");
-        return Date(y, m, d);
+        return Date(d, m, y);
     }
 
     void addDays(int days) {
@@ -48,7 +57,7 @@ struct Date {
         os << d.day << ' ' << d.month << ' ' << d.year;
         return os;
     }
-    
+
     friend std::istream& operator>>(std::istream& is, Date& d) {
         is >> d.day >> d.month >> d.year;
         return is;
@@ -59,6 +68,7 @@ struct Date {
         if (month != other.month) return month > other.month;
         return day > other.day;
     }
+
     bool operator<(const Date& other) const {
         if (year != other.year) return year < other.year;
         if (month != other.month) return month < other.month;
@@ -77,10 +87,7 @@ struct Date {
         static const int daysPerMonth[] = {
             31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31
         };
-        
-        if (month == 2 && isLeapYear(year)) {
-            return 29;
-        }
+        if (month == 2 && isLeapYear(year)) return 29;
         return daysPerMonth[month - 1];
     }
 
