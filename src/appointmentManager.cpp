@@ -7,7 +7,7 @@
 void AppointmentManager::addAppointment(const Appointment &apt_) {
     int ID_ = apt_.getID();
     if (IDHandler<Appointment>::checkDuplicate(ID_)) {
-        throw std::invalid_argument("Doctor ID already existed.");
+        throw std::invalid_argument("Appointment ID already existed.");
     }
     appointmentTable[ID_] = apt_;
     log[ID_] += " Added on: " + Utils::getDateTime();

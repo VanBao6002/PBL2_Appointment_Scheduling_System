@@ -366,3 +366,54 @@ void Utils::validMedicalRecord(const MedicalRecord &medicalRecord_) {
     }
 }
 
+void Utils::writeJsonToFile(const std::string& filePath, const nlohmann::json& j){
+    std::ofstream outFile(filePath);
+    if (!outFile.is_open()) {
+        std::cerr << "Error: Could not open file \"" << filePath << "\" for writing.\n";
+        return;
+    }
+    outFile << j.dump(4);
+}
+
+nlohmann::json Utils::readJsonFromFile(const std::string& filePath){
+    std::ifstream inFile(filePath);
+    if (!inFile.is_open()) {
+        std::cerr << "Error: Could not open file \"" << filePath << "\" for reading.\n";
+        return nlohmann::json();
+    }
+    std::stringstream ss;
+    ss << inFile.rdbuf();
+    return nlohmann::json::parse(ss.str());
+}
+
+void Utils::writeTextToFile(const std::string& filePath, const std::string& text){
+    std::ofstream outFile(filePath);
+    if (!outFile.is_open()) {
+        std::cerr << "Error: Could not open file \"" << filePath << "\" for writing.\n";
+        return;
+    }
+    for (const auto& line : text) {
+        outFile << line << '\n';
+    }
+}
+
+std::string Utils::readTextFromFile(const std::string& filePath){
+    std::ifstream inFile(filePath);
+    if (!inFile.is_open()) {
+        std::cerr << "Error: Could not open file \"" << filePath << "\" for reading.\n";
+        return "";
+    }
+    std::ostringstream ss;
+    ss << inFile.rdbuf();
+    return ss.str();
+}
+
+template<typename Entity> 
+nlohmann::json Utils::serialize(const Entity obj){
+    
+}
+
+template<typename Entity>
+Entity Utils::deserialize(nlohmann::json& j){
+
+}

@@ -6,7 +6,7 @@
 
 int main() {
     // 1️⃣ Tạo patient
-    Patient p1("Nguyen Van A", 'M', Date(15, 6, 2000), 1, "O+", "Nguyen Thi B", "Nguyen Van C");
+    Patient p1;
 
     // 2️⃣ Ghi ra file JSON
     std::ofstream outFile("patient.json");
