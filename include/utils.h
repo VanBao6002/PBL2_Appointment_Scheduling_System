@@ -23,7 +23,6 @@
 class Utils {
 public:
     static bool isExpired(const Date& prescriptionDate, int duration);
-
     static int calculateTotalDays();
     static double calculateTotalCost();
     static std::string getDateTime();
@@ -37,6 +36,7 @@ public:
         const std::vector<std::pair<std::string, std::pair<int, int>>>& medicines,
         const std::string& additionalNotes = "");
 
+    //validicator
     static void validName(const std::string &name);
     static void validGender(char gender);
     static void validDate(const Date &date);
@@ -49,5 +49,19 @@ public:
     static void validRoom(const std::string &room_);
     static void validPrescription(const Prescription &prescription_);
     static void validMedicalRecord(const MedicalRecord &medicalrecord_);
+    
+    //convertor
+    static void writeJsonToFile(const std::string& filePath, const nlohmann::json& j);
+    static nlohmann::json readJsonFromFile(const std::string& filePath);
+
+    static void writeTextToFile(const std::string& filePath, const std::string& text);
+    static std::string readTextFromFile(const std::string& filePath);
+    
+    // chuyển data từ obj sang dạng serial
+    template<typename Entity> 
+    static nlohmann::json serialize(Entity obj);
+    // chuyển data dạng serial sang obj 
+    template<typename Entity>
+    static Entity deserialize(nlohmann::json& j); 
 };
 
