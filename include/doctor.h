@@ -34,6 +34,8 @@ class Doctor : public Person{
         const std::unordered_map<int, Patient>& getPatientIDs() const {return patientIDs;}
         std::string getInfo() const override;
 
+        // convertor
+        static Doctor::Status statusFromString(const std::string& str);
         nlohmann::json toJson() const override;
         void fromJson(const nlohmann::json &j) override;
 };        
