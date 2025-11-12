@@ -74,3 +74,42 @@ Doctor::Status getStatus(const Doctor::Status &doctorStatus_){
 const std::unordered_map<int, Patient> getPatientIDs(const std::unordered_map<int, Patient> &patientIDs_){
     return patientIDs_;
 }
+
+Doctor::Status Doctor::statusFromString(const std::string& str){
+    if (str == "Available") return Doctor::Status::Available;
+    if (str == "Unavailable") return Doctor::Status::Unavailable;
+    throw std::invalid_argument("Unknown status: " + str);
+}
+
+nlohmann::json Doctor::toJson() const {
+    nlohmann::json j;
+    j["ID"] = ID;
+    j["name"] = name;
+    j["gender"] = std::string(1, gender);
+    j["birthday"] = {
+        {"day", birthday.getDay()},
+        {"month", birthday.getMonth()},
+        {"year", birthday.getYear()}
+    };
+    j["specialization"] = specialization;
+    j["doctorStatus"] = doctorStatus;
+    return j;
+}
+
+void Doctor::fromJson(const nlohmann::json &j) {
+    if (j.contains("ID")) ID = j.at("ID").get<int>();
+    if (j.contains("name")) name = j.at("name").get<std::string>();
+    if (j.contains("gender")) {
+        std::string g = j.at("gender").get<std::string>();
+        if (!g.empty()) gender = g[0];
+    }
+    if (j.contains("birthday")) {
+        auto bd = j.at("birthday");
+        int d = bd.value("day", 1);
+        int m = bd.value("month", 1);
+        int y = bd.value("year", 2000);
+        birthday = Date(d, m, y);
+    }
+    if (j.contains("specialization")) specialization = j.at("specialization").get<std::string>();
+    if (j.contains("doctorStatus")) doctorStatus = statusFromString(j.at("doctorStatus").get<std::string>());
+}

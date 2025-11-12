@@ -19,7 +19,7 @@ template<typename Entity>
 std::unordered_set<size_t> IDHandler<Entity>::IDTable;
 
 template<typename Entity>
-size_t IDHandler<Entity>::lastID = 0;
+size_t IDHandler<Entity>::lastID = 1;
 
 template<typename Entity>
 size_t IDHandler<Entity>::generateID(){

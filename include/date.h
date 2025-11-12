@@ -32,7 +32,7 @@ public:
         std::istringstream iss(str);
         iss >> y >> sep1 >> m >> sep2 >> d;
         if (sep1 != '-' || sep2 != '-') throw std::runtime_error("Invalid date format");
-        return Date(d, m, y);
+        return Date(d, m , y);
     }
 
     void addDays(int days) {
