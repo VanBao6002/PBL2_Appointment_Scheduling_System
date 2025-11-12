@@ -57,11 +57,6 @@ public:
     static void writeTextToFile(const std::string& filePath, const std::string& text);
     static std::string readTextFromFile(const std::string& filePath);
     
-    // chuyển data từ obj sang dạng serial
-    template<typename Entity> 
-    static nlohmann::json serialize(Entity obj);
-    // chuyển data dạng serial sang obj 
-    template<typename Entity>
-    static Entity deserialize(nlohmann::json& j); 
+
 };
 

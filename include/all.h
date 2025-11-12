@@ -1,0 +1,18 @@
+#pragma once
+
+#include "person.h"
+#include "patient.h"
+#include "patientManager.h"
+#include "prescription.h"
+#include "medicalRecord.h"
+#include "doctor.h"
+#include "doctorManager.h"
+#include "appointment.h"
+#include "appointmentManager.h"
+#include "user.h"
+#include "userManager.h"
+#include "IDHandler.h"
+#include "utils.h"
+#include "date.h"
+#include "config.h"
+#include "json.hpp"

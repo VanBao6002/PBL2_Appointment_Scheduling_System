@@ -39,4 +39,7 @@ class Appointment{
         Status getStatus() const;
         const Doctor& getDoctor(const DoctorManager& mgr) const;
         const Patient& getPatient(const PatientManager& mgr) const;
+
+        nlohmann::json toJson() const;
+        void fromJson(const nlohmann::json &j);
 };

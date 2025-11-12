@@ -3,7 +3,7 @@
 #include "medicalRecord.h"
 #include "prescription.h"
 #include <string>
-#include "json.hpp"  // nlohmann/json
+#include "json.hpp" 
 
 class Patient : public Person {
 private:
@@ -19,7 +19,7 @@ public:
             const std::string &bloodType_, const std::string &nameMother_, const std::string &nameFather_);
 
     ~Patient();
-    virtual std::string getInfo() const override;
+    std::string getInfo() const override;
 
     std::string getBloodType() const { return bloodType; }
     std::string getNameMother() const { return nameMother; }
@@ -30,6 +30,6 @@ public:
     void setNameFather(const std::string &nameFather_);
 
     // JSON
-    nlohmann::json toJson() const;
-    void fromJson(const nlohmann::json &j);
+    nlohmann::json toJson() const override;
+    void fromJson(const nlohmann::json &j) override;
 };
