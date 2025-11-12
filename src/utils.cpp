@@ -408,12 +408,3 @@ std::string Utils::readTextFromFile(const std::string& filePath){
     return ss.str();
 }
 
-template<typename Entity> 
-nlohmann::json Utils::serialize(const Entity obj){
-    
-}
-
-template<typename Entity>
-Entity Utils::deserialize(nlohmann::json& j){
-
-}

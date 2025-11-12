@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 #include <sstream>
-
+#include "json.hpp"
 class User { 
     public: 
         enum class Role {ADMIN, DOCTOR, PATIENT};
@@ -25,4 +25,7 @@ class User {
         Role getRole() const {return userRole;}
         const std::string& getUsername() const {return username;}
         const std::string& getPassword() const {return passwordHash;}
+
+        nlohmann::json toJson() const;
+        void fromJson(const nlohmann::json &j);
 };
