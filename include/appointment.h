@@ -9,7 +9,7 @@
 
 class Appointment{
     public:
-        enum class Status{DaDat, DaKham, Huy};
+        enum class Status{Occupied, Scheduled, Canceled};
 
     private:    
         int ID;
@@ -25,7 +25,7 @@ class Appointment{
 
         Appointment(int doctorID_, int patientID_, const Date& date_, const std::string& time_, const std::string& room_, Status status_);
 
-        ~Appointment();
+        ~Appointment() =default;
 
         void setDateTime(Date date_, const std::string &time_);
         void setStatus(Status status_);
@@ -39,7 +39,12 @@ class Appointment{
         Status getStatus() const;
         const Doctor& getDoctor(const DoctorManager& mgr) const;
         const Patient& getPatient(const PatientManager& mgr) const;
-
+        
+        // convertor
+        static Appointment::Status statusFromString(const std::string& str);
         nlohmann::json toJson() const;
         void fromJson(const nlohmann::json &j);
+    
+    private:
+        void setID(int ID_); 
 };

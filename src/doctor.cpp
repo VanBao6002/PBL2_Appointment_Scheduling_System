@@ -12,17 +12,11 @@
 Doctor::Doctor() : Person(), specialization(""), patientIDs(), doctorStatus(Status::Available){
     ID = static_cast<int>(IDHandler<Doctor>::generateID());
     setID(ID);
-    IDHandler<Doctor>::registerID(ID);
 }
 Doctor::Doctor(const std::string& name_, char gender_, const Date& birthday_, const std::string& specialization_, Status doctorStatus_) : Person(name_, gender_, birthday_), specialization(specialization_), patientIDs(), doctorStatus(doctorStatus_) {
     int ID = static_cast<int>(IDHandler<Doctor>::generateID());
     setID(ID);
-    IDHandler<Doctor>::registerID(ID);
 } 
-
-Doctor::~Doctor() {
-    IDHandler<Doctor>::unregisterID(ID);
-}
 
 void Doctor::setSpecialization(const std::string &specialization_){
     Utils::validSpecialization(specialization_);
@@ -76,8 +70,10 @@ const std::unordered_map<int, Patient> getPatientIDs(const std::unordered_map<in
 }
 
 Doctor::Status Doctor::statusFromString(const std::string& str){
-    if (str == "Available") return Doctor::Status::Available;
-    if (str == "Unavailable") return Doctor::Status::Unavailable;
+    std::string lowerStr = str;
+    std::transform(lowerStr.begin(), lowerStr.end(), lowerStr.begin(), ::tolower);
+    if (lowerStr == "available") return Doctor::Status::Available;
+    if (lowerStr == "unavailable") return Doctor::Status::Unavailable;
     throw std::invalid_argument("Unknown status: " + str);
 }
 
