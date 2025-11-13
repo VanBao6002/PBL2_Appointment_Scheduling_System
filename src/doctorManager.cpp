@@ -9,7 +9,7 @@
 void DoctorManager::addDoctor(const Doctor &doc_) {
     int ID_ = doc_.getID();
     if (IDHandler<Doctor>::checkDuplicate(ID_)) {
-        throw std::invalid_argument("Adding doctor failed. Doctor ID " + std::to_string(doc_.getID()) + " already exists.");
+        throw std::invalid_argument("Adding failed. Doctor ID " + std::to_string(doc_.getID()) + " already exists.");
     }
     doctorTable[ID_] = doc_;
     log[ID_] += " Added on: " + Utils::getDateTime();
@@ -18,7 +18,7 @@ void DoctorManager::addDoctor(const Doctor &doc_) {
 
 void DoctorManager::editDoctor(int ID_, const Doctor &newDoctor){
     if (!IDHandler<Doctor>::checkDuplicate(ID_)) {
-        throw std::invalid_argument("Editing doctor failed. Doctor ID " + std::to_string(newDoctor.getID()) + " not found.");
+        throw std::invalid_argument("Editing failed. Doctor ID " + std::to_string(newDoctor.getID()) + " not found.");
     }
     doctorTable[ID_] = newDoctor;
     log[ID_] += " Edited on: " + Utils::getDateTime();
@@ -26,10 +26,11 @@ void DoctorManager::editDoctor(int ID_, const Doctor &newDoctor){
                                                                                                                                                
 void DoctorManager::removeDoctor(int ID_){
     if (!IDHandler<Doctor>::checkDuplicate(ID_)) {
-        throw std::invalid_argument("Removing doctor failed. Doctor ID " + std::to_string(ID_) + " not found.");
+        throw std::invalid_argument("Removing failed. Doctor ID " + std::to_string(ID_) + " not found.");
     }
     doctorTable.erase(ID_);
     log.erase(ID_);
+    IDHandler<Doctor>::unregisterID(ID_);
 }
 
 void DoctorManager::changeStatus(int ID_, Doctor::Status status_){
@@ -42,7 +43,7 @@ void DoctorManager::changeStatus(int ID_, Doctor::Status status_){
 
 const Doctor& DoctorManager::getDoctorByID(int ID_) const{
     if (!IDHandler<Doctor>::checkDuplicate(ID_)) {
-        throw std::invalid_argument("Failed getting doctor. Doctor ID " + std::to_string(ID_) + " not found.");
+        throw std::invalid_argument("Failed getting. Doctor ID " + std::to_string(ID_) + " not found.");
     }
     return doctorTable.at(ID_);
 }

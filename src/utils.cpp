@@ -23,7 +23,7 @@ bool Utils::isExpired(const Date& prescriptionDate, int duration) {
 int Utils::calculateTotalDays() {
     std::ifstream file(Config::PRESCRIPTION_PATH);
     if (!file.is_open()) {
-        throw std::runtime_error("Cannot open prescription file");
+        throw std::runtime_error("Cannot open prescription file.");
     }
 
     int maxDuration = 0;
@@ -45,7 +45,7 @@ int Utils::calculateTotalDays() {
 double Utils::calculateTotalCost() {
     std::ifstream priceFile(Config::MEDICINE_PRICE_PATH);
     if (!priceFile.is_open()) {
-        throw std::runtime_error("Cannot open medicine price file");
+        throw std::runtime_error("Cannot open medicine price file.");
     }
 
     std::unordered_map<std::string, double> medicinePrice;
@@ -58,7 +58,7 @@ double Utils::calculateTotalCost() {
 
     std::ifstream prescFile(Config::PRESCRIPTION_PATH);
     if (!prescFile.is_open()) {
-        throw std::runtime_error("Cannot open prescription file");
+        throw std::runtime_error("Cannot open prescription file.");
     }
 
     double totalCost = 0.0;
@@ -133,13 +133,13 @@ std::string Utils::generatePrescriptionText(int prescriptionID, const Date& pres
 
 void Utils::validName(const std::string &name_) {
     if (name_.empty()) {
-        throw std::invalid_argument("Name cannot be empty");
+        throw std::invalid_argument("Name cannot be empty.");
     }
 }
 
 void Utils::validGender(char gender) {
     if (std::tolower(gender) != 'm' && std::tolower(gender) != 'f'){
-        throw std::invalid_argument("Invalid gender, must be 'M' or 'F'");
+        throw std::invalid_argument("Invalid gender, must be 'M' or 'F'.");
     }
 }
 
@@ -150,42 +150,42 @@ void Utils::validDate(const Date &date) {
     int lowerYearLimit = currentYear - 200;
 
     if (date.month < 1 || date.month > 12){
-        throw std::invalid_argument("Invalid month");
+        throw std::invalid_argument("Invalid month.");
     }
 
     int maxDay = date.getDaysInMonth(date.month, date.year);
 
     if (date.day < 1 || date.day > maxDay){
-        throw std::invalid_argument("Invalid day");
+        throw std::invalid_argument("Invalid day.");
     }
 
     if (date.year < lowerYearLimit || date.year > currentYear){
-        throw std::invalid_argument("Invalid year, out of range");
+        throw std::invalid_argument("Invalid year, out of range.");
     }
 }
 
 void Utils::validID(int ID) {
     if (ID < 0){
-        throw std::invalid_argument("Invalid ID, ID must be non-negative");
+        throw std::invalid_argument("Invalid ID, ID must be non-negative.");
     }
 }
 
 void Utils::validTime(const std::string &time){
     if (time.size() != 5 || time[2] != ':') {
-        throw std::invalid_argument("Time format must be HH:MM");
+        throw std::invalid_argument("Time format must be HH:MM.");
     }
     int hour, minute;
     try {
         hour = std::stoi(time.substr(0, 2));
         minute = std::stoi(time.substr(3, 2));
     } catch (...) {
-        throw std::invalid_argument("Time contains invalid numbers");
+        throw std::invalid_argument("Time contains invalid numbers.");
     }
     if (hour < 0 || hour > 23) {
-        throw std::invalid_argument("Hour must be between 00 and 23");
+        throw std::invalid_argument("Hour must be between 00 and 23.");
     }
     if (minute < 0 || minute > 59) {
-        throw std::invalid_argument("Minute must be between 00 and 59");
+        throw std::invalid_argument("Minute must be between 00 and 59.");
     }
 }
 
@@ -198,7 +198,7 @@ void Utils::validSpecialization(const std::string &specialization_){
         return set;
     }();
     if (specializationTable.find(specialization_) == specializationTable.end()){
-        throw std::invalid_argument("Specialization: " + specialization_ + " is not valid");
+        throw std::invalid_argument("Specialization: " + specialization_ + " is not valid.");
     }
 }
 
@@ -211,19 +211,19 @@ void Utils::validBloodType(const std::string &bloodType_){
         return set;
     }();
     if (bloodTypeTable.find(bloodType_) == bloodTypeTable.end()){
-        throw std::invalid_argument("BloodType: " + bloodType_ + " is not valid");
+        throw std::invalid_argument("BloodType: " + bloodType_ + " is not valid.");
     }
 }
 
 void Utils::validUserName(const std::string &username_){
     if (username_.size() < 4 || username_.size() > 20){
-        throw std::invalid_argument("Username: " + username_ + " is not valid");
+        throw std::invalid_argument("Username: " + username_ + " is not valid.");
     }
 }
 
 void Utils::validPassword(const std::string &password_){
     if (password_.size() < 8 || password_.size() > 64){
-        throw std::invalid_argument("Password: " + password_ + " is not valid");
+        throw std::invalid_argument("Password: " + password_ + " is not valid.");
     }
 }
 
@@ -236,13 +236,13 @@ void Utils::validRoom(const std::string &room_){
         return set;
     }();
     if (roomTable.find(room_) == roomTable.end()){
-        throw std::invalid_argument("Room: " + room_ + " is not valid");
+        throw std::invalid_argument("Room: " + room_ + " is not valid.");
     }
 }
 
 void Utils::validPrescription(const Prescription &prescription_) {
     if (prescription_.getPrescriptionID() <= 0) {
-        throw std::invalid_argument("Invalid prescription ID");
+        throw std::invalid_argument("Invalid prescription ID.");
     }
     validID(prescription_.getPatientID());
     validID(prescription_.getDoctorID());
@@ -250,33 +250,33 @@ void Utils::validPrescription(const Prescription &prescription_) {
     validDate(prescription_.getPrescriptionDate());
 
     if (prescription_.getDiagnosis().empty()) {
-        throw std::invalid_argument("Diagnosis cannot be empty");
+        throw std::invalid_argument("Diagnosis cannot be empty.");
     }
 
     const auto& medicines = prescription_.getMedicines();
     if (medicines.empty()) {
-        throw std::invalid_argument("Prescription must have at least one medicine");
+        throw std::invalid_argument("Prescription must have at least one medicine.");
     }
 
     for (const auto& medicine : medicines) {
         if (medicine.name.empty()) {
-            throw std::invalid_argument("Medicine name cannot be empty");
+            throw std::invalid_argument("Medicine name cannot be empty.");
         }
 
         if (medicine.dosage.empty()) {
-            throw std::invalid_argument("Medicine dosage cannot be empty");
+            throw std::invalid_argument("Medicine dosage cannot be empty.");
         }
 
         if (medicine.frequency <= 0 || medicine.frequency > 6) {
-            throw std::invalid_argument("Invalid frequency: must be between 1 and 6 times per day");
+            throw std::invalid_argument("Invalid frequency: must be between 1 and 6 times per day.");
         }
 
         if (medicine.duration <= 0 || medicine.duration > 90) {
-            throw std::invalid_argument("Invalid duration: must be between 1 and 90 days");
+            throw std::invalid_argument("Invalid duration: must be between 1 and 90 days.");
         }
 
         if (medicine.instruction.empty()) {
-            throw std::invalid_argument("Medicine instruction cannot be empty");
+            throw std::invalid_argument("Medicine instruction cannot be empty.");
         }
     }
 }
@@ -284,7 +284,7 @@ void Utils::validPrescription(const Prescription &prescription_) {
 void Utils::validMedicalRecord(const MedicalRecord &medicalRecord_) {
     // Kiểm tra ID
     if (medicalRecord_.getRecordID() <= 0) {
-        throw std::invalid_argument("Invalid medical record ID");
+        throw std::invalid_argument("Invalid medical record ID.");
     }
     validID(medicalRecord_.getPatientID());
     validID(medicalRecord_.getDoctorID());
@@ -295,16 +295,16 @@ void Utils::validMedicalRecord(const MedicalRecord &medicalRecord_) {
 
     // Kiểm tra thời gian hợp lệ (ngày cập nhật phải sau ngày tạo)
     if (medicalRecord_.getLastUpdated() < medicalRecord_.getCreationDate()) {
-        throw std::invalid_argument("Last updated date cannot be before creation date");
+        throw std::invalid_argument("Last updated date cannot be before creation date.");
     }
 
     // Kiểm tra thông tin y tế cơ bản
     if (medicalRecord_.getDiagnosis().empty()) {
-        throw std::invalid_argument("Diagnosis cannot be empty");
+        throw std::invalid_argument("Diagnosis cannot be empty.");
     }
 
     if (medicalRecord_.getSymptoms().empty()) {
-        throw std::invalid_argument("Symptoms cannot be empty");
+        throw std::invalid_argument("Symptoms cannot be empty.");
     }
 
     // Kiểm tra các chỉ số sinh tồn
@@ -313,33 +313,33 @@ void Utils::validMedicalRecord(const MedicalRecord &medicalRecord_) {
     if (!bp.empty()) {  // Nếu có đo huyết áp
         size_t pos = bp.find('/');
         if (pos == std::string::npos) {
-            throw std::invalid_argument("Invalid blood pressure format (should be systolic/diastolic)");
+            throw std::invalid_argument("Invalid blood pressure format (should be systolic/diastolic).");
         }
         int systolic = std::stoi(bp.substr(0, pos));
         int diastolic = std::stoi(bp.substr(pos + 1));
         
         if (systolic < 70 || systolic > 250 || diastolic < 40 || diastolic > 150) {
-            throw std::invalid_argument("Blood pressure values out of reasonable range");
+            throw std::invalid_argument("Blood pressure values out of reasonable range.");
         }
     }
 
     // Nhịp tim (bình thường: 60-100 nhịp/phút)
     int heartRate = medicalRecord_.getHeartRate();
     if (heartRate != 0 && (heartRate < 40 || heartRate > 200)) {
-        throw std::invalid_argument("Heart rate out of reasonable range (40-200 bpm)");
+        throw std::invalid_argument("Heart rate out of reasonable range (40-200 bpm).");
     }
 
     // Nhiệt độ cơ thể (bình thường: 36.5-37.5°C)
     float temp = medicalRecord_.getBodyTemperature();
     if (temp != 0 && (temp < 35.0 || temp > 42.0)) {
-        throw std::invalid_argument("Body temperature out of reasonable range (35-42°C)");
+        throw std::invalid_argument("Body temperature out of reasonable range (35-42°C).");
     }
 
     // Kiểm tra thông tin điều trị
     if (!medicalRecord_.getTreatment().empty()) {
         // Nếu có treatment thì phải có ghi chú của bác sĩ
         if (medicalRecord_.getDoctorNotes().empty()) {
-            throw std::invalid_argument("Doctor notes required when treatment is specified");
+            throw std::invalid_argument("Doctor notes required when treatment is specified.");
         }
     }
 
@@ -355,14 +355,14 @@ void Utils::validMedicalRecord(const MedicalRecord &medicalRecord_) {
         validDate(followUpDate);
         // Ngày tái khám phải sau ngày tạo hồ sơ
         if (followUpDate <= medicalRecord_.getCreationDate()) {
-            throw std::invalid_argument("Follow-up date must be after record creation date");
+            throw std::invalid_argument("Follow-up date must be after record creation date.");
         }
     }
 
     // Kiểm tra lịch sử thay đổi
     const auto& history = medicalRecord_.getChangeHistory();
     if (history.empty()) {
-        throw std::invalid_argument("Change history cannot be empty - at least creation record needed");
+        throw std::invalid_argument("Change history cannot be empty - at least creation record needed.");
     }
 }
 

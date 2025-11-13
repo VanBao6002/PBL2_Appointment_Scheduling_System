@@ -4,7 +4,7 @@
 #include "json.hpp"
 class User { 
     public: 
-        enum class Role {ADMIN, DOCTOR, PATIENT};
+        enum class Role {ADMIN, MANANGER};
 
     private:
         int ID;
@@ -16,7 +16,6 @@ class User {
         User() = default;
         ~User() = default;
 
-        void setID(int ID_);
         void setRole(User::Role role_);
         void setUsername(const std::string &username_);
         void setPassword(const std::string &passwordHash_);
@@ -25,7 +24,12 @@ class User {
         Role getRole() const {return userRole;}
         const std::string& getUsername() const {return username;}
         const std::string& getPassword() const {return passwordHash;}
-
+        
+        // convertor
+        static User::Role roleFromString(const std::string& str);
         nlohmann::json toJson() const;
         void fromJson(const nlohmann::json &j);
+
+    private:
+        void setID(int ID_);
 };
