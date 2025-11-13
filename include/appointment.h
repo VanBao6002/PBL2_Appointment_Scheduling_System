@@ -35,6 +35,8 @@ class Appointment{
 
         
         int getID() const;
+        int getDoctorID() const;
+        int getPatientID() const;
         std::string getDateTime() const;
         Status getStatus() const;
         const Doctor& getDoctor(const DoctorManager& mgr) const;

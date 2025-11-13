@@ -5,7 +5,7 @@
 #include <unordered_set>
 #include <unordered_map>
 #include "appointment.h"
-
+#include "config.h"
 class AppointmentManager{
     private:    
         std::unordered_map<int, std::string> log;
@@ -24,4 +24,8 @@ class AppointmentManager{
         const std::unordered_map<int, Appointment>& getAllAppointments() const; 
         const std::unordered_map<int, std::string>& getAllLog() const;
         const std::string& getIDLog(int ID_) const;
+
+        // loader
+        void loadFromFile(const std::string& path);
+        void saveToFile(const std::string& path);
 };

@@ -1,0 +1,12 @@
+[
+  { "ID": 1, "userRole": "ADMIN", "username": "admin1", "passwordHash": "a1b2c3d4" },
+  { "ID": 2, "userRole": "MANAGER", "username": "manager1", "passwordHash": "e5f6g7h8" },
+  { "ID": 3, "userRole": "MANAGER", "username": "manager2", "passwordHash": "i9j0k1l2" },
+  { "ID": 4, "userRole": "ADMIN", "username": "admin2", "passwordHash": "m3n4o5p6" },
+  { "ID": 5, "userRole": "MANAGER", "username": "manager3", "passwordHash": "q7r8s9t0" },
+  { "ID": 6, "userRole": "MANAGER", "username": "manager4", "passwordHash": "u1v2w3x4" },
+  { "ID": 7, "userRole": "ADMIN", "username": "admin3", "passwordHash": "y5z6a7b8" },
+  { "ID": 8, "userRole": "MANAGER", "username": "manager5", "passwordHash": "c9d0e1f2" },
+  { "ID": 9, "userRole": "MANAGER", "username": "manager6", "passwordHash": "g3h4i5j6" },
+  { "ID": 10, "userRole": "ADMIN", "username": "admin4", "passwordHash": "k7l8m9n0" }
+]

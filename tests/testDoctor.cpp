@@ -3,7 +3,7 @@
 using namespace std;
 
 int main (){
-    nlohmann::json jArr = Utils::readJsonFromFile("data/doctor.json");
+    nlohmann::json jArr = Utils::readJsonFromFile(Config::DOCTOR_PATH);
     vector<Doctor> doctorList;
     for (const auto& jDoctor : jArr) {
         Doctor doc;
@@ -11,12 +11,12 @@ int main (){
         doctorList.push_back(doc);
     }
     DoctorManager mgr;
-    
+
     for (const auto& doctor : doctorList){
         mgr.addDoctor(doctor);
     }
 
-
+    
 
     
 }
