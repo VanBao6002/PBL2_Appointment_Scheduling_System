@@ -1,0 +1,12 @@
+[
+  { "ID": 1, "name": "Alice Nguyen", "gender": "F", "birthday": { "day": 15, "month": 3, "year": 2002 }, "bloodType": "A+", "nameMother": "Mai Tran", "nameFather": "Bao Nguyen" },
+  { "ID": 2, "name": "John Smith", "gender": "M", "birthday": { "day": 22, "month": 7, "year": 1998 }, "bloodType": "O-", "nameMother": "Linda Smith", "nameFather": "Robert Smith" },
+  { "ID": 3, "name": "Maria Garcia", "gender": "F", "birthday": { "day": 5, "month": 12, "year": 1985 }, "bloodType": "B+", "nameMother": "Sofia Lopez", "nameFather": "Carlos Garcia" },
+  { "ID": 4, "name": "David Lee", "gender": "M", "birthday": { "day": 30, "month": 6, "year": 1990 }, "bloodType": "AB-", "nameMother": "Jin Lee", "nameFather": "Min Lee" },
+  { "ID": 5, "name": "Emma Brown", "gender": "F", "birthday": { "day": 11, "month": 1, "year": 2005 }, "bloodType": "O+", "nameMother": "Sarah Brown", "nameFather": "James Brown" },
+  { "ID": 6, "name": "Liam Patel", "gender": "M", "birthday": { "day": 19, "month": 9, "year": 1997 }, "bloodType": "A-", "nameMother": "Priya Patel", "nameFather": "Raj Patel" },
+  { "ID": 7, "name": "Sophia Rossi", "gender": "F", "birthday": { "day": 3, "month": 4, "year": 2010 }, "bloodType": "B-", "nameMother": "Giulia Rossi", "nameFather": "Marco Rossi" },
+  { "ID": 8, "name": "Noah Kim", "gender": "M", "birthday": { "day": 25, "month": 8, "year": 2001 }, "bloodType": "AB+", "nameMother": "Eun Kim", "nameFather": "Joon Kim" },
+  { "ID": 9, "name": "Olivia Chen", "gender": "F", "birthday": { "day": 7, "month": 2, "year": 1995 }, "bloodType": "O-", "nameMother": "Mei Chen", "nameFather": "Wei Chen" },
+  { "ID": 10, "name": "Lucas Silva", "gender": "M", "birthday": { "day": 14, "month": 11, "year": 1988 }, "bloodType": "A+", "nameMother": "Ana Silva", "nameFather": "Joao Silva" }
+]

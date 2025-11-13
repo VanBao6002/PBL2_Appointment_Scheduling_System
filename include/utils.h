@@ -56,7 +56,5 @@ public:
 
     static void writeTextToFile(const std::string& filePath, const std::string& text);
     static std::string readTextFromFile(const std::string& filePath);
-    
-
 };
 

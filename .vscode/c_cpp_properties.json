@@ -3,11 +3,7 @@
     {
       "name": "windows-gcc-x64",
       "includePath": [
-        "${workspaceFolder}/**",
-        "D:/QT/6.9.3/mingw_64/include/**",
-        "D:/QT/6.9.3/mingw_64/include/QtCore/**",
-        "D:/QT/6.9.3/mingw_64/include/QtGui/**",
-        "D:/Qt/6.9.3/mingw_64/include/QtWidgets/**"
+        "${workspaceFolder}/**"
       ],
       "defines": [
         "_DEBUG",

@@ -56,7 +56,34 @@ const std::unordered_map<int, std::string>& AppointmentManager::getAllLog() cons
 
 const std::string& AppointmentManager::getIDLog(int ID_) const {
     if (!IDHandler<Appointment>::checkDuplicate(ID_)) {
-        throw std::invalid_argument("Failed getting log. Appointment ID " +  std::to_string(ID_) + " is not found.");
+        throw std::invalid_argument("Failed getting log. Appointment ID " +  std::to_string(ID_) + " not found.");
     }
     return log.at(ID_);
+}
+
+void AppointmentManager::loadFromFile(const std::string& path) {
+    nlohmann::json jArr = Utils::readJsonFromFile(path);
+
+    for (const auto& jAppointment : jArr) {
+        Appointment apt;
+        apt.fromJson(jAppointment);
+        // check relationship between doctor - patient before loading to appointment manager.
+        if (!IDHandler<Doctor>::checkDuplicate(apt.getDoctorID())){
+            throw std::invalid_argument("Failed loading from: " + path + ". Appointment ID: " + std::to_string(apt.getID()) + ". Doctor ID " + std::to_string(apt.getDoctorID()) + " not found.");
+        }
+
+        if (!IDHandler<Patient>::checkDuplicate(apt.getPatientID())){
+            throw std::invalid_argument("Failed loading from: " + path + ". Appointment ID: " + std::to_string(apt.getID()) + ". Patient ID " + std::to_string(apt.getPatientID()) + " not found.");
+        }
+        addAppointment(apt);
+    }
+}
+
+
+void AppointmentManager::saveToFile(const std::string& path){
+    nlohmann::json jArr;
+    for (const auto& pair : appointmentTable) {
+        jArr.push_back(pair.second.toJson());   
+    }
+    Utils::writeJsonToFile(path, jArr);
 }

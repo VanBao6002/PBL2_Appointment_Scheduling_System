@@ -80,3 +80,21 @@ const std::string& DoctorManager::getIDLog(int ID_) const {
     }
     return log.at(ID_);
 }
+
+void DoctorManager::loadFromFile(const std::string& path){
+    nlohmann::json jArr = Utils::readJsonFromFile(path);
+    for (const auto& jDoctor : jArr) {
+        Doctor doc;
+        doc.fromJson(jDoctor);
+        addDoctor(doc);
+    }
+}
+
+
+void DoctorManager::saveToFile(const std::string& path){
+    nlohmann::json jArr;
+    for (const auto& pair : doctorTable) {
+        jArr.push_back(pair.second.toJson());
+    }
+    Utils::writeJsonToFile(path, jArr);
+}

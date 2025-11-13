@@ -1,6 +1,7 @@
 #pragma once
 
 #include "user.h"
+#include "config.h"
 #include <unordered_map>
 #include <string>
 
@@ -24,5 +25,9 @@ class UserManager{
         const User& getUserByID(int ID_) const;
         const std::unordered_map<int, User>& getAllUsers() const; 
         const std::unordered_map<int, std::string>& getAllLog() const;
-        const std::string& getIDLog(int ID_) const;
+        const std::string& getIDLog(int ID_) const; 
+        
+        // loader
+        void loadFromFile(const std::string& path);
+        void saveToFile(const std::string& path);
 };

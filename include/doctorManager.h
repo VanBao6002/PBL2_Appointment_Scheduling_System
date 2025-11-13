@@ -6,7 +6,7 @@
 #include <unordered_map>
 #include "doctor.h"
 #include "patient.h"
-
+#include "config.h"
 class DoctorManager{
     private:    
         std::unordered_map<int, std::string> log;
@@ -28,4 +28,7 @@ class DoctorManager{
         const std::unordered_map<int, std::string>& getAllLog() const;
         const std::string& getIDLog(int ID_) const;
 
+        // loader
+        void loadFromFile(const std::string& path);
+        void saveToFile(const std::string& path);
 };

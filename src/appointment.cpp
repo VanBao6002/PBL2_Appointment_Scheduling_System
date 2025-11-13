@@ -53,8 +53,16 @@ void Appointment::setRoom(const std::string room_){
     room = room_;
 }
 
-int Appointment::getID() const{
+int Appointment::getID() const {
     return ID;
+}
+
+int Appointment::getDoctorID() const {
+    return doctorID;
+}
+
+int Appointment::getPatientID() const {
+    return patientID;
 }
 
 std::string Appointment::getDateTime() const{

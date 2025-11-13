@@ -18,9 +18,9 @@ public:
     Patient(const std::string &name_, char gender_, const Date &birthday_, 
             const std::string &bloodType_, const std::string &nameMother_, const std::string &nameFather_);
 
-    ~Patient();
-    std::string getInfo() const override;
+    ~Patient() = default;
 
+    std::string getInfo() const override;
     std::string getBloodType() const { return bloodType; }
     std::string getNameMother() const { return nameMother; }
     std::string getNameFather() const { return nameFather; }

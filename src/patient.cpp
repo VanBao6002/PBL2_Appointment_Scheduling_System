@@ -6,26 +6,27 @@
 Patient::Patient(): Person(), bloodType(""), nameMother(""), nameFather(""){
     int ID = static_cast<int>(IDHandler<Patient>::generateID());
     setID(ID);
-    IDHandler<Patient>::registerID(ID);
 }
 
 Patient::Patient(const std::string &name_, char gender_, const Date &birthday_, const std::string &bloodType_, const std::string &nameMother_, const std::string &nameFather_) : Person(name_, gender_, birthday_), bloodType (bloodType_), nameMother(nameMother_), nameFather(nameFather_){
     int ID = static_cast<int>(IDHandler<Patient>::generateID());
     setID(ID);
-    IDHandler<Patient>::registerID(ID);
 } 
-
-Patient::~Patient() {
-    IDHandler<Patient>::unregisterID(ID);
-}
 
 void Patient::setBloodType(const std::string &bloodType_) {
     Utils::validBloodType(bloodType_);
     bloodType = bloodType_;
 }
 
-void Patient::setNameMother(const std::string &nameMother_) { nameMother = nameMother_; }
-void Patient::setNameFather(const std::string &nameFather_) { nameFather = nameFather_; }
+void Patient::setNameMother(const std::string &nameMother_) {
+    Utils::validName(nameMother_);
+    nameMother = nameMother_; 
+}
+
+void Patient::setNameFather(const std::string &nameFather_) { 
+    Utils::validName(nameFather_);
+    nameFather = nameFather_; 
+}
 
 std::string Patient::getInfo() const {
     std::string info = Person::getInfo();
