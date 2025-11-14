@@ -12,7 +12,6 @@ struct Date {
 
 public:
     Date() : day(1), month(1), year(2000) {}
-    
     // Thứ tự: day, month, year
     Date(int d, int m, int y) : day(d), month(m), year(y) {}
 
@@ -22,16 +21,16 @@ public:
 
     std::string toString() const {
         char buffer[11]; // "YYYY-MM-DD" + null terminator
-        std::snprintf(buffer, sizeof(buffer), "%04d-%02d-%02d", year, month, day);
+        std::snprintf(buffer, sizeof(buffer), "%02d/%02d/%04d", day, month, month);
         return std::string(buffer);
     }
 
     static Date fromString(const std::string& str) {
-        int y, m, d;
+        int d,m,y;
         char sep1, sep2;
         std::istringstream iss(str);
-        iss >> y >> sep1 >> m >> sep2 >> d;
-        if (sep1 != '-' || sep2 != '-') throw std::runtime_error("Invalid date format");
+        iss >> d >> sep1 >> m >> sep2 >> y;
+        if (sep1 != '/' || sep2 != '/') throw std::runtime_error("Invalid date format");
         return Date(d, m , y);
     }
 

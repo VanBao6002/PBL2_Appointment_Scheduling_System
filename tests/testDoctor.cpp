@@ -1,22 +1,53 @@
 #include "all.h"
+#include <unordered_map>
+#include <unordered_set>
 #include <iostream>
+#include <string>
 using namespace std;
 
-int main (){
-    nlohmann::json jArr = Utils::readJsonFromFile(Config::DOCTOR_PATH);
-    vector<Doctor> doctorList;
-    for (const auto& jDoctor : jArr) {
-        Doctor doc;
-        doc.fromJson(jDoctor);
-        doctorList.push_back(doc);
+void TEST_PRINT_ALL_INFO (DoctorManager& mgr) {
+    for (const auto& pair : mgr.getAllDoctors()) {
+        cout << pair.second.getInfo() << endl;
     }
+}
+
+void TEST_LOAD(DoctorManager& mgr, const string& path){
+    mgr.loadFromFile(path);
+}
+
+void TEST_ADD(DoctorManager& mgr, Doctor& doc) {
+    mgr.addDoctor(doc);
+}
+
+void TEST_EDIT(DoctorManager& mgr, Doctor& doc) {
+    mgr.editDoctor(doc.getID(), doc);
+}
+
+void TEST_REMOVE(DoctorManager& mgr, Doctor& doc) {
+    mgr.removeDoctor(doc.getID());
+}
+
+
+
+int main (){
     DoctorManager mgr;
 
-    for (const auto& doctor : doctorList){
-        mgr.addDoctor(doctor);
-    }
-
+    Doctor d1;
+    d1.setName("Tom");
+    TEST_ADD(mgr, d1);
+    TEST_PRINT_ALL_INFO(mgr);
     
+
+    d1.setName("Tim");
+    TEST_EDIT(mgr, d1);
+    TEST_PRINT_ALL_INFO(mgr);
+
+
+    TEST_REMOVE(mgr, d1);
+    TEST_PRINT_ALL_INFO(mgr);
+
+
+    //TEST_LOAD(mgr, Config::DOCTOR_PATH);
 
     
 }
