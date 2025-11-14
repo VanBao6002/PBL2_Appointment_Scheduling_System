@@ -1,12 +1,92 @@
 [
-  { "ID": 1001, "name": "Dr. Alice Nguyen", "gender": "F", "birthday": { "day": 14, "month": 2, "year": 1980 }, "specialization": "Cardiologist", "doctorStatus": "Available" },
-  { "ID": 1002, "name": "Dr. Bob Tran", "gender": "M", "birthday": { "day": 23, "month": 7, "year": 1975 }, "specialization": "Neurologist", "doctorStatus": "Unavailable" },
-  { "ID": 1003, "name": "Dr. Carol Le", "gender": "F", "birthday": { "day": 5, "month": 12, "year": 1985 }, "specialization": "Pediatrician", "doctorStatus": "Available" },
-  { "ID": 1004, "name": "Dr. Dave Pham", "gender": "M", "birthday": { "day": 30, "month": 1, "year": 1988 }, "specialization": "Orthopedist", "doctorStatus": "Unavailable" },
-  { "ID": 1005, "name": "Dr. Emma Vu", "gender": "F", "birthday": { "day": 17, "month": 6, "year": 1992 }, "specialization": "Dermatologist", "doctorStatus": "Available" },
-  { "ID": 1006, "name": "Dr. Frank Ho", "gender": "M", "birthday": { "day": 9, "month": 9, "year": 1979 }, "specialization": "Oncologist", "doctorStatus": "Available" },
-  { "ID": 1007, "name": "Dr. Grace Lam", "gender": "F", "birthday": { "day": 22, "month": 3, "year": 1983 }, "specialization": "Endocrinologist", "doctorStatus": "Unavailable" },
-  { "ID": 1008, "name": "Dr. Henry Do", "gender": "M", "birthday": { "day": 11, "month": 11, "year": 1990 }, "specialization": "Psychiatrist", "doctorStatus": "Available" },
-  { "ID": 1009, "name": "Dr. Ivy Nguyen", "gender": "F", "birthday": { "day": 3, "month": 8, "year": 1987 }, "specialization": "Radiologist", "doctorStatus": "Unavailable" },
-  { "ID": 1010, "name": "Dr. Jack Vo", "gender": "M", "birthday": { "day": 27, "month": 4, "year": 1982 }, "specialization": "Surgeon", "doctorStatus": "Available" }
+  {
+    "ID": 1,
+    "name": "Dr. Alice Nguyen",
+    "gender": "F",
+    "birthday": { "day": 12, "month": 5, "year": 1980 },
+    "specialization": "Cardiology",
+    "patientIDs": {},
+    "doctorStatus": "Active"
+  },
+  {
+    "ID": 2,
+    "name": "Dr. Bob Tran",
+    "gender": "M",
+    "birthday": { "day": 23, "month": 8, "year": 1975 },
+    "specialization": "Neurology",
+    "patientIDs": {},
+    "doctorStatus": "Active"
+  },
+  {
+    "ID": 3,
+    "name": "Dr. Carol Le",
+    "gender": "F",
+    "birthday": { "day": 7, "month": 2, "year": 1985 },
+    "specialization": "Pediatrics",
+    "patientIDs": {},
+    "doctorStatus": "Active"
+  },
+  {
+    "ID": 4,
+    "name": "Dr. David Pham",
+    "gender": "M",
+    "birthday": { "day": 15, "month": 11, "year": 1978 },
+    "specialization": "Orthopedics",
+    "patientIDs": {},
+    "doctorStatus": "Active"
+  },
+  {
+    "ID": 5,
+    "name": "Dr. Emma Vu",
+    "gender": "F",
+    "birthday": { "day": 30, "month": 6, "year": 1982 },
+    "specialization": "Dermatology",
+    "patientIDs": {},
+    "doctorStatus": "Active"
+  },
+  {
+    "ID": 6,
+    "name": "Dr. Frank Hoang",
+    "gender": "M",
+    "birthday": { "day": 3, "month": 9, "year": 1970 },
+    "specialization": "Oncology",
+    "patientIDs": {},
+    "doctorStatus": "Active"
+  },
+  {
+    "ID": 7,
+    "name": "Dr. Grace Bui",
+    "gender": "F",
+    "birthday": { "day": 21, "month": 4, "year": 1987 },
+    "specialization": "Gynecology",
+    "patientIDs": {},
+    "doctorStatus": "Active"
+  },
+  {
+    "ID": 8,
+    "name": "Dr. Henry Dang",
+    "gender": "M",
+    "birthday": { "day": 10, "month": 12, "year": 1973 },
+    "specialization": "Radiology",
+    "patientIDs": {},
+    "doctorStatus": "Active"
+  },
+  {
+    "ID": 9,
+    "name": "Dr. Ivy Phan",
+    "gender": "F",
+    "birthday": { "day": 5, "month": 3, "year": 1983 },
+    "specialization": "Psychiatry",
+    "patientIDs": {},
+    "doctorStatus": "Active"
+  },
+  {
+    "ID": 10,
+    "name": "Dr. Jack Nguyen",
+    "gender": "M",
+    "birthday": { "day": 18, "month": 7, "year": 1976 },
+    "specialization": "General Surgery",
+    "patientIDs": {},
+    "doctorStatus": "Active"
+  }
 ]

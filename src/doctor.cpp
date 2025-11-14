@@ -88,6 +88,11 @@ nlohmann::json Doctor::toJson() const {
         {"year", birthday.getYear()}
     };
     j["specialization"] = specialization;
+    nlohmann::json patientIDsJson;
+    for (const auto& [pid, patient] : patientIDs) {
+        patientIDsJson[std::to_string(pid)] = patient.toJson();
+    }
+    j["patientIDs"] = patientIDsJson;
     j["doctorStatus"] = doctorStatus;
     return j;
 }

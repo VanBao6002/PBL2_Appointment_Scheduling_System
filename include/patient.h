@@ -2,16 +2,16 @@
 #include "person.h"
 #include "medicalRecord.h"
 #include "prescription.h"
-#include <string>
 #include "json.hpp" 
+#include <string>
+#include <vector>
 
 class Patient : public Person {
 private:
     std::string bloodType;
     std::string nameMother;
     std::string nameFather;
-    MedicalRecord medicalRecord;
-    Prescription prescription;
+    std::vector<MedicalRecord> medicalRecords;
 
 public:
     Patient();

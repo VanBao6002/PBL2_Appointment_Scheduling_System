@@ -4,13 +4,15 @@
 #include <vector>
 #include "date.h"
 #include "prescription.h"
+#include "json.hpp"
 class MedicalRecord{
     private:
-        int recordID;
+        int ID;
         int patientID;
         int doctorID;
         Date creationDate;
         Date lastUpdated;
+        std::vector<Prescription> prescriptions;
         
         // Thông tin y tế
         std::string diagnosis;        // Chẩn đoán
@@ -31,6 +33,8 @@ class MedicalRecord{
         MedicalRecord();
         MedicalRecord(int recordID_, int patientID_, int doctorID_);
 
+        ~MedicalRecord() = default;
+        
         int getRecordID() const;
         int getPatientID() const;
         int getDoctorID() const;
@@ -57,4 +61,11 @@ class MedicalRecord{
         void setTreatment(const std::string& treatment);
         void setDoctorNotes(const std::string& notes);
         void addFollowUpDate(const Date& date);
+        
+        // convertor
+        nlohmann::json toJson() const;
+        void fromJson(const nlohmann::json &j);
+
+    private:
+        void setID(int ID_);
 };

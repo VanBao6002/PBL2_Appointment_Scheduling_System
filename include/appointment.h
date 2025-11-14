@@ -27,7 +27,8 @@ class Appointment{
 
         ~Appointment() =default;
 
-        void setDateTime(Date date_, const std::string &time_);
+        void setDate(Date date_);
+        void setTime(const std::string &time_);
         void setStatus(Status status_);
         void setDoctor(int doctorID_);
         void setPatient(int patientID_);

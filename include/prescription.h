@@ -3,11 +3,12 @@
 #include <string>
 #include <vector>
 #include "date.h"
-
+#include "IDHandler.h"
+#include "json.hpp"
 class Prescription{
     private:
         // Thông tin cơ bản của đơn thuốc
-        int prescriptionID;
+        int ID;
         int patientID;
         int doctorID;
         Date prescriptionDate;    // Ngày kê đơn
@@ -27,8 +28,9 @@ class Prescription{
 
     public:
         Prescription();
-        Prescription(int prescriptionID, int patientID, int doctorID);
-
+        Prescription(int patientID, int doctorID);
+        ~Prescription() = default;
+        
         int getPrescriptionID() const;
         int getPatientID() const;
         int getDoctorID() const;
@@ -54,4 +56,11 @@ class Prescription{
         void updateMedicineFrequency(const std::string& name, int newFrequency);
         void updateMedicineDuration(const std::string& name, int newDuration);
         void updateMedicineInstruction(const std::string& name, const std::string& newInstruction);
+        
+        // convertor
+        nlohmann::json toJson() const;
+        void fromJson(const nlohmann::json &j);
+        
+    private:
+        void setID(int ID);
 };
