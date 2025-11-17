@@ -1,4 +1,6 @@
+
 #pragma once
+
 
 #include <string>
 #include <vector>
@@ -7,6 +9,10 @@
 #include "person.h"
 #include "medicalRecord.h"
 #include "prescription.h"
+#include "json.hpp"
+#include "IDHandler.h"
+#include "utils.h"
+#include "date.h"
 
 
 
@@ -30,7 +36,6 @@ public:
     std::string getBloodType() const { return bloodType; }
     const std::vector<std::string>& getAllergies() const { return allergies; }
     const std::vector<std::string>& getChronicDiseases() const { return chronicDiseases; }
-    std::string getBloodType() const { return bloodType; }
     std::string getNameMother() const { return nameMother; }
     std::string getNameFather() const { return nameFather; }
     const std::vector<MedicalRecord>& getMedicalRecords() const { return medicalRecords; }
