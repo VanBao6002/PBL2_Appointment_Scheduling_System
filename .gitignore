@@ -45,3 +45,4 @@ moc_*.cpp
 
 #environment
 .vscode/
+gui/

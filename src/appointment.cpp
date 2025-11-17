@@ -23,10 +23,13 @@ void Appointment::setID(int ID_) {
     ID = ID_;
 }
 
-void Appointment::setDateTime(Date date_, const std::string &time_){
+void Appointment::setDate(Date date_){
     Utils::validDate(date_);
-    Utils::validTime(time_);
     date = date_;
+}
+
+void Appointment::setTime(const std::string &time_){
+    Utils::validTime(time_);
     time = time_;
 }
 
