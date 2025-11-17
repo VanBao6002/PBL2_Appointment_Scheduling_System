@@ -9,11 +9,6 @@
 #include <type_traits>
 #include <fstream>
 
-
-#include "doctorManager.h"
-#include "patientManager.h"
-#include "appointmentManager.h"
-#include "userManager.h"
 #include "medicalRecord.h"
 #include "prescription.h"
 
