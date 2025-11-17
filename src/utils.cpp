@@ -73,7 +73,7 @@ std::string Utils::getDateTime() {
     char buffer[17]; // "YYYY-MM-DD HH:MM" + null terminator
     std::time_t t = std::time(nullptr);
     std::tm* currentDateTime = std::localtime(&t);
-    std::strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M", currentDateTime);
+    std::strftime(buffer, sizeof(buffer), "%d-%m-%Y %M:%H", currentDateTime);
     return std::string(buffer);
 }
 
@@ -122,8 +122,8 @@ std::string Utils::generatePrescriptionText(int prescriptionID, const Date& pres
     return ss.str();
 }
 
-std::string Utils::trimmed (const std::string &s) {
-    std::string trimmed = s;
+std::string Utils::trimmed (const std::string &str) {
+    std::string trimmed = str;
     trimmed.erase(trimmed.begin(), std::find_if(trimmed.begin(), trimmed.end(), [](unsigned char ch) { return !std::isspace(ch); }));
     trimmed.erase(std::find_if(trimmed.rbegin(), trimmed.rend(), [](unsigned char ch) { return !std::isspace(ch); }).base(), trimmed.end());
     return trimmed;
