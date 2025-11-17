@@ -1,5 +1,5 @@
 # Compiler
-CXX = g++
+CXX = /ucrt64/bin/g++
 CXXFLAGS = -Wall -Wextra -std=c++17 -Iinclude
 
 # Source and build setup

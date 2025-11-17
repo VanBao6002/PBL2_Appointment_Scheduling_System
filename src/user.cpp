@@ -43,5 +43,5 @@ void User::fromJson(const nlohmann::json &j) {
     if (j.contains("ID")) ID = j.at("ID").get<int>();
     if (j.contains("userRole")) userRole = roleFromString(j.at("userRole").get<std::string>());
     if (j.contains("username")) username = j.at("username").get<std::string>();
-    if (j.contains("passwordHash")) username = j.at("passwordHash").get<std::string>();
+    if (j.contains("passwordHash")) passwordHash = j.at("passwordHash").get<std::string>();
 }
