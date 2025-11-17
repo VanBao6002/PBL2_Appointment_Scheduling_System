@@ -1,13 +1,4 @@
 #include "utils.h"
-#include "config.h"
-#include <stdexcept>
-#include <unordered_set>
-#include <vector>
-#include <string>
-#include <ctime>
-#include <fstream>
-#include <sstream>
-#include <algorithm>
 
 bool Utils::isExpired(const Date& prescriptionDate, int duration) {
     std::time_t t = std::time(nullptr);
@@ -131,9 +122,20 @@ std::string Utils::generatePrescriptionText(int prescriptionID, const Date& pres
     return ss.str();
 }
 
+std::string Utils::trimmed (const std::string &s) {
+    std::string trimmed = s;
+    trimmed.erase(trimmed.begin(), std::find_if(trimmed.begin(), trimmed.end(), [](unsigned char ch) { return !std::isspace(ch); }));
+    trimmed.erase(std::find_if(trimmed.rbegin(), trimmed.rend(), [](unsigned char ch) { return !std::isspace(ch); }).base(), trimmed.end());
+    return trimmed;
+}
+
+
 void Utils::validName(const std::string &name_) {
-    if (name_.empty()) {
-        throw std::invalid_argument("Name cannot be empty.");
+    std::string trimmed = name_;
+    trimmed.erase(trimmed.begin(), std::find_if(trimmed.begin(), trimmed.end(), [](unsigned char ch) { return !std::isspace(ch); }));
+    trimmed.erase(std::find_if(trimmed.rbegin(), trimmed.rend(), [](unsigned char ch) { return !std::isspace(ch); }).base(), trimmed.end());
+    if (trimmed.empty()) {
+        throw std::invalid_argument("Name cannot be empty or whitespace.");
     }
 }
 
@@ -283,12 +285,11 @@ void Utils::validPrescription(const Prescription &prescription_) {
 
 void Utils::validMedicalRecord(const MedicalRecord &medicalRecord_) {
     // Kiểm tra ID
-    if (medicalRecord_.getRecordID() <= 0) {
-        throw std::invalid_argument("Invalid medical record ID.");
-    }
-    validID(medicalRecord_.getPatientID());
+    validID(medicalRecord_.getID());
     validID(medicalRecord_.getDoctorID());
+    validID(medicalRecord_.getPatientID());
 
+   
     // Kiểm tra ngày tạo và cập nhật
     validDate(medicalRecord_.getCreationDate());
     validDate(medicalRecord_.getLastUpdated());

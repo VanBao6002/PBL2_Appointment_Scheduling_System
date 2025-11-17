@@ -1,9 +1,4 @@
-#include "patient.h"
 #include "patientManager.h"
-#include "utils.h"
-#include "IDHandler.h"
-#include <algorithm>
-#include <unordered_set>
 
 void PatientManager::addPatient(const Patient &pat_) {
     int ID_ = pat_.getID();
@@ -29,6 +24,7 @@ void PatientManager::removePatient(int ID_){
     }
     patientTable.erase(ID_);
     log.erase(ID_);
+    log[ID_] += " Removed on: " + Utils::getDateTime();
     IDHandler<Patient>::unregisterID(ID_);
 }
 

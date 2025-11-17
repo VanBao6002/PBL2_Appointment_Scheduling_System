@@ -1,9 +1,9 @@
 #pragma once
 
-#include "user.h"
-#include "config.h"
 #include <unordered_map>
 #include <string>
+
+#include "user.h"
 
 class UserManager{
     private:

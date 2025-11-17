@@ -1,11 +1,16 @@
 #pragma once
 
+#include <string>
+#include <limits>
+
 #include "date.h"
 #include "doctor.h"
 #include "doctorManager.h"
 #include "patient.h"
 #include "patientManager.h"
-#include <string>
+#include "utils.h"
+#include "IDHandler.h"
+
 
 class Appointment{
     public:
@@ -23,9 +28,9 @@ class Appointment{
     public: 
         Appointment();
 
-        Appointment(int doctorID_, int patientID_, const Date& date_, const std::string& time_, const std::string& room_, Status status_);
+        Appointment(const Date& date_, const std::string& time_, const std::string& room_, Status status_);
 
-        ~Appointment() =default;
+        ~Appointment() = default;
 
         void setDate(Date date_);
         void setTime(const std::string &time_);

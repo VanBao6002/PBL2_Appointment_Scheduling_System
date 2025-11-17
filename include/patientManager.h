@@ -3,8 +3,12 @@
 #include <iostream>
 #include <vector>
 #include <unordered_map>
+#include <algorithm>
+#include <unordered_set>
+
 #include "patient.h"
-#include "config.h"
+#include "userManager.h"
+
 class PatientManager{
     private:
         std::unordered_map<int, std::string> log;

@@ -1,19 +1,19 @@
 #include "person.h"
-#include "utils.h"
-#include <cctype>
-#include <stdexcept>
 
-Person::Person() :  ID(0), name(""), gender('M'), birthday(Date()) {}
+Person::Person() : ID(0), name("NGUYEN VAN A"), gender('M'), birthday(Date()) {}
 
-Person::Person(const std::string &name_, char gender_, const Date &birthday_) : ID(0), name(name_), gender(gender_), birthday(birthday_) {
-    Utils::validName(name_);
-    Utils::validGender(gender_);
-    Utils::validDate(birthday_);
+Person::Person(const std::string &name_, char gender_, const Date &birthday_) {
+    std::string trimmedName = Utils::trimmed(name_);
+
+    setName(trimmedName);
+    setGender(gender_);
+    setBirthday(birthday_);
 }
 
 void Person::setName(const std::string &name_){
-    Utils::validName(name_);
-    name = name_;
+    std::string trimmedName = Utils::trimmed(name_);
+    Utils::validName(trimmedName);
+    name = trimmedName;
 }
 
 void Person::setGender(char gender_){
