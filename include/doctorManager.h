@@ -24,7 +24,6 @@ class DoctorManager{
         void addDoctor(const Doctor  &doc_);
         void editDoctor(int ID_, const Doctor &newDoctor);
         void removeDoctor(int ID_);
-        void changeStatus(int ID_, Doctor::Status status_);
 
         const Doctor& getDoctorByID(int ID_) const;
         std::vector<Doctor> findDoctorsByName(const std::string& name) const;

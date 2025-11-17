@@ -27,14 +27,6 @@ void AppointmentManager::removeAppointment(int ID_) {
     IDHandler<Appointment>::unregisterID(ID_);
 }
 
-void AppointmentManager::changeStatus(int ID_, Appointment::Status status_) {
-    if (appointmentTable.find(ID_) == appointmentTable.end()) {
-        throw std::invalid_argument("Cannot change status. Appointment ID " + std::to_string(ID_) + " not found.");
-    }
-    appointmentTable[ID_].setStatus(status_);
-    log[ID_] += " Status changed on: " + Utils::getDateTime();
-}
-
 const Appointment& AppointmentManager::getAppointmentByID(int ID_) const {
     if (!IDHandler<Appointment>::checkDuplicate(ID_)) {
         throw std::invalid_argument("Failed getting. Appointment ID " + std::to_string(ID_) + " not found.");

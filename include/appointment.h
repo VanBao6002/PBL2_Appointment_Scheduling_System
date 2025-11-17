@@ -28,13 +28,13 @@ class Appointment{
     public: 
         Appointment();
 
-        Appointment(const Date& date_, const std::string& time_, const std::string& room_, Status status_);
+        Appointment(const std::string& date_, const std::string& time_, const std::string& room_, const std::string& status_);
 
         ~Appointment() = default;
 
-        void setDate(Date date_);
+        void setDate(const std::string& date_);
         void setTime(const std::string &time_);
-        void setStatus(Status status_);
+        void setStatus(const std::string& status_);
         void setDoctor(int doctorID_);
         void setPatient(int patientID_);
         void setRoom(const std::string room_);

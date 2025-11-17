@@ -1,12 +1,18 @@
 #include "appointment.h"
 
-Appointment::Appointment(): date(), time(""), room(""), status(Status::Scheduled) {
-    ID = static_cast<int>(IDHandler<Appointment>::generateID());
+Appointment::Appointment(): date(), doctorID(0), patientID(0), time("00::00::00"), room("00A"), status(Status::Scheduled) {
+    int ID = static_cast<int>(IDHandler<Appointment>::generateID());
     setID(ID);
 }
 
-Appointment::Appointment(const Date& date_, const std::string& time_, const std::string& room_, Status status_ = Status::Scheduled): date(date_), time(time_), room(room_), status(status_) {
-    ID = static_cast<int>(IDHandler<Appointment>::generateID());
+Appointment::Appointment(const std::string& date_, const std::string& time_, const std::string& room_, const std::string& status_) {
+
+    setDate(date_);
+    setTime(time_);
+    setRoom(room_);
+    setStatus(status_);
+
+    int ID = static_cast<int>(IDHandler<Appointment>::generateID());
     setID(ID);
 }
 
@@ -14,9 +20,11 @@ void Appointment::setID(int ID_) {
     ID = ID_;
 }
 
-void Appointment::setDate(Date date_){
-    Utils::validDate(date_);
-    date = date_;
+void Appointment::setDate(const std::string& date_){
+    std::string trimmedDate = Utils::trimmed(date_);
+    Date temp = Date::fromString(trimmedDate);
+    Utils::validDate(temp);
+    date = temp;
 }
 
 void Appointment::setTime(const std::string &time_){
@@ -25,8 +33,9 @@ void Appointment::setTime(const std::string &time_){
     time = trimmedTime;
 }
 
-void Appointment::setStatus(Appointment::Status status_){
-    status = status_;
+void Appointment::setStatus(const std::string& status_){
+    std::string trimmedStatus = Utils::trimmed(status_);
+    status = statusFromString(trimmedStatus);
 }
 
 void Appointment::setDoctor(int doctorID_){

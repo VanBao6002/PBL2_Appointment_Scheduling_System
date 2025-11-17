@@ -37,7 +37,7 @@ public:
         const std::string& diagnosis,
         const std::vector<std::pair<std::string, std::pair<int, int>>>& medicines,
         const std::string& additionalNotes = "");
-    static std::string trimmed (const std::string &s);
+    static std::string trimmed(const std::string &s);
 
 
     //validicator

@@ -27,14 +27,6 @@ void DoctorManager::removeDoctor(int ID_){
     IDHandler<Doctor>::unregisterID(ID_);
 }
 
-void DoctorManager::changeStatus(int ID_, Doctor::Status status_){
-    if (!IDHandler<Doctor>::checkDuplicate(ID_)) {
-        throw std::invalid_argument("Cannot change status. Doctor ID " + std::to_string(ID_) + " not found.");
-    }
-    doctorTable[ID_].setStatus(status_);
-    log[ID_] += " Status changed on: " + Utils::getDateTime();
-}
-
 const Doctor& DoctorManager::getDoctorByID(int ID_) const{
     if (!IDHandler<Doctor>::checkDuplicate(ID_)) {
         throw std::invalid_argument("Failed getting. Doctor ID " + std::to_string(ID_) + " not found.");
