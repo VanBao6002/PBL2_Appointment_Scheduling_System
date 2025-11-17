@@ -1,6 +1,4 @@
 #include "user.h"
-#include "utils.h"
-#include <string>
 
 void User::setID(int ID_){
     Utils::validID(ID_);

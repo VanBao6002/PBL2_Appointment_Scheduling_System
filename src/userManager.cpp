@@ -1,7 +1,4 @@
 #include "userManager.h"
-#include "user.h"
-#include "utils.h"
-#include "IDHandler.h"
 
 void UserManager::addUser(const User  &user){
     int ID_ = user.getID();

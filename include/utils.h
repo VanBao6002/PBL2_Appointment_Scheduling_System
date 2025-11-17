@@ -1,16 +1,5 @@
 #pragma once
 
-#include "date.h"
-#include "doctor.h"
-#include "doctorManager.h"
-#include "patient.h"
-#include "patientManager.h"
-#include "appointment.h"
-#include "appointmentManager.h"
-#include "user.h"
-#include "userManager.h"
-#include "medicalRecord.h"
-#include "prescription.h"
 #include <string>
 #include <stdexcept>
 #include <unordered_set>
@@ -19,6 +8,19 @@
 #include <concepts>
 #include <type_traits>
 #include <fstream>
+
+
+#include "doctorManager.h"
+#include "patientManager.h"
+#include "appointmentManager.h"
+#include "userManager.h"
+#include "medicalRecord.h"
+#include "prescription.h"
+
+#include "date.h"
+#include "config.h"
+#include "json.hpp"
+
 
 class Utils {
 public:
@@ -35,6 +37,8 @@ public:
         const std::string& diagnosis,
         const std::vector<std::pair<std::string, std::pair<int, int>>>& medicines,
         const std::string& additionalNotes = "");
+    static std::string trimmed (const std::string &s);
+
 
     //validicator
     static void validName(const std::string &name);
@@ -49,7 +53,8 @@ public:
     static void validRoom(const std::string &room_);
     static void validPrescription(const Prescription &prescription_);
     static void validMedicalRecord(const MedicalRecord &medicalrecord_);
-    
+    static void validPhoneNumber(const std::string &phoneNumber_);
+
     //convertor
     static void writeJsonToFile(const std::string& filePath, const nlohmann::json& j);
     static nlohmann::json readJsonFromFile(const std::string& filePath);

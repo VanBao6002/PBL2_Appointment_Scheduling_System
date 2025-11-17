@@ -31,11 +31,11 @@ class MedicalRecord{
 
     public:
         MedicalRecord();
-        MedicalRecord(int recordID_, int patientID_, int doctorID_);
+        MedicalRecord();
 
         ~MedicalRecord() = default;
         
-        int getRecordID() const;
+        int getID() const;
         int getPatientID() const;
         int getDoctorID() const;
         Date getCreationDate() const;

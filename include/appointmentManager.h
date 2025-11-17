@@ -4,8 +4,14 @@
 #include <vector>
 #include <unordered_set>
 #include <unordered_map>
+#include <algorithm>
+#include <stdexcept>
+
 #include "appointment.h"
-#include "config.h"
+#include "doctorManager.h"
+#include "patientManager.h"
+#include "userManager.h"
+
 class AppointmentManager{
     private:    
         std::unordered_map<int, std::string> log;

@@ -1,7 +1,10 @@
 #pragma once
 #include <string>
 #include <sstream>
+
 #include "json.hpp"
+#include "utils.h"
+
 class User { 
     public: 
         enum class Role {ADMIN, MANANGER};

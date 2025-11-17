@@ -1,8 +1,4 @@
 #include "appointmentManager.h"
-#include "utils.h"
-#include "IDHandler.h"
-#include <algorithm>
-#include <stdexcept>
 
 void AppointmentManager::addAppointment(const Appointment &apt_) {
     int ID_ = apt_.getID();
