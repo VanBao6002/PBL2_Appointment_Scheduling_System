@@ -1,16 +1,15 @@
 #include "user.h"
 
-User::User(const std::string &userRole_, const std::string &username_, const std::string &userPassword_){
-
+User::User(const std::string &userRole_, const std::string &username_, const std::string &userPassword_) {
     setRole(userRole_);
     setUsername(username_);
     setPassword(userPassword_);
 
-    int ID = IDHandler<User>::generateID();
-    setID(ID);
+    // gán đúng vào thuộc tính class
+    ID = IDHandler<User>::generateID();
 }
 
-void User::setID(int ID_){
+void User::setID(int ID_) {
     ID = ID_;
 }
 
@@ -29,22 +28,32 @@ void User::setPassword(const std::string &password_){
 }
 
 User::Role User::roleFromString(const std::string& str) {
-    std::string lowerStr = str;
-    std::transform(lowerStr.begin(), lowerStr.end(), lowerStr.begin(), ::tolower);
-    if (lowerStr == "admin") return User::Role::ADMIN;
-    if (lowerStr == "assistant") return User::Role::ASSISTANT;
-    if (lowerStr == "doctor") return User::Role::DOCTOR;
+    std::string lower = str;
+    std::transform(lower.begin(), lower.end(), lower.begin(), ::tolower);
 
-    throw std::invalid_argument("Unknown status: " + str);
+    if (lower == "admin") return Role::ADMIN;
+    if (lower == "assistant") return Role::ASSISTANT;
+    if (lower == "doctor") return Role::DOCTOR;
+
+    throw std::invalid_argument("Unknown role: " + str);
+}
+
+std::string User::roleToString(Role role) {
+    switch (role) {
+        case Role::ADMIN:     return "ADMIN";
+        case Role::ASSISTANT: return "ASSISTANT";
+        case Role::DOCTOR:    return "DOCTOR";
+    }
+    return "UNKNOWN";
 }
 
 nlohmann::json User::toJson() const {
     nlohmann::json j;
-        j["ID"] = ID;
-        j["userRole"] = userRole;
-        j["username"] = username;
-        j["passwordHash"] = passwordHash;
-        return j;
+    j["ID"] = ID;
+    j["userRole"] = roleToString(userRole);
+    j["username"] = username;
+    j["passwordHash"] = passwordHash;
+    return j;
 }
 
 void User::fromJson(const nlohmann::json &j) {

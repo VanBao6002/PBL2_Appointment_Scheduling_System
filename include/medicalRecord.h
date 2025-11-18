@@ -14,7 +14,6 @@ class MedicalRecord{
         int doctorID;
         Date creationDate;
         Date lastUpdated;
-        std::vector<Prescription> prescriptions;
         
         // Thông tin y tế
         std::string diagnosis;        // Chẩn đoán

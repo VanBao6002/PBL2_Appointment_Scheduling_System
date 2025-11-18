@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/LoginWindow">
+        <file>LoginWindow/loginwindow_background.jpg</file>
+    </qresource>
+</RCC>
