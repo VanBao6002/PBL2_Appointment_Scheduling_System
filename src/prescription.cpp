@@ -153,23 +153,3 @@ void Prescription::fromJson(const nlohmann::json &j) {
         });
     }
 }
-
-void Prescription::fromJson(const nlohmann::json &j) {
-    ID = j.at("ID").get<int>();
-    patientID = j.at("patientID").get<int>();
-    doctorID = j.at("doctorID").get<int>();
-    prescriptionDate = Date::fromString(j.at("prescriptionDate").get<std::string>());
-    diagnosis = j.at("diagnosis").get<std::string>();
-    additionalNotes = j.at("additionalNotes").get<std::string>();
-    isActive = j.at("isActive").get<bool>();
-    medicines.clear();
-    for (const auto& medj : j.at("medicines")) {
-        medicines.push_back(Medicine{
-            medj.at("name").get<std::string>(),
-            medj.at("dosage").get<std::string>(),
-            medj.at("frequency").get<int>(),
-            medj.at("duration").get<int>(),
-            medj.at("instruction").get<std::string>()
-        });
-    }
-}
