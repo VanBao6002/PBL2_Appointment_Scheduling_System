@@ -7,7 +7,7 @@
 
 class User { 
     public: 
-        enum class Role {ADMIN, MANANGER};
+        enum class Role {ADMIN, ASSISTANT, DOCTOR};
 
     private:
         int ID;

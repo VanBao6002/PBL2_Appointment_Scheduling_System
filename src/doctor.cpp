@@ -5,11 +5,10 @@ Doctor::Doctor() : Person(), specialization(""), patientIDs(), doctorStatus(Stat
     int ID = static_cast<int>(IDHandler<Doctor>::generateID());
     setID(ID);
 }
-Doctor::Doctor(const std::string& name_, char gender_, const Date& birthday_, const std::string& specialization_, const std::string& doctorStatus_, const std::string& phoneNumber_, const std::string& email_) : Person(name_, gender_, birthday_) {
+Doctor::Doctor(const std::string& name_, char gender_, const Date& birthday_, const std::string &phoneNumber_, const std::string& specialization_, const std::string& doctorStatus_,  const std::string& email_) : Person(name_, gender_, birthday_, phoneNumber_) {
 
     setSpecialization(specialization_);
     setStatus(doctorStatus_);
-    setPhoneNumber(phoneNumber_);
     setEmail(email_);
 
     int ID = static_cast<int>(IDHandler<Doctor>::generateID());
@@ -28,12 +27,6 @@ void Doctor::setStatus(const std::string& doctorStatus_){
     doctorStatus = statusFromString(trimmedStatus);
 }
 
-void Doctor::setPhoneNumber(const std::string &phonenumber_){
-    std::string trimmedPhoneNumber = Utils::trimmed(phonenumber_);
-    if (trimmedPhoneNumber.size() != 11) throw std::invalid_argument("Invalid phonenumber.");
-    phoneNumber = trimmedPhoneNumber;
-}
-
 void Doctor::setEmail(const std::string &email_){
     std::string trimmedEmail = Utils::trimmed(email_);
     Utils::validName(trimmedEmail);
@@ -41,15 +34,19 @@ void Doctor::setEmail(const std::string &email_){
 }
 
 // Add patient ID
-void Doctor::addPatientID(const Patient& patient) {
-    patientIDs[patient.getID()] = patient;
+void Doctor::addPatientID(int ID_) {
+    if (IDHandler<Patient>::checkDuplicate(ID_)){
+        throw std::invalid_argument("Patient ID already existed.");
+    }
+    patientIDs.push_back(ID_);
 }
 
 void Doctor::removePatientID(int patientID_) {
-    if (!IDHandler<Patient>::checkDuplicate(patientID_)){
-        throw std::invalid_argument("Patient ID not found.");
+    auto it = std::find(patientIDs.begin(), patientIDs.end(), patientID_);
+    if (it == patientIDs.end()) {
+        throw std::invalid_argument("Patient ID not found in doctor's list.");
     }
-    patientIDs.erase(patientID_);
+    patientIDs.erase(it);
 }
 
 
@@ -64,8 +61,8 @@ std::string Doctor::getInfo() const{
     std::string statusStr = (doctorStatus == Doctor::Status::Available) ? "Available" : "Unavailable";
     info += (doctorStatus == Doctor::Status::Available) ? "Available\n" : "Unavailable\n";
     info += "Patient IDs: ";
-    for (const auto& [pid, patient] : patientIDs) {
-        info += std::to_string(pid) + " (" + patient.getName() + ") ";
+    for (const auto& pid : patientIDs) {
+        info += std::to_string(pid) + " ";
     }
     info += "\n";
     return info;
@@ -92,8 +89,8 @@ nlohmann::json Doctor::toJson() const {
     };
     j["specialization"] = specialization;
     nlohmann::json patientIDsJson;
-    for (const auto& [pid, patient] : patientIDs) {
-        patientIDsJson[std::to_string(pid)] = patient.toJson();
+    for (const auto& pid : patientIDs) {
+        patientIDsJson.push_back(pid);
     }
     j["patientIDs"] = patientIDsJson;
     j["doctorStatus"] = doctorStatus;

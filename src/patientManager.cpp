@@ -22,10 +22,10 @@ void PatientManager::removePatient(int ID_){
     if (!IDHandler<Patient>::checkDuplicate(ID_)){
         throw std::invalid_argument("Removing failed. Patient ID " + std::to_string(ID_) + " not found.");
     }
+    IDHandler<Patient>::unregisterID(ID_);
     patientTable.erase(ID_);
     log.erase(ID_);
     log[ID_] += " Removed on: " + Utils::getDateTime();
-    IDHandler<Patient>::unregisterID(ID_);
 }
 
 // Getters
@@ -37,9 +37,11 @@ const Patient& PatientManager::getPatientByID(int ID_) const{
 }
 
 std::vector<Patient> PatientManager::findPatientsByName(const std::string& name) const {
+    std::string trimmedName = Utils::trimmed(name);
+
     std::vector<Patient> result;
     for (const auto& pair : patientTable) {
-        if (pair.second.getName() == name) {
+        if (Utils::toLower(pair.second.getName()) == Utils::toLower(trimmedName)) {
             result.push_back(pair.second);
         }
     }

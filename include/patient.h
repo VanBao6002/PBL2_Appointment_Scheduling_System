@@ -27,7 +27,7 @@ private:
 
 public:
     Patient();
-    Patient(const std::string &name_, char gender_, const Date &birthday_, 
+    Patient(const std::string &name_, char gender_, const Date &birthday_, const std::string &phoneNumber_,  
             const std::string &bloodType_,const std::string &allergies_, const std::string &chronicDisease_, const std::string &nameMother_, const std::string &nameFather_);
 
     ~Patient() = default;

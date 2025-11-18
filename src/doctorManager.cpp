@@ -38,7 +38,7 @@ const std::unordered_map<int, Doctor>& DoctorManager::getAllDoctors() const{
     return doctorTable;
 }
 
-const std::unordered_map<int, Patient>& DoctorManager::getPatientsByDoctorID(int ID_) const{
+const std::vector<int>& DoctorManager::getPatientsByDoctorID(int ID_) const{
     if (!IDHandler<Doctor>::checkDuplicate(ID_)) {
         throw std::invalid_argument("Cannot get patients list. Doctor ID " + std::to_string(ID_) + " not found.");
     }
@@ -46,9 +46,11 @@ const std::unordered_map<int, Patient>& DoctorManager::getPatientsByDoctorID(int
 }
 
 std::vector<Doctor> DoctorManager::findDoctorsByName(const std::string& name) const {
+    std::string trimmedName = Utils::trimmed(name);
+
     std::vector<Doctor> result;
     for (const auto& pair : doctorTable) {
-        if (pair.second.getName() == name) {
+        if (Utils::toLower(pair.second.getName()) == Utils::toLower(trimmedName)) {
             result.push_back(pair.second);
         }
     }

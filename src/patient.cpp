@@ -5,7 +5,7 @@ Patient::Patient(): Person(), bloodType("AB+"), allergies{"none"}, chronicDiseas
     setID(ID);
 }
 
-Patient::Patient(const std::string &name_, char gender_, const Date &birthday_, const std::string &bloodType_, const std::string &allergies_, const std::string &chronicDisease_, const std::string &nameMother_, const std::string &nameFather_) : Person(name_, gender_, birthday_) {
+Patient::Patient(const std::string &name_, char gender_, const Date &birthday_, const std::string &phoneNumber_, const std::string &bloodType_, const std::string &allergies_, const std::string &chronicDisease_, const std::string &nameMother_, const std::string &nameFather_) : Person(name_, gender_, birthday_, phoneNumber_) {
 
     setBloodType(bloodType_);
     setAllergies(allergies_);
