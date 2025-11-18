@@ -18,7 +18,9 @@ Patient::Patient(const std::string &name_, char gender_, const std::string &birt
 } 
 
 void Patient::addMedicalRecord(int recordID) {
-
+    if (std::find(medicalRecordIDs.begin(), medicalRecordIDs.end(), recordID) != medicalRecordIDs.end()) {
+        throw std::invalid_argument("Medical record ID already exists for this patient.");
+    }
     medicalRecordIDs.push_back(recordID);
 }   
 
@@ -76,6 +78,7 @@ nlohmann::json Patient::toJson() const {
     for (const auto& ID : medicalRecordIDs) {
         medicalRecordIDsJson.push_back(ID);
     }
+    j["medicalRecordIDs"] = medicalRecordIDsJson;
     return j;
 }
 

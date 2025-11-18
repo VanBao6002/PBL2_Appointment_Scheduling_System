@@ -4,6 +4,8 @@
 #include <vector>
 #include <iostream>
 
+#include "patient.h"
+#include "doctor.h"
 #include "date.h"
 #include "prescription.h"
 #include "json.hpp"
@@ -27,9 +29,9 @@ class MedicalRecord{
         // Thông tin điều trị
         std::string treatment;        // Phương pháp điều trị
         std::string doctorNotes;      // Ghi chú của bác sĩ
-        std::vector<std::string> followUpDates;  // Lịch tái khám
+        std::vector<Date> followUpDates;  // Lịch tái khám
         std::vector<Prescription> prescriptions; // Danh sách đơn thuốc
-        std::vector<std::string> changeHistory; // Lịch sử thay đổi
+        Date history; // Lịch sử thay đổi
 
     public:
         MedicalRecord();
@@ -38,8 +40,8 @@ class MedicalRecord{
                       const std::string& diagnosis_, const std::string& symptoms_, const std::string& testResults_,
                       const std::string& bloodPressure_, int heartRate_, float bodyTemperature_,
                       const std::string& treatment_, const std::string& doctorNotes_,
-                      const std::vector<std::string>& followUpDates_, const std::vector<Prescription>& prescriptions_,
-                      const std::vector<std::string>& changeHistory_);
+                      const std::vector<Date>& followUpDates_, const std::vector<Prescription>& prescriptions_,
+                      const std::string& changeHistory_);
 
         ~MedicalRecord() = default;
         
@@ -56,9 +58,9 @@ class MedicalRecord{
         float getBodyTemperature() const;
         std::string getTreatment() const;
         std::string getDoctorNotes() const;
-        std::vector<std::string> getFollowUpDates() const;
-        const std::vector<Prescription> &getPrescriptions() const;
-        const std::vector<std::string> &getChangeHistory() const;
+        const std::vector<Date>& getFollowUpDates() const;
+        const std::vector<Prescription>& getPrescriptions() const;
+        Date getChangeHistory() const;
         
         void setPatientID(int patientID_);
         void setDoctorID(int doctorID_);
@@ -72,7 +74,8 @@ class MedicalRecord{
         void setBodyTemperature(float temp);
         void setTreatment(const std::string& treatment);
         void setDoctorNotes(const std::string& notes);
-        void addFollowUpDate(const std::string& date);
+        void addFollowUpDate(const std::string& date_);
+        void setChangeHistory(const std::string& date_);
         
         // convertor
         nlohmann::json toJson() const;

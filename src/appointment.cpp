@@ -84,12 +84,19 @@ const Patient& Appointment::getPatient(const PatientManager& mgr) const{
 }
 
 Appointment::Status Appointment::statusFromString(const std::string& str){
-    std::string lowerStr = str;
-    std::transform(lowerStr.begin(), lowerStr.end(), lowerStr.begin(), ::tolower);
-    if (lowerStr == "occupied") return Appointment::Status::Occupied;
-    if (lowerStr == "scheduled") return Appointment::Status::Scheduled;
-    if (lowerStr == "canceled") return Appointment::Status::Canceled;
+    if (Utils::toLower(str) == "occupied") return Appointment::Status::Occupied;
+    if (Utils::toLower(str) == "scheduled") return Appointment::Status::Scheduled;
+    if (Utils::toLower(str) == "canceled") return Appointment::Status::Canceled;
     throw std::invalid_argument("Unknown status: " + str);
+}
+
+std::string Appointment::statusToString(Status status) {
+    switch (status) {
+        case Status::Occupied: return "Occupied";
+        case Status::Scheduled: return "Scheduled";
+        case Status::Canceled: return "Canceled";
+    }
+    return "Unknown";
 }
 
 nlohmann::json Appointment::toJson() const {
@@ -104,7 +111,7 @@ nlohmann::json Appointment::toJson() const {
     };
     j["time"] = time;
     j["room"] = room;
-    j["status"] = status;
+    j["status"] = statusToString(status);
     return j;
 }
 

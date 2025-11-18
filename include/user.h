@@ -31,8 +31,8 @@ public:
     const std::string& getPassword() const { return passwordHash; }
 
     // converters
-    static Role roleFromString(const std::string& str);
-    static std::string roleToString(Role role);
+    static Role roleFromString (const std::string& str);
+    static std::string roleToString (Role role);
 
     nlohmann::json toJson() const;
     void fromJson(const nlohmann::json &j);
