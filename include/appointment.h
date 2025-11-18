@@ -50,6 +50,7 @@ class Appointment{
         
         // convertor
         static Appointment::Status statusFromString(const std::string& str);
+        static std::string statusToString(Status status);
         nlohmann::json toJson() const;
         void fromJson(const nlohmann::json &j);
     

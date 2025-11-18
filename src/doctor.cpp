@@ -31,8 +31,8 @@ void Doctor::setEmail(const std::string &email_){
 
 // Add patient ID
 void Doctor::addPatientID(int ID_) {
-    if (IDHandler<Patient>::checkDuplicate(ID_)){
-        throw std::invalid_argument("Patient ID already existed.");
+    if (std::find(patientIDs.begin(), patientIDs.end(), ID_) != patientIDs.end()) {
+        throw std::invalid_argument("Patient ID already exists in doctor's list.");
     }
     patientIDs.push_back(ID_);
 }
@@ -65,11 +65,9 @@ std::string Doctor::getInfo() const{
 }
 
 
-Doctor::Status Doctor::statusFromString(const std::string& str){
-    std::string lowerStr = str;
-    std::transform(lowerStr.begin(), lowerStr.end(), lowerStr.begin(), ::tolower);
-    if (lowerStr == "available") return Doctor::Status::Available;
-    if (lowerStr == "unavailable") return Doctor::Status::Unavailable;
+Doctor::Status Doctor::statusFromString (const std::string& str){
+    if (Utils::toLower(str) == "available") return Doctor::Status::Available;
+    if (Utils::toLower(str) == "unavailable") return Doctor::Status::Unavailable;
     throw std::invalid_argument("Unknown status: " + str);
 }
 
@@ -89,7 +87,7 @@ nlohmann::json Doctor::toJson() const {
         patientIDsJson.push_back(pid);
     }
     j["patientIDs"] = patientIDsJson;
-    j["doctorStatus"] = doctorStatus;
+    j["doctorStatus"] = (doctorStatus == Status::Available) ? "Available" : "Unavailable";
     j["phoneNumber"] = phoneNumber;
     j["email"] = email;
     return j;

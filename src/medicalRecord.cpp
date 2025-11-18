@@ -1,21 +1,12 @@
 #include "medicalRecord.h"
 
-MedicalRecord::MedicalRecord()
-    : patientID(0), doctorID(0), creationDate(), lastUpdated(),
-      diagnosis(""), symptoms(""), testResults(""), bloodPressure(""),
-      heartRate(0), bodyTemperature(0.0f), treatment(""), doctorNotes(""),
-      followUpDates(), prescriptions(), changeHistory() 
-{
+MedicalRecord::MedicalRecord() : patientID(0), doctorID(0), creationDate(Date()), lastUpdated(Date()), diagnosis(""), symptoms(""), testResults(""), bloodPressure(""), heartRate(0), bodyTemperature(0.0f), treatment(""), doctorNotes(""), followUpDates(), prescriptions(), history(Date()) {
+
     int ID = static_cast<int>(IDHandler<MedicalRecord>::generateID());
     setID(ID);
 }
 
-MedicalRecord::MedicalRecord(int patientID_, int doctorID_, const std::string& creationDate_, const std::string& lastUpdated_,
-    const std::string& diagnosis_, const std::string& symptoms_, const std::string& testResults_,
-    const std::string& bloodPressure_, int heartRate_, float bodyTemperature_,
-    const std::string& treatment_, const std::string& doctorNotes_,
-    const std::vector<std::string>& followUpDates_, const std::vector<Prescription>& prescriptions_,
-    const std::vector<std::string>& changeHistory_) {
+MedicalRecord::MedicalRecord(int patientID_, int doctorID_, const std::string& creationDate_, const std::string& lastUpdated_, const std::string& diagnosis_, const std::string& symptoms_, const std::string& testResults_, const std::string& bloodPressure_, int heartRate_, float bodyTemperature_, const std::string& treatment_, const std::string& doctorNotes_, const std::vector<Date>& followUpDates_, const std::vector<Prescription>& prescriptions_, const std::string& changeHistory_) {
 
     setPatientID(patientID_);
     setDoctorID(doctorID_);
@@ -29,6 +20,9 @@ MedicalRecord::MedicalRecord(int patientID_, int doctorID_, const std::string& c
     setBodyTemperature(bodyTemperature_);
     setTreatment(treatment_);
     setDoctorNotes(doctorNotes_);
+    followUpDates = followUpDates_;
+    prescriptions = prescriptions_;
+    setChangeHistory(changeHistory_);
 
     int ID = static_cast<int>(IDHandler<MedicalRecord>::generateID());
     setID(ID);
@@ -68,14 +62,14 @@ std::string MedicalRecord::getTreatment() const {
 std::string MedicalRecord::getDoctorNotes() const {
     return doctorNotes;
 }
-std::vector<std::string> MedicalRecord::getFollowUpDates() const {
+const std::vector<Date>& MedicalRecord::getFollowUpDates() const {
     return followUpDates;
 }
-const std::vector<Prescription> &MedicalRecord::getPrescriptions() const {
+const std::vector<Prescription>& MedicalRecord::getPrescriptions() const {
     return prescriptions;
 }
-const std::vector<std::string> &MedicalRecord::getChangeHistory() const {
-    return changeHistory;
+Date MedicalRecord::getChangeHistory() const {
+    return history;
 }
 
 void MedicalRecord::setID(int ID_) {
@@ -83,10 +77,16 @@ void MedicalRecord::setID(int ID_) {
 }
 
 void MedicalRecord::setPatientID(int patientID_) {
+    if (!IDHandler<Patient>::checkDuplicate(patientID_)){
+        throw std::invalid_argument("Patient ID not found.");
+    }
     patientID = patientID_;
 }
 
 void MedicalRecord::setDoctorID(int doctorID_) {
+    if (!IDHandler<Doctor>::checkDuplicate(doctorID_)) {
+        throw std::invalid_argument("Doctor ID is not found.");
+    }
     doctorID = doctorID_;
 }
 
@@ -119,22 +119,60 @@ void MedicalRecord::setDoctorNotes(const std::string& notes) {
     doctorNotes = Utils::trimmed(notes);
 }
 void MedicalRecord::setHeartRate(int rate) {
-    heartRate = rate; // Consider adding validation if needed
+    if (rate < 30 || rate > 220) throw std::out_of_range("Heart rate out of realistic range.");
+    heartRate = rate;
 }
 void MedicalRecord::setBodyTemperature(float temp) {
-    bodyTemperature = temp; // Consider adding validation if needed
+    if (temp < 30.0f || temp > 45.0f) throw std::out_of_range("Body temperature out of realistic range.");
+    bodyTemperature = temp;
 }
-void MedicalRecord::addFollowUpDate(const std::string& date) {
-    std::string trimmedDate = Utils::trimmed(date);
-    // Optionally validate date format here
-    // followUpDates.push_back(Date::fromString(trimmedDate));
+void MedicalRecord::addFollowUpDate(const std::string& date_) {
+    Utils::validDate(Date::fromString(Utils::trimmed(date_)));
+    followUpDates.push_back(Date::fromString(Utils::trimmed(date_))); 
+}
+
+void MedicalRecord::setChangeHistory(const std::string& date_) {
+    Utils::validDate(Date::fromString(Utils::trimmed(date_)));
+    history = Date::fromString(Utils::trimmed(date_));
 }
 
 nlohmann::json MedicalRecord::toJson() const {
-    
+    nlohmann::json j;
+    j["ID"] = ID;
+    j["patientID"] = patientID;
+    j["doctorID"] = doctorID;
+    j["creationDate"] = creationDate.toString();
+    j["lastUpdated"] = lastUpdated.toString();
+    j["diagnosis"] = diagnosis;
+    j["symptoms"] = symptoms;
+    j["testResults"] = testResults;
+    j["bloodPressure"] = bloodPressure;
+    j["heartRate"] = heartRate;
+    j["bodyTemperature"] = bodyTemperature;
+    j["treatment"] = treatment;
+    j["doctorNotes"] = doctorNotes;
+    j["followUpDates"] = Utils::datesToJson(followUpDates);
+    j["prescriptions"] = Utils::prescriptionsToJson(prescriptions);
+    j["changeHistory"] = Utils::datesToJson(changeHistory);
+    return j;
 }
 
 void MedicalRecord::fromJson(const nlohmann::json &j) {
-  
+    setID(j.at("ID").get<int>());
+    setPatientID(j.at("patientID").get<int>());
+    setDoctorID(j.at("doctorID").get<int>());
+    setCreationDate(j.at("creationDate").get<std::string>());
+    setLastUpdated(j.at("lastUpdated").get<std::string>());
+    setDiagnosis(j.at("diagnosis").get<std::string>());
+    setSymptoms(j.at("symptoms").get<std::string>());
+    setTestResults(j.at("testResults").get<std::string>());
+    setBloodPressure(j.at("bloodPressure").get<std::string>());
+    setHeartRate(j.at("heartRate").get<int>());
+    setBodyTemperature(j.at("bodyTemperature").get<float>());
+    setTreatment(j.at("treatment").get<std::string>());
+    setDoctorNotes(j.at("doctorNotes").get<std::string>());
+    followUpDates = Utils::jsonToDates(j.at("followUpDates"));
+    prescriptions = Utils::jsonToPrescriptions(j.at("prescriptions"));
+    changeHistory = Utils::jsonToDates(j.at("changeHistory"));
 }
 

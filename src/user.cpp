@@ -27,18 +27,15 @@ void User::setPassword(const std::string &password_){
     passwordHash = Utils::hashFunc(Utils::trimmed(password_));
 }
 
-User::Role User::roleFromString(const std::string& str) {
-    std::string lower = str;
-    std::transform(lower.begin(), lower.end(), lower.begin(), ::tolower);
-
-    if (lower == "admin") return Role::ADMIN;
-    if (lower == "assistant") return Role::ASSISTANT;
-    if (lower == "doctor") return Role::DOCTOR;
+User::Role User::roleFromString (const std::string& str) {
+    if (Utils::toLower(str) == "admin") return Role::ADMIN;
+    if (Utils::toLower(str) == "assistant") return Role::ASSISTANT;
+    if (Utils::toLower(str) == "doctor") return Role::DOCTOR;
 
     throw std::invalid_argument("Unknown role: " + str);
 }
 
-std::string User::roleToString(Role role) {
+std::string User::roleToString (Role role) {
     switch (role) {
         case Role::ADMIN:     return "ADMIN";
         case Role::ASSISTANT: return "ASSISTANT";
