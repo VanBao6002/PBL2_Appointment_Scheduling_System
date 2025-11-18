@@ -26,14 +26,14 @@ User::Role User::roleFromString(const std::string& str) {
     std::string lowerStr = str;
     std::transform(lowerStr.begin(), lowerStr.end(), lowerStr.begin(), ::tolower);
     if (lowerStr == "admin") return User::Role::ADMIN;
-    if (lowerStr == "manager") return User::Role::MANANGER;
+    if (lowerStr == "doctor") return User::Role::DOCTOR;
     throw std::invalid_argument("Unknown status: " + str);
 }
 
 nlohmann::json User::toJson() const {
     nlohmann::json j;
         j["ID"] = ID;
-        j["userRole"] = userRole;
+        j["userRole"] = (userRole == User::Role::ADMIN ? "ADMIN" : "MANAGER");
         j["username"] = username;
         j["passwordHash"] = passwordHash;
         return j;

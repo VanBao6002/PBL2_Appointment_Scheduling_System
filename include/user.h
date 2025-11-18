@@ -4,7 +4,7 @@
 #include "json.hpp"
 class User { 
     public: 
-        enum class Role {ADMIN, MANANGER};
+        enum class Role {ADMIN, DOCTOR};
 
     private:
         int ID;

@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <widget class="QLineEdit" name="UserName">
+  <widget class="QLineEdit" name="userName">
    <property name="geometry">
     <rect>
      <x>270</x>
@@ -23,7 +23,7 @@
     </rect>
    </property>
   </widget>
-  <widget class="QLineEdit" name="PassWord">
+  <widget class="QLineEdit" name="passWord">
    <property name="geometry">
     <rect>
      <x>270</x>
@@ -62,7 +62,7 @@
     <bool>false</bool>
    </property>
   </widget>
-  <widget class="QPushButton" name="CancelButton">
+  <widget class="QPushButton" name="cancelButton">
    <property name="geometry">
     <rect>
      <x>270</x>
@@ -97,12 +97,29 @@
     <bool>true</bool>
    </property>
   </widget>
+  <widget class="QToolButton" name="showPasswordButton">
+   <property name="geometry">
+    <rect>
+     <x>390</x>
+     <y>150</y>
+     <width>18</width>
+     <height>19</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>👁️</string>
+   </property>
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+  </widget>
   <zorder>labelBackground</zorder>
-  <zorder>UserName</zorder>
-  <zorder>PassWord</zorder>
+  <zorder>userName</zorder>
+  <zorder>passWord</zorder>
   <zorder>loginButton</zorder>
   <zorder>label</zorder>
-  <zorder>CancelButton</zorder>
+  <zorder>cancelButton</zorder>
+  <zorder>showPasswordButton</zorder>
  </widget>
  <resources/>
  <connections/>

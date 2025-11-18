@@ -1,5 +1,5 @@
 #include "mainwindow.h"
-#include "ui_mainwindow.h"
+#include "gui/ui_mainwindow.h"
 #include "loginwindow.h"
 
 MainWindow::MainWindow(QWidget *parent)

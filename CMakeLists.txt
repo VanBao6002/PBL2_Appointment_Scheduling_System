@@ -21,6 +21,13 @@ file(GLOB_RECURSE GUI_FILES CONFIGURE_DEPENDS
     "${CMAKE_SOURCE_DIR}/gui/*.ui"
 )
 
+# --- NEW: Gather data files (.json and .txt) ---
+file(GLOB DATA_FILES CONFIGURE_DEPENDS
+    "${CMAKE_SOURCE_DIR}/data/*.json"
+    "${CMAKE_SOURCE_DIR}/data/*.txt"
+)
+# -----------------------------------------------
+
 # ---------------- Helper: detect MinGW on Windows ----------------
 set(USE_MINGW OFF)
 if(WIN32 AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
@@ -50,6 +57,18 @@ if(USE_QT_GUI)
     target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Widgets)
     target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/include)
 
+    # --- NEW: Post-Build Copy Data Files ---
+    # Lệnh này sẽ sao chép các file data sang thư mục của file thực thi sau khi build.
+    if(DATA_FILES)
+        add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            ${DATA_FILES}
+            $<TARGET_FILE_DIR:${PROJECT_NAME}>
+            COMMENT "Copying required data files (.json, .txt) to executable directory."
+        )
+    endif()
+    # ---------------------------------------
+
     set_target_properties(${PROJECT_NAME} PROPERTIES WIN32_EXECUTABLE OFF)
     if(USE_MINGW)
         target_link_options(${PROJECT_NAME} PRIVATE "-Wl,--subsystem,console")
@@ -61,11 +80,23 @@ else()
         ${SRC_FILES}
     )
     target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/include)
+
+    # --- NEW: Post-Build Copy Data Files (for non-GUI build) ---
+    if(DATA_FILES)
+        add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            ${DATA_FILES}
+            $<TARGET_FILE_DIR:${PROJECT_NAME}>
+            COMMENT "Copying required data files (.json, .txt) to executable directory."
+        )
+    endif()
+    # ---------------------------------------
 endif()
 
 # ---------------- Extra files for Qt Creator ----------------
 add_custom_target(ExtraFiles SOURCES
     ${HEADER_FILES}
+    ${DATA_FILES} # <-- ADDED DATA_FILES HERE
     README.md
     LICENSE
 )
