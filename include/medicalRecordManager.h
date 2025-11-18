@@ -7,9 +7,6 @@
 #include <algorithm>
 
 #include "medicalRecord.h"
-#include "patientManager.h"
-#include "userManager.h"
-
 
 
 class MedicalRecordManager{

@@ -1,5 +1,4 @@
 #include "medicalRecord.h"
-#include <iostream>
 
 MedicalRecord::MedicalRecord()
     : patientID(0), doctorID(0), creationDate(), lastUpdated(),
@@ -15,7 +14,7 @@ MedicalRecord::MedicalRecord(int patientID_, int doctorID_, const std::string& c
     const std::string& diagnosis_, const std::string& symptoms_, const std::string& testResults_,
     const std::string& bloodPressure_, int heartRate_, float bodyTemperature_,
     const std::string& treatment_, const std::string& doctorNotes_,
-    const std::vector<Date>& followUpDates_, const std::vector<Prescription>& prescriptions_,
+    const std::vector<std::string>& followUpDates_, const std::vector<Prescription>& prescriptions_,
     const std::vector<std::string>& changeHistory_) {
 
     setPatientID(patientID_);
