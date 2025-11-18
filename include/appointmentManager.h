@@ -4,8 +4,14 @@
 #include <vector>
 #include <unordered_set>
 #include <unordered_map>
+#include <algorithm>
+#include <stdexcept>
+
 #include "appointment.h"
-#include "config.h"
+#include "doctorManager.h"
+#include "patientManager.h"
+#include "userManager.h"
+
 class AppointmentManager{
     private:    
         std::unordered_map<int, std::string> log;
@@ -18,7 +24,6 @@ class AppointmentManager{
         void addAppointment(const Appointment  &doc_);
         void editAppointment(int ID_, const Appointment &newAppointment);
         void removeAppointment(int ID_);
-        void changeStatus(int ID_, Appointment::Status status_);
 
         const Appointment& getAppointmentByID(int ID_) const;
         const std::unordered_map<int, Appointment>& getAllAppointments() const; 

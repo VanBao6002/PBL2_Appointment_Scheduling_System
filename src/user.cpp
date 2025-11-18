@@ -1,24 +1,35 @@
 #include "user.h"
-#include "utils.h"
-#include <string>
+
+User::User(const std::string &userRole_, const std::string &username_, const std::string &userPassword_){
+
+    setRole(userRole_);
+    setUsername(username_);
+    setPassword(userPassword_);
+
+    int ID = IDHandler<User>::generateID();
+    setID(ID);
+}
 
 void User::setID(int ID_){
-    Utils::validID(ID_);
     ID = ID_;
 }
 
-void User::setRole(User::Role role_){
-    userRole = role_;
+void User::setRole(const std::string &role_){
+    std::string trimmedRole = Utils::trimmed(role_);
+    Role temp = roleFromString(trimmedRole);
+    userRole = temp;
 }
 
 void User::setUsername(const std::string &username_){
-    Utils::validUserName(username_);
-    username = username_;
+    std::string trimmedUsername = Utils::trimmed(username_);
+    Utils::validUserName(trimmedUsername);
+    username = trimmedUsername;
 }   
 
 void User::setPassword(const std::string &password_){
-    Utils::validPassword(password_);
-    std::string passwordHash_ = Utils::hashFunc(password_);
+    std::string trimedPassword = Utils::trimmed(password_);
+    Utils::validPassword(trimedPassword);
+    std::string passwordHash_ = Utils::hashFunc(trimedPassword);
     passwordHash = passwordHash_;
 }
 
@@ -26,7 +37,9 @@ User::Role User::roleFromString(const std::string& str) {
     std::string lowerStr = str;
     std::transform(lowerStr.begin(), lowerStr.end(), lowerStr.begin(), ::tolower);
     if (lowerStr == "admin") return User::Role::ADMIN;
+    if (lowerStr == "assistant") return User::Role::ASSISTANT;
     if (lowerStr == "doctor") return User::Role::DOCTOR;
+
     throw std::invalid_argument("Unknown status: " + str);
 }
 

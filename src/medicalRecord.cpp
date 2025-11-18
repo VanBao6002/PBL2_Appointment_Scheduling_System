@@ -1,18 +1,18 @@
 #include "medicalRecord.h"
 #include <iostream>
 
-MedicalRecord::MedicalRecord(): ID(0), patientID(0), doctorID(0), creationDate(Date()), lastUpdated(Date()), diagnosis(""), symptoms(""), testResults(""), bloodPressure(""), heartRate(0), bodyTemperature(0.0f), treatment(""), doctorNotes(""), followUpDates() {
+MedicalRecord::MedicalRecord(): patientID(0), doctorID(0), creationDate(Date()), lastUpdated(Date()), diagnosis(""), symptoms(""), testResults(""), bloodPressure(""), heartRate(0), bodyTemperature(0.0f), treatment(""), doctorNotes(""), followUpDates() {
     ID = static_cast<int>(IDHandler<MedicalRecord>::generateID());
     setID(ID);
 }
 
-MedicalRecord::MedicalRecord(int ID_, int patientID_, int doctorID_): ID(ID_), patientID(patientID_), doctorID(doctorID_), creationDate(Date()), lastUpdated(Date()), diagnosis(""), symptoms(""), testResults(""), bloodPressure(""), heartRate(0), bodyTemperature(0.0f), treatment(""), doctorNotes(""), followUpDates() {
+MedicalRecord::MedicalRecord(int patientID_, int doctorID_): patientID(patientID_), doctorID(doctorID_), creationDate(Date()), lastUpdated(Date()), diagnosis(""), symptoms(""), testResults(""), bloodPressure(""), heartRate(0), bodyTemperature(0.0f), treatment(""), doctorNotes(""), followUpDates() {
     ID = static_cast<int>(IDHandler<MedicalRecord>::generateID());
     setID(ID);
 }
 
 
-int MedicalRecord::getRecordID() const {
+int MedicalRecord::getID() const {
     return ID;
 }
 int MedicalRecord::getPatientID() const {

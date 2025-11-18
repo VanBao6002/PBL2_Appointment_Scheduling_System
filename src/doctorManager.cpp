@@ -1,10 +1,4 @@
-#include "doctor.h"
-#include "utils.h"
 #include "doctorManager.h"
-#include "IDHandler.h"
-#include <algorithm>
-#include <unordered_set>
-#include <unordered_map>
 
 void DoctorManager::addDoctor(const Doctor &doc_) {
     int ID_ = doc_.getID();
@@ -33,14 +27,6 @@ void DoctorManager::removeDoctor(int ID_){
     IDHandler<Doctor>::unregisterID(ID_);
 }
 
-void DoctorManager::changeStatus(int ID_, Doctor::Status status_){
-    if (!IDHandler<Doctor>::checkDuplicate(ID_)) {
-        throw std::invalid_argument("Cannot change status. Doctor ID " + std::to_string(ID_) + " not found.");
-    }
-    doctorTable[ID_].setStatus(status_);
-    log[ID_] += " Status changed on: " + Utils::getDateTime();
-}
-
 const Doctor& DoctorManager::getDoctorByID(int ID_) const{
     if (!IDHandler<Doctor>::checkDuplicate(ID_)) {
         throw std::invalid_argument("Failed getting. Doctor ID " + std::to_string(ID_) + " not found.");
@@ -52,7 +38,7 @@ const std::unordered_map<int, Doctor>& DoctorManager::getAllDoctors() const{
     return doctorTable;
 }
 
-const std::unordered_map<int, Patient>& DoctorManager::getPatientsByDoctorID(int ID_) const{
+const std::vector<int>& DoctorManager::getPatientsByDoctorID(int ID_) const{
     if (!IDHandler<Doctor>::checkDuplicate(ID_)) {
         throw std::invalid_argument("Cannot get patients list. Doctor ID " + std::to_string(ID_) + " not found.");
     }
@@ -60,9 +46,11 @@ const std::unordered_map<int, Patient>& DoctorManager::getPatientsByDoctorID(int
 }
 
 std::vector<Doctor> DoctorManager::findDoctorsByName(const std::string& name) const {
+    std::string trimmedName = Utils::trimmed(name);
+
     std::vector<Doctor> result;
     for (const auto& pair : doctorTable) {
-        if (pair.second.getName() == name) {
+        if (Utils::toLower(pair.second.getName()) == Utils::toLower(trimmedName)) {
             result.push_back(pair.second);
         }
     }

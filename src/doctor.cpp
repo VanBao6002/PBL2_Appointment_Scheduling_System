@@ -1,41 +1,52 @@
 #include "doctor.h"
-#include "utils.h"
-#include "patient.h"
-#include "date.h"
-#include "IDHandler.h"
-#include <limits>
-#include <algorithm>
-#include <unordered_set>
-#include <unordered_map>
-#include <string>
+
 
 Doctor::Doctor() : Person(), specialization(""), patientIDs(), doctorStatus(Status::Available){
-    ID = static_cast<int>(IDHandler<Doctor>::generateID());
+    int ID = static_cast<int>(IDHandler<Doctor>::generateID());
     setID(ID);
 }
-Doctor::Doctor(const std::string& name_, char gender_, const Date& birthday_, const std::string& specialization_, Status doctorStatus_) : Person(name_, gender_, birthday_), specialization(specialization_), patientIDs(), doctorStatus(doctorStatus_) {
+Doctor::Doctor(const std::string& name_, char gender_, const Date& birthday_, const std::string &phoneNumber_, const std::string& specialization_, const std::string& doctorStatus_,  const std::string& email_) : Person(name_, gender_, birthday_, phoneNumber_) {
+
+    setSpecialization(specialization_);
+    setStatus(doctorStatus_);
+    setEmail(email_);
+
     int ID = static_cast<int>(IDHandler<Doctor>::generateID());
     setID(ID);
 } 
 
 void Doctor::setSpecialization(const std::string &specialization_){
-    Utils::validSpecialization(specialization_);
-    specialization = specialization_;
+    std::string trimmedSpecialization = Utils::trimmed(specialization_);
+    Utils::validSpecialization(trimmedSpecialization);
+    specialization = trimmedSpecialization;
 }
 
-void Doctor::setStatus(Status doctorStatus_){
-    doctorStatus = doctorStatus_;
+void Doctor::setStatus(const std::string& doctorStatus_){
+    std::string trimmedStatus = Utils::trimmed(doctorStatus_);
+
+    doctorStatus = statusFromString(trimmedStatus);
 }
+
+void Doctor::setEmail(const std::string &email_){
+    std::string trimmedEmail = Utils::trimmed(email_);
+    Utils::validName(trimmedEmail);
+    email = trimmedEmail;
+}
+
 // Add patient ID
-void Doctor::addPatientID(const Patient& patient) {
-    patientIDs[patient.getID()] = patient;
+void Doctor::addPatientID(int ID_) {
+    if (IDHandler<Patient>::checkDuplicate(ID_)){
+        throw std::invalid_argument("Patient ID already existed.");
+    }
+    patientIDs.push_back(ID_);
 }
 
 void Doctor::removePatientID(int patientID_) {
-    if (!IDHandler<Patient>::checkDuplicate(patientID_)){
-        throw std::invalid_argument("Patient ID not found.");
+    auto it = std::find(patientIDs.begin(), patientIDs.end(), patientID_);
+    if (it == patientIDs.end()) {
+        throw std::invalid_argument("Patient ID not found in doctor's list.");
     }
-    patientIDs.erase(patientID_);
+    patientIDs.erase(it);
 }
 
 
@@ -50,24 +61,13 @@ std::string Doctor::getInfo() const{
     std::string statusStr = (doctorStatus == Doctor::Status::Available) ? "Available" : "Unavailable";
     info += (doctorStatus == Doctor::Status::Available) ? "Available\n" : "Unavailable\n";
     info += "Patient IDs: ";
-    for (const auto& [pid, patient] : patientIDs) {
-        info += std::to_string(pid) + " (" + patient.getName() + ") ";
+    for (const auto& pid : patientIDs) {
+        info += std::to_string(pid) + " ";
     }
     info += "\n";
     return info;
 }
 
-std::string getSpecialization(const std::string &specialization_){
-    return specialization_;
-}
-
-Doctor::Status getStatus(const Doctor::Status &doctorStatus_){
-    return doctorStatus_;
-}
-
-const std::unordered_map<int, Patient> getPatientIDs(const std::unordered_map<int, Patient> &patientIDs_){
-    return patientIDs_;
-}
 
 Doctor::Status Doctor::statusFromString(const std::string& str){
     std::string lowerStr = str;
@@ -89,11 +89,13 @@ nlohmann::json Doctor::toJson() const {
     };
     j["specialization"] = specialization;
     nlohmann::json patientIDsJson;
-    for (const auto& [pid, patient] : patientIDs) {
-        patientIDsJson[std::to_string(pid)] = patient.toJson();
+    for (const auto& pid : patientIDs) {
+        patientIDsJson.push_back(pid);
     }
     j["patientIDs"] = patientIDsJson;
     j["doctorStatus"] = doctorStatus;
+    j["phoneNumber"] = phoneNumber;
+    j["email"] = email;
     return j;
 }
 
@@ -113,4 +115,6 @@ void Doctor::fromJson(const nlohmann::json &j) {
     }
     if (j.contains("specialization")) specialization = j.at("specialization").get<std::string>();
     if (j.contains("doctorStatus")) doctorStatus = statusFromString(j.at("doctorStatus").get<std::string>());
+    if (j.contains("phoneNumber")) phoneNumber = j.at("phoneNumber").get<std::string>();
+    if (j.contains("email")) email = j.at("email").get<std::string>();
 }

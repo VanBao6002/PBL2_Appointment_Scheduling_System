@@ -4,9 +4,14 @@
 #include <vector>
 #include <unordered_set>
 #include <unordered_map>
+#include <algorithm>
+
 #include "doctor.h"
-#include "patient.h"
-#include "config.h"
+#include "patientManager.h"
+#include "userManager.h"
+
+
+
 class DoctorManager{
     private:    
         std::unordered_map<int, std::string> log;
@@ -19,12 +24,11 @@ class DoctorManager{
         void addDoctor(const Doctor  &doc_);
         void editDoctor(int ID_, const Doctor &newDoctor);
         void removeDoctor(int ID_);
-        void changeStatus(int ID_, Doctor::Status status_);
 
         const Doctor& getDoctorByID(int ID_) const;
         std::vector<Doctor> findDoctorsByName(const std::string& name) const;
         const std::unordered_map<int, Doctor>& getAllDoctors() const; // return list of all doctors
-        const std::unordered_map<int, Patient>& getPatientsByDoctorID(int ID_) const; // return list of patients that being cared by that doctor
+        const std::vector<int>& getPatientsByDoctorID(int ID_) const; // return list of patients that being cared by that doctor
         const std::unordered_map<int, std::string>& getAllLog() const;
         const std::string& getIDLog(int ID_) const;
 

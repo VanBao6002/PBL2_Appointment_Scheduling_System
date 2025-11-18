@@ -1,8 +1,4 @@
 #include "appointmentManager.h"
-#include "utils.h"
-#include "IDHandler.h"
-#include <algorithm>
-#include <stdexcept>
 
 void AppointmentManager::addAppointment(const Appointment &apt_) {
     int ID_ = apt_.getID();
@@ -29,14 +25,6 @@ void AppointmentManager::removeAppointment(int ID_) {
     appointmentTable.erase(ID_);
     log.erase(ID_);
     IDHandler<Appointment>::unregisterID(ID_);
-}
-
-void AppointmentManager::changeStatus(int ID_, Appointment::Status status_) {
-    if (appointmentTable.find(ID_) == appointmentTable.end()) {
-        throw std::invalid_argument("Cannot change status. Appointment ID " + std::to_string(ID_) + " not found.");
-    }
-    appointmentTable[ID_].setStatus(status_);
-    log[ID_] += " Status changed on: " + Utils::getDateTime();
 }
 
 const Appointment& AppointmentManager::getAppointmentByID(int ID_) const {
