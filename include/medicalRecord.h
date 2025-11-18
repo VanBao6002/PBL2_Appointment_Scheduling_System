@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include <iostream>
 
 #include "date.h"
 #include "prescription.h"
@@ -37,7 +38,7 @@ class MedicalRecord{
                       const std::string& diagnosis_, const std::string& symptoms_, const std::string& testResults_,
                       const std::string& bloodPressure_, int heartRate_, float bodyTemperature_,
                       const std::string& treatment_, const std::string& doctorNotes_,
-                      const std::vector<Date>& followUpDates_, const std::vector<Prescription>& prescriptions_,
+                      const std::vector<std::string>& followUpDates_, const std::vector<Prescription>& prescriptions_,
                       const std::vector<std::string>& changeHistory_);
 
         ~MedicalRecord() = default;

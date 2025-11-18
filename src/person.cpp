@@ -1,6 +1,6 @@
 #include "person.h"
 
-Person::Person() : ID(0), name("NGUYEN VAN A"), gender('M'), phoneNumber("00000000000"), birthday(Date()) {}
+Person::Person() : ID(0), name("NGUYEN VAN A"), gender('M'), birthday(Date()), phoneNumber("00000000000") {}
 
 Person::Person(const std::string &name_, char gender_, const std::string &birthday_, const std::string &phoneNumber_) {
     setName(name_);
