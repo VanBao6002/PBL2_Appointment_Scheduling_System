@@ -5,7 +5,7 @@ Doctor::Doctor() : Person(), specialization(""), patientIDs(), doctorStatus(Stat
     int ID = static_cast<int>(IDHandler<Doctor>::generateID());
     setID(ID);
 }
-Doctor::Doctor(const std::string& name_, char gender_, const Date& birthday_, const std::string &phoneNumber_, const std::string& specialization_, const std::string& doctorStatus_,  const std::string& email_) : Person(name_, gender_, birthday_, phoneNumber_) {
+Doctor::Doctor(const std::string& name_, char gender_, const std::string& birthday_, const std::string &phoneNumber_, const std::string& specialization_, const std::string& doctorStatus_,  const std::string& email_) : Person(name_, gender_, birthday_, phoneNumber_) {
 
     setSpecialization(specialization_);
     setStatus(doctorStatus_);
@@ -16,21 +16,17 @@ Doctor::Doctor(const std::string& name_, char gender_, const Date& birthday_, co
 } 
 
 void Doctor::setSpecialization(const std::string &specialization_){
-    std::string trimmedSpecialization = Utils::trimmed(specialization_);
-    Utils::validSpecialization(trimmedSpecialization);
-    specialization = trimmedSpecialization;
+    Utils::validSpecialization(Utils::trimmed(specialization_));
+    specialization = Utils::trimmed(specialization_);
 }
 
 void Doctor::setStatus(const std::string& doctorStatus_){
-    std::string trimmedStatus = Utils::trimmed(doctorStatus_);
-
-    doctorStatus = statusFromString(trimmedStatus);
+    doctorStatus = statusFromString(Utils::trimmed(doctorStatus_));
 }
 
 void Doctor::setEmail(const std::string &email_){
-    std::string trimmedEmail = Utils::trimmed(email_);
-    Utils::validName(trimmedEmail);
-    email = trimmedEmail;
+    Utils::validName(Utils::trimmed(email_));
+    email = Utils::trimmed(email_);
 }
 
 // Add patient ID
@@ -117,4 +113,10 @@ void Doctor::fromJson(const nlohmann::json &j) {
     if (j.contains("doctorStatus")) doctorStatus = statusFromString(j.at("doctorStatus").get<std::string>());
     if (j.contains("phoneNumber")) phoneNumber = j.at("phoneNumber").get<std::string>();
     if (j.contains("email")) email = j.at("email").get<std::string>();
+    if (j.contains("patientIDs")) {
+        patientIDs.clear();
+        for (const auto& pid : j.at("patientIDs")) {
+            patientIDs.push_back(pid.get<int>());
+        }
+    }
 }
