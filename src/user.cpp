@@ -1,55 +1,62 @@
 #include "user.h"
 
-User::User(const std::string &userRole_, const std::string &username_, const std::string &userPassword_){
-
+User::User(const std::string &userRole_, const std::string &username_, const std::string &userPassword_) {
     setRole(userRole_);
     setUsername(username_);
     setPassword(userPassword_);
 
-    int ID = IDHandler<User>::generateID();
-    setID(ID);
+    // gán đúng vào thuộc tính class
+    ID = IDHandler<User>::generateID();
 }
 
-void User::setID(int ID_){
+void User::setID(int ID_) {
     ID = ID_;
 }
 
-void User::setRole(const std::string &role_){
+void User::setRole(const std::string &role_) {
     std::string trimmedRole = Utils::trimmed(role_);
-    Role temp = roleFromString(trimmedRole);
-    userRole = temp;
+    userRole = roleFromString(trimmedRole);
 }
 
-void User::setUsername(const std::string &username_){
+void User::setUsername(const std::string &username_) {
     std::string trimmedUsername = Utils::trimmed(username_);
     Utils::validUserName(trimmedUsername);
     username = trimmedUsername;
-}   
+}
 
-void User::setPassword(const std::string &password_){
-    std::string trimedPassword = Utils::trimmed(password_);
-    Utils::validPassword(trimedPassword);
-    std::string passwordHash_ = Utils::hashFunc(trimedPassword);
-    passwordHash = passwordHash_;
+void User::setPassword(const std::string &password_) {
+    std::string trimmedPassword = Utils::trimmed(password_);
+    Utils::validPassword(trimmedPassword);
+    passwordHash = Utils::hashFunc(trimmedPassword);
 }
 
 User::Role User::roleFromString(const std::string& str) {
-    std::string lowerStr = str;
-    std::transform(lowerStr.begin(), lowerStr.end(), lowerStr.begin(), ::tolower);
-    if (lowerStr == "admin") return User::Role::ADMIN;
-    if (lowerStr == "assistant") return User::Role::ASSISTANT;
-    if (lowerStr == "doctor") return User::Role::DOCTOR;
+    std::string lower = str;
+    std::transform(lower.begin(), lower.end(), lower.begin(), ::tolower);
 
-    throw std::invalid_argument("Unknown status: " + str);
+    if (lower == "admin") return Role::ADMIN;
+    if (lower == "assistant") return Role::ASSISTANT;
+    if (lower == "doctor") return Role::DOCTOR;
+
+    throw std::invalid_argument("Unknown role: " + str);
+}
+
+std::string User::roleToString(Role role) {
+    switch (role) {
+        case Role::ADMIN:     return "ADMIN";
+        case Role::ASSISTANT: return "ASSISTANT";
+        case Role::DOCTOR:    return "DOCTOR";
+    }
+    return "UNKNOWN";
 }
 
 nlohmann::json User::toJson() const {
     nlohmann::json j;
-        j["ID"] = ID;
-        j["userRole"] = (userRole == User::Role::ADMIN ? "ADMIN" : "MANAGER");
-        j["username"] = username;
-        j["passwordHash"] = passwordHash;
-        return j;
+    j["ID"] = ID;
+    j["userRole"] = roleToString(userRole);
+    j["username"] = username;
+    j["passwordHash"] = passwordHash;
+    return j;
 }
 
 void User::fromJson(const nlohmann::json &j) {

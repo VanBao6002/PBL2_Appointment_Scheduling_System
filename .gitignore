@@ -46,3 +46,6 @@ moc_*.cpp
 #environment
 .vscode/
 gui/
+caythumuc.txt
+CMakeLists.txt.user
+CMakeLists.txt
