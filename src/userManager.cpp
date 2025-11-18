@@ -27,7 +27,7 @@ void UserManager::removeUser(int ID_){
     IDHandler<User>::unregisterID(ID_);
 }
 
-void UserManager::changeRole(int ID_, User::Role newRole){
+void UserManager::changeRole(int ID_, const std::string& newRole){
     if (!IDHandler<User>::checkDuplicate(ID_)){
         throw std::invalid_argument("Cannot change user's role. User ID " + std::to_string(ID_) + " not found.");
     } 

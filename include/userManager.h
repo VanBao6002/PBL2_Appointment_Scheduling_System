@@ -18,7 +18,7 @@ class UserManager{
         void editUser(int ID_, const User &newUser);
         void removeUser(int ID_);
 
-        void changeRole(int ID_, User::Role newRole);
+        void changeRole(int ID_, const std::string& newRole);
         void changeUsername(int ID_, const std::string& newUsername);
         void changePassword(int ID_, const std::string& newPassword);
         

@@ -37,7 +37,9 @@ User::Role User::roleFromString(const std::string& str) {
     std::string lowerStr = str;
     std::transform(lowerStr.begin(), lowerStr.end(), lowerStr.begin(), ::tolower);
     if (lowerStr == "admin") return User::Role::ADMIN;
-    if (lowerStr == "manager") return User::Role::MANANGER;
+    if (lowerStr == "assistant") return User::Role::ASSISTANT;
+    if (lowerStr == "doctor") return User::Role::DOCTOR;
+
     throw std::invalid_argument("Unknown status: " + str);
 }
 
@@ -54,5 +56,5 @@ void User::fromJson(const nlohmann::json &j) {
     if (j.contains("ID")) ID = j.at("ID").get<int>();
     if (j.contains("userRole")) userRole = roleFromString(j.at("userRole").get<std::string>());
     if (j.contains("username")) username = j.at("username").get<std::string>();
-    if (j.contains("passwordHash")) username = j.at("passwordHash").get<std::string>();
+    if (j.contains("passwordHash")) passwordHash = j.at("passwordHash").get<std::string>();
 }

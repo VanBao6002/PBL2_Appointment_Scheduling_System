@@ -129,6 +129,12 @@ std::string Utils::trimmed (const std::string &str) {
     return trimmed;
 }
 
+std::string Utils::toLower(const std::string& str) {
+    std::string result = str;
+    std::transform(result.begin(), result.end(), result.begin(),
+                   [](unsigned char c){ return std::tolower(c); });
+    return result;
+}
 
 void Utils::validName(const std::string &name_) {
     std::string trimmed = name_;
@@ -164,6 +170,10 @@ void Utils::validDate(const Date &date) {
     if (date.year < lowerYearLimit || date.year > currentYear){
         throw std::invalid_argument("Invalid year, out of range.");
     }
+}
+
+void Utils::validPhoneNumber(const std::string &phoneNumber) {
+    if (phoneNumber.size() != 11) throw std::invalid_argument("Invalid phonenumber.");
 }
 
 void Utils::validID(int ID) {

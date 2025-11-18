@@ -13,10 +13,12 @@ class Person {
         std::string name;
         char gender;
         Date birthday;
+        std::string phoneNumber;
+
     public:
         Person();
 
-        Person(const std::string &name_, char gender_, const Date &birthday_);
+        Person(const std::string &name_, char gender_, const Date &birthday_, const std::string &phoneNumber_);
 
         virtual ~Person() = default;
 
@@ -24,6 +26,7 @@ class Person {
         std::string getName() const { return name; }
         char getGender() const { return gender; }
         Date getBirthday() const { return birthday; }
+        std::string getPhoneNumber() const {return phoneNumber;}
         int getID() const { return ID; }
         virtual std::string getInfo() const = 0;
 
@@ -31,6 +34,7 @@ class Person {
         void setName(const std::string &name_);
         void setGender(const char gender_);
         void setBirthday(const Date &birthday_); 
+        void setPhoneNumber(const std::string &phonenumber_);
 
         // converter
         virtual nlohmann::json toJson() const = 0;

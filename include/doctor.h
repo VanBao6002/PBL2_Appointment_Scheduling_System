@@ -6,6 +6,7 @@
 #include <sstream>
 #include <limits>
 #include <algorithm>
+#include <vector>
 
 #include "person.h"
 #include "patient.h"
@@ -16,7 +17,7 @@ class Doctor : public Person{
 
     private:
         std::string specialization; // Chuyên Khoa
-        std::unordered_map<int, Patient> patientIDs; // ID bệnh nhân được bác sĩ đảm nhận
+        std::vector<int> patientIDs; // ID bệnh nhân được bác sĩ đảm nhận
         Status doctorStatus;
         std::string phoneNumber;
         std::string email;
@@ -24,24 +25,22 @@ class Doctor : public Person{
     public:
         Doctor();
 
-        Doctor(const std::string& name_, char gender_, const Date& birthday_, const std::string& specialization_, const std::string& doctorStatus_, const std::string& phoneNumber_, const std::string& email_);
+        Doctor(const std::string& name_, char gender_, const Date& birthday_, const std::string &phoneNumber_, const std::string& specialization_, const std::string& doctorStatus_, const std::string& email_);
 
         ~Doctor() = default;
 
         void setSpecialization(const std::string &specialization_);
         void setStatus(const std::string& doctorStatus_);
-        void setPhoneNumber(const std::string &phonenumber_);
         void setEmail(const std::string &email_);
 
 
-        void addPatientID(const Patient &patientID_);
-        void removePatientID(int patientID_);
+        void addPatientID(int ID_);
+        void removePatientID(int ID_);
 
         std::string getSpecialization() const {return specialization;}
         Status getStatus() const {return doctorStatus;}
-        const std::unordered_map<int, Patient>& getPatientIDs() const {return patientIDs;}
+        const std::vector<int>& getPatientIDs() const {return patientIDs;}
         std::string getInfo() const override;
-        std::string getPhoneNumber() const {return phoneNumber;}
         std::string getEmail() const {return email;}
 
         // convertor
