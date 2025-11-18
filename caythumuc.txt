@@ -1,0 +1,77 @@
+Folder PATH listing for volume OS
+Volume serial number is B223-6231
+C:.
+¦   .gitignore
+¦   caythumuc.txt
+¦   LICENSE
+¦   main.cpp
+¦   Makefile
+¦   README.md
+¦   
++---.vscode
+¦       c_cpp_properties.json
+¦       launch.json
+¦       settings.json
+¦       tasks.json
+¦       
++---build
++---data
+¦       appointments.txt
+¦       bloodType.txt
+¦       doctors.txt
+¦       doctorSpecializations.txt
+¦       medicine_prices.txt
+¦       patient.json
+¦       patients.txt
+¦       prescriptions.txt
+¦       room.txt
+¦       
++---docs
+¦   ¦   design_0.md
+¦   ¦   design_1.md
+¦   ¦   diagram.md
+¦   ¦   future_design.md
+¦   ¦   note.md
+¦   ¦   person.md
+¦   ¦   ui.md
+¦   ¦   utils.md
+¦   ¦   
+¦   +---.github
+¦           copilot-instructions.md
+¦           
++---gui
++---include
+¦       appointment.h
+¦       appointmentManager.h
+¦       config.h
+¦       date.h
+¦       doctor.h
+¦       doctorManager.h
+¦       json.hpp
+¦       medicalRecord.h
+¦       patient.h
+¦       patientManager.h
+¦       person.h
+¦       prescription.h
+¦       user.h
+¦       userManager.h
+¦       utils.h
+¦       
++---src
+¦       appointment.cpp
+¦       appointmentManager.cpp
+¦       doctor.cpp
+¦       doctorManager.cpp
+¦       medicalRecord.cpp
+¦       patient.cpp
+¦       patientManager.cpp
+¦       person.cpp
+¦       prescription.cpp
+¦       user.cpp
+¦       userManager.cpp
+¦       utils.cpp
+¦       
++---tests
+        test0.cpp
+        test1.cpp
+        
