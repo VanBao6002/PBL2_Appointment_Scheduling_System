@@ -3,90 +3,31 @@
     "ID": 1,
     "name": "Alice Nguyen",
     "gender": "F",
-    "birthday": { "day": 12, "month": 5, "year": 2002 },
+    "birthday": {"day": 12, "month": 5, "year": 2002},
     "bloodType": "A+",
-    "nameMother": "Mai Tran",
-    "nameFather": "Khoa Nguyen"
+    "nameMother": "Mai Nguyen",
+    "nameFather": "Khoa Nguyen",
+    "allergies": ["penicillin"],
+    "chronicDiseases": [],
+    "medicalRecords": [
+      {
+        "recordID": 101,
+        "diagnosis": "Flu",
+        "date": {"day": 10, "month": 3, "year": 2023},
+        "notes": "Prescribed Tamiflu"
+      }
+    ]
   },
   {
     "ID": 2,
-    "name": "Bao Le",
+    "name": "Bao Tran",
     "gender": "M",
-    "birthday": { "day": 23, "month": 8, "year": 1999 },
+    "birthday": {"day": 23, "month": 8, "year": 2001},
     "bloodType": "O-",
-    "nameMother": "Lan Pham",
-    "nameFather": "Minh Le"
-  },
-  {
-    "ID": 3,
-    "name": "Chi Pham",
-    "gender": "F",
-    "birthday": { "day": 7, "month": 11, "year": 2001 },
-    "bloodType": "B+",
-    "nameMother": "Thao Vu",
-    "nameFather": "Hieu Pham"
-  },
-  {
-    "ID": 4,
-    "name": "Duc Tran",
-    "gender": "M",
-    "birthday": { "day": 15, "month": 2, "year": 2000 },
-    "bloodType": "AB-",
-    "nameMother": "Hoa Nguyen",
-    "nameFather": "Son Tran"
-  },
-  {
-    "ID": 5,
-    "name": "Emmy Vo",
-    "gender": "F",
-    "birthday": { "day": 30, "month": 6, "year": 2003 },
-    "bloodType": "O+",
-    "nameMother": "Linh Vo",
-    "nameFather": "Quang Vo"
-  },
-  {
-    "ID": 6,
-    "name": "Phong Do",
-    "gender": "M",
-    "birthday": { "day": 19, "month": 9, "year": 1998 },
-    "bloodType": "A-",
-    "nameMother": "Tam Do",
-    "nameFather": "Hung Do"
-  },
-  {
-    "ID": 7,
-    "name": "Giang Hoang",
-    "gender": "F",
-    "birthday": { "day": 3, "month": 4, "year": 2004 },
-    "bloodType": "B-",
-    "nameMother": "Nga Hoang",
-    "nameFather": "Long Hoang"
-  },
-  {
-    "ID": 8,
-    "name": "Hieu Vu",
-    "gender": "M",
-    "birthday": { "day": 27, "month": 12, "year": 2002 },
-    "bloodType": "AB+",
-    "nameMother": "Thu Vu",
-    "nameFather": "Quoc Vu"
-  },
-  {
-    "ID": 9,
-    "name": "Khanh Phan",
-    "gender": "F",
-    "birthday": { "day": 8, "month": 1, "year": 2001 },
-    "bloodType": "O-",
-    "nameMother": "Bich Phan",
-    "nameFather": "Tien Phan"
-  },
-  {
-    "ID": 10,
-    "name": "Lam Bui",
-    "gender": "M",
-    "birthday": { "day": 21, "month": 10, "year": 1997 },
-    "bloodType": "A+",
-    "nameMother": "Dao Bui",
-    "nameFather": "Nam Bui"
+    "nameMother": "Lan Tran",
+    "nameFather": "Minh Tran",
+    "allergies": [],
+    "chronicDiseases": ["asthma"],
+    "medicalRecords": []
   }
 ]

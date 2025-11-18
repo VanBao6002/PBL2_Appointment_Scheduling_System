@@ -18,7 +18,7 @@ class Person {
     public:
         Person();
 
-        Person(const std::string &name_, char gender_, const Date &birthday_, const std::string &phoneNumber_);
+        Person(const std::string &name_, char gender_, const std::string &birthday_, const std::string &phoneNumber_);
 
         virtual ~Person() = default;
 
@@ -33,7 +33,7 @@ class Person {
         // setter
         void setName(const std::string &name_);
         void setGender(const char gender_);
-        void setBirthday(const Date &birthday_); 
+        void setBirthday(const std::string &birthday_); 
         void setPhoneNumber(const std::string &phonenumber_);
 
         // converter

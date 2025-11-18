@@ -23,21 +23,17 @@ void Appointment::setID(int ID_) {
 }
 
 void Appointment::setDate(const std::string& date_){
-    std::string trimmedDate = Utils::trimmed(date_);
-    Date temp = Date::fromString(trimmedDate);
-    Utils::validDate(temp);
-    date = temp;
+    Utils::validDate(Date::fromString(Utils::trimmed(date_)));
+    date = Date::fromString(Utils::trimmed(date_));
 }
 
 void Appointment::setTime(const std::string &time_){
-    std::string trimmedTime = Utils::trimmed(time_);
-    Utils::validTime(trimmedTime);
-    time = trimmedTime;
+    Utils::validTime(Utils::trimmed(time_));
+    time = Utils::trimmed(time_);
 }
 
 void Appointment::setStatus(const std::string& status_){
-    std::string trimmedStatus = Utils::trimmed(status_);
-    status = statusFromString(trimmedStatus);
+    status = statusFromString(Utils::trimmed(status_));
 }
 
 void Appointment::setDoctor(int doctorID_){
@@ -55,9 +51,8 @@ void Appointment::setPatient(int patientID_){
 }
 
 void Appointment::setRoom(const std::string room_){
-    std::string trimmedRoom = Utils::trimmed(room_);
-    Utils::validRoom(trimmedRoom);
-    room = trimmedRoom;
+    Utils::validRoom(Utils::trimmed(room_));
+    room = Utils::trimmed(room_);
 }
 
 int Appointment::getID() const {

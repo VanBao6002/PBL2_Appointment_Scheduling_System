@@ -23,11 +23,11 @@ private:
     std::vector<std::string> chronicDiseases; // bệnh nền
     std::string nameMother;
     std::string nameFather;
-    std::vector<MedicalRecord> medicalRecords; // hồ sơ bệnh án 
+    std::vector<int> medicalRecordIDs; // hồ sơ bệnh án 
 
 public:
     Patient();
-    Patient(const std::string &name_, char gender_, const Date &birthday_, const std::string &phoneNumber_,  
+    Patient(const std::string &name_, char gender_, const std::string &birthday_, const std::string &phoneNumber_,  
             const std::string &bloodType_,const std::string &allergies_, const std::string &chronicDisease_, const std::string &nameMother_, const std::string &nameFather_);
 
     ~Patient() = default;
@@ -38,9 +38,9 @@ public:
     const std::vector<std::string>& getChronicDiseases() const { return chronicDiseases; }
     std::string getNameMother() const { return nameMother; }
     std::string getNameFather() const { return nameFather; }
-    const std::vector<MedicalRecord>& getMedicalRecords() const { return medicalRecords; }
+    const std::vector<int>& getMedicalRecords() const { return medicalRecordIDs; }
 
-    void addMedicalRecord(const MedicalRecord& record);
+    void addMedicalRecord(int recordID);
     void setBloodType(const std::string &bloodType_);
     void setAllergies(const std::string &allergies_);
     void setChronicDiseases(const std::string &chronicDieases_);

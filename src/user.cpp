@@ -15,22 +15,17 @@ void User::setID(int ID_){
 }
 
 void User::setRole(const std::string &role_){
-    std::string trimmedRole = Utils::trimmed(role_);
-    Role temp = roleFromString(trimmedRole);
-    userRole = temp;
+    userRole = roleFromString(Utils::trimmed(role_));
 }
 
 void User::setUsername(const std::string &username_){
-    std::string trimmedUsername = Utils::trimmed(username_);
-    Utils::validUserName(trimmedUsername);
-    username = trimmedUsername;
+    Utils::validUserName(Utils::trimmed(username_));
+    username = Utils::trimmed(username_);
 }   
 
 void User::setPassword(const std::string &password_){
-    std::string trimedPassword = Utils::trimmed(password_);
-    Utils::validPassword(trimedPassword);
-    std::string passwordHash_ = Utils::hashFunc(trimedPassword);
-    passwordHash = passwordHash_;
+    Utils::validPassword(Utils::trimmed(password_));
+    passwordHash = Utils::hashFunc(Utils::trimmed(password_));
 }
 
 User::Role User::roleFromString(const std::string& str) {

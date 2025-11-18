@@ -3,90 +3,110 @@
     "ID": 1,
     "name": "Dr. Alice Nguyen",
     "gender": "F",
-    "birthday": { "day": 12, "month": 5, "year": 1980 },
+    "birthday": {"day": 12, "month": 5, "year": 1980},
     "specialization": "Cardiology",
-    "patientIDs": {},
-    "doctorStatus": "Active"
+    "patientIDs": [1],
+    "doctorStatus": "Active",
+    "phoneNumber": "0901234567",
+    "email": "alice.nguyen@hospital.com"
   },
   {
     "ID": 2,
     "name": "Dr. Bob Tran",
     "gender": "M",
-    "birthday": { "day": 23, "month": 8, "year": 1975 },
+    "birthday": {"day": 23, "month": 8, "year": 1975},
     "specialization": "Neurology",
-    "patientIDs": {},
-    "doctorStatus": "Active"
+    "patientIDs": [2],
+    "doctorStatus": "OnLeave",
+    "phoneNumber": "0902345678",
+    "email": "bob.tran@hospital.com"
   },
   {
     "ID": 3,
     "name": "Dr. Carol Le",
     "gender": "F",
-    "birthday": { "day": 7, "month": 2, "year": 1985 },
+    "birthday": {"day": 7, "month": 3, "year": 1985},
     "specialization": "Pediatrics",
-    "patientIDs": {},
-    "doctorStatus": "Active"
+    "patientIDs": [],
+    "doctorStatus": "Active",
+    "phoneNumber": "0903456789",
+    "email": "carol.le@hospital.com"
   },
   {
     "ID": 4,
     "name": "Dr. David Pham",
     "gender": "M",
-    "birthday": { "day": 15, "month": 11, "year": 1978 },
+    "birthday": {"day": 15, "month": 11, "year": 1990},
     "specialization": "Orthopedics",
-    "patientIDs": {},
-    "doctorStatus": "Active"
+    "patientIDs": [],
+    "doctorStatus": "Active",
+    "phoneNumber": "0904567890",
+    "email": "david.pham@hospital.com"
   },
   {
     "ID": 5,
     "name": "Dr. Emma Vu",
     "gender": "F",
-    "birthday": { "day": 30, "month": 6, "year": 1982 },
+    "birthday": {"day": 30, "month": 6, "year": 1982},
     "specialization": "Dermatology",
-    "patientIDs": {},
-    "doctorStatus": "Active"
+    "patientIDs": [1],
+    "doctorStatus": "Retired",
+    "phoneNumber": "0905678901",
+    "email": "emma.vu@hospital.com"
   },
   {
     "ID": 6,
     "name": "Dr. Frank Hoang",
     "gender": "M",
-    "birthday": { "day": 3, "month": 9, "year": 1970 },
-    "specialization": "Oncology",
-    "patientIDs": {},
-    "doctorStatus": "Active"
+    "birthday": {"day": 2, "month": 2, "year": 1978},
+    "specialization": "Radiology",
+    "patientIDs": [2],
+    "doctorStatus": "Active",
+    "phoneNumber": "0906789012",
+    "email": "frank.hoang@hospital.com"
   },
   {
     "ID": 7,
     "name": "Dr. Grace Bui",
     "gender": "F",
-    "birthday": { "day": 21, "month": 4, "year": 1987 },
-    "specialization": "Gynecology",
-    "patientIDs": {},
-    "doctorStatus": "Active"
+    "birthday": {"day": 19, "month": 9, "year": 1988},
+    "specialization": "Oncology",
+    "patientIDs": [],
+    "doctorStatus": "Active",
+    "phoneNumber": "0907890123",
+    "email": "grace.bui@hospital.com"
   },
   {
     "ID": 8,
-    "name": "Dr. Henry Dang",
+    "name": "Dr. Henry Do",
     "gender": "M",
-    "birthday": { "day": 10, "month": 12, "year": 1973 },
-    "specialization": "Radiology",
-    "patientIDs": {},
-    "doctorStatus": "Active"
+    "birthday": {"day": 5, "month": 4, "year": 1983},
+    "specialization": "Gastroenterology",
+    "patientIDs": [],
+    "doctorStatus": "OnLeave",
+    "phoneNumber": "0908901234",
+    "email": "henry.do@hospital.com"
   },
   {
     "ID": 9,
-    "name": "Dr. Ivy Phan",
+    "name": "Dr. Ivy Ngo",
     "gender": "F",
-    "birthday": { "day": 5, "month": 3, "year": 1983 },
-    "specialization": "Psychiatry",
-    "patientIDs": {},
-    "doctorStatus": "Active"
+    "birthday": {"day": 27, "month": 12, "year": 1992},
+    "specialization": "Endocrinology",
+    "patientIDs": [],
+    "doctorStatus": "Active",
+    "phoneNumber": "0909012345",
+    "email": "ivy.ngo@hospital.com"
   },
   {
     "ID": 10,
-    "name": "Dr. Jack Nguyen",
+    "name": "Dr. Jack Ly",
     "gender": "M",
-    "birthday": { "day": 18, "month": 7, "year": 1976 },
-    "specialization": "General Surgery",
-    "patientIDs": {},
-    "doctorStatus": "Active"
+    "birthday": {"day": 10, "month": 7, "year": 1986},
+    "specialization": "Urology",
+    "patientIDs": [],
+    "doctorStatus": "Active",
+    "phoneNumber": "0900123456",
+    "email": "jack.ly@hospital.com"
   }
 ]
