@@ -1,4 +1,5 @@
 #include "utils.h"
+#include <regex>
 
 bool Utils::isExpired(const Date& prescriptionDate, int duration) {
     std::time_t t = std::time(nullptr);
@@ -292,6 +293,18 @@ void Utils::validPrescription(const Prescription &prescription_) {
         }
     }
 }
+
+static void validEmail(const std::string& email) {
+    // Trim khoảng trắng 2 đầu
+    std::string e = Utils::trimmed(email);
+    const std::regex pattern(
+        R"(^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$)"
+    );
+    if (!std::regex_match(e, pattern)) {
+        throw std::invalid_argument("Invalid email format: " + email);
+    }
+}
+
 
 
 void Utils::writeJsonToFile(const std::string& filePath, const nlohmann::json& j){

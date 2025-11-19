@@ -1,11 +1,9 @@
 
 #pragma once
 
-
 #include <string>
 #include <vector>
 #include <iostream>
-
 #include "person.h"
 #include "medicalRecord.h"
 #include "prescription.h"
@@ -13,8 +11,6 @@
 #include "IDHandler.h"
 #include "utils.h"
 #include "date.h"
-
-
 
 class Patient : public Person {
 private:

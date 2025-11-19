@@ -1,7 +1,7 @@
 #include "doctor.h"
 
 
-Doctor::Doctor() : Person(), specialization(""), patientIDs(), doctorStatus(Status::Available){
+Doctor::Doctor() : Person(), specialization(""), patientIDs(), doctorStatus(Status::Available), phoneNumber(""), email(""){
     int ID = static_cast<int>(IDHandler<Doctor>::generateID());
     setID(ID);
 }
@@ -25,7 +25,7 @@ void Doctor::setStatus(const std::string& doctorStatus_){
 }
 
 void Doctor::setEmail(const std::string &email_){
-    Utils::validName(Utils::trimmed(email_));
+    Utils::validEmail(Utils::trimmed(email_));
     email = Utils::trimmed(email_);
 }
 

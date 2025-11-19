@@ -3,9 +3,6 @@
 #include <string>
 #include <vector>
 #include <iostream>
-
-#include "patient.h"
-#include "doctor.h"
 #include "date.h"
 #include "prescription.h"
 #include "json.hpp"

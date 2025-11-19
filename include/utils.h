@@ -48,7 +48,7 @@ public:
     static void validPassword(const std::string &password_);
     static void validRoom(const std::string &room_);
     static void validPrescription(const Prescription &prescription_);
-
+    static void validEmail(const std::string& email);
     
     //convertor
     static void writeJsonToFile(const std::string& filePath, const nlohmann::json& j);
