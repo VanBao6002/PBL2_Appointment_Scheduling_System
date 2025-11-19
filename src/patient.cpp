@@ -50,7 +50,7 @@ void Patient::setNameFather(const std::string &nameFather_) {
 }
 
 std::string Patient::getInfo() const {
-    std::string info = Person::getInfo();
+    std::string info = "Patient Info:\n";
     info += "\nBlood Type: " + bloodType;
     info += "\nMother's Name: " + nameMother;
     info += "\nFather's Name: " + nameFather;

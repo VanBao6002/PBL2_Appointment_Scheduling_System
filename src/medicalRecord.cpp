@@ -1,6 +1,4 @@
 #include "medicalRecord.h"
-#include "patient.h"
-#include "doctor.h"
 
 MedicalRecord::MedicalRecord() : patientID(0), doctorID(0), creationDate(Date()), lastUpdated(Date()), diagnosis(""), symptoms(""), testResults(""), bloodPressure(""), heartRate(0), bodyTemperature(0.0f), treatment(""), doctorNotes(""), followUpDates(), prescriptions(), history(Date()) {
 
