@@ -30,8 +30,7 @@ class MedicalRecord{
 
     public:
         MedicalRecord();
-        MedicalRecord();
-
+        MedicalRecord(int patientID_, int doctorID_);
         ~MedicalRecord() = default;
         
         int getID() const;

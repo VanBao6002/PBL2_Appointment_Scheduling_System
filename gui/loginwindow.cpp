@@ -2,6 +2,7 @@
 #include "gui/ui_loginwindow.h"
 #include "adminwindow.h"
 #include "doctorwindow.h"
+#include "assistantwindow.h"
 #include <QPainter>
 #include <QDebug>
 
@@ -64,29 +65,24 @@ void loginwindow::on_loginButton_clicked()
         }
 
         if (loginSuccess) {
-            // Đóng cửa sổ hiện tại (loginwindow)
             this->close();
-
-            // --- LOGIC CHUYỂN CỬA SỔ DỰA TRÊN VAI TRÒ ---
-
             if (loggedInUser.getRole() == User::Role::ADMIN) {
-                // Mở Admin Window
                 AdminWindow *adminWindow = new AdminWindow();
                 adminWindow->show();
                 qDebug() << "Admin login successful.";
 
             } else if (loggedInUser.getRole() == User::Role::DOCTOR) {
-                // Mở Doctor Window
                 DoctorWindow *doctorWindow = new DoctorWindow();
                 doctorWindow->show();
                 qDebug() << "Doctor login successful.";
 
+            } else if(loggedInUser.getRole() == User::Role::ASSISTANT){
+                AssistantWindow *assistantWindow = new AssistantWindow();
+                assistantWindow->show();
+                qDebug() << "Assistant login successful.";
             } else {
-                // Xử lý các vai trò khác (nếu có) hoặc vai trò không xác định
                 QMessageBox::critical(nullptr, "Lỗi Vai Trò", "Vai trò người dùng không hợp lệ hoặc không được hỗ trợ.");
             }
-            // ----------------------------------------------
-
         } else {
             QMessageBox::warning(this, "Lỗi Đăng Nhập", "Sai tên đăng nhập hoặc mật khẩu.");
         }

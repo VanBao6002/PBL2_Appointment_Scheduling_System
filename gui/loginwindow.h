@@ -25,7 +25,6 @@ public:
 private slots:
     void on_loginButton_clicked();
     void on_cancelButton_clicked();
-
     void on_showPasswordButton_toggled(bool checked);
 
 protected:
@@ -33,12 +32,10 @@ protected:
     void paintEvent(QPaintEvent *event) override; // Thêm: Để vẽ nền
 
 private:
-    void loadUsers(); // Thêm: Hàm để load người dùng từ file
-
+    void loadUsers();
     Ui::loginwindow *ui;
-    QPixmap m_bgPixmap; // lưu ảnh gốc
-    // std::vector<User> m_users; // Xóa: Không cần thiết nữa, dùng UserManager
-    UserManager m_userManager; // Thêm: Đối tượng quản lý người dùng
+    QPixmap m_bgPixmap;
+    UserManager m_userManager;
 };
 
 #endif // LOGINWINDOW_H
