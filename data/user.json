@@ -8,5 +8,6 @@
   { "ID": 7, "userRole": "ADMIN", "username": "admin3", "passwordHash": "y5z6a7b8" },
   { "ID": 8, "userRole": "DOCTOR", "username": "doctor5", "passwordHash": "c9d0e1f2" },
   { "ID": 9, "userRole": "DOCTOR", "username": "doctor6", "passwordHash": "g3h4i5j6" },
-  { "ID": 10, "userRole": "ADMIN", "username": "admin4", "passwordHash": "k7l8m9n0" }
+  { "ID": 10, "userRole": "ADMIN", "username": "admin4", "passwordHash": "k7l8m9n0" },
+  { "ID": 11, "userRole": "ASSISTANT", "username": "assistant1", "passwordHash": "test" }
 ]
