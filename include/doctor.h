@@ -25,7 +25,7 @@ class Doctor : public Person{
     public:
         Doctor();
 
-        Doctor(const std::string& name_, char gender_, const Date& birthday_, const std::string &phoneNumber_, const std::string& specialization_, const std::string& doctorStatus_, const std::string& email_);
+        Doctor(const std::string& name_, char gender_, const std::string& birthday_, const std::string &phoneNumber_, const std::string& specialization_, const std::string& doctorStatus_, const std::string& email_);
 
         ~Doctor() = default;
 

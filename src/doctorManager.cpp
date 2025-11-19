@@ -46,11 +46,9 @@ const std::vector<int>& DoctorManager::getPatientsByDoctorID(int ID_) const{
 }
 
 std::vector<Doctor> DoctorManager::findDoctorsByName(const std::string& name) const {
-    std::string trimmedName = Utils::trimmed(name);
-
     std::vector<Doctor> result;
     for (const auto& pair : doctorTable) {
-        if (Utils::toLower(pair.second.getName()) == Utils::toLower(trimmedName)) {
+        if (Utils::toLower(pair.second.getName()) == Utils::toLower(Utils::trimmed(name))) {
             result.push_back(pair.second);
         }
     }

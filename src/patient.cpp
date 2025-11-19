@@ -1,11 +1,11 @@
 #include "patient.h"
 
-Patient::Patient(): Person(), bloodType("AB+"), allergies{"none"}, chronicDiseases{"none"}, nameMother("NGUYEN VAN B"), nameFather("NGUYEN VAN A"), medicalRecords() {
+Patient::Patient(): Person(), bloodType("AB+"), allergies{"none"}, chronicDiseases{"none"}, nameMother("NGUYEN VAN B"), nameFather("NGUYEN VAN A"), medicalRecordIDs() {
     int ID = static_cast<int>(IDHandler<Patient>::generateID());
     setID(ID);
 }
 
-Patient::Patient(const std::string &name_, char gender_, const Date &birthday_, const std::string &phoneNumber_, const std::string &bloodType_, const std::string &allergies_, const std::string &chronicDisease_, const std::string &nameMother_, const std::string &nameFather_) : Person(name_, gender_, birthday_, phoneNumber_) {
+Patient::Patient(const std::string &name_, char gender_, const std::string &birthday_, const std::string &phoneNumber_, const std::string &bloodType_, const std::string &allergies_, const std::string &chronicDisease_, const std::string &nameMother_, const std::string &nameFather_) : Person(name_, gender_, birthday_, phoneNumber_) {
 
     setBloodType(bloodType_);
     setAllergies(allergies_);
@@ -17,39 +17,36 @@ Patient::Patient(const std::string &name_, char gender_, const Date &birthday_, 
     setID(ID);
 } 
 
-void Patient::addMedicalRecord(const MedicalRecord& record) {
-    Utils::validMedicalRecord(record);
-    medicalRecords.push_back(record);
+void Patient::addMedicalRecord(int recordID) {
+    if (std::find(medicalRecordIDs.begin(), medicalRecordIDs.end(), recordID) != medicalRecordIDs.end()) {
+        throw std::invalid_argument("Medical record ID already exists for this patient.");
+    }
+    medicalRecordIDs.push_back(recordID);
 }   
 
 void Patient::setBloodType(const std::string &bloodType_) {
-    std::string trimmedBloodType = Utils::trimmed(bloodType_);
-    Utils::validBloodType(trimmedBloodType);
-    bloodType = trimmedBloodType;
+    Utils::validBloodType(Utils::trimmed(bloodType_));
+    bloodType = Utils::trimmed(bloodType_);
 }
 
 void Patient::setAllergies(const std::string &allergies_) {
-    std::string trimmedAllergy = Utils::trimmed(allergies_);
-    Utils::validName(trimmedAllergy);
-    allergies.push_back(trimmedAllergy);
+    Utils::validName(Utils::trimmed(allergies_));
+    allergies.push_back(Utils::trimmed(allergies_));
 }
 
 void Patient::setChronicDiseases(const std::string &chronicDiseases_) {
-    std::string trimmedDisease = Utils::trimmed(chronicDiseases_);
-    Utils::validName(trimmedDisease);
-    chronicDiseases.push_back(trimmedDisease);
+    Utils::validName(Utils::trimmed(chronicDiseases_));
+    chronicDiseases.push_back(Utils::trimmed(chronicDiseases_));
 }
 
 void Patient::setNameMother(const std::string &nameMother_) {
-    std::string trimmedName = Utils::trimmed(nameMother_);
-    Utils::validName(trimmedName);
-    nameMother = trimmedName;
+    Utils::validName(Utils::trimmed(nameMother_));
+    nameMother = Utils::trimmed(nameMother_);
 }
 
 void Patient::setNameFather(const std::string &nameFather_) {
-    std::string trimmedName = Utils::trimmed(nameFather_);
-    Utils::validName(trimmedName);
-    nameFather = trimmedName;
+    Utils::validName(Utils::trimmed(nameFather_));
+    nameFather = Utils::trimmed(nameFather_);
 }
 
 std::string Patient::getInfo() const {
@@ -77,10 +74,11 @@ nlohmann::json Patient::toJson() const {
     j["allergies"] = allergies;
     j["chronicDiseases"] = chronicDiseases;
     // Serialize medicalRecords as array of json objects
-    j["medicalRecords"] = nlohmann::json::array();
-    for (const auto& record : medicalRecords) {
-        j["medicalRecords"].push_back(record.toJson());
+    nlohmann::json medicalRecordIDsJson;
+    for (const auto& ID : medicalRecordIDs) {
+        medicalRecordIDsJson.push_back(ID);
     }
+    j["medicalRecordIDs"] = medicalRecordIDsJson;
     return j;
 }
 
@@ -103,12 +101,10 @@ void Patient::fromJson(const nlohmann::json &j) {
     if (j.contains("nameFather")) nameFather = j.at("nameFather").get<std::string>();
     if (j.contains("allergies")) allergies = j.at("allergies").get<std::vector<std::string>>();
     if (j.contains("chronicDiseases")) chronicDiseases = j.at("chronicDiseases").get<std::vector<std::string>>();
-    if (j.contains("medicalRecords")) {
-        medicalRecords.clear();
-        for (const auto& recJson : j.at("medicalRecords")) {
-            MedicalRecord rec;
-            rec.fromJson(recJson);
-            medicalRecords.push_back(rec);
+    medicalRecordIDs.clear();
+    if (j.contains("medicalRecordIDs")) {
+        for (const auto& id : j.at("medicalRecordIDs")) {
+            medicalRecordIDs.push_back(id.get<int>());
         }
     }
 }

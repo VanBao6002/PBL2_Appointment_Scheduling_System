@@ -13,35 +13,29 @@ void User::setID(int ID_) {
     ID = ID_;
 }
 
-void User::setRole(const std::string &role_) {
-    std::string trimmedRole = Utils::trimmed(role_);
-    userRole = roleFromString(trimmedRole);
+void User::setRole(const std::string &role_){
+    userRole = roleFromString(Utils::trimmed(role_));
 }
 
-void User::setUsername(const std::string &username_) {
-    std::string trimmedUsername = Utils::trimmed(username_);
-    Utils::validUserName(trimmedUsername);
-    username = trimmedUsername;
+void User::setUsername(const std::string &username_){
+    Utils::validUserName(Utils::trimmed(username_));
+    username = Utils::trimmed(username_);
+}   
+
+void User::setPassword(const std::string &password_){
+    Utils::validPassword(Utils::trimmed(password_));
+    passwordHash = Utils::hashFunc(Utils::trimmed(password_));
 }
 
-void User::setPassword(const std::string &password_) {
-    std::string trimmedPassword = Utils::trimmed(password_);
-    Utils::validPassword(trimmedPassword);
-    passwordHash = Utils::hashFunc(trimmedPassword);
-}
-
-User::Role User::roleFromString(const std::string& str) {
-    std::string lower = str;
-    std::transform(lower.begin(), lower.end(), lower.begin(), ::tolower);
-
-    if (lower == "admin") return Role::ADMIN;
-    if (lower == "assistant") return Role::ASSISTANT;
-    if (lower == "doctor") return Role::DOCTOR;
+User::Role User::roleFromString (const std::string& str) {
+    if (Utils::toLower(str) == "admin") return Role::ADMIN;
+    if (Utils::toLower(str) == "assistant") return Role::ASSISTANT;
+    if (Utils::toLower(str) == "doctor") return Role::DOCTOR;
 
     throw std::invalid_argument("Unknown role: " + str);
 }
 
-std::string User::roleToString(Role role) {
+std::string User::roleToString (Role role) {
     switch (role) {
         case Role::ADMIN:     return "ADMIN";
         case Role::ASSISTANT: return "ASSISTANT";
