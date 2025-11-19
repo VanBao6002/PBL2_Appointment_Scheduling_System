@@ -48,14 +48,16 @@ void Doctor::removePatientID(int patientID_) {
 
 std::string Doctor::getInfo() const{
     std::string info = "Doctor Info:\n";
+    info += "ID: " + std::to_string(getID()) + "\n";
     info += "Name: " + getName() + "\n";
     info += "Gender: " + std::string(1, getGender()) + "\n";
     info += "Birthday: " + getBirthday().toString() + "\n"; 
-    info += "ID: " + std::to_string(getID()) + "\n";
+    info += "Phone Number: " + phoneNumber + "\n";
     info += "Specialization: " + specialization + "\n";
     info += "Status: ";
     std::string statusStr = (doctorStatus == Doctor::Status::Available) ? "Available" : "Unavailable";
     info += (doctorStatus == Doctor::Status::Available) ? "Available\n" : "Unavailable\n";
+    info += "Email: " + email + "\n";
     info += "Patient IDs: ";
     for (const auto& pid : patientIDs) {
         info += std::to_string(pid) + " ";

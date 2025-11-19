@@ -153,9 +153,6 @@ nlohmann::json MedicalRecord::toJson() const {
     j["bodyTemperature"] = bodyTemperature;
     j["treatment"] = treatment;
     j["doctorNotes"] = doctorNotes;
-    j["followUpDates"] = Utils::datesToJson(followUpDates);
-    j["prescriptions"] = Utils::prescriptionsToJson(prescriptions);
-    j["changeHistory"] = Utils::datesToJson(changeHistory);
     return j;
 }
 
@@ -173,8 +170,5 @@ void MedicalRecord::fromJson(const nlohmann::json &j) {
     setBodyTemperature(j.at("bodyTemperature").get<float>());
     setTreatment(j.at("treatment").get<std::string>());
     setDoctorNotes(j.at("doctorNotes").get<std::string>());
-    followUpDates = Utils::jsonToDates(j.at("followUpDates"));
-    prescriptions = Utils::jsonToPrescriptions(j.at("prescriptions"));
-    changeHistory = Utils::jsonToDates(j.at("changeHistory"));
 }
 
