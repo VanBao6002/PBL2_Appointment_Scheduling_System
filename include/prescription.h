@@ -3,14 +3,15 @@
 #include <string>
 #include <vector>
 #include "date.h"
-#include "IDHandler.h"
 #include "json.hpp"
 class Prescription{
+    public:
+        enum class Status {Active, Inactive};
+
     private:
         // Thông tin cơ bản của đơn thuốc
         int ID;
-        int patientID;
-        int doctorID;
+        int medicalRecordID;
         Date prescriptionDate;    // Ngày kê đơn
         
         // Thông tin về thuốc
@@ -21,29 +22,26 @@ class Prescription{
             int duration;            // Số ngày uống
             std::string instruction; // Hướng dẫn sử dụng (vd: "Uống sau ăn")
         };
-        std::vector<Medicine> medicines;  // Danh sách các thuốc trong đơn
-        std::string diagnosis;           // Chẩn đoán bệnh
+        std::vector<Medicine> medicines;  // Danh sách các thuốc trong đơn        
         std::string additionalNotes;     // Ghi chú thêm của bác sĩ
-        bool isActive;                   // Đơn thuốc còn hiệu lực hay không
+        Status prescriptionStatus;       // Đơn thuốc còn hiệu lực hay không
 
     public:
         Prescription();
-        Prescription(int patientID, int doctorID);
-        ~Prescription() = default;
+        Prescription(int medicalRecordID_, const std::string& prescriptionDate_, const std::string& additionalNotes_, const std::string& prescriptionStatus_);
+        ~Prescription();
         
-        int getPrescriptionID() const;
-        int getPatientID() const;
-        int getDoctorID() const;
-        Date getPrescriptionDate() const;
+        int getID() const;
+        int getMedicalRecordID () const;
+        Date getDate() const;
         const std::vector<Medicine> &getMedicines() const;
-        std::string getDiagnosis() const;
         std::string getAdditionalNotes() const;
-        bool getIsActive() const;
+        Prescription::Status getStatus() const;
 
-        void setPrescriptionDate(const Date& date);
-        void setDiagnosis(const std::string& diagnosis);
-        void setAdditionalNotes(const std::string& notes);
-        void setIsActive(bool active);
+        void setMedicalRecordID (int medicalRecordID_);
+        void setDate(const std::string& date_);
+        void setAdditionalNotes(const std::string& notes_);
+        void setStatus(const std::string& status_);
 
         // Quản lý thuốc trong đơn
         void addMedicine(const std::string& name, 
@@ -58,9 +56,19 @@ class Prescription{
         void updateMedicineInstruction(const std::string& name, const std::string& newInstruction);
         
         // convertor
+        static Prescription::Status statusFromString(const std::string& str);
+        static std::string statusToString(Status status);
         nlohmann::json toJson() const;
         void fromJson(const nlohmann::json &j);
         
+        // helper
+        Medicine* findMed(const std::string& name) {
+            for (auto& m : medicines) {
+                if (m.name == name) return &m;
+            }
+            return nullptr;
+        }
+
     private:
         void setID(int ID);
 };

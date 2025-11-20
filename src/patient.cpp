@@ -3,6 +3,7 @@
 Patient::Patient(): Person(), bloodType("AB+"), allergies{"none"}, chronicDiseases{"none"}, nameMother("NGUYEN VAN B"), nameFather("NGUYEN VAN A"), medicalRecordIDs() {
     int ID = static_cast<int>(IDHandler<Patient>::generateID());
     setID(ID);
+    IDHandler<Patient>::registerID(ID);
 }
 
 Patient::Patient(const std::string &name_, char gender_, const std::string &birthday_, const std::string &phoneNumber_, const std::string &bloodType_, const std::string &allergies_, const std::string &chronicDisease_, const std::string &nameMother_, const std::string &nameFather_) : Person(name_, gender_, birthday_, phoneNumber_) {
@@ -15,7 +16,12 @@ Patient::Patient(const std::string &name_, char gender_, const std::string &birt
 
     int ID = static_cast<int>(IDHandler<Patient>::generateID());
     setID(ID);
+    IDHandler<Patient>::registerID(ID);
 } 
+
+Patient::~Patient(){
+    IDHandler<Patient>::unregisterID(ID);
+}
 
 void Patient::addMedicalRecord(int recordID) {
     if (std::find(medicalRecordIDs.begin(), medicalRecordIDs.end(), recordID) != medicalRecordIDs.end()) {

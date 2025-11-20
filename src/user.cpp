@@ -1,12 +1,19 @@
 #include "user.h"
+#include "appointment.h"
+#include "IDHandler.h"
 
 User::User(const std::string &userRole_, const std::string &username_, const std::string &userPassword_) {
     setRole(userRole_);
     setUsername(username_);
     setPassword(userPassword_);
 
-    // gán đúng vào thuộc tính class
-    ID = IDHandler<User>::generateID();
+    int ID = static_cast<int>(IDHandler<Appointment>::generateID());
+    setID(ID);
+    IDHandler<User>::registerID(ID);
+}
+
+User::~User(){
+    IDHandler<User>::unregisterID(ID);
 }
 
 void User::setID(int ID_) {

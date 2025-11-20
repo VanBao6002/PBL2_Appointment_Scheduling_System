@@ -40,7 +40,7 @@ class MedicalRecord{
                       const std::vector<Date>& followUpDates_, const std::vector<Prescription>& prescriptions_,
                       const std::string& changeHistory_);
 
-        ~MedicalRecord() = default;
+        ~MedicalRecord();
         
         int getID() const;
         int getPatientID() const;
