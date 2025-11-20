@@ -1,19 +1,25 @@
 #include "doctor.h"
 
 
-Doctor::Doctor() : Person(), specialization(""), patientIDs(), doctorStatus(Status::Available), phoneNumber(""), email(""){
+Doctor::Doctor() : Person(), specialization(""), patientIDs(), doctorStatus(Status::Available){
     int ID = static_cast<int>(IDHandler<Doctor>::generateID());
     setID(ID);
+    IDHandler<Doctor>::registerID(ID);
 }
-Doctor::Doctor(const std::string& name_, char gender_, const std::string& birthday_, const std::string &phoneNumber_, const std::string& specialization_, const std::string& doctorStatus_,  const std::string& email_) : Person(name_, gender_, birthday_, phoneNumber_) {
+Doctor::Doctor(const std::string& name_, char gender_, const std::string& birthday_, const std::string &phoneNumber_, const std::string& email_, const std::string& specialization_, const std::string& doctorStatus_) : Person(name_, gender_, birthday_, phoneNumber_) {
 
+    setEmail(email_);
     setSpecialization(specialization_);
     setStatus(doctorStatus_);
-    setEmail(email_);
 
     int ID = static_cast<int>(IDHandler<Doctor>::generateID());
     setID(ID);
+    IDHandler<Doctor>::registerID(ID);
 } 
+
+Doctor::~Doctor(){
+    IDHandler<Doctor>::unregisterID(ID);
+}
 
 void Doctor::setSpecialization(const std::string &specialization_){
     Utils::validSpecialization(Utils::trimmed(specialization_));
@@ -25,7 +31,7 @@ void Doctor::setStatus(const std::string& doctorStatus_){
 }
 
 void Doctor::setEmail(const std::string &email_){
-    Utils::validEmail(Utils::trimmed(email_));
+    Utils::validName(Utils::trimmed(email_));
     email = Utils::trimmed(email_);
 }
 
@@ -83,6 +89,8 @@ nlohmann::json Doctor::toJson() const {
         {"month", birthday.getMonth()},
         {"year", birthday.getYear()}
     };
+    j["phoneNumber"] = phoneNumber;
+    j["email"] = email;
     j["specialization"] = specialization;
     nlohmann::json patientIDsJson;
     for (const auto& pid : patientIDs) {
@@ -90,8 +98,6 @@ nlohmann::json Doctor::toJson() const {
     }
     j["patientIDs"] = patientIDsJson;
     j["doctorStatus"] = (doctorStatus == Status::Available) ? "Available" : "Unavailable";
-    j["phoneNumber"] = phoneNumber;
-    j["email"] = email;
     return j;
 }
 
@@ -109,14 +115,15 @@ void Doctor::fromJson(const nlohmann::json &j) {
         int y = bd.value("year", 2000);
         birthday = Date(d, m, y);
     }
-    if (j.contains("specialization")) specialization = j.at("specialization").get<std::string>();
-    if (j.contains("doctorStatus")) doctorStatus = statusFromString(j.at("doctorStatus").get<std::string>());
     if (j.contains("phoneNumber")) phoneNumber = j.at("phoneNumber").get<std::string>();
     if (j.contains("email")) email = j.at("email").get<std::string>();
+    if (j.contains("specialization")) specialization = j.at("specialization").get<std::string>();
     if (j.contains("patientIDs")) {
         patientIDs.clear();
         for (const auto& pid : j.at("patientIDs")) {
             patientIDs.push_back(pid.get<int>());
         }
     }
+    if (j.contains("doctorStatus")) doctorStatus = statusFromString(j.at("doctorStatus").get<std::string>());
+    
 }

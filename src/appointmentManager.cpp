@@ -2,16 +2,15 @@
 
 void AppointmentManager::addAppointment(const Appointment &apt_) {
     int ID_ = apt_.getID();
-    if (IDHandler<Appointment>::checkDuplicate(ID_)) {
+    if (appointmentTable.find(ID_) != appointmentTable.end()) {
         throw std::invalid_argument("Adding failed. Appointment ID " + std::to_string(apt_.getID()) + " already exists.");
     }
     appointmentTable[ID_] = apt_;
     log[ID_] += " Added on: " + Utils::getDateTime();
-    IDHandler<Appointment>::registerID(ID_);
 }
 
 void AppointmentManager::editAppointment(int ID_, const Appointment &newAppointment) {
-    if (!IDHandler<Appointment>::checkDuplicate(ID_)) {
+    if (appointmentTable.find(ID_) == appointmentTable.end()) {
         throw std::invalid_argument("Editing failed. Appointment ID " + std::to_string(newAppointment.getID()) + " not found.");
     }
     appointmentTable[ID_] = newAppointment;
@@ -19,16 +18,15 @@ void AppointmentManager::editAppointment(int ID_, const Appointment &newAppointm
 }
 
 void AppointmentManager::removeAppointment(int ID_) {
-    if (!IDHandler<Appointment>::checkDuplicate(ID_)) {
+    if (appointmentTable.find(ID_) == appointmentTable.end()) {
         throw std::invalid_argument("Removing failed. Appointment ID " + std::to_string(ID_) + " not found.");
     }
     appointmentTable.erase(ID_);
     log.erase(ID_);
-    IDHandler<Appointment>::unregisterID(ID_);
 }
 
 const Appointment& AppointmentManager::getAppointmentByID(int ID_) const {
-    if (!IDHandler<Appointment>::checkDuplicate(ID_)) {
+    if (appointmentTable.find(ID_) == appointmentTable.end()) {
         throw std::invalid_argument("Failed getting. Appointment ID " + std::to_string(ID_) + " not found.");
     }
     return appointmentTable.at(ID_);
@@ -43,7 +41,7 @@ const std::unordered_map<int, std::string>& AppointmentManager::getAllLog() cons
 }
 
 const std::string& AppointmentManager::getIDLog(int ID_) const {
-    if (!IDHandler<Appointment>::checkDuplicate(ID_)) {
+    if (log.find(ID_) == log.end()) {
         throw std::invalid_argument("Failed getting log. Appointment ID " +  std::to_string(ID_) + " not found.");
     }
     return log.at(ID_);

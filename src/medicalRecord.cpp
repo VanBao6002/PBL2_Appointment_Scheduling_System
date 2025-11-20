@@ -6,6 +6,7 @@ MedicalRecord::MedicalRecord() : patientID(0), doctorID(0), creationDate(Date())
 
     int ID = static_cast<int>(IDHandler<MedicalRecord>::generateID());
     setID(ID);
+    IDHandler<MedicalRecord>::registerID(ID);
 }
 
 MedicalRecord::MedicalRecord(int patientID_, int doctorID_, const std::string& creationDate_, const std::string& lastUpdated_, const std::string& diagnosis_, const std::string& symptoms_, const std::string& testResults_, const std::string& bloodPressure_, int heartRate_, float bodyTemperature_, const std::string& treatment_, const std::string& doctorNotes_, const std::vector<Date>& followUpDates_, const std::vector<Prescription>& prescriptions_, const std::string& changeHistory_) {
@@ -28,8 +29,12 @@ MedicalRecord::MedicalRecord(int patientID_, int doctorID_, const std::string& c
 
     int ID = static_cast<int>(IDHandler<MedicalRecord>::generateID());
     setID(ID);
+    IDHandler<MedicalRecord>::registerID(ID);
 }
 
+MedicalRecord::~MedicalRecord(){
+    IDHandler<MedicalRecord>::unregisterID(ID);
+}
 
 int MedicalRecord::getID() const {
     return ID;
@@ -103,6 +108,8 @@ void MedicalRecord::setLastUpdated(const std::string& lastUpdated_) {
 }
 
 void MedicalRecord::setDiagnosis(const std::string& diagnosis_) {
+    if (diagnosis_.empty())
+        throw std::invalid_argument("Diagnosis cannot be empty.");
     diagnosis = Utils::trimmed(diagnosis_);
 }
 void MedicalRecord::setSymptoms(const std::string& symptoms_) {
@@ -121,7 +128,8 @@ void MedicalRecord::setDoctorNotes(const std::string& notes) {
     doctorNotes = Utils::trimmed(notes);
 }
 void MedicalRecord::setHeartRate(int rate) {
-    if (rate < 30 || rate > 220) throw std::out_of_range("Heart rate out of realistic range.");
+    if (rate < 30 || rate > 220)
+        throw std::out_of_range("Heart rate out of realistic range.");
     heartRate = rate;
 }
 void MedicalRecord::setBodyTemperature(float temp) {
@@ -153,6 +161,13 @@ nlohmann::json MedicalRecord::toJson() const {
     j["bodyTemperature"] = bodyTemperature;
     j["treatment"] = treatment;
     j["doctorNotes"] = doctorNotes;
+    j["followUpDates"] = nlohmann::json::array();
+    for (const auto& date : followUpDates)
+        j["followUpDates"].push_back(date.toString());
+    j["prescriptions"] = nlohmann::json::array();
+    for (const auto& p : prescriptions)
+        j["prescriptions"].push_back(p.toJson());
+    j["history"] = history.toString();
     return j;
 }
 
@@ -170,5 +185,16 @@ void MedicalRecord::fromJson(const nlohmann::json &j) {
     setBodyTemperature(j.at("bodyTemperature").get<float>());
     setTreatment(j.at("treatment").get<std::string>());
     setDoctorNotes(j.at("doctorNotes").get<std::string>());
+    followUpDates.clear();
+    for (const auto& dateStr : j.at("followUpDates")) {
+        followUpDates.push_back(Date::fromString(dateStr.get<std::string>()));
+    }
+    prescriptions.clear();
+    for (const auto& presJson : j.at("prescriptions")) {
+        Prescription pres;
+        pres.fromJson(presJson);
+        prescriptions.push_back(pres);
+    }
+    setChangeHistory(j.at("history").get<std::string>());
 }
 

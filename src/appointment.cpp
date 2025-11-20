@@ -3,6 +3,7 @@
 Appointment::Appointment(): doctorID(0), patientID(0), date(), time("00::00::00"), room("00A"), status(Status::Scheduled) {
     int ID = static_cast<int>(IDHandler<Appointment>::generateID());
     setID(ID);
+    IDHandler<Appointment>::registerID(ID);
 }
 
 Appointment::Appointment(int doctorID, int patientID, const std::string& date_, const std::string& time_, const std::string& room_, const std::string& status_) {
@@ -16,6 +17,11 @@ Appointment::Appointment(int doctorID, int patientID, const std::string& date_, 
 
     int ID = static_cast<int>(IDHandler<Appointment>::generateID());
     setID(ID);
+    IDHandler<Appointment>::registerID(ID);
+}
+
+Appointment::~Appointment(){
+    IDHandler<Appointment>::unregisterID(ID);
 }
 
 void Appointment::setID(int ID_) {
