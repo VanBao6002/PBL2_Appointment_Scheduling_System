@@ -22,9 +22,9 @@ void AppointmentManager::removeAppointment(int ID_) {
     if (!IDHandler<Appointment>::checkDuplicate(ID_)) {
         throw std::invalid_argument("Removing failed. Appointment ID " + std::to_string(ID_) + " not found.");
     }
+    IDHandler<Appointment>::unregisterID(ID_);
     appointmentTable.erase(ID_);
     log.erase(ID_);
-    IDHandler<Appointment>::unregisterID(ID_);
 }
 
 const Appointment& AppointmentManager::getAppointmentByID(int ID_) const {

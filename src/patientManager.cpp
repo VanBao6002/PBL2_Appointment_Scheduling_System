@@ -25,7 +25,6 @@ void PatientManager::removePatient(int ID_){
     IDHandler<Patient>::unregisterID(ID_);
     patientTable.erase(ID_);
     log.erase(ID_);
-    log[ID_] += " Removed on: " + Utils::getDateTime();
 }
 
 // Getters

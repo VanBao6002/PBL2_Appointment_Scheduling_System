@@ -22,9 +22,9 @@ void UserManager::removeUser(int ID_){
     if (!IDHandler<User>::checkDuplicate(ID_)){
         throw std::invalid_argument("Removing failed. User ID " + std::to_string(ID_) + " not found.");
     }
+    IDHandler<User>::unregisterID(ID_);
     userTable.erase(ID_);
     log.erase(ID_);
-    IDHandler<User>::unregisterID(ID_);
 }
 
 void UserManager::changeRole(int ID_, const std::string& newRole){

@@ -22,9 +22,9 @@ void DoctorManager::removeDoctor(int ID_){
     if (!IDHandler<Doctor>::checkDuplicate(ID_)) {
         throw std::invalid_argument("Removing failed. Doctor ID " + std::to_string(ID_) + " not found.");
     }
+    IDHandler<Doctor>::unregisterID(ID_);
     doctorTable.erase(ID_);
     log.erase(ID_);
-    IDHandler<Doctor>::unregisterID(ID_);
 }
 
 const Doctor& DoctorManager::getDoctorByID(int ID_) const{

@@ -9,7 +9,7 @@
 #include "medicalRecord.h"
 
 
-class MedicalRecordManager{
+class MedicalRecordManager {
     private:    
         std::unordered_map<int, std::string> log;
         std::unordered_map<int, MedicalRecord> MedicalRecordTable;

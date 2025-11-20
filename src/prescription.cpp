@@ -1,4 +1,6 @@
 #include "prescription.h"
+#include "IDHandler.h"
+#include "utils.h"
 #include <algorithm>
 #include <fstream>
 #include <vector>
@@ -6,24 +8,27 @@
 #include <limits>
 #include <iostream>
 
-Prescription::Prescription(): patientID(0), doctorID(0), prescriptionDate(Date()), diagnosis(""), additionalNotes(""), isActive(true) {
+Prescription::Prescription(): medicalRecordID(0), prescriptionDate(Date()), medicines(), additionalNotes(""), prescriptionStatus(Status::Active) {
     ID = static_cast<int>(IDHandler<Prescription>::generateID());
     setID(ID);
 }
 
-Prescription::Prescription(int patientID_, int doctorID_): patientID(patientID_), doctorID(doctorID_),prescriptionDate(Date()), diagnosis(""), additionalNotes(""), isActive(true) {
+Prescription::Prescription(int medicalRecordID_, const std::string& prescriptionDate_, const std::string& additionalNotes_, const std::string& prescriptionStatus_) {
+
+    setMedicalRecordID(medicalRecordID_);
+    setDate(prescriptionDate_);
+    setAdditionalNotes(additionalNotes_);
+    setStatus(prescriptionStatus_);
+
     ID = static_cast<int>(IDHandler<Prescription>::generateID());
     setID(ID);
 }
 
-int Prescription::getPrescriptionID() const {
+int Prescription::getID() const {
     return ID;
 }
-int Prescription::getPatientID() const {
-    return patientID;
-}
-int Prescription::getDoctorID() const {
-    return doctorID;
+int Prescription::getMedicalRecordID () const {
+    return medicalRecordID;
 }
 Date Prescription::getPrescriptionDate() const {
     return prescriptionDate;
@@ -31,31 +36,34 @@ Date Prescription::getPrescriptionDate() const {
 const std::vector<Prescription::Medicine> &Prescription::getMedicines() const {
     return medicines;
 }
-std::string Prescription::getDiagnosis() const {
-    return diagnosis;
-}
 std::string Prescription::getAdditionalNotes() const {
     return additionalNotes;
 }
-bool Prescription::getIsActive() const {
-    return isActive;
+Prescription::Status Prescription::getPrescriptionStatus() const {
+    return prescriptionStatus;
 }
 
 void Prescription::setID(int ID_){
     ID = ID_;
 }
+void Prescription::setMedicalRecordID(int medicalRecordID_) {
+    if (IDHandler<MedicalRecord>::checkDuplicate(medicalRecordID_)) {
+        throw std::invalid_argument("MedicalRecord ID already existed.");
+    }
+    medicalRecordID = medicalRecordID_;
+}
+void Prescription::setDate(const std::string& date_) {
+    Utils::validDate(Date::fromString(Utils::trimmed(date_)));
+    date = Date::fromString(Utils::trimmed(date_));
+}
 
-void Prescription::setPrescriptionDate(const Date& date) {
-    prescriptionDate = date;
+void Prescription::setAdditionalNotes(const std::string& notes_) {
+    Utils::validName(Utils::trimmed(notes_));
+    additionalNotes = Utils::trimmed(notes_)
 }
-void Prescription::setDiagnosis(const std::string& diagnosis_) {
-    diagnosis = diagnosis_;
-}
-void Prescription::setAdditionalNotes(const std::string& notes) {
-    additionalNotes = notes;
-}
-void Prescription::setIsActive(bool active) {
-    isActive = active;
+
+void Prescription::setStatus(const std::string& status_){
+    status = statusFromString(Utils::trimmed(status_));
 }
 
 // Quản lý thuốc trong đơn
@@ -112,15 +120,25 @@ void Prescription::updateMedicineInstruction(const std::string& name, const std:
     }
 }
 
+Prescription::Status Prescription::statusFromString(const std::string& str){
+    if (Utils::toLower(str) == "active") return Prescription::Status::Active;
+    if (Utils::toLower(str) == "inactive") return Prescription::Status::Inactive;
+    throw std::invalid_argument("Unknown status: " + str);
+}
+
+std::string Prescription::statusToString(Status status) {
+    switch (status) {
+        case Status::Active: return "Active";
+        case Status::Inactive: return "Inactive";
+    }
+    return "Unknown";
+}
+
 nlohmann::json Prescription::toJson() const {
     nlohmann::json j;
     j["ID"] = ID;
-    j["patientID"] = patientID;
-    j["doctorID"] = doctorID;
-    j["prescriptionDate"] = prescriptionDate.toString(); // assuming Date has toString()
-    j["diagnosis"] = diagnosis;
-    j["additionalNotes"] = additionalNotes;
-    j["isActive"] = isActive;
+    j["medicalRecordID"] = medicalRecordID;
+    j["prescriptionDate"] = prescriptionDate.toString();
     j["medicines"] = nlohmann::json::array();
     for (const auto& med : medicines) {
         j["medicines"].push_back({
@@ -131,25 +149,32 @@ nlohmann::json Prescription::toJson() const {
             {"instruction", med.instruction}
         });
     }
+    j["additionalNotes"] = additionalNotes;
+    j["prescriptionStatus"] = statusToString(prescriptionStatus);
+    
     return j;
 }
-
+// Deserialize Prescription from JSON
 void Prescription::fromJson(const nlohmann::json &j) {
-    ID = j.at("ID").get<int>();
-    patientID = j.at("patientID").get<int>();
-    doctorID = j.at("doctorID").get<int>();
-    prescriptionDate = Date::fromString(j.at("prescriptionDate").get<std::string>()); // assuming Date::fromString()
-    diagnosis = j.at("diagnosis").get<std::string>();
-    additionalNotes = j.at("additionalNotes").get<std::string>();
-    isActive = j.at("isActive").get<bool>();
-    medicines.clear();
-    for (const auto& medj : j.at("medicines")) {
-        medicines.push_back(Medicine{
-            medj.at("name").get<std::string>(),
-            medj.at("dosage").get<std::string>(),
-            medj.at("frequency").get<int>(),
-            medj.at("duration").get<int>(),
-            medj.at("instruction").get<std::string>()
-        });
+    if (j.contains("ID")) ID = j.at("ID").get<int>();
+    if (j.contains("medicalRecordID")) medicalRecordID = j.at("medicalRecordID").get<int>();
+    if (j.contains("prescriptionDate")) 
+        prescriptionDate = Date::fromString(j.at("prescriptionDate").get<std::string>());
+    if (j.contains("medicines")) {
+        medicines.clear();
+        for (const auto& medj : j.at("medicines")) {
+            medicines.push_back(Medicine{
+                medj.value("name", ""),
+                medj.value("dosage", ""),
+                medj.value("frequency", 0),
+                medj.value("duration", 0),
+                medj.value("instruction", "")
+            });
+        }
     }
+    if (j.contains("additionalNotes")) 
+        additionalNotes = j.at("additionalNotes").get<std::string>();
+    if (j.contains("prescriptionStatus")) 
+        prescriptionStatus = statusFromString(j.at("prescriptionStatus").get<std::string>());
+    
 }

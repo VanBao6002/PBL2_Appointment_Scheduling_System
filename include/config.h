@@ -9,5 +9,6 @@ namespace Config {
     constexpr const char* PATIENT_PATH = "data/doctor.json";
     constexpr const char* APPOINTMENT_PATH = "data/doctor.json";
     constexpr const char* USER_PATH = "data/doctor.json";
+    constexpr const char* LOG_PATH = "data/log.txt";
 
 }

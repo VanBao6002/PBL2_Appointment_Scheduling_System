@@ -51,7 +51,20 @@ void Patient::setNameFather(const std::string &nameFather_) {
 
 std::string Patient::getInfo() const {
     std::string info = "Patient Info:\n";
+    info += "ID: " + std::to_string(getID()) + "\n";
+    info += "Name: " + getName() + "\n";
+    info += "Gender: " + std::string(1, getGender()) + "\n";
+    info += "Birthday: " + getBirthday().toString() + "\n";
+    info += "Phone Number: " + phoneNumber + "\n";
     info += "\nBlood Type: " + bloodType;
+    info += "\nAllergies: ";
+    for (const auto& allergy : allergies) {
+        info += allergy + " ";
+    }
+    info += "\nChronic Diseases: ";
+    for (const auto& disease : chronicDiseases) {
+        info += disease + " ";
+    }
     info += "\nMother's Name: " + nameMother;
     info += "\nFather's Name: " + nameFather;
     return info;

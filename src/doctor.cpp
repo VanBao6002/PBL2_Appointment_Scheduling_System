@@ -52,11 +52,12 @@ std::string Doctor::getInfo() const{
     info += "Name: " + getName() + "\n";
     info += "Gender: " + std::string(1, getGender()) + "\n";
     info += "Birthday: " + getBirthday().toString() + "\n"; 
-    info += "Phonenumber: " + getPhoneNumber() + "\n"; 
+    info += "Phone Number: " + phoneNumber + "\n";
     info += "Specialization: " + specialization + "\n";
     info += "Status: ";
     std::string statusStr = (doctorStatus == Doctor::Status::Available) ? "Available" : "Unavailable";
     info += (doctorStatus == Doctor::Status::Available) ? "Available\n" : "Unavailable\n";
+    info += "Email: " + email + "\n";
     info += "Patient IDs: ";
     for (const auto& pid : patientIDs) {
         info += std::to_string(pid) + " ";

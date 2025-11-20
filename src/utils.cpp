@@ -229,6 +229,7 @@ void Utils::validBloodType(const std::string &bloodType_){
 }
 
 void Utils::validUserName(const std::string &username_){
+    Utils::validName(name_);
     if (username_.size() < 4 || username_.size() > 20){
         throw std::invalid_argument("Username: " + username_ + " is not valid.");
     }
@@ -294,7 +295,7 @@ void Utils::validPrescription(const Prescription &prescription_) {
     }
 }
 
-static void validEmail(const std::string& email) {
+void Utils::validEmail(const std::string& email) {
     // Trim khoảng trắng 2 đầu
     std::string e = Utils::trimmed(email);
     const std::regex pattern(
@@ -304,8 +305,6 @@ static void validEmail(const std::string& email) {
         throw std::invalid_argument("Invalid email format: " + email);
     }
 }
-
-
 
 void Utils::writeJsonToFile(const std::string& filePath, const nlohmann::json& j){
     std::ofstream outFile(filePath);
