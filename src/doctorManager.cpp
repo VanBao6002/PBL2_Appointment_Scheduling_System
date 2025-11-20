@@ -2,16 +2,15 @@
 
 void DoctorManager::addDoctor(const Doctor &doc_) {
     int ID_ = doc_.getID();
-    if (IDHandler<Doctor>::checkDuplicate(ID_)) {
+    if (doctorTable.find(ID_) != doctorTable.end()) {
         throw std::invalid_argument("Adding failed. Doctor ID " + std::to_string(doc_.getID()) + " already exists.");
     }
     doctorTable[ID_] = doc_;
     log[ID_] += " Added on: " + Utils::getDateTime();
-    IDHandler<Doctor>::registerID(ID_);
 }
 
 void DoctorManager::editDoctor(int ID_, const Doctor &newDoctor){
-    if (!IDHandler<Doctor>::checkDuplicate(ID_)) {
+    if (doctorTable.find(ID_) == doctorTable.end()) {
         throw std::invalid_argument("Editing failed. Doctor ID " + std::to_string(newDoctor.getID()) + " not found.");
     }
     doctorTable[ID_] = newDoctor;
@@ -19,16 +18,15 @@ void DoctorManager::editDoctor(int ID_, const Doctor &newDoctor){
 }
                                                                                                                                                
 void DoctorManager::removeDoctor(int ID_){
-    if (!IDHandler<Doctor>::checkDuplicate(ID_)) {
+    if (doctorTable.find(ID_) == doctorTable.end()) {
         throw std::invalid_argument("Removing failed. Doctor ID " + std::to_string(ID_) + " not found.");
     }
-    IDHandler<Doctor>::unregisterID(ID_);
     doctorTable.erase(ID_);
     log.erase(ID_);
 }
 
 const Doctor& DoctorManager::getDoctorByID(int ID_) const{
-    if (!IDHandler<Doctor>::checkDuplicate(ID_)) {
+    if (doctorTable.find(ID_) == doctorTable.end()) {
         throw std::invalid_argument("Failed getting. Doctor ID " + std::to_string(ID_) + " not found.");
     }
     return doctorTable.at(ID_);
@@ -39,7 +37,7 @@ const std::unordered_map<int, Doctor>& DoctorManager::getAllDoctors() const{
 }
 
 const std::vector<int>& DoctorManager::getPatientsByDoctorID(int ID_) const{
-    if (!IDHandler<Doctor>::checkDuplicate(ID_)) {
+    if (doctorTable.find(ID_) == doctorTable.end()) {
         throw std::invalid_argument("Cannot get patients list. Doctor ID " + std::to_string(ID_) + " not found.");
     }
     return doctorTable.at(ID_).getPatientIDs();
@@ -61,7 +59,7 @@ const std::unordered_map<int, std::string>& DoctorManager::getAllLog() const {
 }
 
 const std::string& DoctorManager::getIDLog(int ID_) const {
-    if (!IDHandler<Doctor>::checkDuplicate(ID_)) {
+    if (log.find(ID_) == log.end()) {
         throw std::invalid_argument("Failed getting log. Doctor ID " +  std::to_string(ID_) + " is not found.");
     }
     return log.at(ID_);

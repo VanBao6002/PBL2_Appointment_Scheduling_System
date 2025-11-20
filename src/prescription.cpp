@@ -11,6 +11,7 @@
 Prescription::Prescription(): medicalRecordID(0), prescriptionDate(Date()), medicines(), additionalNotes(""), prescriptionStatus(Status::Active) {
     ID = static_cast<int>(IDHandler<Prescription>::generateID());
     setID(ID);
+    IDHandler<Prescription>::registerID(ID);
 }
 
 Prescription::Prescription(int medicalRecordID_, const std::string& prescriptionDate_, const std::string& additionalNotes_, const std::string& prescriptionStatus_) {
@@ -22,6 +23,11 @@ Prescription::Prescription(int medicalRecordID_, const std::string& prescription
 
     ID = static_cast<int>(IDHandler<Prescription>::generateID());
     setID(ID);
+    IDHandler<Prescription>::registerID(ID);
+}
+
+Prescription::~Prescription(){
+    IDHandler<Prescription>::unregisterID(ID);
 }
 
 int Prescription::getID() const {
@@ -30,7 +36,7 @@ int Prescription::getID() const {
 int Prescription::getMedicalRecordID () const {
     return medicalRecordID;
 }
-Date Prescription::getPrescriptionDate() const {
+Date Prescription::getDate() const {
     return prescriptionDate;
 }
 const std::vector<Prescription::Medicine> &Prescription::getMedicines() const {
@@ -39,7 +45,7 @@ const std::vector<Prescription::Medicine> &Prescription::getMedicines() const {
 std::string Prescription::getAdditionalNotes() const {
     return additionalNotes;
 }
-Prescription::Status Prescription::getPrescriptionStatus() const {
+Prescription::Status Prescription::getStatus() const {
     return prescriptionStatus;
 }
 
@@ -47,77 +53,61 @@ void Prescription::setID(int ID_){
     ID = ID_;
 }
 void Prescription::setMedicalRecordID(int medicalRecordID_) {
-    if (IDHandler<MedicalRecord>::checkDuplicate(medicalRecordID_)) {
-        throw std::invalid_argument("MedicalRecord ID already existed.");
+    if (!IDHandler<MedicalRecord>::checkDuplicate(medicalRecordID_)) {
+        throw std::invalid_argument("MedicalRecord ID not found.");
     }
     medicalRecordID = medicalRecordID_;
 }
 void Prescription::setDate(const std::string& date_) {
     Utils::validDate(Date::fromString(Utils::trimmed(date_)));
-    date = Date::fromString(Utils::trimmed(date_));
+    prescriptionDate = Date::fromString(Utils::trimmed(date_));
 }
 
 void Prescription::setAdditionalNotes(const std::string& notes_) {
-    Utils::validName(Utils::trimmed(notes_));
-    additionalNotes = Utils::trimmed(notes_)
+    additionalNotes = Utils::trimmed(notes_);
 }
 
 void Prescription::setStatus(const std::string& status_){
-    status = statusFromString(Utils::trimmed(status_));
+    prescriptionStatus = statusFromString(Utils::trimmed(status_));
 }
 
 // Quản lý thuốc trong đơn
 void Prescription::addMedicine(const std::string& name, 
-                             const std::string& dosage,
-                             int frequency,
-                             int duration,
-                             const std::string& instruction) {
-    Medicine med = {name, dosage, frequency, duration, instruction};
-    for (const auto& m : medicines) { // tránh trùng tên thuốc trong cùng đơn
-        if (m.name == name) return; // hoặc update
+                            const std::string& dosage,
+                            int frequency,
+                            int duration,
+                            const std::string& instruction) {
+    for (auto& m : medicines) { // tránh trùng tên thuốc trong cùng đơn
+        if (m.name == name) {
+            m.dosage = dosage;
+            m.frequency = frequency;
+            m.duration = duration;
+            m.instruction = instruction;
+            return;
+        }
     }
     medicines.emplace_back(Medicine{name, dosage, frequency, duration, instruction});
 }
 void Prescription::removeMedicine(const std::string& name) {
     medicines.erase(std::remove_if(medicines.begin(), medicines.end(),
-                   [&name](const Medicine& med) { return med.name == name; }),
-                   medicines.end());
+                [&name](const Medicine& med) { return med.name == name; }),
+                medicines.end());
 }
 void Prescription::updateMedicineDosage(const std::string& name, const std::string& newDosage) {
-    auto it = std::find_if(medicines.begin(), medicines.end(),
-                        [&name](const Medicine& med){ return med.name == name; });
-    if (it != medicines.end()) {
-        it->dosage = newDosage; // thay đổi trường tương ứng
-    } else {
-        throw std::runtime_error("Medicine not found");
-    }
+    if (auto* m = findMed(name)) { m->dosage = newDosage; return; }
+    throw std::runtime_error("Medicine not found");
 }
 void Prescription::updateMedicineFrequency(const std::string& name, int newFrequency) {
-    auto it = std::find_if(medicines.begin(), medicines.end(),
-                        [&name](const Medicine& med){ return med.name == name; });
-    if (it != medicines.end()) {
-        it->frequency = newFrequency; // thay đổi trường tương ứng
-    } else {
-        throw std::runtime_error("Medicine not found");
-    }
+    if (auto* m = findMed(name)) { m->frequency = newFrequency; return; }
+    throw std::runtime_error("Medicine not found");
 }
 void Prescription::updateMedicineDuration(const std::string& name, int newDuration) {
-    auto it = std::find_if(medicines.begin(), medicines.end(),
-                        [&name](const Medicine& med){ return med.name == name; });
-    if (it != medicines.end()) {
-        it->duration = newDuration; // thay đổi trường tương ứng
-    } else {
-        throw std::runtime_error("Medicine not found");
-    }
+    if (auto* m = findMed(name)) { m->duration = newDuration; return; }
+    throw std::runtime_error("Medicine not found");
 }
 void Prescription::updateMedicineInstruction(const std::string& name, const std::string& newInstruction) {
-    auto it = std::find_if(medicines.begin(), medicines.end(),
-                        [&name](const Medicine& med){ return med.name == name; });
-    if (it != medicines.end()) {
-        it->instruction = newInstruction; // thay đổi trường tương ứng
-    } else {
-        throw std::runtime_error("Medicine not found");
-    }
+    if (auto* m = findMed(name)) { m->instruction = newInstruction; return; }
+    throw std::runtime_error("Medicine not found");
 }
 
 Prescription::Status Prescription::statusFromString(const std::string& str){

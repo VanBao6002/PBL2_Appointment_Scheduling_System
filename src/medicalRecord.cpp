@@ -6,6 +6,7 @@ MedicalRecord::MedicalRecord() : patientID(0), doctorID(0), creationDate(Date())
 
     int ID = static_cast<int>(IDHandler<MedicalRecord>::generateID());
     setID(ID);
+    IDHandler<MedicalRecord>::registerID(ID);
 }
 
 MedicalRecord::MedicalRecord(int patientID_, int doctorID_, const std::string& creationDate_, const std::string& lastUpdated_, const std::string& diagnosis_, const std::string& symptoms_, const std::string& testResults_, const std::string& bloodPressure_, int heartRate_, float bodyTemperature_, const std::string& treatment_, const std::string& doctorNotes_, const std::vector<Date>& followUpDates_, const std::vector<Prescription>& prescriptions_, const std::string& changeHistory_) {
@@ -28,8 +29,12 @@ MedicalRecord::MedicalRecord(int patientID_, int doctorID_, const std::string& c
 
     int ID = static_cast<int>(IDHandler<MedicalRecord>::generateID());
     setID(ID);
+    IDHandler<MedicalRecord>::registerID(ID);
 }
 
+MedicalRecord::~MedicalRecord(){
+    IDHandler<MedicalRecord>::unregisterID(ID);
+}
 
 int MedicalRecord::getID() const {
     return ID;

@@ -30,7 +30,7 @@ class Appointment{
 
         Appointment(int doctorID, int patientID, const std::string& date_, const std::string& time_, const std::string& room_, const std::string& status_);
 
-        ~Appointment() = default;
+        ~Appointment();
 
         void setDate(const std::string& date_);
         void setTime(const std::string &time_);

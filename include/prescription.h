@@ -29,7 +29,7 @@ class Prescription{
     public:
         Prescription();
         Prescription(int medicalRecordID_, const std::string& prescriptionDate_, const std::string& additionalNotes_, const std::string& prescriptionStatus_);
-        ~Prescription() = default;
+        ~Prescription();
         
         int getID() const;
         int getMedicalRecordID () const;
@@ -61,6 +61,14 @@ class Prescription{
         nlohmann::json toJson() const;
         void fromJson(const nlohmann::json &j);
         
+        // helper
+        Medicine* findMed(const std::string& name) {
+            for (auto& m : medicines) {
+                if (m.name == name) return &m;
+            }
+            return nullptr;
+        }
+
     private:
         void setID(int ID);
 };

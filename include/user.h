@@ -18,7 +18,7 @@ private:
 public:
     User() = default;
     User(const std::string &userRole_, const std::string &username_, const std::string &userPassword_);
-    ~User() = default;
+    ~User();
 
     void setRole(const std::string &role_);
     void setUsername(const std::string &username_);

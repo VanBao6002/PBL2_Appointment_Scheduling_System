@@ -1,4 +1,7 @@
 #include "utils.h"
+#include "doctor.h"
+#include "patient.h"
+#include "prescription.h"
 #include <regex>
 
 bool Utils::isExpired(const Date& prescriptionDate, int duration) {
@@ -138,11 +141,16 @@ std::string Utils::toLower(const std::string& str) {
 }
 
 void Utils::validName(const std::string &name_) {
-    std::string trimmed = name_;
-    trimmed.erase(trimmed.begin(), std::find_if(trimmed.begin(), trimmed.end(), [](unsigned char ch) { return !std::isspace(ch); }));
-    trimmed.erase(std::find_if(trimmed.rbegin(), trimmed.rend(), [](unsigned char ch) { return !std::isspace(ch); }).base(), trimmed.end());
+    std::string trimmed = Utils::trimmed(name_);
+
     if (trimmed.empty()) {
-        throw std::invalid_argument("Name cannot be empty or whitespace.");
+        throw std::invalid_argument("Name must not be empty or only whitespace.");
+    }
+
+    for (char c : trimmed) {
+        if (std::isdigit(static_cast<unsigned char>(c))) {
+            throw std::invalid_argument("Name cannot contain numbers.");
+        }
     }
 }
 
@@ -229,7 +237,7 @@ void Utils::validBloodType(const std::string &bloodType_){
 }
 
 void Utils::validUserName(const std::string &username_){
-    Utils::validName(name_);
+    Utils::validName(username_);
     if (username_.size() < 4 || username_.size() > 20){
         throw std::invalid_argument("Username: " + username_ + " is not valid.");
     }
@@ -255,17 +263,10 @@ void Utils::validRoom(const std::string &room_){
 }
 
 void Utils::validPrescription(const Prescription &prescription_) {
-    if (prescription_.getPrescriptionID() <= 0) {
-        throw std::invalid_argument("Invalid prescription ID.");
-    }
-    validID(prescription_.getPatientID());
-    validID(prescription_.getDoctorID());
+    validID(prescription_.getID());
+    validID(prescription_.getMedicalRecordID());
 
-    validDate(prescription_.getPrescriptionDate());
-
-    if (prescription_.getDiagnosis().empty()) {
-        throw std::invalid_argument("Diagnosis cannot be empty.");
-    }
+    validDate(prescription_.getDate());
 
     const auto& medicines = prescription_.getMedicines();
     if (medicines.empty()) {

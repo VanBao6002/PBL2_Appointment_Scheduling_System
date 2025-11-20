@@ -27,7 +27,7 @@ class Doctor : public Person{
 
         Doctor(const std::string& name_, char gender_, const std::string& birthday_, const std::string &phoneNumber_, const std::string& email_, const std::string& specialization_, const std::string& doctorStatus_);
 
-        ~Doctor() = default;
+        ~Doctor();
 
         void setSpecialization(const std::string &specialization_);
         void setStatus(const std::string& doctorStatus_);

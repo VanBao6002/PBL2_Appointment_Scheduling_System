@@ -4,6 +4,7 @@
 Doctor::Doctor() : Person(), specialization(""), patientIDs(), doctorStatus(Status::Available){
     int ID = static_cast<int>(IDHandler<Doctor>::generateID());
     setID(ID);
+    IDHandler<Doctor>::registerID(ID);
 }
 Doctor::Doctor(const std::string& name_, char gender_, const std::string& birthday_, const std::string &phoneNumber_, const std::string& email_, const std::string& specialization_, const std::string& doctorStatus_) : Person(name_, gender_, birthday_, phoneNumber_) {
 
@@ -13,7 +14,12 @@ Doctor::Doctor(const std::string& name_, char gender_, const std::string& birthd
 
     int ID = static_cast<int>(IDHandler<Doctor>::generateID());
     setID(ID);
+    IDHandler<Doctor>::registerID(ID);
 } 
+
+Doctor::~Doctor(){
+    IDHandler<Doctor>::unregisterID(ID);
+}
 
 void Doctor::setSpecialization(const std::string &specialization_){
     Utils::validSpecialization(Utils::trimmed(specialization_));
