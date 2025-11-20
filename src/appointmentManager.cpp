@@ -34,7 +34,7 @@ const Appointment& AppointmentManager::getAppointmentByID(int ID_) const {
     return appointmentTable.at(ID_);
 }
 
-const std::unordered_map<int, Appointment>& AppointmentManager::getAllAppointments() const {
+const std::unordered_map<int, Appointment>& AppointmentManager::getAllAppointmentsMap() const {
     return appointmentTable;
 }
 

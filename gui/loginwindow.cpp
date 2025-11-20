@@ -43,8 +43,6 @@ void loginwindow::on_loginButton_clicked()
         QMessageBox::warning(this, "Lỗi Đăng Nhập", "Tên đăng nhập và mật khẩu không được để trống.");
         return;
     }
-
-    // Tạm thời bỏ qua hash (cho mục đích bài tập)
     std::string passwordHash = password.toStdString();
 
     try {
@@ -65,20 +63,22 @@ void loginwindow::on_loginButton_clicked()
         }
 
         if (loginSuccess) {
-            this->close();
+            this->hide();
             if (loggedInUser.getRole() == User::Role::ADMIN) {
-                AdminWindow *adminWindow = new AdminWindow();
+                AdminWindow *adminWindow = new AdminWindow(this); // set parent là loginwindow
                 adminWindow->show();
+                this->hide();
                 qDebug() << "Admin login successful.";
-
             } else if (loggedInUser.getRole() == User::Role::DOCTOR) {
-                DoctorWindow *doctorWindow = new DoctorWindow();
+                DoctorWindow *doctorWindow = new DoctorWindow(this);
                 doctorWindow->show();
+                this->hide();
                 qDebug() << "Doctor login successful.";
 
             } else if(loggedInUser.getRole() == User::Role::ASSISTANT){
-                AssistantWindow *assistantWindow = new AssistantWindow();
+                AssistantWindow *assistantWindow = new AssistantWindow(this);
                 assistantWindow->show();
+                this->hide();
                 qDebug() << "Assistant login successful.";
             } else {
                 QMessageBox::critical(nullptr, "Lỗi Vai Trò", "Vai trò người dùng không hợp lệ hoặc không được hỗ trợ.");
@@ -101,7 +101,6 @@ void loginwindow::on_cancelButton_clicked()
 void loginwindow::resizeEvent(QResizeEvent *event)
 {
     Q_UNUSED(event);
-    // Thay đổi kích thước QLabel labelBackground để nó chiếm toàn bộ cửa sổ
     if (ui->labelBackground) {
         ui->labelBackground->setGeometry(0, 0, width(), height());
     }
