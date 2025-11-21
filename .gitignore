@@ -1,51 +1,43 @@
-# Compiled object files
+# Build artifacts
+build/
+CMakeFiles/
+CMakeCache.txt
 *.o
 *.obj
-
-# Precompiled Headers
-*.gch
-*.pch
-
-# Compiled Dynamic libraries
 *.so
 *.dll
 *.dylib
-
-# Executable files
 *.exe
 *.out
 *.app
 
-# Qt / CMake build files
-build/
-CMakeFiles/
-CMakeCache.txt
+# Qt auto-generated files
+ui_*.h
+moc_*.cpp
+qrc_*.cpp
 
-# User-specific files
-*.log
+# IDE and user-specific files
 *.user
+*.user.*
+*.log
 *.DS_Store
 *.swp
 *.vcxproj.*
-
-# Copilot insturctions
-*.github/*
+.vscode/
 
 # Qt Creator files
-*.user
-*.user.*  
+*.pro.user
+*.pro.user.*
 
-# Build folder
-build/
+# Copilot instructions
+.github/*
 
-# Qt auto-generated files
-ui_*.h
-qrc_*.cpp
-moc_*.cpp
-
-#environment
-.vscode/
-gui/
-caythumuc.txt
+# Ignore only generated or config files, NOT source
 CMakeLists.txt.user
-CMakeLists.txt
+
+# Ignore data and temp files (if not needed in repo)
+caythumuc.txt
+
+# Do NOT ignore gui/ (contains .ui, .cpp, .h, .qrc)
+# Remove or comment out the following line if present:
+# gui/
