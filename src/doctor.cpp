@@ -109,9 +109,6 @@ nlohmann::json Doctor::toJson() const {
 }
 
 void Doctor::fromJson(const nlohmann::json &j) {
-    // ✅ Chỉ đọc dữ liệu, KHÔNG register ID
-    // ID sẽ được register trong DoctorManager::loadFromFile()
-    
     if (j.contains("ID")) {
         ID = j.at("ID").get<int>();
     }
@@ -130,7 +127,12 @@ void Doctor::fromJson(const nlohmann::json &j) {
         birthday = Date(d, m, y);
     }
     if (j.contains("phoneNumber")) {
-        phoneNumber = j.at("phoneNumber").get<std::string>();
+        std::string phone = j.at("phoneNumber").get<std::string>();
+        if (!phone.empty()) {
+            setPhoneNumber(phone);
+        } else {
+            phoneNumber = "None";
+        }
     }
     if (j.contains("email")) {
         email = j.at("email").get<std::string>();

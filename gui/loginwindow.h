@@ -11,8 +11,8 @@ namespace Ui {
 class loginwindow;
 }
 
-// Thêm: Định nghĩa đường dẫn file người dùng
-constexpr const char* USER_FILE_PATH = "user.json";
+// Đường dẫn file người dùng
+constexpr const char* USER_FILE_PATH = "data/user.json"; // ✅ Sửa path cho đúng với Config
 
 class loginwindow : public QWidget
 {
@@ -29,13 +29,12 @@ private slots:
 
 protected:
     void resizeEvent(QResizeEvent *event) override;
-    void paintEvent(QPaintEvent *event) override; // Thêm: Để vẽ nền
+    void paintEvent(QPaintEvent *event) override;
 
 private:
     void loadUsers();
     Ui::loginwindow *ui;
     QPixmap m_bgPixmap;
-    UserManager m_userManager;
 };
 
 #endif // LOGINWINDOW_H
