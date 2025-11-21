@@ -1,10 +1,7 @@
 #include "doctor.h"
 
-
-Doctor::Doctor() : Person(), specialization(""), patientIDs(), doctorStatus(Status::Available){
-    int ID = static_cast<int>(IDHandler<Doctor>::generateID());
-    setID(ID);
-    IDHandler<Doctor>::registerID(ID);
+Doctor::Doctor() : Person(), specialization(""), patientIDs(), doctorStatus(Status::Active){ 
+    ID = 0;
 }
 Doctor::Doctor(const std::string& name_, char gender_, const std::string& birthday_, const std::string &phoneNumber_, const std::string& email_, const std::string& specialization_, const std::string& doctorStatus_) : Person(name_, gender_, birthday_, phoneNumber_) {
 
@@ -18,7 +15,9 @@ Doctor::Doctor(const std::string& name_, char gender_, const std::string& birthd
 } 
 
 Doctor::~Doctor(){
+    if (ID > 0) {
     IDHandler<Doctor>::unregisterID(ID);
+    }
 }
 
 void Doctor::setSpecialization(const std::string &specialization_){
@@ -35,7 +34,6 @@ void Doctor::setEmail(const std::string &email_){
     email = Utils::trimmed(email_);
 }
 
-// Add patient ID
 void Doctor::addPatientID(int ID_) {
     if (std::find(patientIDs.begin(), patientIDs.end(), ID_) != patientIDs.end()) {
         throw std::invalid_argument("Patient ID already exists in doctor's list.");
@@ -61,8 +59,7 @@ std::string Doctor::getInfo() const{
     info += "Phone Number: " + phoneNumber + "\n";
     info += "Specialization: " + specialization + "\n";
     info += "Status: ";
-    std::string statusStr = (doctorStatus == Doctor::Status::Available) ? "Available" : "Unavailable";
-    info += (doctorStatus == Doctor::Status::Available) ? "Available\n" : "Unavailable\n";
+    info += statusToString(doctorStatus) + "\n";
     info += "Email: " + email + "\n";
     info += "Patient IDs: ";
     for (const auto& pid : patientIDs) {
@@ -72,10 +69,20 @@ std::string Doctor::getInfo() const{
     return info;
 }
 
+std::string Doctor::statusToString(Doctor::Status status) {
+    switch (status) {
+        case Status::Active: return "Active";
+        case Status::OnLeave: return "OnLeave";
+        case Status::Retired: return "Retired";
+        default: return "Unknown"; // Tránh lỗi nếu có trạng thái mới
+    }
+}
 
 Doctor::Status Doctor::statusFromString (const std::string& str){
-    if (Utils::toLower(str) == "available") return Doctor::Status::Available;
-    if (Utils::toLower(str) == "unavailable") return Doctor::Status::Unavailable;
+    std::string lowerStr = Utils::toLower(str);
+    if (lowerStr == "active") return Doctor::Status::Active; 
+    if (lowerStr == "onleave") return Doctor::Status::OnLeave;
+    if (lowerStr == "retired") return Doctor::Status::Retired;
     throw std::invalid_argument("Unknown status: " + str);
 }
 
@@ -97,13 +104,20 @@ nlohmann::json Doctor::toJson() const {
         patientIDsJson.push_back(pid);
     }
     j["patientIDs"] = patientIDsJson;
-    j["doctorStatus"] = (doctorStatus == Status::Available) ? "Available" : "Unavailable";
+    j["doctorStatus"] = statusToString(doctorStatus); 
     return j;
 }
 
 void Doctor::fromJson(const nlohmann::json &j) {
-    if (j.contains("ID")) ID = j.at("ID").get<int>();
-    if (j.contains("name")) name = j.at("name").get<std::string>();
+    // ✅ Chỉ đọc dữ liệu, KHÔNG register ID
+    // ID sẽ được register trong DoctorManager::loadFromFile()
+    
+    if (j.contains("ID")) {
+        ID = j.at("ID").get<int>();
+    }
+    if (j.contains("name")) {
+        name = j.at("name").get<std::string>();
+    }
     if (j.contains("gender")) {
         std::string g = j.at("gender").get<std::string>();
         if (!g.empty()) gender = g[0];
@@ -115,15 +129,22 @@ void Doctor::fromJson(const nlohmann::json &j) {
         int y = bd.value("year", 2000);
         birthday = Date(d, m, y);
     }
-    if (j.contains("phoneNumber")) phoneNumber = j.at("phoneNumber").get<std::string>();
-    if (j.contains("email")) email = j.at("email").get<std::string>();
-    if (j.contains("specialization")) specialization = j.at("specialization").get<std::string>();
+    if (j.contains("phoneNumber")) {
+        phoneNumber = j.at("phoneNumber").get<std::string>();
+    }
+    if (j.contains("email")) {
+        email = j.at("email").get<std::string>();
+    }
+    if (j.contains("specialization")) {
+        specialization = j.at("specialization").get<std::string>();
+    }
     if (j.contains("patientIDs")) {
         patientIDs.clear();
         for (const auto& pid : j.at("patientIDs")) {
             patientIDs.push_back(pid.get<int>());
         }
     }
-    if (j.contains("doctorStatus")) doctorStatus = statusFromString(j.at("doctorStatus").get<std::string>());
-    
+    if (j.contains("doctorStatus")) {
+        doctorStatus = statusFromString(j.at("doctorStatus").get<std::string>());
+    }
 }

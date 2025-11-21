@@ -10,6 +10,7 @@
 #include "patientManager.h"
 #include "utils.h"
 #include "IDHandler.h"
+#include "json.hpp"
 
 
 class Appointment{
@@ -43,7 +44,8 @@ class Appointment{
         int getID() const;
         int getDoctorID() const;
         int getPatientID() const;
-        std::string getDateTime() const;
+        const Date& getDate() const;
+        const std::string& getTime() const;
         Status getStatus() const;
         const Doctor& getDoctor(const DoctorManager& mgr) const;
         const Patient& getPatient(const PatientManager& mgr) const;

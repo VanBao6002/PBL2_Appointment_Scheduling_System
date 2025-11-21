@@ -16,32 +16,5 @@
     "time": "10:30",
     "room": "B202",
     "status": "Occupied"
-  },
-  {
-    "ID": 3,
-    "doctorID": 5,
-    "patientID": 6,
-    "date": { "day": 17, "month": 11, "year": 2025 },
-    "time": "14:00",
-    "room": "C303",
-    "status": "Scheduled"
-  },
-  {
-    "ID": 4,
-    "doctorID": 7,
-    "patientID": 8,
-    "date": { "day": 18, "month": 11, "year": 2025 },
-    "time": "15:30",
-    "room": "A101",
-    "status": "Canceled"
-  },
-  {
-    "ID": 5,
-    "doctorID": 9,
-    "patientID": 10,
-    "date": { "day": 19, "month": 11, "year": 2025 },
-    "time": "11:15",
-    "room": "B202",
-    "status": "Scheduled"
   }
 ]

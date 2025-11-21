@@ -32,8 +32,17 @@ const Appointment& AppointmentManager::getAppointmentByID(int ID_) const {
     return appointmentTable.at(ID_);
 }
 
-const std::unordered_map<int, Appointment>& AppointmentManager::getAllAppointments() const {
+const std::unordered_map<int, Appointment>& AppointmentManager::getAllAppointmentsMap() const {
     return appointmentTable;
+}
+
+std::vector<Appointment> AppointmentManager::getAllAppointmentsAsVector() const {
+    std::vector<Appointment> result;
+    result.reserve(appointmentTable.size());
+    for (const auto& pair : appointmentTable) {
+        result.push_back(pair.second);
+    }
+    return result;
 }
 
 const std::unordered_map<int, std::string>& AppointmentManager::getAllLog() const {
@@ -67,7 +76,7 @@ void AppointmentManager::loadFromFile(const std::string& path) {
 
 
 void AppointmentManager::saveToFile(const std::string& path){
-    nlohmann::json jArr;
+    nlohmann::json jArr = nlohmann::json::array();
     for (const auto& pair : appointmentTable) {
         jArr.push_back(pair.second.toJson());   
     }

@@ -13,7 +13,7 @@
 
 class Doctor : public Person{
     public:
-        enum class Status {Unavailable, Available};
+        enum class Status {Active, OnLeave, Retired};
 
     private:
         std::string specialization; // Chuyên Khoa
@@ -44,6 +44,7 @@ class Doctor : public Person{
         std::string getEmail() const {return email;}
 
         // convertor
+        static std::string statusToString(Status status);
         static Doctor::Status statusFromString(const std::string& str);
         nlohmann::json toJson() const override;
         void fromJson(const nlohmann::json &j) override;

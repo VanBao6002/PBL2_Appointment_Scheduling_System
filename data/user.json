@@ -1,5 +1,5 @@
 [
-  { "ID": 1, "userRole": "ADMIN", "username": "admin1", "passwordHash": "a1b2c3d4" },
+  { "ID": 1, "userRole": "ADMIN", "username": "admin1", "passwordHash": "abc" },
   { "ID": 2, "userRole": "DOCTOR", "username": "doctor1", "passwordHash": "e5f6g7h8" },
   { "ID": 3, "userRole": "DOCTOR", "username": "doctor2", "passwordHash": "i9j0k1l2" },
   { "ID": 4, "userRole": "ADMIN", "username": "admin2", "passwordHash": "m3n4o5p6" },
