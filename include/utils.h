@@ -34,6 +34,8 @@ public:
         const std::string& additionalNotes = "");
     static std::string trimmed(const std::string &str);
     static std::string toLower(const std::string &str);
+    static std::string toUpper(const std::string &str);
+    static std::string join(const std::vector<std::string>& vec, const std::string& delimiter);
 
     //validicator
     static void validName(const std::string &name);

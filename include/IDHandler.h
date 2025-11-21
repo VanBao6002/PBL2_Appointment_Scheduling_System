@@ -14,6 +14,8 @@ class IDHandler {
         static bool checkDuplicate(size_t ID);
         static void registerID(size_t ID);
         static void unregisterID(size_t ID);
+        static void setCurrentID(size_t ID);
+        static void reset();  // ✅ THÊM MỚI
 };
 
 template<typename Entity>
@@ -46,4 +48,16 @@ void IDHandler<Entity>::registerID(size_t ID){
 template<typename Entity>
 void IDHandler<Entity>::unregisterID(size_t ID){
     IDTable.erase(ID);
+}
+
+template <typename Entity>
+void IDHandler<Entity>::setCurrentID(size_t ID) {
+    IDHandler<Entity>::lastID = ID + 1; 
+}
+
+// ✅ THÊM MỚI: Reset toàn bộ IDTable và lastID
+template <typename Entity>
+void IDHandler<Entity>::reset() {
+    IDTable.clear();
+    lastID = 1;
 }

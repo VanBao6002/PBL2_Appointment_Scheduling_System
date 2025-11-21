@@ -1,4 +1,7 @@
 #include "doctorManager.h"
+#include "IDHandler.h"
+#include <qdebug.h>
+#include <qlogging.h>
 
 void DoctorManager::addDoctor(const Doctor &doc_) {
     int ID_ = doc_.getID();
@@ -7,6 +10,8 @@ void DoctorManager::addDoctor(const Doctor &doc_) {
     }
     doctorTable[ID_] = doc_;
     log[ID_] += " Added on: " + Utils::getDateTime();
+    IDHandler<Doctor>::registerID(static_cast<size_t>(ID_));
+    saveToFile(Config::DOCTOR_PATH);
 }
 
 void DoctorManager::editDoctor(int ID_, const Doctor &newDoctor){
@@ -15,6 +20,7 @@ void DoctorManager::editDoctor(int ID_, const Doctor &newDoctor){
     }
     doctorTable[ID_] = newDoctor;
     log[ID_] += " Edited on: " + Utils::getDateTime();
+    saveToFile(Config::DOCTOR_PATH);
 }
                                                                                                                                                
 void DoctorManager::removeDoctor(int ID_){
@@ -23,6 +29,12 @@ void DoctorManager::removeDoctor(int ID_){
     }
     doctorTable.erase(ID_);
     log.erase(ID_);
+    IDHandler<Doctor>::unregisterID(static_cast<size_t>(ID_));
+    saveToFile(Config::DOCTOR_PATH);
+}
+
+bool DoctorManager::isDoctorExist(int doctorID) const {
+    return IDHandler<Doctor>::checkDuplicate(static_cast<size_t>(doctorID));
 }
 
 const Doctor& DoctorManager::getDoctorByID(int ID_) const{
@@ -65,15 +77,64 @@ const std::string& DoctorManager::getIDLog(int ID_) const {
     return log.at(ID_);
 }
 
-void DoctorManager::loadFromFile(const std::string& path){
-    nlohmann::json jArr = Utils::readJsonFromFile(path);
-    for (const auto& jDoctor : jArr) {
-        Doctor doc;
-        doc.fromJson(jDoctor);
-        addDoctor(doc);
+void DoctorManager::loadFromFile(const std::string& path) {
+    // ✅ QUAN TRỌNG: Clear dữ liệu cũ trước khi load
+    doctorTable.clear();
+    log.clear();
+    
+    // ✅ Reset IDHandler trước khi load (tránh trùng lặp)
+    IDHandler<Doctor>::reset(); // Nếu có hàm reset()
+    // Hoặc nếu không có reset(), bỏ qua bước này
+    
+    // Kiểm tra file có tồn tại không
+    std::ifstream file(path);
+    if (!file.good()) {
+        qDebug() << "[WARNING] Doctor file not found:" << QString::fromStdString(path);
+        return; // Không có file thì return, không throw error
     }
+    file.close();
+    
+    nlohmann::json jArr = Utils::readJsonFromFile(path);
+    
+    // Kiểm tra JSON rỗng
+    if (jArr.empty() || !jArr.is_array()) {
+        qDebug() << "[INFO] Doctor file is empty or invalid format";
+        return;
+    }
+    
+    int maxID = 0;
+    
+    for (const auto& jDoctor : jArr) {
+        Doctor doctor;
+        doctor.fromJson(jDoctor);
+        
+        int ID = doctor.getID();
+        
+        // ✅ Kiểm tra ID đã tồn tại trong table chưa (tránh duplicate trong file JSON)
+        if (doctorTable.find(ID) != doctorTable.end()) {
+            qWarning() << "[WARNING] Duplicate Doctor ID in file:" << ID << "- Skipping";
+            continue; // Bỏ qua record trùng, không throw error
+        }
+        
+        // ✅ Chỉ register ID nếu chưa tồn tại
+        if (!IDHandler<Doctor>::checkDuplicate(static_cast<size_t>(ID))) {
+            IDHandler<Doctor>::registerID(static_cast<size_t>(ID));
+        }
+        
+        doctorTable[ID] = doctor;
+        
+        if (ID > maxID) {
+            maxID = ID;
+        }
+    }
+    
+    // ✅ Set current ID để ID mới sẽ > maxID
+    if (maxID > 0) {
+        IDHandler<Doctor>::setCurrentID(static_cast<size_t>(maxID));
+    }
+    
+    qDebug() << "[INFO] Loaded" << doctorTable.size() << "doctors from file";
 }
-
 
 void DoctorManager::saveToFile(const std::string& path){
     nlohmann::json jArr;

@@ -1,12 +1,20 @@
 #include "patientManager.h"
+#include "IDHandler.h"
 
 void PatientManager::addPatient(const Patient &pat_) {
     int ID_ = pat_.getID();
+    
+    // ✅ Kiểm tra ID có tồn tại trong table không
     if (patientTable.find(ID_) != patientTable.end()){
         throw std::invalid_argument("Adding failed. Patient ID " + std::to_string(pat_.getID()) + " already exists.");
     }
+    
+    // ✅ KHÔNG copy lại, chỉ lưu trực tiếp reference
+    // Nếu phải lưu, hãy sử dụng move để tránh copy constructor
     patientTable[ID_] = pat_;
+    
     log[ID_] += " Added on: " + Utils::getDateTime();
+    saveToFile(Config::PATIENT_PATH);
 }
 
 void PatientManager::editPatient(int ID_, const Patient &newPatient){
@@ -15,6 +23,7 @@ void PatientManager::editPatient(int ID_, const Patient &newPatient){
     }
     patientTable[ID_] = newPatient;
     log[ID_] += " Edited on: " + Utils::getDateTime();
+    saveToFile(Config::PATIENT_PATH);
 }
 
 void PatientManager::removePatient(int ID_){
@@ -23,6 +32,14 @@ void PatientManager::removePatient(int ID_){
     }
     patientTable.erase(ID_);
     log.erase(ID_);
+    try {
+        IDHandler<Patient>::unregisterID(static_cast<size_t>(ID_));
+    } catch (...) {}
+    saveToFile(Config::PATIENT_PATH);
+}
+
+bool PatientManager::isPatientExist(int patientID) const {
+    return IDHandler<Patient>::checkDuplicate(static_cast<size_t>(patientID));
 }
 
 // Getters
@@ -61,18 +78,50 @@ const std::string& PatientManager::getIDLog(int ID_) const {
 
 void PatientManager::loadFromFile(const std::string& path) {
     nlohmann::json jArr = Utils::readJsonFromFile(path);
+    int maxID = 0;
+    
     for (const auto& jPatient : jArr) {
-        Patient pat;
-        pat.fromJson(jPatient);
-        addPatient(pat);
+        Patient patient;
+        patient.fromJson(jPatient);
+        int ID = patient.getID();
+        
+        if (patientTable.find(ID) != patientTable.end()) {
+            throw std::invalid_argument("Loading failed. Patient ID " + std::to_string(ID) + " already exists in table.");
+        }
+        
+        // ✅ Register ID
+        try {
+            IDHandler<Patient>::registerID(static_cast<size_t>(ID)); 
+        } catch (...) {
+            // ID đã được register, bỏ qua
+        }
+        
+        patientTable[ID] = patient;
+        
+        if (ID > maxID) {
+            maxID = ID;
+        }
+    }
+    
+    if (maxID > 0) {
+        IDHandler<Patient>::setCurrentID(static_cast<size_t>(maxID));
     }
 }
 
-
 void PatientManager::saveToFile(const std::string& path){
-    nlohmann::json jArr;
-    for (const auto& pair : patientTable) {
-        jArr.push_back(pair.second.toJson());
+    try {
+        nlohmann::json jArr;
+        for (const auto& pair : patientTable) {
+            jArr.push_back(pair.second.toJson());
+        }
+        
+        // ✅ Debug: In số lượng bệnh nhân đang lưu
+        std::cout << "[DEBUG] Saving " << patientTable.size() << " patients to: " << path << std::endl;
+        
+        Utils::writeJsonToFile(path, jArr);
+        
+    } catch (const std::exception& e) {
+        std::cerr << "[ERROR] Failed to save patients: " << e.what() << std::endl;
+        throw; // ✅ Ném lại exception để caller biết
     }
-    Utils::writeJsonToFile(path, jArr);
 }

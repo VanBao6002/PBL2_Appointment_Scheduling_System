@@ -33,6 +33,11 @@ void Person::setBirthday(const std::string &birthday_) {
     birthday = Date::fromString(Utils::trimmed(birthday_));
 }
 
+void Person::setBirthday(const Date &date_) {
+    Utils::validDate(date_);
+    birthday = date_;
+}
+
 void Person::setPhoneNumber(const std::string &phoneNumber_) {
     Utils::validPhoneNumber(Utils::trimmed(phoneNumber_));
     phoneNumber = Utils::trimmed(phoneNumber_);
