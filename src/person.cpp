@@ -40,6 +40,9 @@ void Person::setBirthday(const Date &date_) {
 
 void Person::setPhoneNumber(const std::string &phoneNumber_) {
     Utils::validPhoneNumber(Utils::trimmed(phoneNumber_));
+    if(phoneNumber_.size() == 0){
+        phoneNumber = "None";
+    } else
     phoneNumber = Utils::trimmed(phoneNumber_);
 }
 

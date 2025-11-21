@@ -3,6 +3,7 @@
 #include "adminwindow.h"
 #include "doctorwindow.h"
 #include "assistantwindow.h"
+#include "userManager.h"
 #include <QPainter>
 #include <QDebug>
 
@@ -15,7 +16,7 @@ loginwindow::loginwindow(QWidget *parent) :
         qDebug() << "Failed to load background image.";
     }
     loadUsers();
-    ui->passWord->setEchoMode(QLineEdit::Password); // Ẩn mật khẩu
+    ui->passWord->setEchoMode(QLineEdit::Password);
 }
 
 loginwindow::~loginwindow()
@@ -26,7 +27,7 @@ loginwindow::~loginwindow()
 void loginwindow::loadUsers()
 {
     try {
-        m_userManager.loadFromFile(USER_FILE_PATH);
+        UserManager::getInstance().loadFromFile(USER_FILE_PATH);
         QMessageBox::information(this, "Thành công", "Đã tải dữ liệu người dùng thành công.");
     } catch (const std::exception& e) {
         QMessageBox::critical(this, "Lỗi Tải Dữ Liệu", QString("Không thể tải file %1: %2").arg(USER_FILE_PATH).arg(e.what()));
@@ -46,7 +47,7 @@ void loginwindow::on_loginButton_clicked()
     std::string passwordHash = password.toStdString();
 
     try {
-        const auto& allUsers = m_userManager.getAllUsers();
+        const auto& allUsers = UserManager::getInstance().getAllUsers();
         bool loginSuccess = false;
         User loggedInUser;
 

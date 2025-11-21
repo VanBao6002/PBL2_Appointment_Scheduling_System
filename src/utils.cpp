@@ -216,12 +216,17 @@ void Utils::validDate(const Date &date) {
     }
 }
 
-void Utils::validPhoneNumber(const std::string &phoneNumber) {
-    if (phoneNumber.size() != 10 && phoneNumber.size() != 11) {
-        throw std::invalid_argument("Invalid phonenumber size, must be 10 or 11 digits.");
+void Utils::validPhoneNumber(const std::string& phoneNumber) {
+    if (phoneNumber.empty() || phoneNumber == "None") {
+        return;
     }
-    if (phoneNumber.find_first_not_of("0123456789") != std::string::npos) {
-        throw std::invalid_argument("Phone number must only contain digits.");
+    if (phoneNumber.length() < 10 || phoneNumber.length() > 11) {
+        throw std::invalid_argument("Invalid phonenumber size, must be 10 or 11 digits");
+    }
+    for (char c : phoneNumber) {
+        if (!std::isdigit(c)) {
+            throw std::invalid_argument("Phone number must contain only digits");
+        }
     }
 }
 
