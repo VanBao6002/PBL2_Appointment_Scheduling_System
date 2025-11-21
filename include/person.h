@@ -20,19 +20,17 @@ public:
     Person(const std::string &name_, char gender_, const std::string &birthday_, const std::string &phoneNumber_);
     virtual ~Person() = default;
 
-    // getters
     std::string getName() const { return name; }
     char getGender() const { return gender; }
     Date getBirthday() const { return birthday; }
     std::string getPhoneNumber() const { return phoneNumber; }
     int getID() const { return ID; }
+    virtual std::string getInfo() const = 0;
 
-    virtual std::string getInfo() const = 0;   // pure virtual
-
-    // setters
     void setName(const std::string &name_);
-    void setGender(char gender_);  // sửa lỗi prototype
+    void setGender(char gender_); 
     void setBirthday(const std::string &birthday_);
+    void setBirthday(const Date &date_);
     void setPhoneNumber(const std::string &phoneNumber_);
 
     // converter

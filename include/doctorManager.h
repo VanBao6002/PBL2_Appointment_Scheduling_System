@@ -9,21 +9,28 @@
 #include "doctor.h"
 #include "patientManager.h"
 #include "userManager.h"
-
-
+#include "utils.h"
+#include "json.hpp"
 
 class DoctorManager{
     private:    
         std::unordered_map<int, std::string> log;
         std::unordered_map<int, Doctor> doctorTable;
 
-    public:
         DoctorManager() = default;
-        ~DoctorManager() = default;
+        DoctorManager(const DoctorManager&) = delete;
+        DoctorManager& operator=(const DoctorManager&) = delete;
 
+    public:
+        static DoctorManager& getInstance() {
+            static DoctorManager instance;
+            return instance;
+        }
+        ~DoctorManager() = default;
         void addDoctor(const Doctor  &doc_);
         void editDoctor(int ID_, const Doctor &newDoctor);
         void removeDoctor(int ID_);
+        bool isDoctorExist(int doctorID) const;
 
         const Doctor& getDoctorByID(int ID_) const;
         std::vector<Doctor> findDoctorsByName(const std::string& name) const;

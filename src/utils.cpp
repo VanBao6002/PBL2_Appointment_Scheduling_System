@@ -2,14 +2,20 @@
 #include "doctor.h"
 #include "patient.h"
 #include "prescription.h"
+#include "config.h"
 #include <regex>
+#include <ctime>
+#include <algorithm>
+#include <cctype>
+#include <fstream>
+#include <sstream>
 
 bool Utils::isExpired(const Date& prescriptionDate, int duration) {
     std::time_t t = std::time(nullptr);
     std::tm* currentTime = std::localtime(&t);
-    Date currentDate(currentTime->tm_year + 1900, 
+    Date currentDate(currentTime->tm_mday, // Đã sửa thứ tự: day
                     currentTime->tm_mon + 1, 
-                    currentTime->tm_mday);
+                    currentTime->tm_year + 1900);
     Date expiryDate = prescriptionDate;
     expiryDate.addDays(duration);
     return currentDate > expiryDate;
@@ -74,10 +80,11 @@ double Utils::calculateTotalCost() {
 }
 
 std::string Utils::getDateTime() {
-    char buffer[17]; // "YYYY-MM-DD HH:MM" + null terminator
+    char buffer[20]; // "DD-MM-YYYY HH:MM:SS" + null terminator
     std::time_t t = std::time(nullptr);
     std::tm* currentDateTime = std::localtime(&t);
-    std::strftime(buffer, sizeof(buffer), "%d-%m-%Y %M:%H", currentDateTime);
+    // Thay đổi định dạng: %d-%m-%Y %H:%M:%S
+    std::strftime(buffer, sizeof(buffer), "%d-%m-%Y %H:%M:%S", currentDateTime); 
     return std::string(buffer);
 }
 
@@ -140,6 +147,27 @@ std::string Utils::toLower(const std::string& str) {
     return result;
 }
 
+std::string Utils::toUpper(const std::string &str) {
+    std::string upperStr = str;
+    std::transform(upperStr.begin(), upperStr.end(), upperStr.begin(), 
+        [](unsigned char c){ return std::toupper(c); });
+    return upperStr;
+}
+
+std::string Utils::join(const std::vector<std::string>& vec, const std::string& delimiter) {
+    if (vec.empty()) {
+        return "";
+    }
+    std::string result = vec[0];
+    for (size_t i = 1; i < vec.size(); ++i) {
+        result += delimiter;
+        result += vec[i];
+    }
+    return result;
+}
+
+// ======================= VALIDATOR =======================
+
 void Utils::validName(const std::string &name_) {
     std::string trimmed = Utils::trimmed(name_);
 
@@ -160,29 +188,41 @@ void Utils::validGender(char gender) {
     }
 }
 
+// ✅ ĐÃ SỬA: validDate để sử dụng .toString() và chi tiết hơn
 void Utils::validDate(const Date &date) {
     std::time_t t = std::time(nullptr);
     std::tm* currentTime = std::localtime(&t);
     int currentYear = currentTime->tm_year + 1900;
     int lowerYearLimit = currentYear - 200;
-
+    
+    // Đảm bảo không sử dụng date trực tiếp trong phép cộng chuỗi
     if (date.month < 1 || date.month > 12){
-        throw std::invalid_argument("Invalid month.");
+        throw std::invalid_argument("Invalid month: " + date.toString());
     }
 
-    int maxDay = date.getDaysInMonth(date.month, date.year);
-
-    if (date.day < 1 || date.day > maxDay){
-        throw std::invalid_argument("Invalid day.");
+    // Kiểm tra ngày hợp lệ
+    try {
+        int maxDay = Date::getDaysInMonth(date.month, date.year);
+        if (date.day < 1 || date.day > maxDay){
+             throw std::invalid_argument("Invalid day " + std::to_string(date.day) + " for month " + std::to_string(date.month) + ". Date: " + date.toString());
+        }
+    } catch (const std::out_of_range& e) {
+        throw std::invalid_argument(std::string(e.what()) + ". Date: " + date.toString());
     }
+
 
     if (date.year < lowerYearLimit || date.year > currentYear){
-        throw std::invalid_argument("Invalid year, out of range.");
+        throw std::invalid_argument("Invalid year " + std::to_string(date.year) + ", out of range (" + std::to_string(lowerYearLimit) + "-" + std::to_string(currentYear) + "). Date: " + date.toString());
     }
 }
 
 void Utils::validPhoneNumber(const std::string &phoneNumber) {
-    if (phoneNumber.size() != 11) throw std::invalid_argument("Invalid phonenumber.");
+    if (phoneNumber.size() != 10 && phoneNumber.size() != 11) {
+        throw std::invalid_argument("Invalid phonenumber size, must be 10 or 11 digits.");
+    }
+    if (phoneNumber.find_first_not_of("0123456789") != std::string::npos) {
+        throw std::invalid_argument("Phone number must only contain digits.");
+    }
 }
 
 void Utils::validID(int ID) {
@@ -213,25 +253,56 @@ void Utils::validTime(const std::string &time){
 void Utils::validSpecialization(const std::string &specialization_){
     static std::unordered_set<std::string> specializationTable = []{
         std::unordered_set<std::string> set;
-        std::ifstream file(Config::SPECIALIZATION_PATH);
-        std::string line;
-        while (std::getline(file, line)) set.insert(line);
+        try {
+            nlohmann::json j = Utils::readJsonFromFile(Config::SPECIALIZATION_PATH);
+            if (j.contains("specializations") && j["specializations"].is_array()) {
+                for (const auto& spec : j["specializations"]) {
+                    set.insert(spec.get<std::string>());
+                }
+            }
+            std::cout << "[INFO] Loaded " << set.size() << " specializations." << std::endl;
+        } catch (const std::exception& e) {
+            std::cerr << "[ERROR] Cannot load specializations: " << e.what() << std::endl;
+            // Fallback
+            set = {"Cardiology", "Neurology", "Pediatrics"};
+        }
         return set;
     }();
+    
     if (specializationTable.find(specialization_) == specializationTable.end()){
         throw std::invalid_argument("Specialization: " + specialization_ + " is not valid.");
     }
 }
 
-void Utils::validBloodType(const std::string &bloodType_){
-    static std::unordered_set<std::string> bloodTypeTable = []{
+void Utils::validBloodType(const std::string &bloodType_) {
+    std::string normalizedBloodType = Utils::trimmed(bloodType_);
+    normalizedBloodType = Utils::toUpper(normalizedBloodType);
+
+    static std::unordered_set<std::string> validTypes = [](){
         std::unordered_set<std::string> set;
-        std::ifstream file(Config::BLOOD_TYPE_PATH);
-        std::string line;
-        while (std::getline(file, line)) set.insert(line);
+        try {
+            // ✅ Đọc từ JSON
+            nlohmann::json j = Utils::readJsonFromFile(Config::BLOOD_TYPE_PATH);
+            
+            if (j.contains("bloodTypes") && j["bloodTypes"].is_array()) {
+                for (const auto& bloodType : j["bloodTypes"]) {
+                    std::string bt = bloodType.get<std::string>();
+                    set.insert(Utils::toUpper(Utils::trimmed(bt)));
+                }
+            }
+            
+            std::cout << "[INFO] Loaded " << set.size() << " blood types from JSON." << std::endl;
+            
+        } catch (const std::exception& e) {
+            std::cerr << "[ERROR] Cannot load blood types: " << e.what() << std::endl;
+            // ✅ Fallback: Thêm giá trị mặc định
+            set = {"A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"};
+            std::cerr << "[FALLBACK] Using default blood types." << std::endl;
+        }
         return set;
     }();
-    if (bloodTypeTable.find(bloodType_) == bloodTypeTable.end()){
+
+    if (validTypes.find(normalizedBloodType) == validTypes.end()) {
         throw std::invalid_argument("BloodType: " + bloodType_ + " is not valid.");
     }
 }
@@ -252,7 +323,8 @@ void Utils::validPassword(const std::string &password_){
 void Utils::validRoom(const std::string &room_){
     static std::unordered_set<std::string> roomTable = []{
         std::unordered_set<std::string> set;
-        std::ifstream file(Config::ROOM_PATH);
+        // Giả định Config::ROOM_PATH tồn tại
+        std::ifstream file(Config::ROOM_PATH); 
         std::string line;
         while (std::getline(file, line)) set.insert(line);
         return set;
@@ -307,13 +379,28 @@ void Utils::validEmail(const std::string& email) {
     }
 }
 
+// ======================= CONVERTOR =======================
+
 void Utils::writeJsonToFile(const std::string& filePath, const nlohmann::json& j){
     std::ofstream outFile(filePath);
     if (!outFile.is_open()) {
-        std::cerr << "Error: Could not open file \"" << filePath << "\" for writing.\n";
-        return;
+        throw std::runtime_error("Error: Could not open file \"" + filePath + "\" for writing.");
     }
+    
     outFile << j.dump(4);
+    
+    // ✅ QUAN TRỌNG: Đảm bảo dữ liệu được ghi vào đĩa
+    outFile.flush();
+    
+    // ✅ Kiểm tra xem có lỗi khi ghi không
+    if (outFile.fail()) {
+        throw std::runtime_error("Error: Failed to write to file \"" + filePath + "\".");
+    }
+    
+    outFile.close();
+    
+    // ✅ Debug: In thông báo thành công
+    std::cout << "[SUCCESS] Data saved to: " << filePath << std::endl;
 }
 
 nlohmann::json Utils::readJsonFromFile(const std::string& filePath){
@@ -333,7 +420,10 @@ void Utils::writeTextToFile(const std::string& filePath, const std::string& text
         std::cerr << "Error: Could not open file \"" << filePath << "\" for writing.\n";
         return;
     }
-    for (const auto& line : text) {
+    // Ghi từng dòng
+    std::stringstream ss(text);
+    std::string line;
+    while (std::getline(ss, line)) {
         outFile << line << '\n';
     }
 }
@@ -348,6 +438,3 @@ std::string Utils::readTextFromFile(const std::string& filePath){
     ss << inFile.rdbuf();
     return ss.str();
 }
-
-
-

@@ -73,8 +73,12 @@ int Appointment::getPatientID() const {
     return patientID;
 }
 
-std::string Appointment::getDateTime() const{
-    return date.toString() + " " + time;
+const Date& Appointment::getDate() const {
+    return date;
+}
+
+const std::string& Appointment::getTime() const {
+    return time;
 }
 
 Appointment::Status Appointment::getStatus() const{
