@@ -166,6 +166,21 @@ std::string Utils::join(const std::vector<std::string>& vec, const std::string& 
     return result;
 }
 
+std::vector<std::string> Utils::parseStringToList(const std::string& str) {
+    std::vector<std::string> list;
+    if (str.empty()) return list;
+
+    std::stringstream ss(str);
+    std::string segment;
+    while(std::getline(ss, segment, ',')) {
+        std::string trimmedSegment = Utils::trimmed(segment);
+        if (!trimmedSegment.empty()) {
+            list.push_back(trimmedSegment);
+        }
+    }
+    return list;
+}
+
 // ======================= VALIDATOR =======================
 
 void Utils::validName(const std::string &name_) {
@@ -274,15 +289,12 @@ void Utils::validSpecialization(const std::string &specialization_){
         return set;
     }();
     
-    if (specializationTable.find(specialization_) == specializationTable.end()){
+    if (specializationTable.find(Utils::toUpper(Utils::trimmed(specialization_))) == specializationTable.end()){
         throw std::invalid_argument("Specialization: " + specialization_ + " is not valid.");
     }
 }
 
 void Utils::validBloodType(const std::string &bloodType_) {
-    std::string normalizedBloodType = Utils::trimmed(bloodType_);
-    normalizedBloodType = Utils::toUpper(normalizedBloodType);
-
     static std::unordered_set<std::string> validTypes = [](){
         std::unordered_set<std::string> set;
         try {
@@ -307,7 +319,7 @@ void Utils::validBloodType(const std::string &bloodType_) {
         return set;
     }();
 
-    if (validTypes.find(normalizedBloodType) == validTypes.end()) {
+    if (validTypes.find(Utils::toUpper(Utils::trimmed(bloodType_))) == validTypes.end()) {
         throw std::invalid_argument("BloodType: " + bloodType_ + " is not valid.");
     }
 }

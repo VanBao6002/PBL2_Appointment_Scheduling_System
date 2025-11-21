@@ -3,20 +3,7 @@
 #include <stdexcept>
 #include <sstream>
 
-std::vector<std::string> parseStringToList(const std::string& str) {
-    std::vector<std::string> list;
-    if (str.empty()) return list;
 
-    std::stringstream ss(str);
-    std::string segment;
-    while(std::getline(ss, segment, ',')) {
-        std::string trimmedSegment = Utils::trimmed(segment);
-        if (!trimmedSegment.empty()) {
-            list.push_back(trimmedSegment);
-        }
-    }
-    return list;
-}
 
 Patient::Patient(): Person(), bloodType("AB+"), allergies{}, chronicDiseases{}, nameMother("NGUYEN VAN B"), nameFather("NGUYEN VAN A"), medicalRecordIDs() {
 }
@@ -162,23 +149,26 @@ std::string Patient::getInfo() const {
 }
 
 void Patient::setBloodType(const std::string &bloodType_) {
-    bloodType = bloodType_;
+    Utils::validBloodType(bloodType_);
+    bloodType = Utils::toUpper(Utils::::trimmed(bloodType_));
 }
 
 void Patient::setAllergies(const std::string &allergies_) {
-    allergies = parseStringToList(allergies_);
+    allergies = Utils::parseStringToList(Utils::trimmed(allergies_));
 }
 
 void Patient::setChronicDiseases(const std::string &chronicDiseases_) {
-    chronicDiseases = parseStringToList(chronicDiseases_);
+    chronicDiseases = Utils::parseStringToList(Utils::trimmed(chronicDiseases_));
 }
 
 void Patient::setNameMother(const std::string &nameMother_) {
-    nameMother = nameMother_;
+    Utils::validName(Utils::trimmed(nameMother_));
+    nameMother = Utils::trimmed(nameMother_);
 }
 
 void Patient::setNameFather(const std::string &nameFather_) {
-    nameFather = nameFather_;
+    Utils::validName(Utils::trimmed(nameFather_));
+    nameFather = Utils::trimmed(nameFather_);
 }
 
 nlohmann::json Patient::toJson() const {
