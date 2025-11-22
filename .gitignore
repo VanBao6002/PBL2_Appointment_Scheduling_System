@@ -32,7 +32,14 @@ qrc_*.cpp
 # Copilot instructions
 .github/*
 
-# Ignore only generated or config files, NOT source
+# Qt auto-generated files
+ui_*.h
+qrc_*.cpp
+moc_*.cpp
+
+#environment
+.vscode/
+caythumuc.txt
 CMakeLists.txt.user
 
 # Ignore data and temp files (if not needed in repo)
