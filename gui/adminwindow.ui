@@ -1,0 +1,1299 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>AdminWindow</class>
+ <widget class="QMainWindow" name="AdminWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1200</width>
+    <height>800</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>ADMIN WINDOW</string>
+  </property>
+  <property name="styleSheet">
+   <string/>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,3">
+    <item>
+     <widget class="QWidget" name="sidebarWidget" native="true">
+      <property name="styleSheet">
+       <string notr="true">/* Style cho toàn bộ Sidebar */
+#sidebarWidget {
+    background-color: #0d47a1; /* Màu nền xanh đậm */
+    border: none;
+}
+
+/* Style cho tiêu đề &quot;HỆ THỐNG QUẢN LÝ Y TẾ&quot; */
+#lblSystemTitle { /* Sử dụng objectName của QLabel này */
+    color: white; /* Chữ màu trắng */
+    padding: 20px 0; /* Khoảng đệm trên dưới */
+    font-size: 16pt; /* Kích thước font */
+    font-weight: bold; /* In đậm */
+    text-align: center; /* Căn giữa văn bản */
+}
+
+/* Style mặc định cho tất cả các QPushButton trong Sidebar */
+#sidebarWidget QPushButton {
+    color: white; /* Chữ màu trắng */
+    background-color: transparent; /* Nền trong suốt */
+    border: none; /* Không có viền */
+    padding: 10px 15px; /* Khoảng đệm */
+    text-align: left; /* Căn lề trái */
+    font-size: 11pt; /* Kích thước font */
+    margin-left: 10px; /* Thụt lề nhẹ cho chữ */
+}
+
+/* Style khi di chuột (hover) qua các nút trong Sidebar */
+#sidebarWidget QPushButton:hover {
+    background-color: #1976d2; /* Màu xanh nhạt hơn khi hover */
+}
+
+/* (Tùy chọn) Style cho nút đang được chọn (active/clicked) */
+/* Bạn sẽ cần thêm một objectName hoặc thuộc tính động trong C++ để áp dụng cái này */</string>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <item>
+        <widget class="QLabel" name="lblSystemTitle">
+         <property name="layoutDirection">
+          <enum>Qt::LayoutDirection::LeftToRight</enum>
+         </property>
+         <property name="text">
+          <string>HỆ THỐNG QUẢN LÍ BỆNH NHÂN - ADMIN</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="appointmentManagerButton">
+         <property name="text">
+          <string>QUẢN LÝ CUỘC HẸN</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="doctorManagerButton">
+         <property name="text">
+          <string>QUẢN LÝ BÁC SĨ</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="patientManagerButton">
+         <property name="text">
+          <string>QUẢN LÝ BỆNH NHÂN</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="userManagerButton">
+         <property name="text">
+          <string>QUẢN LÝ NGƯỜI DÙNG</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="medicalRecordButton">
+         <property name="text">
+          <string>QUẢN LÝ HỒ SƠ Y TẾ</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="logoutButton">
+         <property name="text">
+          <string>ĐĂNG XUẤT</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Orientation::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>523</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QWidget" name="contentAreaWidget" native="true">
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item>
+        <widget class="QStackedWidget" name="mainStack">
+         <property name="currentIndex">
+          <number>1</number>
+         </property>
+         <widget class="QWidget" name="page_appointment">
+          <layout class="QVBoxLayout" name="verticalLayout_3">
+           <item>
+            <widget class="QLabel" name="lblPageTitle_Appointment">
+             <property name="styleSheet">
+              <string notr="true">font-size: 18pt; font-weight: bold;</string>
+             </property>
+             <property name="text">
+              <string>QUẢN LÝ CUỘC HẸN</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QWidget" name="toolbar_Appointment" native="true">
+             <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="1,0,3,1,1">
+              <item>
+               <widget class="QPushButton" name="btnAddAppointment">
+                <property name="text">
+                 <string>+ THÊM CUỘC HẸN</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer">
+                <property name="orientation">
+                 <enum>Qt::Orientation::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="txtSearchAppointment">
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="readOnly">
+                 <bool>false</bool>
+                </property>
+                <property name="placeholderText">
+                 <string>Tìm kiếm cuộc hẹn</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="btnSearchAppointment">
+                <property name="text">
+                 <string>TÌM KIẾM</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_2">
+                <property name="orientation">
+                 <enum>Qt::Orientation::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>121</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QTableWidget" name="tableAppointment">
+             <property name="columnCount">
+              <number>7</number>
+             </property>
+             <attribute name="horizontalHeaderCascadingSectionResizes">
+              <bool>true</bool>
+             </attribute>
+             <attribute name="horizontalHeaderMinimumSectionSize">
+              <number>20</number>
+             </attribute>
+             <attribute name="horizontalHeaderStretchLastSection">
+              <bool>true</bool>
+             </attribute>
+             <attribute name="verticalHeaderCascadingSectionResizes">
+              <bool>false</bool>
+             </attribute>
+             <column>
+              <property name="text">
+               <string>ID Cuộc hẹn</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Bệnh nhân</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Bác sĩ</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Ngày</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Giờ</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Trạng thái</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Hành động</string>
+              </property>
+             </column>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="lblCurrentPage_Appointment">
+             <property name="text">
+              <string>TextLabel</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignmentFlag::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QWidget" name="pagination_Appointment" native="true">
+             <layout class="QHBoxLayout" name="horizontalLayout_3">
+              <item>
+               <spacer name="horizontalSpacer_3">
+                <property name="orientation">
+                 <enum>Qt::Orientation::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>186</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <widget class="QPushButton" name="btnPrevPage_Appointment">
+                <property name="text">
+                 <string>&lt; Trang trước</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="btnPage_Appointment_1">
+                <property name="text">
+                 <string>1</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="btnPage_Appointment_2">
+                <property name="text">
+                 <string>2</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="btnPage_Appointment_3">
+                <property name="text">
+                 <string>3</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="btnNextPage_Appointment">
+                <property name="text">
+                 <string>Trang tiếp &gt;</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_4">
+                <property name="orientation">
+                 <enum>Qt::Orientation::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>185</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="page_user">
+          <layout class="QVBoxLayout" name="verticalLayout_6">
+           <item>
+            <widget class="QLabel" name="lblPageTitle_User">
+             <property name="styleSheet">
+              <string notr="true">font-size: 18pt; font-weight: bold;</string>
+             </property>
+             <property name="text">
+              <string>QUẢN LÝ NGƯỜI DÙNG</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QWidget" name="toolbar_User" native="true">
+             <layout class="QHBoxLayout" name="horizontalLayout_8" stretch="1,0,3,1,0,0,1">
+              <item>
+               <widget class="QPushButton" name="btnAddUser">
+                <property name="text">
+                 <string>+ THÊM NGƯỜI DÙNG</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_13">
+                <property name="orientation">
+                 <enum>Qt::Orientation::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="txtSearchUser">
+                <property name="placeholderText">
+                 <string>Tìm kiếm người dùng</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="btnSearchUser">
+                <property name="text">
+                 <string>TÌM KIẾM</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="btnSortAZUser">
+                <property name="text">
+                 <string>🔼 A → Z</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="btnSortZAUser">
+                <property name="text">
+                 <string>🔽 Z → A</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_14">
+                <property name="orientation">
+                 <enum>Qt::Orientation::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>121</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QTableWidget" name="tableUser">
+             <attribute name="horizontalHeaderStretchLastSection">
+              <bool>true</bool>
+             </attribute>
+             <column>
+              <property name="text">
+               <string>Vai trò</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Tên người dùng</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Mật khẩu</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Trạng thái</string>
+              </property>
+             </column>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="lblCurrentPage_User">
+             <property name="text">
+              <string>TextLabel</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignmentFlag::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QWidget" name="pagination_User" native="true">
+             <layout class="QHBoxLayout" name="horizontalLayout_9">
+              <item>
+               <spacer name="horizontalSpacer_15">
+                <property name="orientation">
+                 <enum>Qt::Orientation::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>186</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <widget class="QPushButton" name="btnPrevPage_User">
+                <property name="text">
+                 <string>&lt; Trang trước</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="btnPage_User_1">
+                <property name="text">
+                 <string>1</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="btnPage_User_2">
+                <property name="text">
+                 <string>2</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="btnPage_User_3">
+                <property name="text">
+                 <string>3</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="btnNextPage_User">
+                <property name="text">
+                 <string>Trang sau &gt;</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_16">
+                <property name="orientation">
+                 <enum>Qt::Orientation::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>185</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="page_prescription">
+          <layout class="QVBoxLayout" name="verticalLayout_8">
+           <item>
+            <widget class="QLabel" name="lblPageTitle_Prescription">
+             <property name="styleSheet">
+              <string notr="true">font-size: 18pt; font-weight: bold;</string>
+             </property>
+             <property name="text">
+              <string>QUẢN LÝ ĐƠN THUỐC</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QWidget" name="toolbar_Prescription" native="true">
+             <layout class="QHBoxLayout" name="horizontalLayout_13" stretch="1,0,3,1,1">
+              <item>
+               <widget class="QPushButton" name="pushButton_35">
+                <property name="text">
+                 <string>+ KÊ ĐƠN THUỐC MỚI</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_21">
+                <property name="orientation">
+                 <enum>Qt::Orientation::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="lineEdit_6">
+                <property name="placeholderText">
+                 <string>Tìm kiếm đơn thuốc</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushButton_36">
+                <property name="text">
+                 <string>TÌM KIẾM</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_22">
+                <property name="orientation">
+                 <enum>Qt::Orientation::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>121</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QTableWidget" name="tablePrescription">
+             <attribute name="horizontalHeaderStretchLastSection">
+              <bool>true</bool>
+             </attribute>
+             <column>
+              <property name="text">
+               <string>ID</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>ID Bệnh nhân</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>ID Bác sĩ</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Ngày kê đơn</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Chuẩn đoán</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Hiệu lực</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Xem chi tiết</string>
+              </property>
+             </column>
+            </widget>
+           </item>
+           <item>
+            <widget class="QWidget" name="pagination_Prescription" native="true">
+             <layout class="QHBoxLayout" name="horizontalLayout_12">
+              <item>
+               <spacer name="horizontalSpacer_23">
+                <property name="orientation">
+                 <enum>Qt::Orientation::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>186</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushButton_5">
+                <property name="text">
+                 <string>&lt; Trang trước</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushButton_3">
+                <property name="text">
+                 <string>1</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushButton_2">
+                <property name="text">
+                 <string>2</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushButton">
+                <property name="text">
+                 <string>3</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushButton_4">
+                <property name="text">
+                 <string>Trang sau &gt;</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_24">
+                <property name="orientation">
+                 <enum>Qt::Orientation::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>185</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="page_medicalRecord">
+          <layout class="QVBoxLayout" name="verticalLayout_7">
+           <item>
+            <widget class="QLabel" name="lblPageTitle_MedicalRecord">
+             <property name="styleSheet">
+              <string notr="true">font-size: 18pt; font-weight: bold;</string>
+             </property>
+             <property name="text">
+              <string>QUẢN LÝ HỒ SƠ Y TẾ</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QWidget" name="toolbar_MedicalRecord" native="true">
+             <layout class="QHBoxLayout" name="horizontalLayout_11" stretch="1,0,3,1,1">
+              <item>
+               <widget class="QPushButton" name="pushButton_28">
+                <property name="text">
+                 <string>+ THÊM HÔ SƠ Y TẾ</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_17">
+                <property name="orientation">
+                 <enum>Qt::Orientation::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="lineEdit_5">
+                <property name="placeholderText">
+                 <string>Tìm kiếm hồ sơ y tế</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushButton_29">
+                <property name="text">
+                 <string>TÌM KIẾM</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_18">
+                <property name="orientation">
+                 <enum>Qt::Orientation::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>121</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QTableWidget" name="tableMedicalRecord">
+             <attribute name="horizontalHeaderStretchLastSection">
+              <bool>true</bool>
+             </attribute>
+             <column>
+              <property name="text">
+               <string>ID</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>ID Bệnh nhân</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>ID Bác sĩ</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Ngày tạo</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Lần cập nhật cuối</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Chuẩn đoán</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Xem chi tiết</string>
+              </property>
+             </column>
+            </widget>
+           </item>
+           <item>
+            <widget class="QWidget" name="pagination_MedicalRecord" native="true">
+             <layout class="QHBoxLayout" name="horizontalLayout_10">
+              <item>
+               <spacer name="horizontalSpacer_19">
+                <property name="orientation">
+                 <enum>Qt::Orientation::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>186</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushButton_30">
+                <property name="text">
+                 <string>&lt; Trang trước</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushButton_31">
+                <property name="text">
+                 <string>1</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushButton_32">
+                <property name="text">
+                 <string>2</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushButton_33">
+                <property name="text">
+                 <string>3</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushButton_34">
+                <property name="text">
+                 <string>Trang sau &gt;</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_20">
+                <property name="orientation">
+                 <enum>Qt::Orientation::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>185</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="page_patient">
+          <layout class="QVBoxLayout" name="verticalLayout_5">
+           <item>
+            <widget class="QLabel" name="lblPageTitle_Patient">
+             <property name="styleSheet">
+              <string notr="true">font-size: 18pt; font-weight: bold;</string>
+             </property>
+             <property name="text">
+              <string>QUẢN LÝ BỆNH NHÂN</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QWidget" name="toolbar_Patient" native="true">
+             <layout class="QHBoxLayout" name="horizontalLayout_7" stretch="1,0,2,1,1,1,0">
+              <item>
+               <widget class="QPushButton" name="btnAddPatient">
+                <property name="text">
+                 <string>+ THÊM BỆNH NHÂN</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_11">
+                <property name="orientation">
+                 <enum>Qt::Orientation::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="txtSearchPatient">
+                <property name="placeholderText">
+                 <string>Tìm kiếm bệnh nhân</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="btnSearchPatient">
+                <property name="text">
+                 <string>TÌM KIẾM</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="btnSortAZPatient">
+                <property name="text">
+                 <string>SẮP XẾP: A → Z ▼</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="btnSortZAPatient">
+                <property name="text">
+                 <string>SẮP XẾP: Z → A ▼</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_12">
+                <property name="orientation">
+                 <enum>Qt::Orientation::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QTableWidget" name="tablePatient">
+             <attribute name="horizontalHeaderStretchLastSection">
+              <bool>true</bool>
+             </attribute>
+             <column>
+              <property name="text">
+               <string>ID Bệnh nhân</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Họ tên</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Giới tính</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Ngày sinh</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Nhóm máu</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>SĐT</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Email</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Tuỳ chọn</string>
+              </property>
+             </column>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="lblCurrentPage_Patient">
+             <property name="text">
+              <string>TextLabel</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignmentFlag::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QWidget" name="pagination_Patient" native="true">
+             <layout class="QHBoxLayout" name="horizontalLayout_6">
+              <item>
+               <spacer name="horizontalSpacer_9">
+                <property name="orientation">
+                 <enum>Qt::Orientation::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>186</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <widget class="QPushButton" name="btnPrevPage_Patient">
+                <property name="text">
+                 <string>&lt; Trang trước</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="btnPage_Patient_1">
+                <property name="text">
+                 <string>1</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="btnPage_Patient_2">
+                <property name="text">
+                 <string>2</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="btnPage_Patient_3">
+                <property name="text">
+                 <string>3</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="btnNextPage_Patient">
+                <property name="text">
+                 <string>Trang sau &gt;</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_10">
+                <property name="orientation">
+                 <enum>Qt::Orientation::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>185</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="page_doctor">
+          <layout class="QVBoxLayout" name="verticalLayout_4">
+           <item>
+            <widget class="QLabel" name="lblPageTitle_Doctor">
+             <property name="styleSheet">
+              <string notr="true">font-size: 18pt; font-weight: bold;</string>
+             </property>
+             <property name="text">
+              <string>QUẢN LÝ BÁC SĨ</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QWidget" name="toolbar_Doctor" native="true">
+             <layout class="QHBoxLayout" name="horizontalLayout_5" stretch="1,0,2,1,1,1,0">
+              <item>
+               <widget class="QPushButton" name="btnAddDoctor">
+                <property name="text">
+                 <string>+ THÊM BÁC SĨ</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_7">
+                <property name="orientation">
+                 <enum>Qt::Orientation::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="txtSearchDoctor">
+                <property name="placeholderText">
+                 <string>Tìm kiếm bác sĩ</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="btnSearchDoctor">
+                <property name="text">
+                 <string>TÌM KIẾM</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="btnSortAZDoctor">
+                <property name="text">
+                 <string>SẮP XẾP: A → Z ▼</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="btnSortZADoctor">
+                <property name="text">
+                 <string>SẮP XẾP: Z → A ▼</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_8">
+                <property name="orientation">
+                 <enum>Qt::Orientation::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>121</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QTableWidget" name="tableDoctor">
+             <property name="columnCount">
+              <number>8</number>
+             </property>
+             <attribute name="horizontalHeaderStretchLastSection">
+              <bool>true</bool>
+             </attribute>
+             <column>
+              <property name="text">
+               <string>ID Bác sĩ</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Họ tên</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Giới tính</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Ngày sinh</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Chuyên khoa</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>SĐT</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Email</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Trạng thái</string>
+              </property>
+             </column>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="lblCurrentPage_Doctor">
+             <property name="text">
+              <string>TextLabel</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignmentFlag::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QWidget" name="pagination_Doctor" native="true">
+             <layout class="QHBoxLayout" name="horizontalLayout_4">
+              <item>
+               <spacer name="horizontalSpacer_5">
+                <property name="orientation">
+                 <enum>Qt::Orientation::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>186</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <widget class="QPushButton" name="btnPrevPage_Doctor">
+                <property name="text">
+                 <string>&lt; Trang trước</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="btnPage_Doctor_1">
+                <property name="text">
+                 <string>1</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="btnPage_Doctor_2">
+                <property name="text">
+                 <string>2</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="btnPage_Doctor_3">
+                <property name="text">
+                 <string>3</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="btnNextPage_Doctor">
+                <property name="text">
+                 <string>Trang sau &gt;</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_6">
+                <property name="orientation">
+                 <enum>Qt::Orientation::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>185</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
