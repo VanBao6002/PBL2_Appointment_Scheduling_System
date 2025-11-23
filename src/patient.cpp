@@ -25,7 +25,7 @@ Patient::Patient(const std::string &name_, char gender_, const std::string &birt
     IDHandler<Patient>::registerID(static_cast<size_t>(newID));
 }
 
-// ✅ Copy Constructor - CHỈ COPY ID, không tạo mới
+// Copy Constructor - CHỈ COPY ID, không tạo mới
 Patient::Patient(const Patient& other) 
     : Person(other) {
     bloodType = other.bloodType;
@@ -34,30 +34,12 @@ Patient::Patient(const Patient& other)
     nameMother = other.nameMother;
     nameFather = other.nameFather;
     medicalRecordIDs = other.medicalRecordIDs;
-    
-    // ✅ QUAN TRỌNG: Chỉ COPY ID từ object khác, không tạo mới
     ID = other.ID;
-    
-    // ✅ Chỉ register ID nếu nó > 0 (tức là object này sẽ được lưu vào table)
-    if (ID > 0) {
-        try {
-            IDHandler<Patient>::registerID(static_cast<size_t>(ID));
-        } catch (...) {
-            // ID đã được register rồi (có thể từ lần load trước), bỏ qua
-        }
-    }
 }
 
-// ✅ Assignment Operator - Xử lý ID an toàn
+// Assignment Operator - Xử lý ID an toàn, ko tạo mới ID
 Patient& Patient::operator=(const Patient& other) {
     if (this != &other) {
-        // Unregister ID cũ nếu có
-        if (ID > 0) {
-            try {
-                IDHandler<Patient>::unregisterID(ID);
-            } catch (...) {}
-        }
-        
         // Copy dữ liệu từ Person
         Person::operator=(other);
         
@@ -68,20 +50,12 @@ Patient& Patient::operator=(const Patient& other) {
         nameFather = other.nameFather;
         medicalRecordIDs = other.medicalRecordIDs;
         
-        // ✅ COPY ID từ object khác
         ID = other.ID;
-        
-        // ✅ Register ID nếu > 0
-        if (ID > 0) {
-            try {
-                IDHandler<Patient>::registerID(static_cast<size_t>(ID));
-            } catch (...) {}
-        }
     }
     return *this;
 }
 
-// ✅ Move Constructor - Di chuyển ID
+// Move Constructor - Di chuyển ID ko tạo mới 
 Patient::Patient(Patient&& other) noexcept 
     : Person(std::move(other)) {
     bloodType = std::move(other.bloodType);
@@ -90,23 +64,14 @@ Patient::Patient(Patient&& other) noexcept
     nameMother = std::move(other.nameMother);
     nameFather = std::move(other.nameFather);
     medicalRecordIDs = std::move(other.medicalRecordIDs);
-    
-    // ✅ Di chuyển ID, không tạo mới
     ID = other.ID;
     other.ID = 0;
 }
 
-// ✅ Move Assignment Operator - Di chuyển ID an toàn
+// Move Assignment Operator - Di chuyển ID an toàn, ko tạo mới
 Patient& Patient::operator=(Patient&& other) noexcept {
     if (this != &other) {
-        // Unregister ID cũ
-        if (ID > 0) {
-            try {
-                IDHandler<Patient>::unregisterID(ID);
-            } catch (...) {}
-        }
-        
-        // Move dữ liệu từ Person
+       // Move dữ liệu từ Person
         Person::operator=(std::move(other));
         
         bloodType = std::move(other.bloodType);
@@ -115,8 +80,6 @@ Patient& Patient::operator=(Patient&& other) noexcept {
         nameMother = std::move(other.nameMother);
         nameFather = std::move(other.nameFather);
         medicalRecordIDs = std::move(other.medicalRecordIDs);
-        
-        // ✅ Di chuyển ID
         ID = other.ID;
         other.ID = 0;
     }
@@ -124,7 +87,6 @@ Patient& Patient::operator=(Patient&& other) noexcept {
 }
 
 Patient::~Patient(){
-    // ✅ Chỉ unregister nếu ID > 0
     if (ID > 0) {
         try {
             IDHandler<Patient>::unregisterID(ID);
@@ -150,7 +112,7 @@ std::string Patient::getInfo() const {
 
 void Patient::setBloodType(const std::string &bloodType_) {
     Utils::validBloodType(bloodType_);
-    bloodType = Utils::toUpper(Utils::::trimmed(bloodType_));
+    bloodType = Utils::toUpper(Utils::trimmed(bloodType_));
 }
 
 void Patient::setAllergies(const std::string &allergies_) {
@@ -177,7 +139,7 @@ nlohmann::json Patient::toJson() const {
     j["name"] = name;
     j["gender"] = std::string(1, gender);
     j["birthday"] = birthday.toJson();
-    j["phoneNumber"] = phoneNumber;  // ✅ Đảm bảo có phoneNumber
+    j["phoneNumber"] = phoneNumber; 
     j["bloodType"] = bloodType;
     j["nameMother"] = nameMother;
     j["nameFather"] = nameFather;

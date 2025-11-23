@@ -1,5 +1,6 @@
 <RCC>
-    <qresource prefix="/LoginWindow">
-        <file>LoginWindow/loginwindow_background.jpg</file>
+    <qresource prefix="/">
+        <file>assets/loginwindow_background.jpg</file>
+        <file>assets/domixi.png</file>
     </qresource>
 </RCC>

@@ -95,7 +95,6 @@ AdminWindow::AdminWindow(QWidget *parent)
     ui->btnSortAZUser->setText("🔼 A → Z");
     ui->btnSortZAUser->setText("🔽 Z → A");
 
-    loadAllManagersData();
     ui->mainStack->setCurrentWidget(ui->page_appointment);
     loadAppointmentData(currentAppointmentPage);
 
@@ -104,43 +103,7 @@ AdminWindow::AdminWindow(QWidget *parent)
 
 AdminWindow::~AdminWindow()
 {
-    try {
-        AppointmentManager::getInstance().saveToFile(Config::APPOINTMENT_PATH);
-        DoctorManager::getInstance().saveToFile(Config::DOCTOR_PATH);
-        PatientManager::getInstance().saveToFile(Config::PATIENT_PATH);
-        UserManager::getInstance().saveToFile(Config::USER_PATH);
-    } catch (...) {
-        qDebug() << "Error saving data on exit.";
-    }
     delete ui;
-}
-
-void AdminWindow::loadAllManagersData() {
-    qDebug() << "==================================================";
-    qDebug() << "Current working directory:" << QDir::currentPath();
-    qDebug() << "Patient file path:" << Config::PATIENT_PATH;
-    qDebug() << "File exists?" << QFile::exists(Config::PATIENT_PATH);
-    qDebug() << "==================================================";
-
-    try {
-        if (!QFile::exists(Config::PATIENT_PATH)) {
-            qWarning() << "Patient file not found, creating new one...";
-            PatientManager::getInstance().saveToFile(Config::PATIENT_PATH);
-        }
-
-        DoctorManager::getInstance().loadFromFile(Config::DOCTOR_PATH);
-        PatientManager::getInstance().loadFromFile(Config::PATIENT_PATH);
-
-    } catch (const std::exception& e) {
-        QMessageBox::critical(this, "Lỗi Dữ liệu",
-                              QString("Không thể tải file: %1").arg(e.what()));
-        return;
-    }
-    try {
-        AppointmentManager::getInstance().loadFromFile(Config::APPOINTMENT_PATH);
-    } catch (const std::exception& e) {
-        // ... xử lý lỗi
-    }
 }
 
 void AdminWindow::loadAppointmentData(int page, const QString& searchText)
@@ -870,7 +833,8 @@ void AdminWindow::loadPatientData(int page, const QString& searchText) {
 }
 
 void AdminWindow::on_logoutButton_clicked()
-{
+{   
+    Core::saveAll();
     this->hide();
     if (parentWidget()) {
         parentWidget()->show();
@@ -959,7 +923,6 @@ void AdminWindow::on_btnAddAppointment_clicked()
             }
 
             AppointmentManager::getInstance().addAppointment(newAppt);
-            AppointmentManager::getInstance().saveToFile(Config::APPOINTMENT_PATH);
 
             QMessageBox::information(this, "Thành công", "Cuộc hẹn đã được thêm và lưu.");
             loadAppointmentData(currentAppointmentPage, ui->txtSearchAppointment->text().trimmed());
@@ -1090,10 +1053,7 @@ void AdminWindow::on_btnAddPatient_clicked() {
 
             PatientManager::getInstance().addPatient(newPatient);
 
-            QMessageBox::information(this, "Thành công",
-                                     QString("Đã thêm bệnh nhân mới với ID: %1\nFile đã được lưu tại: %2")
-                                         .arg(newPatient.getID())
-                                         .arg(Config::PATIENT_PATH));
+            QMessageBox::information(this, "Thành công", QString("Đã thêm bệnh nhân mới với ID: %1").arg(newPatient.getID()));
 
             loadPatientData(currentPatientPage, ui->txtSearchPatient->text().trimmed());
 
@@ -1639,8 +1599,7 @@ void AdminWindow::loadUserData(int page, const QString& searchText) {
         // Tô màu theo vai trò
         if (user.getRole() == User::Role::ADMIN) {
             roleItem->setBackground(QBrush(QColor(255, 87, 34, 50))); // Cam
-        } else if (user.getRole() == User::Role::DOCTOR) {
-            roleItem->setBackground(QBrush(QColor(33, 150, 243, 50))); // Xanh dương
+ 
         } else if (user.getRole() == User::Role::ASSISTANT) {
             roleItem->setBackground(QBrush(QColor(76, 175, 80, 50))); // Xanh lá
         }

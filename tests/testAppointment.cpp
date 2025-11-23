@@ -1,7 +1,6 @@
-#include "all.h"
 #include <iostream>
-using namespace std;
+#include "all.h"
 
 int main(){
-    std::cout << "Test placeholder\n";
+    std::cout << Utils::hashFunc("abc") << std::endl;
 }

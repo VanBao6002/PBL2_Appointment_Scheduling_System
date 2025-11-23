@@ -4,7 +4,10 @@
 #include "doctorwindow.h"
 #include "assistantwindow.h"
 #include "userManager.h"
+#include "config.h"
+#include "utils.h"
 #include <QPainter>
+#include <QResource>
 #include <QDebug>
 
 loginwindow::loginwindow(QWidget *parent) :
@@ -12,27 +15,16 @@ loginwindow::loginwindow(QWidget *parent) :
     ui(new Ui::loginwindow)
 {
     ui->setupUi(this);
-    if (!m_bgPixmap.load(":/images/background.jpg")) {
+
+    if (!m_bgPixmap.load(Config::LOGIN_IMAGE_PATH)) {
         qDebug() << "Failed to load background image.";
     }
-    loadUsers();
     ui->passWord->setEchoMode(QLineEdit::Password);
 }
 
 loginwindow::~loginwindow()
 {
     delete ui;
-}
-
-void loginwindow::loadUsers()
-{
-    try {
-        UserManager::getInstance().loadFromFile(USER_FILE_PATH);
-        QMessageBox::information(this, "Thành công", "Đã tải dữ liệu người dùng thành công.");
-    } catch (const std::exception& e) {
-        QMessageBox::critical(this, "Lỗi Tải Dữ Liệu", QString("Không thể tải file %1: %2").arg(USER_FILE_PATH).arg(e.what()));
-        qDebug() << "Error loading users: " << e.what();
-    }
 }
 
 void loginwindow::on_loginButton_clicked()
@@ -44,8 +36,6 @@ void loginwindow::on_loginButton_clicked()
         QMessageBox::warning(this, "Lỗi Đăng Nhập", "Tên đăng nhập và mật khẩu không được để trống.");
         return;
     }
-    std::string passwordHash = password.toStdString();
-
     try {
         const auto& allUsers = UserManager::getInstance().getAllUsers();
         bool loginSuccess = false;
@@ -53,9 +43,8 @@ void loginwindow::on_loginButton_clicked()
 
         for (const auto& pair : allUsers) {
             const User& user = pair.second;
-            // So sánh trực tiếp chuỗi mật khẩu nhập vào với chuỗi đã lưu
             if (user.getUsername() == username.toStdString() &&
-                user.getPassword() == passwordHash)
+                user.getPassword() == password.toStdString())
             {
                 loginSuccess = true;
                 loggedInUser = user;
@@ -66,16 +55,10 @@ void loginwindow::on_loginButton_clicked()
         if (loginSuccess) {
             this->hide();
             if (loggedInUser.getRole() == User::Role::ADMIN) {
-                AdminWindow *adminWindow = new AdminWindow(this); // set parent là loginwindow
+                AdminWindow *adminWindow = new AdminWindow(this); 
                 adminWindow->show();
                 this->hide();
                 qDebug() << "Admin login successful.";
-            } else if (loggedInUser.getRole() == User::Role::DOCTOR) {
-                DoctorWindow *doctorWindow = new DoctorWindow(this);
-                doctorWindow->show();
-                this->hide();
-                qDebug() << "Doctor login successful.";
-
             } else if(loggedInUser.getRole() == User::Role::ASSISTANT){
                 AssistantWindow *assistantWindow = new AssistantWindow(this);
                 assistantWindow->show();
@@ -122,12 +105,12 @@ void loginwindow::on_showPasswordButton_toggled(bool checked)
         // Nút được nhấn -> Hiển thị mật khẩu
         ui->passWord->setEchoMode(QLineEdit::Normal);
         // Có thể thay đổi biểu tượng nút thành "👁️"
-        ui->showPasswordButton->setText("Hide");
+        ui->showPasswordButton->setText("Ẩn");
     } else {
         // Nút không được nhấn -> Ẩn mật khẩu
         ui->passWord->setEchoMode(QLineEdit::Password);
         // Có thể thay đổi biểu tượng nút thành "🙈"
-        ui->showPasswordButton->setText("Show");
+        ui->showPasswordButton->setText("Hiện");
     }
 }
 

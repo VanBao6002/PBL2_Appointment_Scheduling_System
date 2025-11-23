@@ -2,6 +2,7 @@
 
 Doctor::Doctor() : Person(), specialization(""), patientIDs(), doctorStatus(Status::Active){ 
 }
+
 Doctor::Doctor(const std::string& name_, char gender_, const std::string& birthday_, const std::string &phoneNumber_, const std::string& email_, const std::string& specialization_, const std::string& doctorStatus_) : Person(name_, gender_, birthday_, phoneNumber_) {
 
     setEmail(email_);

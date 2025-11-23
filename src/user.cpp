@@ -37,7 +37,6 @@ void User::setPassword(const std::string &password_){
 User::Role User::roleFromString (const std::string& str) {
     if (Utils::toLower(str) == "admin") return Role::ADMIN;
     if (Utils::toLower(str) == "assistant") return Role::ASSISTANT;
-    if (Utils::toLower(str) == "doctor") return Role::DOCTOR;
 
     throw std::invalid_argument("Unknown role: " + str);
 }
@@ -46,7 +45,6 @@ std::string User::roleToString (Role role) {
     switch (role) {
         case Role::ADMIN:     return "ADMIN";
         case Role::ASSISTANT: return "ASSISTANT";
-        case Role::DOCTOR:    return "DOCTOR";
     }
     return "UNKNOWN";
 }

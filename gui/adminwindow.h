@@ -87,9 +87,7 @@ private slots:
     void loadPatientData(int page = 1, const QString& searchText = "");
     void loadDoctorData(int page = 1, const QString& searchText = "");
     void loadUserData(int page = 1, const QString& searchText = "");
-    // void loadMedicalRecordData(int page = 1, const QString& searchText = "");
-
-    void loadAllManagersData();
+   
 
 private:
     Ui::AdminWindow *ui;

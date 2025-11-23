@@ -44,32 +44,39 @@ if(USE_QT_GUI)
     set(RESOURCE_FILES ${CMAKE_SOURCE_DIR}/gui/resources.qrc)
 
     # ensure we compile rcc
-    qt_add_resources(GUI_RESOURCES ${RESOURCE_FILES})
+    # qt_add_resources(GUI_RESOURCES ${RESOURCE_FILES})
 
     # then add GUI_RESOURCES into the executable
     qt_add_executable(${PROJECT_NAME}
-        ${CMAKE_SOURCE_DIR}/main.cpp
-        ${SRC_FILES}
-        ${GUI_FILES}
-        ${GUI_RESOURCES}
+    ${CMAKE_SOURCE_DIR}/main.cpp
+    ${SRC_FILES}
+    ${GUI_FILES}
+    ${CMAKE_SOURCE_DIR}/gui/resources.qrc
     )
 
     target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Widgets)
     target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/include)
 
-    # --- NEW: Post-Build Copy Data Files ---
-    # Lệnh này sẽ sao chép các file data sang thư mục của file thực thi sau khi build.
+    # --- NEW: Post-Build Copy Data Files into 'data' subfolder ---
     if(DATA_FILES)
         add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:${PROJECT_NAME}>/data
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            ${DATA_FILES}
-            $<TARGET_FILE_DIR:${PROJECT_NAME}>
-            COMMENT "Copying required data files (.json, .txt) to executable directory."
+                ${DATA_FILES}
+                $<TARGET_FILE_DIR:${PROJECT_NAME}>/data
+            COMMENT "Copying required data files (.json, .txt) to 'data' subfolder in executable directory."
         )
     endif()
-    # ---------------------------------------
+    # --- Copy assets folder to build output (GUI) ---
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+            ${CMAKE_SOURCE_DIR}/assets
+            $<TARGET_FILE_DIR:${PROJECT_NAME}>/assets
+        COMMENT "Copying assets folder to build output directory."
+    )
+    # ------------------------------------------------------------
 
-    set_target_properties(${PROJECT_NAME} PROPERTIES WIN32_EXECUTABLE OFF)
+    set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "main")
     if(USE_MINGW)
         target_link_options(${PROJECT_NAME} PRIVATE "-Wl,--subsystem,console")
     endif()
@@ -81,16 +88,24 @@ else()
     )
     target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/include)
 
-    # --- NEW: Post-Build Copy Data Files (for non-GUI build) ---
+    # --- NEW: Post-Build Copy Data Files into 'data' subfolder (for non-GUI build) ---
     if(DATA_FILES)
         add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:${PROJECT_NAME}>/data
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            ${DATA_FILES}
-            $<TARGET_FILE_DIR:${PROJECT_NAME}>
-            COMMENT "Copying required data files (.json, .txt) to executable directory."
+                ${DATA_FILES}
+                $<TARGET_FILE_DIR:${PROJECT_NAME}>/data
+            COMMENT "Copying required data files (.json, .txt) to 'data' subfolder in executable directory."
         )
     endif()
-    # ---------------------------------------
+    # --- Copy assets folder to build output (non-GUI) ---
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+            ${CMAKE_SOURCE_DIR}/assets
+            $<TARGET_FILE_DIR:${PROJECT_NAME}>/assets
+        COMMENT "Copying assets folder to build output directory."
+    )
+    # -------------------------------------------------------------------------------
 endif()
 
 # ---------------- Extra files for Qt Creator ----------------
@@ -100,3 +115,5 @@ add_custom_target(ExtraFiles SOURCES
     README.md
     LICENSE
 )
+
+# --- Copy assets folder to build output ---

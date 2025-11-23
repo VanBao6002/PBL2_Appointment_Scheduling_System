@@ -1,18 +1,11 @@
 #pragma once
-
-#include "patientManager.h"
-#include "doctorManager.h"
-#include "appointmentManager.h"
-#include "userManager.h"
-
-
-class Core {
-    PatientManager patientMgr;
-    DoctorManager doctorMgr;
-    AppointmentManager appointmentMgr;
-    UserManager userMgr;
-    
-public:
-    void loadAll();
-    void saveAll();
+#include <vector>
+#include <string>
+#include <QStringList>
+#include <unordered_set>
+class Core {  
+    public:
+        static void loadAll();
+        static void saveAll();
+        static std::unordered_set<std::string> loadSpecializations();
 };
