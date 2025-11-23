@@ -47,45 +47,6 @@ AddEditDoctorDialog::~AddEditDoctorDialog()
     delete ui;
 }
 
-// ============================================
-// LOAD SPECIALIZATIONS TỪ FILE JSON
-// ============================================
-QStringList AddEditDoctorDialog::loadSpecializationsFromJson() {
-    QStringList specializations;
-
-    QString filePath = "data/doctorSpecializations.json";
-    QFile file(filePath);
-
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        qWarning() << "[WARNING] Cannot open specializations file:" << filePath;
-        specializations << "Cardiology" << "Neurology" << "Pediatrics"
-                        << "Orthopedics" << "Dermatology";
-        return specializations;
-    }
-
-    QByteArray jsonData = file.readAll();
-    file.close();
-
-    QJsonDocument doc = QJsonDocument::fromJson(jsonData);
-    if (doc.isNull() || !doc.isObject()) {
-        qWarning() << "[WARNING] Invalid JSON format in specializations file";
-        specializations << "Cardiology" << "Neurology" << "Pediatrics";
-        return specializations;
-    }
-
-    QJsonObject obj = doc.object();
-    if (obj.contains("specializations") && obj["specializations"].isArray()) {
-        QJsonArray arr = obj["specializations"].toArray();
-        for (const QJsonValue& val : arr) {
-            if (val.isString()) {
-                specializations << val.toString();
-            }
-        }
-    }
-
-    qDebug() << "[DIALOG] Loaded" << specializations.size() << "specializations from JSON";
-    return specializations;
-}
 
 // ============================================
 // SETUP COMBOBOXES
@@ -99,7 +60,11 @@ void AddEditDoctorDialog::setupComboBoxes() {
 
     // ComboBox Chuyên khoa - Load từ JSON
     ui->cmbSpecialization->clear();
-    QStringList specializations = loadSpecializationsFromJson();
+    auto specs = Core::loadSpecializations();
+    QStringList specializations;
+    for (const auto& s : specs) {
+        specializations << QString::fromStdString(s);
+    }
     for (const QString& spec : specializations) {
         ui->cmbSpecialization->addItem(spec);
     }
@@ -270,7 +235,7 @@ Doctor AddEditDoctorDialog::getDoctorData() const {
                                .arg(qBirthday.year())
                                .toStdString();
 
-    // ✅ Dùng txtPhoneNumber và txtEmail
+
     std::string phoneNumber = ui->txtPhoneNumber->text().trimmed().toStdString();
     std::string email = ui->txtEmail->text().trimmed().toStdString();
     std::string specialization = ui->cmbSpecialization->currentText().trimmed().toStdString();

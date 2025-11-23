@@ -32,18 +32,9 @@ qrc_*.cpp
 # Copilot instructions
 .github/*
 
-# Qt auto-generated files
-ui_*.h
-qrc_*.cpp
-moc_*.cpp
-
-#environment
-.vscode/
+# Environment/Temp files
 caythumuc.txt
 CMakeLists.txt.user
-
-# Ignore data and temp files (if not needed in repo)
-caythumuc.txt
 
 # Do NOT ignore gui/ (contains .ui, .cpp, .h, .qrc)
 # Remove or comment out the following line if present:

@@ -277,7 +277,7 @@ void Utils::validSpecialization(const std::string &specialization_){
             nlohmann::json j = Utils::readJsonFromFile(Config::SPECIALIZATION_PATH);
             if (j.contains("specializations") && j["specializations"].is_array()) {
                 for (const auto& spec : j["specializations"]) {
-                    set.insert(spec.get<std::string>());
+                    set.insert(Utils::toUpper(Utils::trimmed(spec.get<std::string>())));
                 }
             }
             std::cout << "[INFO] Loaded " << set.size() << " specializations." << std::endl;

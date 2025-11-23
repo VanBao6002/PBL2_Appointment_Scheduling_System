@@ -11,9 +11,6 @@ namespace Ui {
 class loginwindow;
 }
 
-// Đường dẫn file người dùng
-constexpr const char* USER_FILE_PATH = "data/user.json"; // ✅ Sửa path cho đúng với Config
-
 class loginwindow : public QWidget
 {
     Q_OBJECT
@@ -32,7 +29,6 @@ protected:
     void paintEvent(QPaintEvent *event) override;
 
 private:
-    void loadUsers();
     Ui::loginwindow *ui;
     QPixmap m_bgPixmap;
 };

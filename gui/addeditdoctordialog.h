@@ -8,7 +8,7 @@
 #include <QRegularExpressionValidator>
 #include <QStringList>
 #include "doctor.h"
-
+#include "core.h"
 namespace Ui {
 class AddEditDoctorDialog;
 }
@@ -45,9 +45,6 @@ private:
     // Setup UI components
     void setupComboBoxes();
     void setupValidators();
-
-    // Load specializations từ JSON file
-    QStringList loadSpecializationsFromJson();
 
     // Load dữ liệu khi edit
     void loadDoctorData(const Doctor& doctor);
