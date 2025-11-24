@@ -14,8 +14,14 @@ class MedicalRecordManager {
         std::unordered_map<int, std::string> log;
         std::unordered_map<int, MedicalRecord> medicalRecordTable;
 
-    public:
         MedicalRecordManager() = default;
+        MedicalRecordManager(const MedicalRecordManager&) = delete;
+        MedicalRecordManager& operator=(const MedicalRecordManager&) = delete;
+    public:
+        static MedicalRecordManager& getInstance() {
+                    static MedicalRecordManager instance;
+                    return instance;
+        }
         ~MedicalRecordManager() = default;
 
         void addMedicalRecord(const MedicalRecord  &record_);

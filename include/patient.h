@@ -28,11 +28,8 @@ public:
             const std::string &nameMother_, const std::string &nameFather_);
 
     Patient(const Patient& other);
-    
     Patient& operator=(const Patient& other);
-    
     Patient(Patient&& other) noexcept;
-    
     Patient& operator=(Patient&& other) noexcept;
 
     ~Patient();

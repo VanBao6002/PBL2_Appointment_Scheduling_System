@@ -82,7 +82,6 @@ Patient AddEditPatientDialog::getPatientData() const {
     QString nameFather = ui->txtNameFather->text().trimmed();
     QString phoneNumber = ui->txtPhoneNumber->text().trimmed();
 
-    // ✅ VALIDATE LẠI MỘT LẦN NỮA (defense in depth)
     try {
         Utils::validName(name.toStdString());
         Utils::validPhoneNumber(phoneNumber.toStdString());

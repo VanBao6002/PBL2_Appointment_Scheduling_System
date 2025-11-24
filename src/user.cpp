@@ -16,6 +16,52 @@ User::~User(){
     IDHandler<User>::unregisterID(ID);
 }
 
+// Copy Constructor - Copy ID, do not generate/register new one
+User::User(const User& other)
+    : ID(other.ID),
+      userRole(other.userRole),
+      username(other.username),
+      passwordHash(other.passwordHash)
+{
+    // Do not register ID again (ownership stays with original)
+}
+
+// Copy Assignment Operator - Copy fields, do not register/unregister ID
+User& User::operator=(const User& other)
+{
+    if (this != &other) {
+        ID = other.ID;
+        userRole = other.userRole;
+        username = other.username;
+        passwordHash = other.passwordHash;
+        // Do not register/unregister ID
+    }
+    return *this;
+}
+
+// Move Constructor - Move fields, transfer ID, clear other's ID
+User::User(User&& other) noexcept
+    : ID(other.ID),
+      userRole(std::move(other.userRole)),
+      username(std::move(other.username)),
+      passwordHash(std::move(other.passwordHash))
+{
+    other.ID = 0;
+}
+
+// Move Assignment Operator - Move fields, transfer ID, clear other's ID
+User& User::operator=(User&& other) noexcept
+{
+    if (this != &other) {
+        ID = other.ID;
+        userRole = std::move(other.userRole);
+        username = std::move(other.username);
+        passwordHash = std::move(other.passwordHash);
+        other.ID = 0;
+    }
+    return *this;
+}
+
 void User::setID(int ID_) {
     ID = ID_;
 }

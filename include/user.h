@@ -20,6 +20,11 @@ public:
     User(const std::string &userRole_, const std::string &username_, const std::string &userPassword_);
     ~User();
 
+    User(const User& other);
+    User& operator=(const User& other);
+    User(User&& other) noexcept;
+    User& operator=(User&& other) noexcept;
+    
     void setRole(const std::string &role_);
     void setUsername(const std::string &username_);
     void setPassword(const std::string &passwordHash_);

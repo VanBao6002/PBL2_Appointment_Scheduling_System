@@ -1,5 +1,6 @@
 #include "patientManager.h"
 #include "IDHandler.h"
+#include <QDebug>
 
 void PatientManager::addPatient(const Patient &pat_) {
     int ID_ = pat_.getID();
@@ -77,35 +78,45 @@ const std::string& PatientManager::getIDLog(int ID_) const {
 }
 
 void PatientManager::loadFromFile(const std::string& path) {
+    // clean data before loading
+    patientTable.clear();
+    log.clear();
+    IDHandler<Patient>::reset(); 
+
+    // check active path, propriate data
     nlohmann::json jArr = Utils::readJsonFromFile(path);
+    if (jArr.empty() || !jArr.is_array()) {
+        qDebug() << "[INFO] Patient file is empty or invalid format";
+        return;
+    }
+
+    // start reading and load to memory
     int maxID = 0;
-    
     for (const auto& jPatient : jArr) {
-        Patient patient;
-        patient.fromJson(jPatient);
-        int ID = patient.getID();
-        
-        if (patientTable.find(ID) != patientTable.end()) {
-            throw std::invalid_argument("Loading failed. Patient ID " + std::to_string(ID) + " already exists in table.");
+    try {
+        Patient pat;
+        pat.fromJson(jPatient);
+        int ID = pat.getID();
+        if (patientTable.count(ID)) {
+            qWarning() << "[WARNING] Duplicate patient ID in file:" << ID << "- Skipping";
+            continue;
         }
-        
-        // ✅ Register ID
-        try {
-            IDHandler<Patient>::registerID(static_cast<size_t>(ID)); 
-        } catch (...) {
-            // ID đã được register, bỏ qua
+        if (!IDHandler<Patient>::checkDuplicate(static_cast<size_t>(ID))) {
+            IDHandler<Patient>::registerID(static_cast<size_t>(ID));
         }
-        
-        patientTable[ID] = patient;
-        
-        if (ID > maxID) {
-            maxID = ID;
-        }
+        patientTable[ID] = pat;
+        if (ID > maxID) maxID = ID;
+    } catch (const std::exception& e) {
+        qWarning() << "[ERROR] Failed to load patient record:" << e.what();
+    }
     }
     
-    if (maxID > 0) {
+    // Set current ID > maxID
+    if (maxID >= 0) {
         IDHandler<Patient>::setCurrentID(static_cast<size_t>(maxID));
     }
+    
+    qDebug() << "[INFO] Loaded" << patientTable.size() << "patients from file";
 }
 
 void PatientManager::saveToFile(const std::string& path){
@@ -113,15 +124,11 @@ void PatientManager::saveToFile(const std::string& path){
         nlohmann::json jArr;
         for (const auto& pair : patientTable) {
             jArr.push_back(pair.second.toJson());
-        }
-        
-        // ✅ Debug: In số lượng bệnh nhân đang lưu
-        std::cout << "[DEBUG] Saving " << patientTable.size() << " patients to: " << path << std::endl;
-        
+        }        
         Utils::writeJsonToFile(path, jArr);
         
     } catch (const std::exception& e) {
-        std::cerr << "[ERROR] Failed to save patients: " << e.what() << std::endl;
-        throw; // ✅ Ném lại exception để caller biết
+        std::cerr << "[ERROR] Failed to save patients data: " << e.what() << std::endl;
+        throw; // rethrow for caller (UI layer) show message
     }
 }

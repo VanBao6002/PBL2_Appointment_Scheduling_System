@@ -1,4 +1,5 @@
 #include "appointmentManager.h"
+#include <QDebug>
 
 void AppointmentManager::addAppointment(const Appointment &apt_) {
     int ID_ = apt_.getID();
@@ -57,28 +58,64 @@ const std::string& AppointmentManager::getIDLog(int ID_) const {
 }
 
 void AppointmentManager::loadFromFile(const std::string& path) {
+    // clean data before loading
+    appointmentTable.clear();
+    log.clear();
+    IDHandler<Appointment>::reset(); 
+
+    // check active path, propriate data
     nlohmann::json jArr = Utils::readJsonFromFile(path);
-
-    for (const auto& jAppointment : jArr) {
-        Appointment apt;
-        apt.fromJson(jAppointment);
-        // check relationship between doctor - patient before loading to appointment manager.
-        if (!IDHandler<Doctor>::checkDuplicate(apt.getDoctorID())){
-            throw std::invalid_argument("Failed loading from: " + path + ". Appointment ID: " + std::to_string(apt.getID()) + ". Doctor ID " + std::to_string(apt.getDoctorID()) + " not found.");
-        }
-
-        if (!IDHandler<Patient>::checkDuplicate(apt.getPatientID())){
-            throw std::invalid_argument("Failed loading from: " + path + ". Appointment ID: " + std::to_string(apt.getID()) + ". Patient ID " + std::to_string(apt.getPatientID()) + " not found.");
-        }
-        addAppointment(apt);
+    if (jArr.empty() || !jArr.is_array()) {
+        qDebug() << "[INFO] Appointment file is empty or invalid format";
+        return;
     }
+
+    // start reading and load to memory
+    int maxID = 0;
+    for (const auto& jApt : jArr) {
+    try {
+        Appointment apt;
+        apt.fromJson(jApt);
+        int ID = apt.getID();
+        if (appointmentTable.count(ID)) {
+            qWarning() << "[WARNING] Duplicate appointment ID in file:" << ID << "- Skipping";
+            continue;
+        }
+        if (!IDHandler<Appointment>::checkDuplicate(static_cast<size_t>(ID))) {
+            IDHandler<Appointment>::registerID(static_cast<size_t>(ID));
+        }
+        if (!IDHandler<Doctor>::checkDuplicate(static_cast<size_t>(apt.getDoctorID()))) {
+            throw std::invalid_argument("Doctor ID: " + std::to_string(apt.getDoctorID()) + " not found in appointment:" + std::to_string(ID));
+        }
+        if (!IDHandler<Patient>::checkDuplicate(static_cast<size_t>(apt.getPatientID()))) {
+            throw std::invalid_argument("Patient ID: " + std::to_string(apt.getPatientID()) + " not found in appointment:" + std::to_string(ID));
+        }
+        appointmentTable[ID] = apt;
+        if (ID > maxID) maxID = ID;
+    } catch (const std::exception& e) {
+        qWarning() << "[ERROR] Failed to load appointment record:" << e.what();
+    }
+    }
+    
+    // Set current ID > maxID
+    if (maxID >= 0) {
+        IDHandler<Appointment>::setCurrentID(static_cast<size_t>(maxID));
+    }
+    
+    qDebug() << "[INFO] Loaded" << appointmentTable.size() << "appointments from file";
 }
 
 
 void AppointmentManager::saveToFile(const std::string& path){
-    nlohmann::json jArr = nlohmann::json::array();
-    for (const auto& pair : appointmentTable) {
-        jArr.push_back(pair.second.toJson());   
+    try {
+        nlohmann::json jArr;
+        for (const auto& pair : appointmentTable) {
+            jArr.push_back(pair.second.toJson());
+        }        
+        Utils::writeJsonToFile(path, jArr);
+        
+    } catch (const std::exception& e) {
+        std::cerr << "[ERROR] Failed to save appointments data: " << e.what() << std::endl;
+        throw; // rethrow for caller (UI layer) show message
     }
-    Utils::writeJsonToFile(path, jArr);
 }

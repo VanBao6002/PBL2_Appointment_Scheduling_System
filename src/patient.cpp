@@ -146,7 +146,6 @@ nlohmann::json Patient::toJson() const {
     j["allergies"] = allergies;
     j["chronicDiseases"] = chronicDiseases;
     j["medicalRecordIDs"] = medicalRecordIDs;
-    std::cout << "[DEBUG] Patient toJson() - ID: " << ID << ", Name: " << name << std::endl;
     return j;
 }
 

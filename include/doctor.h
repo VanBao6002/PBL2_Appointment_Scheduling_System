@@ -16,11 +16,10 @@ class Doctor : public Person{
         enum class Status {Active, OnLeave, Retired};
 
     private:
-        std::string specialization; // Chuyên Khoa
-        std::vector<int> patientIDs; // ID bệnh nhân được bác sĩ đảm nhận
-        Status doctorStatus;
-        std::string phoneNumber;
         std::string email;
+        std::string specialization; // Chuyên Khoa
+        std::unordered_set<int> patientIDs; // ID bệnh nhân được bác sĩ đảm nhận
+        Status doctorStatus;
     
     public:
         Doctor();
@@ -28,6 +27,11 @@ class Doctor : public Person{
         Doctor(const std::string& name_, char gender_, const std::string& birthday_, const std::string &phoneNumber_, const std::string& email_, const std::string& specialization_, const std::string& doctorStatus_);
 
         ~Doctor();
+
+        Doctor(const Doctor& other);
+        Doctor& operator=(const Doctor& other);
+        Doctor(Doctor&& other) noexcept;
+        Doctor& operator=(Doctor&& other) noexcept;
 
         void setSpecialization(const std::string &specialization_);
         void setStatus(const std::string& doctorStatus_);
@@ -39,7 +43,7 @@ class Doctor : public Person{
 
         std::string getSpecialization() const {return specialization;}
         Status getStatus() const {return doctorStatus;}
-        const std::vector<int>& getPatientIDs() const {return patientIDs;}
+        const std::unordered_set<int>& getPatientIDs() const {return patientIDs;}
         std::string getInfo() const override;
         std::string getEmail() const {return email;}
 

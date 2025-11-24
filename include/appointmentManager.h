@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <stdexcept>
 
+
 #include "appointment.h"
 #include "doctorManager.h" // Chắc chắn đã include
 #include "patientManager.h" // Chắc chắn đã include
@@ -20,7 +21,7 @@ private:
     std::unordered_map<int, std::string> log;
     std::unordered_map<int, Appointment> appointmentTable;
 
-    // --- MỚI: Singleton pattern ---
+
     AppointmentManager() = default; // Constructor private
     AppointmentManager(const AppointmentManager&) = delete; // Xóa copy constructor
     AppointmentManager& operator=(const AppointmentManager&) = delete; // Xóa copy assignment operator

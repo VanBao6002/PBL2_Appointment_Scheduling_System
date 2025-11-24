@@ -35,7 +35,7 @@ class DoctorManager{
         const Doctor& getDoctorByID(int ID_) const;
         std::vector<Doctor> findDoctorsByName(const std::string& name) const;
         const std::unordered_map<int, Doctor>& getAllDoctors() const; // return list of all doctors
-        const std::vector<int>& getPatientsByDoctorID(int ID_) const; // return list of patients that being cared by that doctor
+        const std::unordered_set<int>& getPatientsByDoctorID(int ID_) const; // return list of patients that being cared by that doctor
         const std::unordered_map<int, std::string>& getAllLog() const;
         const std::string& getIDLog(int ID_) const;
 

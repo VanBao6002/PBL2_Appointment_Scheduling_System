@@ -31,6 +31,13 @@ class Prescription{
         Prescription(int medicalRecordID_, const std::string& prescriptionDate_, const std::string& additionalNotes_, const std::string& prescriptionStatus_);
         ~Prescription();
         
+        
+        Prescription(const Prescription& other);
+        Prescription& operator=(const Prescription& other);
+        Prescription(Prescription&& other) noexcept;
+        Prescription& operator=(Prescription&& other) noexcept;
+        
+
         int getID() const;
         int getMedicalRecordID () const;
         Date getDate() const;
