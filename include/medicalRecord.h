@@ -41,6 +41,13 @@ class MedicalRecord{
                       const std::string& changeHistory_);
 
         ~MedicalRecord();
+
+        
+        MedicalRecord(const MedicalRecord& other);
+        MedicalRecord& operator=(const MedicalRecord& other);
+        MedicalRecord(MedicalRecord&& other) noexcept;
+        MedicalRecord& operator=(MedicalRecord&& other) noexcept;
+
         
         int getID() const;
         int getPatientID() const;

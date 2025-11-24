@@ -1,6 +1,6 @@
 #include "appointment.h"
 
-Appointment::Appointment(): doctorID(0), patientID(0), date(), time("00::00::00"), room("00A"), status(Status::Scheduled) {
+Appointment::Appointment(): doctorID(0), patientID(0), date(), time("00:00:00"), room("00A"), status(Status::Scheduled) {
     int ID = static_cast<int>(IDHandler<Appointment>::generateID());
     setID(ID);
     IDHandler<Appointment>::registerID(ID);
@@ -22,6 +22,63 @@ Appointment::Appointment(int doctorID, int patientID, const std::string& date_, 
 
 Appointment::~Appointment(){
     IDHandler<Appointment>::unregisterID(ID);
+}
+
+// Copy Constructor
+Appointment::Appointment(const Appointment& other)
+    : doctorID(other.doctorID),
+      patientID(other.patientID),
+      date(other.date),
+      time(other.time),
+      room(other.room),
+      status(other.status),
+      ID(other.ID)
+{
+    // Do NOT register new ID, just copy
+}
+
+// Copy Assignment Operator
+Appointment& Appointment::operator=(const Appointment& other)
+{
+    if (this != &other) {
+        doctorID = other.doctorID;
+        patientID = other.patientID;
+        date = other.date;
+        time = other.time;
+        room = other.room;
+        status = other.status;
+        ID = other.ID;
+    }
+    return *this;
+}
+
+// Move Constructor
+Appointment::Appointment(Appointment&& other) noexcept
+    : doctorID(other.doctorID),
+      patientID(other.patientID),
+      date(std::move(other.date)),
+      time(std::move(other.time)),
+      room(std::move(other.room)),
+      status(other.status),
+      ID(other.ID)
+{
+    other.ID = 0;
+}
+
+// Move Assignment Operator
+Appointment& Appointment::operator=(Appointment&& other) noexcept
+{
+    if (this != &other) {
+        doctorID = other.doctorID;
+        patientID = other.patientID;
+        date = std::move(other.date);
+        time = std::move(other.time);
+        room = std::move(other.room);
+        status = other.status;
+        ID = other.ID;
+        other.ID = 0;
+    }
+    return *this;
 }
 
 void Appointment::setID(int ID_) {

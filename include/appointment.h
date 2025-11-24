@@ -33,6 +33,13 @@ class Appointment{
 
         ~Appointment();
 
+        
+        Appointment(const Appointment& other);
+        Appointment& operator=(const Appointment& other);
+        Appointment(Appointment&& other) noexcept;
+        Appointment& operator=(Appointment&& other) noexcept;
+        
+
         void setDate(const std::string& date_);
         void setTime(const std::string &time_);
         void setStatus(const std::string& status_);

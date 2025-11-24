@@ -1,7 +1,7 @@
 #include "doctorManager.h"
 #include "IDHandler.h"
-#include <qdebug.h>
 #include <qlogging.h>
+#include <QDebug>
 
 void DoctorManager::addDoctor(const Doctor &doc_) {
     int ID_ = doc_.getID();
@@ -10,7 +10,6 @@ void DoctorManager::addDoctor(const Doctor &doc_) {
     }
     doctorTable[ID_] = doc_;
     log[ID_] += " Added on: " + Utils::getDateTime();
-    IDHandler<Doctor>::registerID(static_cast<size_t>(ID_));
     saveToFile(Config::DOCTOR_PATH);
 }
 
@@ -29,7 +28,6 @@ void DoctorManager::removeDoctor(int ID_){
     }
     doctorTable.erase(ID_);
     log.erase(ID_);
-    IDHandler<Doctor>::unregisterID(static_cast<size_t>(ID_));
     saveToFile(Config::DOCTOR_PATH);
 }
 
@@ -48,7 +46,7 @@ const std::unordered_map<int, Doctor>& DoctorManager::getAllDoctors() const{
     return doctorTable;
 }
 
-const std::vector<int>& DoctorManager::getPatientsByDoctorID(int ID_) const{
+const std::unordered_set<int>& DoctorManager::getPatientsByDoctorID(int ID_) const{
     if (doctorTable.find(ID_) == doctorTable.end()) {
         throw std::invalid_argument("Cannot get patients list. Doctor ID " + std::to_string(ID_) + " not found.");
     }
@@ -78,58 +76,41 @@ const std::string& DoctorManager::getIDLog(int ID_) const {
 }
 
 void DoctorManager::loadFromFile(const std::string& path) {
-    // ✅ QUAN TRỌNG: Clear dữ liệu cũ trước khi load
+    // clean data before loading
     doctorTable.clear();
     log.clear();
-    
-    // ✅ Reset IDHandler trước khi load (tránh trùng lặp)
-    IDHandler<Doctor>::reset(); // Nếu có hàm reset()
-    // Hoặc nếu không có reset(), bỏ qua bước này
-    
-    // Kiểm tra file có tồn tại không
-    std::ifstream file(path);
-    if (!file.good()) {
-        qDebug() << "[WARNING] Doctor file not found:" << QString::fromStdString(path);
-        return; // Không có file thì return, không throw error
-    }
-    file.close();
-    
+    IDHandler<Doctor>::reset(); 
+
+    // check active path, propriate data
     nlohmann::json jArr = Utils::readJsonFromFile(path);
-    
-    // Kiểm tra JSON rỗng
     if (jArr.empty() || !jArr.is_array()) {
         qDebug() << "[INFO] Doctor file is empty or invalid format";
         return;
     }
-    
+
+    // start reading and load to memory
     int maxID = 0;
-    
     for (const auto& jDoctor : jArr) {
+    try {
         Doctor doctor;
         doctor.fromJson(jDoctor);
-        
         int ID = doctor.getID();
-        
-        // ✅ Kiểm tra ID đã tồn tại trong table chưa (tránh duplicate trong file JSON)
-        if (doctorTable.find(ID) != doctorTable.end()) {
+        if (doctorTable.count(ID)) {
             qWarning() << "[WARNING] Duplicate Doctor ID in file:" << ID << "- Skipping";
-            continue; // Bỏ qua record trùng, không throw error
+            continue;
         }
-        
-        // ✅ Chỉ register ID nếu chưa tồn tại
         if (!IDHandler<Doctor>::checkDuplicate(static_cast<size_t>(ID))) {
             IDHandler<Doctor>::registerID(static_cast<size_t>(ID));
         }
-        
         doctorTable[ID] = doctor;
-        
-        if (ID > maxID) {
-            maxID = ID;
-        }
+        if (ID > maxID) maxID = ID;
+    } catch (const std::exception& e) {
+        qWarning() << "[ERROR] Failed to load doctor record:" << e.what();
+    }
     }
     
-    // ✅ Set current ID để ID mới sẽ > maxID
-    if (maxID > 0) {
+    // Set current ID > maxID
+    if (maxID >= 0) {
         IDHandler<Doctor>::setCurrentID(static_cast<size_t>(maxID));
     }
     
@@ -137,9 +118,15 @@ void DoctorManager::loadFromFile(const std::string& path) {
 }
 
 void DoctorManager::saveToFile(const std::string& path){
-    nlohmann::json jArr;
-    for (const auto& pair : doctorTable) {
-        jArr.push_back(pair.second.toJson());
+    try {
+        nlohmann::json jArr;
+        for (const auto& pair : doctorTable) {
+            jArr.push_back(pair.second.toJson());
+        }        
+        Utils::writeJsonToFile(path, jArr);
+        
+    } catch (const std::exception& e) {
+        std::cerr << "[ERROR] Failed to save doctors data: " << e.what() << std::endl;
+        throw; // rethrow for caller (UI layer) show message
     }
-    Utils::writeJsonToFile(path, jArr);
 }

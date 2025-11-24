@@ -1,6 +1,6 @@
 #include "doctor.h"
 
-Doctor::Doctor() : Person(), specialization(""), patientIDs(), doctorStatus(Status::Active){ 
+Doctor::Doctor() : Person(), specialization(""), patientIDs(), doctorStatus(Doctor::Status::Active){ 
 }
 
 Doctor::Doctor(const std::string& name_, char gender_, const std::string& birthday_, const std::string &phoneNumber_, const std::string& email_, const std::string& specialization_, const std::string& doctorStatus_) : Person(name_, gender_, birthday_, phoneNumber_) {
@@ -20,6 +20,59 @@ Doctor::~Doctor(){
     }
 }
 
+// Copy Constructor - Only copy ID, do not generate new one
+Doctor::Doctor(const Doctor& other)
+    : Person(other),
+      specialization(other.specialization),
+      patientIDs(other.patientIDs),
+      doctorStatus(other.doctorStatus),
+      email(other.email)
+{
+    ID = other.ID;
+}
+
+// Copy Assignment Operator - Safe ID handling, do not generate new ID
+Doctor& Doctor::operator=(const Doctor& other)
+{
+    if (this != &other) {
+        Person::operator=(other);
+        specialization = other.specialization;
+        patientIDs = other.patientIDs;
+        doctorStatus = other.doctorStatus;
+        email = other.email;
+        ID = other.ID;
+    }
+    return *this;
+}
+
+// Move Constructor - Move ID, do not generate new one
+Doctor::Doctor(Doctor&& other) noexcept
+    : Person(std::move(other)),
+      specialization(std::move(other.specialization)),
+      patientIDs(std::move(other.patientIDs)),
+      doctorStatus(other.doctorStatus),
+      email(std::move(other.email))
+{
+    ID = other.ID;
+    other.ID = 0;
+}
+
+// Move Assignment Operator - Move ID safely, do not generate new one
+Doctor& Doctor::operator=(Doctor&& other) noexcept
+{
+    if (this != &other) {
+        Person::operator=(std::move(other));
+        specialization = std::move(other.specialization);
+        patientIDs = std::move(other.patientIDs);
+        doctorStatus = other.doctorStatus;
+        email = std::move(other.email);
+        ID = other.ID;
+        other.ID = 0;
+    }
+    return *this;
+}
+
+
 void Doctor::setSpecialization(const std::string &specialization_){
     Utils::validSpecialization(Utils::trimmed(specialization_));
     specialization = Utils::trimmed(specialization_);
@@ -35,18 +88,17 @@ void Doctor::setEmail(const std::string &email_){
 }
 
 void Doctor::addPatientID(int ID_) {
-    if (std::find(patientIDs.begin(), patientIDs.end(), ID_) != patientIDs.end()) {
+    if (patientIDs.count(ID_)) {
         throw std::invalid_argument("Patient ID already exists in doctor's list.");
     }
-    patientIDs.push_back(ID_);
+    patientIDs.insert(ID_);
 }
 
-void Doctor::removePatientID(int patientID_) {
-    auto it = std::find(patientIDs.begin(), patientIDs.end(), patientID_);
-    if (it == patientIDs.end()) {
+void Doctor::removePatientID(int ID_) {
+    if (!patientIDs.count(ID_)) {
         throw std::invalid_argument("Patient ID not found in doctor's list.");
     }
-    patientIDs.erase(it);
+    patientIDs.erase(ID_);
 }
 
 
@@ -71,9 +123,9 @@ std::string Doctor::getInfo() const{
 
 std::string Doctor::statusToString(Doctor::Status status) {
     switch (status) {
-        case Status::Active: return "Active";
-        case Status::OnLeave: return "OnLeave";
-        case Status::Retired: return "Retired";
+        case Doctor::Status::Active: return "Active";
+        case Doctor::Status::OnLeave: return "OnLeave";
+        case Doctor::Status::Retired: return "Retired";
         default: return "Unknown"; // Tránh lỗi nếu có trạng thái mới
     }
 }
@@ -143,7 +195,7 @@ void Doctor::fromJson(const nlohmann::json &j) {
     if (j.contains("patientIDs")) {
         patientIDs.clear();
         for (const auto& pid : j.at("patientIDs")) {
-            patientIDs.push_back(pid.get<int>());
+            patientIDs.insert(pid.get<int>());
         }
     }
     if (j.contains("doctorStatus")) {

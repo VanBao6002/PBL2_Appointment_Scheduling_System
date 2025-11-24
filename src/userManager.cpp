@@ -1,5 +1,8 @@
 #include "userManager.h"
 #include "utils.h"  
+#include "IDHandler.h"
+#include <qlogging.h>
+#include <QDebug>
 #include <stdexcept> 
 
 void UserManager::addUser(const User  &user){
@@ -74,19 +77,58 @@ const std::string& UserManager::getIDLog(int ID_) const {
 }
 
 void UserManager::loadFromFile(const std::string& path) {
+    // clean data before loading
+    userTable.clear();
+    log.clear();
+    IDHandler<User>::reset(); 
+
+    // check active path, propriate data
     nlohmann::json jArr = Utils::readJsonFromFile(path);
-    for (const auto& jUser : jArr) {
-        User usr;
-        usr.fromJson(jUser);
-        addUser(usr);
+    if (jArr.empty() || !jArr.is_array()) {
+        qDebug() << "[INFO] User file is empty or invalid format";
+        return;
     }
+
+    // start reading and load to memory
+    int maxID = 0;
+    for (const auto& jUser : jArr) {
+    try {
+        User u;
+        u.fromJson(jUser);
+        int ID = u.getID();
+        if (userTable.count(ID)) {
+            qWarning() << "[WARNING] Duplicate User ID in file:" << ID << "- Skipping";
+            continue;
+        }
+        if (!IDHandler<User>::checkDuplicate(static_cast<size_t>(ID))) {
+            IDHandler<User>::registerID(static_cast<size_t>(ID));
+        }
+        userTable[ID] = u;
+        if (ID > maxID) maxID = ID;
+    } catch (const std::exception& e) {
+        qWarning() << "[ERROR] Failed to load User record:" << e.what();
+    }
+    }
+    
+    // Set current ID > maxID
+    if (maxID >= 0) {
+        IDHandler<User>::setCurrentID(static_cast<size_t>(maxID));
+    }
+    
+    qDebug() << "[INFO] Loaded" << userTable.size() << "Users from file";
 }
 
 
 void UserManager::saveToFile(const std::string& path){
-    nlohmann::json jArr;
-    for (const auto& pair : userTable) {
-        jArr.push_back(pair.second.toJson());
+     try {
+        nlohmann::json jArr;
+        for (const auto& pair : userTable) {
+            jArr.push_back(pair.second.toJson());
+        }        
+        Utils::writeJsonToFile(path, jArr);
+        
+    } catch (const std::exception& e) {
+        std::cerr << "[ERROR] Failed to save doctors data: " << e.what() << std::endl;
+        throw; // rethrow for caller (UI layer) show message
     }
-    Utils::writeJsonToFile(path, jArr);
 }

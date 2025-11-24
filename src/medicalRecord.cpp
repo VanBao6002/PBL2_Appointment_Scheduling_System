@@ -36,6 +36,97 @@ MedicalRecord::~MedicalRecord(){
     IDHandler<MedicalRecord>::unregisterID(ID);
 }
 
+// Copy Constructor
+MedicalRecord::MedicalRecord(const MedicalRecord& other)
+    : patientID(other.patientID),
+      doctorID(other.doctorID),
+      creationDate(other.creationDate),
+      lastUpdated(other.lastUpdated),
+      diagnosis(other.diagnosis),
+      symptoms(other.symptoms),
+      testResults(other.testResults),
+      bloodPressure(other.bloodPressure),
+      heartRate(other.heartRate),
+      bodyTemperature(other.bodyTemperature),
+      treatment(other.treatment),
+      doctorNotes(other.doctorNotes),
+      followUpDates(other.followUpDates),
+      prescriptions(other.prescriptions),
+      history(other.history),
+      ID(other.ID) // Copy ID, do not register
+{
+    // Do not register ID again
+}
+
+// Copy Assignment Operator
+MedicalRecord& MedicalRecord::operator=(const MedicalRecord& other) {
+    if (this != &other) {
+        patientID = other.patientID;
+        doctorID = other.doctorID;
+        creationDate = other.creationDate;
+        lastUpdated = other.lastUpdated;
+        diagnosis = other.diagnosis;
+        symptoms = other.symptoms;
+        testResults = other.testResults;
+        bloodPressure = other.bloodPressure;
+        heartRate = other.heartRate;
+        bodyTemperature = other.bodyTemperature;
+        treatment = other.treatment;
+        doctorNotes = other.doctorNotes;
+        followUpDates = other.followUpDates;
+        prescriptions = other.prescriptions;
+        history = other.history;
+        ID = other.ID; // Copy ID, do not register
+    }
+    return *this;
+}
+
+// Move Constructor
+MedicalRecord::MedicalRecord(MedicalRecord&& other) noexcept
+    : patientID(std::move(other.patientID)),
+      doctorID(std::move(other.doctorID)),
+      creationDate(std::move(other.creationDate)),
+      lastUpdated(std::move(other.lastUpdated)),
+      diagnosis(std::move(other.diagnosis)),
+      symptoms(std::move(other.symptoms)),
+      testResults(std::move(other.testResults)),
+      bloodPressure(std::move(other.bloodPressure)),
+      heartRate(std::move(other.heartRate)),
+      bodyTemperature(std::move(other.bodyTemperature)),
+      treatment(std::move(other.treatment)),
+      doctorNotes(std::move(other.doctorNotes)),
+      followUpDates(std::move(other.followUpDates)),
+      prescriptions(std::move(other.prescriptions)),
+      history(std::move(other.history)),
+      ID(other.ID) // Move ID, do not register
+{
+    other.ID = 0;
+}
+
+// Move Assignment Operator
+MedicalRecord& MedicalRecord::operator=(MedicalRecord&& other) noexcept {
+    if (this != &other) {
+        patientID = std::move(other.patientID);
+        doctorID = std::move(other.doctorID);
+        creationDate = std::move(other.creationDate);
+        lastUpdated = std::move(other.lastUpdated);
+        diagnosis = std::move(other.diagnosis);
+        symptoms = std::move(other.symptoms);
+        testResults = std::move(other.testResults);
+        bloodPressure = std::move(other.bloodPressure);
+        heartRate = std::move(other.heartRate);
+        bodyTemperature = std::move(other.bodyTemperature);
+        treatment = std::move(other.treatment);
+        doctorNotes = std::move(other.doctorNotes);
+        followUpDates = std::move(other.followUpDates);
+        prescriptions = std::move(other.prescriptions);
+        history = std::move(other.history);
+        ID = other.ID; // Move ID, do not register
+        other.ID = 0;
+    }
+    return *this;
+}
+
 int MedicalRecord::getID() const {
     return ID;
 }

@@ -30,6 +30,57 @@ Prescription::~Prescription(){
     IDHandler<Prescription>::unregisterID(ID);
 }
 
+// Copy Constructor - Only copy ID, do not generate new one
+Prescription::Prescription(const Prescription& other)
+    : medicalRecordID(other.medicalRecordID),
+      prescriptionDate(other.prescriptionDate),
+      medicines(other.medicines),
+      additionalNotes(other.additionalNotes),
+      prescriptionStatus(other.prescriptionStatus),
+      ID(other.ID)
+{
+    // Do not register new ID, just copy
+}
+
+// Copy Assignment Operator - Copy ID safely, do not generate new one
+Prescription& Prescription::operator=(const Prescription& other) {
+    if (this != &other) {
+        medicalRecordID = other.medicalRecordID;
+        prescriptionDate = other.prescriptionDate;
+        medicines = other.medicines;
+        additionalNotes = other.additionalNotes;
+        prescriptionStatus = other.prescriptionStatus;
+        ID = other.ID;
+    }
+    return *this;
+}
+
+// Move Constructor - Move ID, do not generate new one
+Prescription::Prescription(Prescription&& other) noexcept
+    : medicalRecordID(std::move(other.medicalRecordID)),
+      prescriptionDate(std::move(other.prescriptionDate)),
+      medicines(std::move(other.medicines)),
+      additionalNotes(std::move(other.additionalNotes)),
+      prescriptionStatus(other.prescriptionStatus),
+      ID(other.ID)
+{
+    other.ID = 0;
+}
+
+// Move Assignment Operator - Move ID safely, do not generate new one
+Prescription& Prescription::operator=(Prescription&& other) noexcept {
+    if (this != &other) {
+        medicalRecordID = std::move(other.medicalRecordID);
+        prescriptionDate = std::move(other.prescriptionDate);
+        medicines = std::move(other.medicines);
+        additionalNotes = std::move(other.additionalNotes);
+        prescriptionStatus = other.prescriptionStatus;
+        ID = other.ID;
+        other.ID = 0;
+    }
+    return *this;
+}
+
 int Prescription::getID() const {
     return ID;
 }

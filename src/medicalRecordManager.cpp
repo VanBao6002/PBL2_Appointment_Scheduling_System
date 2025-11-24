@@ -4,6 +4,7 @@
 #include "IDHandler.h"
 #include "doctor.h"
 #include "patient.h"
+#include <QDebug>
 
 void MedicalRecordManager::addMedicalRecord(const MedicalRecord &record_) {
     int ID_ = record_.getID();
@@ -53,28 +54,58 @@ const std::string& MedicalRecordManager::getIDLog(int ID_) const {
 }
 
 void MedicalRecordManager::loadFromFile(const std::string& path) {
+    // clean data before loading
+    medicalRecordTable.clear();
+    log.clear();
+    IDHandler<MedicalRecord>::reset(); 
+
+    // check active path, propriate data
     nlohmann::json jArr = Utils::readJsonFromFile(path);
-
-    for (const auto& jMedicalRecord : jArr) {
-        MedicalRecord record_;
-        record_.fromJson(jMedicalRecord);
-        // kiểm tra ràng buộc doctoc , patient
-        if (!IDHandler<Doctor>::checkDuplicate(record_.getDoctorID())){
-            throw std::invalid_argument("Failed loading from: " + path + ". MedicalRecord ID: " + std::to_string(record_.getID()) + ". Doctor ID " + std::to_string(record_.getDoctorID()) + " not found.");
-        }
-
-        if (!IDHandler<Patient>::checkDuplicate(record_.getPatientID())){
-            throw std::invalid_argument("Failed loading from: " + path + ". MedicalRecord ID: " + std::to_string(record_.getID()) + ". Patient ID " + std::to_string(record_.getPatientID()) + " not found.");
-        }
-        addMedicalRecord(record_);
+    if (jArr.empty() || !jArr.is_array()) {
+        qDebug() << "[INFO] Records file is empty or invalid format";
+        return;
     }
+
+    // start reading and load to memory
+    int maxID = 0;
+    for (const auto& jmedRecord : jArr) {
+    try {
+        MedicalRecord medRecord;
+        medRecord.fromJson(jmedRecord);
+        int ID = medRecord.getID();
+        if (medicalRecordTable.count(ID)) {
+            qWarning() << "[WARNING] Duplicate medicalRecord ID in file:" << ID << "- Skipping";
+            continue;
+        }
+        if (!IDHandler<MedicalRecord>::checkDuplicate(static_cast<size_t>(ID))) {
+            IDHandler<MedicalRecord>::registerID(static_cast<size_t>(ID));
+        }
+        medicalRecordTable[ID] = medRecord;
+        if (ID > maxID) maxID = ID;
+    } catch (const std::exception& e) {
+        qWarning() << "[ERROR] Failed to load medical record:" << e.what();
+    }
+    }
+    
+    // Set current ID > maxID
+    if (maxID >= 0) {
+        IDHandler<MedicalRecord>::setCurrentID(static_cast<size_t>(maxID));
+    }
+    
+    qDebug() << "[INFO] Loaded" << medicalRecordTable.size() << "medical records from file";
 }
 
 
 void MedicalRecordManager::saveToFile(const std::string& path){
-    nlohmann::json jArr;
-    for (const auto& pair : medicalRecordTable) {
-        jArr.push_back(pair.second.toJson());   
+    try {
+        nlohmann::json jArr;
+        for (const auto& pair : medicalRecordTable) {
+            jArr.push_back(pair.second.toJson());
+        }        
+        Utils::writeJsonToFile(path, jArr);
+        
+    } catch (const std::exception& e) {
+        std::cerr << "[ERROR] Failed to save medicalRecord data: " << e.what() << std::endl;
+        throw; // rethrow for caller (UI layer) show message
     }
-    Utils::writeJsonToFile(path, jArr);
 }
