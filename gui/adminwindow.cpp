@@ -1178,25 +1178,20 @@ void AdminWindow::on_btnPage_Patient_3_clicked()
 
 void AdminWindow::on_btnSortAZPatient_clicked() {
     qDebug() << "[SORT] Button A-Z clicked";
-
     currentPatientSortMode = PatientSortMode::BY_NAME_ASC;
-
     ui->btnSortAZPatient->setStyleSheet("background-color: #4CAF50; color: white; font-weight: bold;");
     ui->btnSortZAPatient->setStyleSheet("");
-
     loadPatientData(currentPatientPage, ui->txtSearchPatient->text().trimmed());
 }
 
 void AdminWindow::on_btnSortZAPatient_clicked() {
     qDebug() << "[SORT] Button Z-A clicked";
-
     currentPatientSortMode = PatientSortMode::BY_NAME_DESC;
-
     ui->btnSortZAPatient->setStyleSheet("background-color: #4CAF50; color: white; font-weight: bold;");
     ui->btnSortAZPatient->setStyleSheet("");
-
     loadPatientData(currentPatientPage, ui->txtSearchPatient->text().trimmed());
 }
+
 void AdminWindow::on_btnAddDoctor_clicked() {
     qDebug() << "Dialog add doctor opened";
     AddEditDoctorDialog dialog(this);
