@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1920</width>
-    <height>1080</height>
+    <width>590</width>
+    <height>367</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,10 +17,10 @@
    <widget class="QPushButton" name="Login">
     <property name="geometry">
      <rect>
-      <x>610</x>
-      <y>230</y>
-      <width>301</width>
-      <height>251</height>
+      <x>470</x>
+      <y>10</y>
+      <width>101</width>
+      <height>41</height>
      </rect>
     </property>
     <property name="maximumSize">
@@ -34,9 +34,6 @@
       <pointsize>24</pointsize>
      </font>
     </property>
-    <property name="autoFillBackground">
-     <bool>false</bool>
-    </property>
     <property name="text">
      <string>Login</string>
     </property>
@@ -47,8 +44,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1920</width>
-     <height>17</height>
+     <width>590</width>
+     <height>23</height>
     </rect>
    </property>
   </widget>

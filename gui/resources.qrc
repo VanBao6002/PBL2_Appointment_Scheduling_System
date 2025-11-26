@@ -1,6 +1,6 @@
 <RCC>
     <qresource prefix="/">
-        <file>assets/loginwindow_background.jpg</file>
-        <file>assets/domixi.png</file>
+        <file>assets/log_in_background.png</file>
+        <file>assets/main_background.png</file>
     </qresource>
 </RCC>
