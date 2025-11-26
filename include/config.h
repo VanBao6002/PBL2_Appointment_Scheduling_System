@@ -9,7 +9,9 @@ namespace Config {
     constexpr const char* PATIENT_PATH = "data/patient.json"; 
     constexpr const char* APPOINTMENT_PATH = "data/appointment.json"; 
     constexpr const char* USER_PATH = "data/user.json";
-    constexpr const char* LOG_PATH = "data/log.txt";
-    constexpr const char* LOGIN_IMAGE_PATH = "C:/Users/Bao/Documents/PBL2_Patient_Management_System/assets/loginwindow_background.jpg";
     constexpr const char* DOCTOR_SPECIALIZATION_PATH = "data/doctorSpecializations.json";
+    constexpr const char* LOG_PATH = "data/log.txt";
+    constexpr const char* LOGIN_IMAGE_PATH = ":/assets/loginwindow_background.jpg";
+    constexpr const char* MAIN_SCREEN_IMAGE_PATH = ":/assets/domixi.png";
+
 }

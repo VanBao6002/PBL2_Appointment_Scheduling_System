@@ -3,7 +3,7 @@
 #include <unordered_set>
 #include <iostream>
 #include <string>
-using namespace std;
+using namespace std; 
 
 void TEST_PRINT_ALL_INFO (UserManager& mgr) {
     for (const auto& pair : mgr.getAllUsers()) {
@@ -28,7 +28,7 @@ void TEST_REMOVE(UserManager& mgr, User& doc) {
 }
 
 
-
+ s
 int main (){
     UserManager mgr;
 
@@ -53,4 +53,4 @@ int main (){
 
 
     
-}
+} 
