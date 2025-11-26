@@ -3,6 +3,8 @@
 #include "patient.h"
 #include "prescription.h"
 #include "config.h"
+#include <qdebug.h>
+#include <qlogging.h>
 #include <regex>
 #include <ctime>
 #include <algorithm>
@@ -454,4 +456,90 @@ std::string Utils::readTextFromFile(const std::string& filePath){
     std::ostringstream ss;
     ss << inFile.rdbuf();
     return ss.str();
+}
+
+// Load medicine prices from JSON
+std::unordered_map<std::string, double> Utils::loadMedicinePrices() {
+    std::unordered_map<std::string, double> prices;
+    
+    try {
+        nlohmann::json j = readJsonFromFile(Config::MEDICINE_PRICE_PATH);
+        
+        if (j.contains("medicines") && j["medicines"].is_array()) {
+            for (const auto& med : j["medicines"]) {
+                std::string name = med.value("name", "");
+                double price = med.value("price", 0.0);
+                if (!name.empty() && price > 0) {
+                    prices[name] = price;
+                }
+            }
+        }
+        
+        qDebug() << "[INFO] Loaded" << prices.size() << "medicine prices from JSON";
+        
+    } catch (const std::exception& e) {
+        qWarning() << "[ERROR] Cannot load medicine prices:" << e.what();
+        // Fallback prices
+        prices["Paracetamol"] = 5000;
+        prices["Ibuprofen"] = 8000;
+        prices["Amoxicillin"] = 12000;
+    }
+    
+    return prices;
+}
+
+// Get medicine info from JSON
+std::vector<std::pair<std::string, double>> Utils::getAllMedicinesWithPrices() {
+    std::vector<std::pair<std::string, double>> result;
+    
+    try {
+        nlohmann::json j = readJsonFromFile(Config::MEDICINE_PRICE_PATH);
+        
+        if (j.contains("medicines") && j["medicines"].is_array()) {
+            for (const auto& med : j["medicines"]) {
+                std::string name = med.value("name", "");
+                double price = med.value("price", 0.0);
+                if (!name.empty()) {
+                    result.push_back({name, price});
+                }
+            }
+        }
+        
+    } catch (const std::exception& e) {
+        qWarning() << "[ERROR] Cannot get medicine list:" << e.what();
+    }
+    
+    return result;
+}
+
+// Search medicine by name or category
+std::vector<nlohmann::json> Utils::searchMedicines(const std::string& searchText) {
+    std::vector<nlohmann::json> results;
+    
+    try {
+        nlohmann::json j = readJsonFromFile(Config::MEDICINE_PRICE_PATH);
+        
+        if (!j.contains("medicines") || !j["medicines"].is_array()) {
+            return results;
+        }
+        
+        std::string lowerSearch = toLower(searchText);
+        
+        for (const auto& med : j["medicines"]) {
+            std::string name = toLower(med.value("name", ""));
+            std::string category = toLower(med.value("category", ""));
+            std::string description = toLower(med.value("description", ""));
+            
+            if (name.find(lowerSearch) != std::string::npos ||
+                category.find(lowerSearch) != std::string::npos ||
+                description.find(lowerSearch) != std::string::npos) {
+                results.push_back(med);
+            }
+        }
+        
+    } catch (const std::exception& e) {
+        qWarning() << "[ERROR] Cannot search medicines:" << e.what();
+    }
+    
+    return results;
 }

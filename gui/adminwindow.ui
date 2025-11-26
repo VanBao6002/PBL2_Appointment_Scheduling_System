@@ -130,7 +130,7 @@
        <item>
         <widget class="QStackedWidget" name="mainStack">
          <property name="currentIndex">
-          <number>1</number>
+          <number>3</number>
          </property>
          <widget class="QWidget" name="page_appointment">
           <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -711,9 +711,9 @@
            </item>
            <item>
             <widget class="QWidget" name="toolbar_MedicalRecord" native="true">
-             <layout class="QHBoxLayout" name="horizontalLayout_11" stretch="1,0,3,1,1">
+             <layout class="QHBoxLayout" name="horizontalLayout_11" stretch="1,0,3,1,0,0,1">
               <item>
-               <widget class="QPushButton" name="pushButton_28">
+               <widget class="QPushButton" name="btnAddMedicalRecord">
                 <property name="text">
                  <string>+ THÊM HÔ SƠ Y TẾ</string>
                 </property>
@@ -733,16 +733,30 @@
                </spacer>
               </item>
               <item>
-               <widget class="QLineEdit" name="lineEdit_5">
+               <widget class="QLineEdit" name="txtSearchMedicalRecord">
                 <property name="placeholderText">
                  <string>Tìm kiếm hồ sơ y tế</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="pushButton_29">
+               <widget class="QPushButton" name="btnSearchMedicalRecord">
                 <property name="text">
                  <string>TÌM KIẾM</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="btnSortAZMedicalRecord">
+                <property name="text">
+                 <string>SẮP XẾP: A → Z ▼</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="btnSortZAMedicalRecord">
+                <property name="text">
+                 <string>SẮP XẾP: Z → A ▼</string>
                 </property>
                </widget>
               </item>
@@ -805,6 +819,13 @@
             </widget>
            </item>
            <item>
+            <widget class="QLabel" name="lblCurrentPage_MedicalRecord">
+             <property name="text">
+              <string>TextLabel</string>
+             </property>
+            </widget>
+           </item>
+           <item>
             <widget class="QWidget" name="pagination_MedicalRecord" native="true">
              <layout class="QHBoxLayout" name="horizontalLayout_10">
               <item>
@@ -821,35 +842,35 @@
                </spacer>
               </item>
               <item>
-               <widget class="QPushButton" name="pushButton_30">
+               <widget class="QPushButton" name="btnPrevPage_MedicalRecord">
                 <property name="text">
                  <string>&lt; Trang trước</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="pushButton_31">
+               <widget class="QPushButton" name="btnPage_MedicalRecord_1">
                 <property name="text">
                  <string>1</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="pushButton_32">
+               <widget class="QPushButton" name="btnPage_MedicalRecord_2">
                 <property name="text">
                  <string>2</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="pushButton_33">
+               <widget class="QPushButton" name="btnPage_MedicalRecord_3">
                 <property name="text">
                  <string>3</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="pushButton_34">
+               <widget class="QPushButton" name="btnNextPage_MedicalRecord">
                 <property name="text">
                  <string>Trang sau &gt;</string>
                 </property>

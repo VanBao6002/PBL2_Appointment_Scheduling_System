@@ -1,0 +1,225 @@
+{
+  "prescriptions": [
+    {
+      "prescriptionID": 1001,
+      "patientID": 2001,
+      "doctorID": 3001,
+      "date": "30/10/2025",
+      "diagnosis": "Viêm đường hô hấp trên cấp tính",
+      "medicines": [
+        {
+          "name": "Paracetamol",
+          "dosage": "500mg",
+          "frequency": 3,
+          "duration": 5,
+          "instruction": "Uống sau ăn"
+        },
+        {
+          "name": "Bromhexine",
+          "dosage": "8mg",
+          "frequency": 3,
+          "duration": 5,
+          "instruction": "Uống sau ăn"
+        },
+        {
+          "name": "Cetirizine",
+          "dosage": "10mg",
+          "frequency": 2,
+          "duration": 5,
+          "instruction": "Uống trước khi ngủ"
+        },
+        {
+          "name": "Vitamin_C",
+          "dosage": "1000mg",
+          "frequency": 2,
+          "duration": 7,
+          "instruction": "Uống sau ăn"
+        }
+      ],
+      "notes": "Uống thuốc sau ăn. Nghỉ ngơi, uống nhiều nước.",
+      "status": "Active"
+    },
+    {
+      "prescriptionID": 1002,
+      "patientID": 2003,
+      "doctorID": 3002,
+      "date": "30/10/2025",
+      "diagnosis": "Viêm dạ dày cấp tính",
+      "medicines": [
+        {
+          "name": "Omeprazole",
+          "dosage": "20mg",
+          "frequency": 2,
+          "duration": 14,
+          "instruction": "Uống trước ăn 30 phút"
+        },
+        {
+          "name": "Maalox",
+          "dosage": "10ml",
+          "frequency": 3,
+          "duration": 10,
+          "instruction": "Uống khi đau"
+        }
+      ],
+      "notes": "Uống thuốc trước ăn 30 phút. Kiêng đồ cay nóng, cafe, rượu bia.",
+      "status": "Active"
+    },
+    {
+      "prescriptionID": 1003,
+      "patientID": 2005,
+      "doctorID": 3001,
+      "date": "30/10/2025",
+      "diagnosis": "Viêm phế quản cấp do vi khuẩn",
+      "medicines": [
+        {
+          "name": "Amoxicillin",
+          "dosage": "500mg",
+          "frequency": 3,
+          "duration": 7,
+          "instruction": "Uống sau ăn, uống đủ liệu trình"
+        },
+        {
+          "name": "Bromhexine",
+          "dosage": "8mg",
+          "frequency": 3,
+          "duration": 7,
+          "instruction": "Uống sau ăn"
+        },
+        {
+          "name": "Paracetamol",
+          "dosage": "500mg",
+          "frequency": 3,
+          "duration": 5,
+          "instruction": "Uống khi sốt"
+        }
+      ],
+      "notes": "Uống đủ liệu trình kháng sinh. Tái khám sau 1 tuần.",
+      "status": "Active"
+    },
+    {
+      "prescriptionID": 1004,
+      "patientID": 2008,
+      "doctorID": 3004,
+      "date": "30/10/2025",
+      "diagnosis": "Tăng huyết áp độ 1",
+      "medicines": [
+        {
+          "name": "Amlodipine",
+          "dosage": "5mg",
+          "frequency": 1,
+          "duration": 30,
+          "instruction": "Uống vào buổi sáng"
+        },
+        {
+          "name": "Losartan",
+          "dosage": "50mg",
+          "frequency": 1,
+          "duration": 30,
+          "instruction": "Uống vào buổi sáng"
+        }
+      ],
+      "notes": "Uống thuốc đều đặn mỗi sáng. Hạn chế ăn mặn, tập thể dục nhẹ nhàng.",
+      "status": "Active"
+    },
+    {
+      "prescriptionID": 1005,
+      "patientID": 2010,
+      "doctorID": 3003,
+      "date": "30/10/2025",
+      "diagnosis": "Viêm mũi dị ứng theo mùa",
+      "medicines": [
+        {
+          "name": "Loratadine",
+          "dosage": "10mg",
+          "frequency": 1,
+          "duration": 14,
+          "instruction": "Uống buổi tối"
+        },
+        {
+          "name": "Cetirizine",
+          "dosage": "10mg",
+          "frequency": 1,
+          "duration": 14,
+          "instruction": "Uống khi cần"
+        }
+      ],
+      "notes": "Tránh các tác nhân gây dị ứng. Rửa mũi bằng nước muối sinh lý.",
+      "status": "Active"
+    },
+    {
+      "prescriptionID": 1006,
+      "patientID": 2012,
+      "doctorID": 3005,
+      "date": "30/10/2025",
+      "diagnosis": "Đái tháo đường type 2",
+      "medicines": [
+        {
+          "name": "Metformin",
+          "dosage": "850mg",
+          "frequency": 2,
+          "duration": 30,
+          "instruction": "Uống sau ăn sáng và tối"
+        },
+        {
+          "name": "Gliclazide",
+          "dosage": "80mg",
+          "frequency": 1,
+          "duration": 30,
+          "instruction": "Uống trước bữa sáng"
+        }
+      ],
+      "notes": "Uống thuốc đều đặn, kiểm tra đường huyết hàng ngày. Tái khám sau 1 tháng.",
+      "status": "Active"
+    },
+    {
+      "prescriptionID": 1007,
+      "patientID": 2015,
+      "doctorID": 3002,
+      "date": "30/10/2025",
+      "diagnosis": "Viêm khớp dạng thấp",
+      "medicines": [
+        {
+          "name": "Ibuprofen",
+          "dosage": "400mg",
+          "frequency": 3,
+          "duration": 10,
+          "instruction": "Uống sau ăn"
+        },
+        {
+          "name": "Calcium_D3",
+          "dosage": "1 viên",
+          "frequency": 1,
+          "duration": 30,
+          "instruction": "Uống buổi tối"
+        }
+      ],
+      "notes": "Uống thuốc sau ăn. Vật lý trị liệu 2 lần/tuần.",
+      "status": "Active"
+    },
+    {
+      "prescriptionID": 1008,
+      "patientID": 2018,
+      "doctorID": 3006,
+      "date": "30/10/2025",
+      "diagnosis": "Rối loạn lo âu toàn thể",
+      "medicines": [
+        {
+          "name": "Alprazolam",
+          "dosage": "0.5mg",
+          "frequency": 2,
+          "duration": 14,
+          "instruction": "Uống sáng và tối"
+        },
+        {
+          "name": "Vitamin_B_Complex",
+          "dosage": "1 viên",
+          "frequency": 1,
+          "duration": 30,
+          "instruction": "Uống sau ăn sáng"
+        }
+      ],
+      "notes": "Uống thuốc theo đúng liều lượng. Kết hợp tư vấn tâm lý hàng tuần.",
+      "status": "Active"
+    }
+  ]
+}
