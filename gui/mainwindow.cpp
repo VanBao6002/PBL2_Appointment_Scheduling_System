@@ -35,3 +35,4 @@ void MainWindow::paintEvent(QPaintEvent *event)
         painter.drawPixmap(rect(), pixmap);
     }
 }
+
