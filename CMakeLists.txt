@@ -47,11 +47,12 @@ if(USE_QT_GUI)
     # qt_add_resources(GUI_RESOURCES ${RESOURCE_FILES})
 
     # then add GUI_RESOURCES into the executable
+    qt_add_resources(GUI_RESOURCES ${CMAKE_SOURCE_DIR}/gui/resources.qrc)
     qt_add_executable(${PROJECT_NAME}
     ${CMAKE_SOURCE_DIR}/main.cpp
     ${SRC_FILES}
     ${GUI_FILES}
-    ${CMAKE_SOURCE_DIR}/gui/resources.qrc
+    ${GUI_RESOURCES}
     )
 
     target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Widgets)

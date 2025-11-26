@@ -12,7 +12,7 @@
 #include "doctorManager.h" // Chắc chắn đã include
 #include "patientManager.h" // Chắc chắn đã include
 #include "userManager.h"    // Chắc chắn đã include
-#include "Utils.h"          // Cần cho getIDLog và load/save toJson
+#include "utils.h"          // Cần cho getIDLog và load/save toJson
 #include "IDHandler.h"      // Cần cho IDHandler
 #include "json.hpp"         // Cần cho toJson/fromJson
 

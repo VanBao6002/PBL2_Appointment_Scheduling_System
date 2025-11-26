@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QPixmap>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -20,6 +21,11 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
+    QPixmap pixmap;
+    
+protected:
+    void paintEvent(QPaintEvent *event) override;
+
 };
 
 #endif // MAINWINDOW_H

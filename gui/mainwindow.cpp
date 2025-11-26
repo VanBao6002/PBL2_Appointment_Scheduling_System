@@ -1,12 +1,19 @@
 #include "mainwindow.h"
 #include "gui/ui_mainwindow.h"
 #include "loginwindow.h"
+#include "config.h"
+#include <QPainter>
+#include <QResource>
+#include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    if (!pixmap.load(Config::MAIN_SCREEN_IMAGE_PATH)) {
+        qDebug() << "Failed to load background image.";
+    }
 }
 
 MainWindow::~MainWindow()
@@ -20,3 +27,11 @@ void MainWindow::on_Login_clicked()
     lgwd->show();
 }
 
+void MainWindow::paintEvent(QPaintEvent *event)
+{
+    QMainWindow::paintEvent(event);
+    if (!pixmap.isNull()) {
+        QPainter painter(this);
+        painter.drawPixmap(rect(), pixmap);
+    }
+}
