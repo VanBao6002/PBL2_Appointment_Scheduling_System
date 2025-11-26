@@ -170,6 +170,14 @@ Date MedicalRecord::getChangeHistory() const {
     return history;
 }
 
+Date MedicalRecord::getCreationDate() const {
+    return creationDate;
+}
+
+Date MedicalRecord::getLastUpdated() const {
+    return lastUpdated;
+}
+
 void MedicalRecord::setID(int ID_) {
     ID = ID_;
 }

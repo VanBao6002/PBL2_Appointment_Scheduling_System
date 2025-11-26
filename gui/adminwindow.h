@@ -31,6 +31,7 @@ private slots:
     void on_btnEditAppointment_clicked();
     void on_btnSearchAppointment_clicked();
     void on_btnRemoveAppointment_clicked();
+
     void on_btnNextPage_Appointment_clicked();
     void on_btnPrevPage_Appointment_clicked();
     void on_btnPage_Appointment_1_clicked();
@@ -67,6 +68,21 @@ private slots:
     void on_btnPage_Doctor_2_clicked();
     void on_btnPage_Doctor_3_clicked();
 
+    //slot cho page_medicalrecord
+    void on_btnAddMedicalRecord_clicked();
+    void on_btnEditMedicalRecord_clicked();
+    void on_btnRemoveMedicalRecord_clicked();
+    void on_btnSearchMedicalRecord_clicked();
+    void on_btnViewMedicalRecordDetail_clicked();
+    void on_btnSortAZMedicalRecord_clicked();
+    void on_btnSortZAMedicalRecord_clicked();
+
+    void on_btnPrevPage_MedicalRecord_clicked();
+    void on_btnNextPage_MedicalRecord_clicked();
+    void on_btnPage_MedicalRecord_1_clicked();
+    void on_btnPage_MedicalRecord_2_clicked();
+    void on_btnPage_MedicalRecord_3_clicked();
+
     //slot cho page_user
     void on_btnAddUser_clicked();
     void on_btnRemoveUser_clicked();
@@ -86,6 +102,7 @@ private slots:
     void loadAppointmentData(int page = 1, const QString& searchText = "");
     void loadPatientData(int page = 1, const QString& searchText = "");
     void loadDoctorData(int page = 1, const QString& searchText = "");
+    void loadMedicalRecordData(int page = 1, const QString& searchText = "");
     void loadUserData(int page = 1, const QString& searchText = "");
    
 
@@ -100,6 +117,9 @@ private:
     //Doctor
     int currentDoctorPage;
     int totalDoctorPages;
+    //Medical Record
+    int currentMedicalRecordPage;
+    int totalMedicalRecordPages;
     //User
     int currentUserPage;
     int totalUserPages;
@@ -119,6 +139,12 @@ private:
         BY_NAME_DESC
     };
 
+    enum class MedicalRecordSortMode {
+        BY_ID_ASC,
+        BY_PATIENT_NAME_ASC,
+        BY_PATIENT_NAME_DESC
+    };
+
     enum class UserSortMode {
         BY_ID_ASC,
         BY_USERNAME_ASC,
@@ -127,15 +153,18 @@ private:
 
     DoctorSortMode currentDoctorSortMode = DoctorSortMode::BY_ID_ASC;
     PatientSortMode currentPatientSortMode = PatientSortMode::BY_ID_ASC;
+    MedicalRecordSortMode currentMedicalRecordSortMode = MedicalRecordSortMode::BY_ID_ASC;
     UserSortMode currentUserSortMode = UserSortMode::BY_ID_ASC;
 
     void setupPatientTable();
     void setupDoctorTable();
     void setupUserTable();
+    void setupMedicalRecordTable();
 
     void updateDoctorPaginationUI();
     void updatePatientPaginationUI();
     void updateUserPaginationUI();
+    void updateMedicalRecordPaginationUI();
 };
 
 #endif // ADMINWINDOW_H

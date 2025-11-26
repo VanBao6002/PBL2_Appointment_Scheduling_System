@@ -2,7 +2,7 @@
 #include "addeditpatientdialog.h"
 #include "addeditdoctordialog.h"
 #include "addedituserdialog.h"
-#include "gui/ui_addedituserdialog.h"
+#include "addeditmedicalrecorddialog.h"
 #include "gui/ui_adminwindow.h"
 #include <QHeaderView>
 #include <QDebug>
@@ -13,6 +13,7 @@
 #include "appointmentManager.h"
 #include "patientManager.h"
 #include "doctorManager.h"
+#include "medicalRecordManager.h"
 #include "userManager.h"
 
 AdminWindow::AdminWindow(QWidget *parent)
@@ -40,6 +41,9 @@ AdminWindow::AdminWindow(QWidget *parent)
     currentDoctorPage = 1;
     totalDoctorPages = 1;
 
+    currentMedicalRecordPage = 1;
+    totalMedicalRecordPages = 1;
+
     currentUserPage = 1;
     totalUserPages = 1;
 
@@ -47,6 +51,7 @@ AdminWindow::AdminWindow(QWidget *parent)
 
     currentPatientSortMode = PatientSortMode::BY_ID_ASC;
     currentDoctorSortMode = DoctorSortMode::BY_ID_ASC;
+    currentMedicalRecordSortMode = MedicalRecordSortMode::BY_ID_ASC;
     currentUserSortMode = UserSortMode::BY_ID_ASC;
 
     //Appointment
@@ -82,6 +87,13 @@ AdminWindow::AdminWindow(QWidget *parent)
 
     ui->btnSortAZDoctor->setText("🔼 A → Z");
     ui->btnSortZADoctor->setText("🔽 Z → A");
+
+    //Medical Record
+    connect(ui->btnSortAZMedicalRecord, &QPushButton::clicked, this, &AdminWindow::on_btnSortAZMedicalRecord_clicked);
+    connect(ui->btnSortZAMedicalRecord, &QPushButton::clicked, this, &AdminWindow::on_btnSortZAMedicalRecord_clicked);
+
+    ui->btnSortAZMedicalRecord->setText("🔼 A → Z");
+    ui->btnSortZAMedicalRecord->setText("🔽 Z → A");
 
     //User
     connect(ui->btnSortAZUser, &QPushButton::clicked, this, &AdminWindow::on_btnSortAZUser_clicked);
@@ -896,6 +908,14 @@ void AdminWindow::on_userManagerButton_clicked()
 void AdminWindow::on_medicalRecordButton_clicked()
 {
     ui->mainStack->setCurrentWidget(ui->page_medicalRecord);
+
+    currentMedicalRecordSortMode = MedicalRecordSortMode::BY_ID_ASC;
+    ui->btnSortAZMedicalRecord->setStyleSheet("");
+    ui->btnSortZAMedicalRecord->setStyleSheet("");
+    ui->txtSearchMedicalRecord->clear();
+
+    setupMedicalRecordTable();
+    loadMedicalRecordData(1, "");
 }
 
 void AdminWindow::on_btnAddAppointment_clicked()
@@ -1178,25 +1198,20 @@ void AdminWindow::on_btnPage_Patient_3_clicked()
 
 void AdminWindow::on_btnSortAZPatient_clicked() {
     qDebug() << "[SORT] Button A-Z clicked";
-
     currentPatientSortMode = PatientSortMode::BY_NAME_ASC;
-
     ui->btnSortAZPatient->setStyleSheet("background-color: #4CAF50; color: white; font-weight: bold;");
     ui->btnSortZAPatient->setStyleSheet("");
-
     loadPatientData(currentPatientPage, ui->txtSearchPatient->text().trimmed());
 }
 
 void AdminWindow::on_btnSortZAPatient_clicked() {
     qDebug() << "[SORT] Button Z-A clicked";
-
     currentPatientSortMode = PatientSortMode::BY_NAME_DESC;
-
     ui->btnSortZAPatient->setStyleSheet("background-color: #4CAF50; color: white; font-weight: bold;");
     ui->btnSortAZPatient->setStyleSheet("");
-
     loadPatientData(currentPatientPage, ui->txtSearchPatient->text().trimmed());
 }
+
 void AdminWindow::on_btnAddDoctor_clicked() {
     qDebug() << "Dialog add doctor opened";
     AddEditDoctorDialog dialog(this);
@@ -1793,5 +1808,505 @@ void AdminWindow::on_btnPage_User_3_clicked()
     if (pageNum > 0 && pageNum <= totalUserPages) {
         currentUserPage = pageNum;
         loadUserData(currentUserPage, ui->txtSearchUser->text().trimmed());
+    }
+}
+
+// ============== MEDICAL RECORD FUNCTIONS ==============
+
+void AdminWindow::setupMedicalRecordTable() {
+    ui->tableMedicalRecord->setColumnCount(8);
+
+    QStringList headers;
+    headers << "ID Hồ Sơ" << "ID Bệnh Nhân" << "Tên Bệnh Nhân"
+            << "ID Bác Sĩ" << "Tên Bác Sĩ" << "Ngày Tạo"
+            << "Chẩn Đoán" << "Tùy Chọn";
+    ui->tableMedicalRecord->setHorizontalHeaderLabels(headers);
+
+    QHeaderView* header = ui->tableMedicalRecord->horizontalHeader();
+
+    // Cột 0: ID Hồ Sơ (Fixed)
+    header->setSectionResizeMode(0, QHeaderView::Fixed);
+    ui->tableMedicalRecord->setColumnWidth(0, 80);
+
+    // Cột 1: ID Bệnh Nhân (Fixed)
+    header->setSectionResizeMode(1, QHeaderView::Fixed);
+    ui->tableMedicalRecord->setColumnWidth(1, 100);
+
+    // Cột 2: Tên Bệnh Nhân (Stretch)
+    header->setSectionResizeMode(2, QHeaderView::Stretch);
+
+    // Cột 3: ID Bác Sĩ (Fixed)
+    header->setSectionResizeMode(3, QHeaderView::Fixed);
+    ui->tableMedicalRecord->setColumnWidth(3, 80);
+
+    // Cột 4: Tên Bác Sĩ (Stretch)
+    header->setSectionResizeMode(4, QHeaderView::Stretch);
+
+    // Cột 5: Ngày Tạo (Fixed)
+    header->setSectionResizeMode(5, QHeaderView::Fixed);
+    ui->tableMedicalRecord->setColumnWidth(5, 120);
+
+    // Cột 6: Chẩn Đoán (Stretch)
+    header->setSectionResizeMode(6, QHeaderView::Stretch);
+
+    // Cột 7: Tùy Chọn (Fixed)
+    header->setSectionResizeMode(7, QHeaderView::Fixed);
+    ui->tableMedicalRecord->setColumnWidth(7, 200);
+
+    ui->tableMedicalRecord->verticalHeader()->setSectionResizeMode(QHeaderView::Fixed);
+    ui->tableMedicalRecord->verticalHeader()->setDefaultSectionSize(75);
+    ui->tableMedicalRecord->setSelectionBehavior(QAbstractItemView::SelectRows);
+    ui->tableMedicalRecord->setSelectionMode(QAbstractItemView::SingleSelection);
+    ui->tableMedicalRecord->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    ui->tableMedicalRecord->setAlternatingRowColors(true);
+    ui->tableMedicalRecord->verticalHeader()->setVisible(false);
+    header->setDefaultAlignment(Qt::AlignCenter);
+
+    qDebug() << "[TABLE SETUP] Medical Record table configured successfully";
+}
+
+void AdminWindow::updateMedicalRecordPaginationUI() {
+    ui->lblCurrentPage_MedicalRecord->setText(QString("Trang %1/%2").arg(currentMedicalRecordPage).arg(totalMedicalRecordPages));
+
+    ui->btnPrevPage_MedicalRecord->setEnabled(currentMedicalRecordPage > 1);
+    ui->btnNextPage_MedicalRecord->setEnabled(currentMedicalRecordPage < totalMedicalRecordPages);
+
+    int startPage, endPage;
+
+    if (totalMedicalRecordPages <= 3) {
+        startPage = 1;
+        endPage = totalMedicalRecordPages;
+    } else {
+        startPage = qMax(1, currentMedicalRecordPage - 1);
+        endPage = qMin(totalMedicalRecordPages, currentMedicalRecordPage + 1);
+
+        if (endPage - startPage < 2) {
+            if (currentMedicalRecordPage == 1) {
+                endPage = qMin(3, totalMedicalRecordPages);
+            } else if (currentMedicalRecordPage == totalMedicalRecordPages) {
+                startPage = qMax(1, totalMedicalRecordPages - 2);
+            }
+        }
+    }
+
+    // Nút 1
+    if (startPage <= totalMedicalRecordPages) {
+        ui->btnPage_MedicalRecord_1->setText(QString::number(startPage));
+        ui->btnPage_MedicalRecord_1->setVisible(true);
+        ui->btnPage_MedicalRecord_1->setEnabled(startPage != currentMedicalRecordPage);
+        if (startPage == currentMedicalRecordPage) {
+            ui->btnPage_MedicalRecord_1->setStyleSheet("background-color: #4CAF50; color: white; font-weight: bold;");
+        } else {
+            ui->btnPage_MedicalRecord_1->setStyleSheet("");
+        }
+    } else {
+        ui->btnPage_MedicalRecord_1->setVisible(false);
+    }
+
+    // Nút 2
+    if (startPage + 1 <= totalMedicalRecordPages) {
+        ui->btnPage_MedicalRecord_2->setText(QString::number(startPage + 1));
+        ui->btnPage_MedicalRecord_2->setVisible(true);
+        ui->btnPage_MedicalRecord_2->setEnabled(startPage + 1 != currentMedicalRecordPage);
+        if (startPage + 1 == currentMedicalRecordPage) {
+            ui->btnPage_MedicalRecord_2->setStyleSheet("background-color: #4CAF50; color: white; font-weight: bold;");
+        } else {
+            ui->btnPage_MedicalRecord_2->setStyleSheet("");
+        }
+    } else {
+        ui->btnPage_MedicalRecord_2->setVisible(false);
+    }
+
+    // Nút 3
+    if (startPage + 2 <= totalMedicalRecordPages) {
+        ui->btnPage_MedicalRecord_3->setText(QString::number(startPage + 2));
+        ui->btnPage_MedicalRecord_3->setVisible(true);
+        ui->btnPage_MedicalRecord_3->setEnabled(startPage + 2 != currentMedicalRecordPage);
+        if (startPage + 2 == currentMedicalRecordPage) {
+            ui->btnPage_MedicalRecord_3->setStyleSheet("background-color: #4CAF50; color: white; font-weight: bold;");
+        } else {
+            ui->btnPage_MedicalRecord_3->setStyleSheet("");
+        }
+    } else {
+        ui->btnPage_MedicalRecord_3->setVisible(false);
+    }
+
+    qDebug() << "[MEDICAL RECORD PAGINATION] Current:" << currentMedicalRecordPage
+             << "| Total:" << totalMedicalRecordPages
+             << "| Buttons:" << startPage << startPage+1 << startPage+2;
+}
+
+void AdminWindow::loadMedicalRecordData(int page, const QString& searchText) {
+    qDebug() << "Loading medical record data for page" << page << "with search text:" << searchText;
+
+    // 1. Lấy dữ liệu từ Singleton
+    const auto& allRecords = MedicalRecordManager::getInstance().getAllMedicalRecords();
+    std::vector<MedicalRecord> filteredRecords;
+
+    // 2. Lọc CHỈ theo ID
+    if (searchText.isEmpty()) {
+        for (const auto& pair : allRecords) {
+            filteredRecords.push_back(pair.second);
+        }
+    } else {
+        bool isNumber = false;
+        int searchID = searchText.toInt(&isNumber);
+
+        if (!isNumber) {
+            QMessageBox::warning(this, "Cảnh báo", "Vui lòng nhập ID (số nguyên) để tìm kiếm!");
+            for (const auto& pair : allRecords) {
+                filteredRecords.push_back(pair.second);
+            }
+        } else {
+            for (const auto& pair : allRecords) {
+                if (pair.second.getID() == searchID) {
+                    filteredRecords.push_back(pair.second);
+                }
+            }
+
+            if (filteredRecords.empty()) {
+                QMessageBox::information(this, "Kết quả tìm kiếm",
+                                         QString("Không tìm thấy hồ sơ bệnh án có ID: %1").arg(searchID));
+                for (const auto& pair : allRecords) {
+                    filteredRecords.push_back(pair.second);
+                }
+            }
+        }
+    }
+
+    // 3. SẮP XẾP theo mode hiện tại
+    switch (currentMedicalRecordSortMode) {
+    case MedicalRecordSortMode::BY_ID_ASC:
+        std::sort(filteredRecords.begin(), filteredRecords.end(),
+                  [](const MedicalRecord& a, const MedicalRecord& b) {
+                      return a.getID() < b.getID();
+                  });
+        qDebug() << "[SORT] Applied: ID Ascending";
+        break;
+
+    case MedicalRecordSortMode::BY_PATIENT_NAME_ASC:
+        std::sort(filteredRecords.begin(), filteredRecords.end(),
+                  [](const MedicalRecord& a, const MedicalRecord& b) {
+                      try {
+                          std::string nameA = Utils::toLower(PatientManager::getInstance().getPatientByID(a.getPatientID()).getName());
+                          std::string nameB = Utils::toLower(PatientManager::getInstance().getPatientByID(b.getPatientID()).getName());
+                          return nameA < nameB;
+                      } catch (...) {
+                          return a.getID() < b.getID();
+                      }
+                  });
+        qDebug() << "[SORT] Applied: Patient Name A-Z";
+        break;
+
+    case MedicalRecordSortMode::BY_PATIENT_NAME_DESC:
+        std::sort(filteredRecords.begin(), filteredRecords.end(),
+                  [](const MedicalRecord& a, const MedicalRecord& b) {
+                      try {
+                          std::string nameA = Utils::toLower(PatientManager::getInstance().getPatientByID(a.getPatientID()).getName());
+                          std::string nameB = Utils::toLower(PatientManager::getInstance().getPatientByID(b.getPatientID()).getName());
+                          return nameA > nameB;
+                      } catch (...) {
+                          return a.getID() < b.getID();
+                      }
+                  });
+        qDebug() << "[SORT] Applied: Patient Name Z-A";
+        break;
+    }
+
+    // 4. Tính toán phân trang
+    int totalItems = filteredRecords.size();
+    totalMedicalRecordPages = (totalItems == 0) ? 1 : (totalItems + itemsPerPage - 1) / itemsPerPage;
+
+    if (page < 1) page = 1;
+    if (page > totalMedicalRecordPages) page = totalMedicalRecordPages;
+    currentMedicalRecordPage = page;
+
+    qDebug() << "[MEDICAL RECORD] Total items:" << totalItems
+             << "| Total pages:" << totalMedicalRecordPages
+             << "| Current page:" << currentMedicalRecordPage;
+
+    // 5. Đặt lại bảng và điền dữ liệu
+    ui->tableMedicalRecord->setRowCount(0);
+    int startIdx = (currentMedicalRecordPage - 1) * itemsPerPage;
+    int endIdx = qMin(startIdx + itemsPerPage, totalItems);
+
+    for (int i = startIdx; i < endIdx; ++i) {
+        const MedicalRecord& record = filteredRecords.at(i);
+        ui->tableMedicalRecord->insertRow(ui->tableMedicalRecord->rowCount());
+        int row = ui->tableMedicalRecord->rowCount() - 1;
+
+        // Cột 0: ID Hồ Sơ
+        QTableWidgetItem* idItem = new QTableWidgetItem(QString::number(record.getID()));
+        idItem->setTextAlignment(Qt::AlignCenter);
+        ui->tableMedicalRecord->setItem(row, 0, idItem);
+
+        // Cột 1: ID Bệnh Nhân
+        QTableWidgetItem* patientIDItem = new QTableWidgetItem(QString::number(record.getPatientID()));
+        patientIDItem->setTextAlignment(Qt::AlignCenter);
+        ui->tableMedicalRecord->setItem(row, 1, patientIDItem);
+
+        // Cột 2: Tên Bệnh Nhân
+        QString patientName = "N/A";
+        try {
+            patientName = QString::fromStdString(PatientManager::getInstance().getPatientByID(record.getPatientID()).getName());
+        } catch (...) {}
+        QTableWidgetItem* patientNameItem = new QTableWidgetItem(patientName);
+        patientNameItem->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+        ui->tableMedicalRecord->setItem(row, 2, patientNameItem);
+
+        // Cột 3: ID Bác Sĩ
+        QTableWidgetItem* doctorIDItem = new QTableWidgetItem(QString::number(record.getDoctorID()));
+        doctorIDItem->setTextAlignment(Qt::AlignCenter);
+        ui->tableMedicalRecord->setItem(row, 3, doctorIDItem);
+
+        // Cột 4: Tên Bác Sĩ
+        QString doctorName = "N/A";
+        try {
+            doctorName = QString::fromStdString(DoctorManager::getInstance().getDoctorByID(record.getDoctorID()).getName());
+        } catch (...) {}
+        QTableWidgetItem* doctorNameItem = new QTableWidgetItem(doctorName);
+        doctorNameItem->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+        ui->tableMedicalRecord->setItem(row, 4, doctorNameItem);
+
+        // Cột 5: Ngày Tạo
+        QTableWidgetItem* dateItem = new QTableWidgetItem(QString::fromStdString(record.getCreationDate().toString()));
+        dateItem->setTextAlignment(Qt::AlignCenter);
+        ui->tableMedicalRecord->setItem(row, 5, dateItem);
+
+        // Cột 6: Chẩn Đoán
+        QString diagnosis = QString::fromStdString(record.getDiagnosis());
+        if (diagnosis.length() > 50) {
+            diagnosis = diagnosis.left(47) + "...";
+        }
+        QTableWidgetItem* diagnosisItem = new QTableWidgetItem(diagnosis);
+        diagnosisItem->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+        ui->tableMedicalRecord->setItem(row, 6, diagnosisItem);
+
+        // Cột 7: Tùy Chọn
+        QWidget* actionWidget = new QWidget();
+        QHBoxLayout* layout = new QHBoxLayout(actionWidget);
+        layout->setContentsMargins(5, 2, 5, 2);
+        layout->setSpacing(5);
+
+        QPushButton* btnViewDetail = new QPushButton("Xem chi tiết");
+        btnViewDetail->setProperty("recordID", record.getID());
+        btnViewDetail->setStyleSheet(R"(
+            QPushButton {
+                background-color: #2196F3;
+                color: white;
+                border: none;
+                padding: 5px 10px;
+                border-radius: 3px;
+            }
+            QPushButton:hover {
+                background-color: #1976D2;
+            }
+        )");
+        connect(btnViewDetail, &QPushButton::clicked, this, &AdminWindow::on_btnViewMedicalRecordDetail_clicked);
+
+        QPushButton* btnDelete = new QPushButton("Xóa");
+        btnDelete->setProperty("recordID", record.getID());
+        btnDelete->setStyleSheet(R"(
+            QPushButton {
+                background-color: #f44336;
+                color: white;
+                border: none;
+                padding: 5px 10px;
+                border-radius: 3px;
+            }
+            QPushButton:hover {
+                background-color: #d32f2f;
+            }
+        )");
+        connect(btnDelete, &QPushButton::clicked, this, &AdminWindow::on_btnRemoveMedicalRecord_clicked);
+
+        layout->addWidget(btnViewDetail);
+        layout->addWidget(btnDelete);
+        actionWidget->setLayout(layout);
+
+        ui->tableMedicalRecord->setCellWidget(row, 7, actionWidget);
+    }
+
+    updateMedicalRecordPaginationUI();
+}
+
+// SLOT IMPLEMENTATIONS
+void AdminWindow::on_btnAddMedicalRecord_clicked() {
+    qDebug() << "page_medicalRecord: + Thêm hồ sơ bệnh án mới clicked.";
+
+    AddEditMedicalRecordDialog addDialog(this);
+
+    if (addDialog.exec() == QDialog::Accepted) {
+        try {
+            MedicalRecord newRecord = addDialog.getMedicalRecordData();
+
+            MedicalRecordManager::getInstance().addMedicalRecord(newRecord);
+
+            QMessageBox::information(this, "Thành công", "Hồ sơ bệnh án đã được thêm và lưu.");
+            loadMedicalRecordData(currentMedicalRecordPage, ui->txtSearchMedicalRecord->text().trimmed());
+
+        } catch (const std::exception& e) {
+            QMessageBox::critical(this, "Lỗi Thêm Hồ Sơ", QString("Không thể thêm hồ sơ: %1").arg(e.what()));
+            qDebug() << "Error adding medical record: " << e.what();
+        }
+    } else {
+        qDebug() << "Thêm hồ sơ bệnh án đã bị hủy.";
+    }
+}
+
+void AdminWindow::on_btnEditMedicalRecord_clicked() {
+    QMessageBox::information(this, "Thông báo", "Chức năng Sửa Hồ Sơ Bệnh Án chưa được triển khai.");
+}
+
+void AdminWindow::on_btnRemoveMedicalRecord_clicked() {
+    QPushButton* btn = qobject_cast<QPushButton*>(sender());
+    int recordID = 0;
+
+    if (btn) {
+        recordID = btn->property("recordID").toInt();
+    } else {
+        QMessageBox::warning(this, "Cảnh báo", "Vui lòng chọn một hồ sơ để xóa.");
+        return;
+    }
+
+    QMessageBox::StandardButton reply;
+    reply = QMessageBox::question(this, "Xác nhận xóa",
+                                  "Bạn có chắc chắn muốn xóa hồ sơ ID: " + QString::number(recordID) + " không?",
+                                  QMessageBox::Yes|QMessageBox::No);
+    if (reply == QMessageBox::Yes) {
+        try {
+            MedicalRecordManager::getInstance().removeMedicalRecord(recordID);
+            QMessageBox::information(this, "Thành công", "Đã xóa hồ sơ ID: " + QString::number(recordID));
+
+            loadMedicalRecordData(currentMedicalRecordPage, ui->txtSearchMedicalRecord->text().trimmed());
+        } catch (const std::exception& e) {
+            QMessageBox::critical(this, "Lỗi Xóa Hồ Sơ", QString::fromStdString(e.what()));
+        }
+    }
+}
+
+void AdminWindow::on_btnSearchMedicalRecord_clicked() {
+    qDebug() << "page_medicalRecord: TÌM KIẾM clicked.";
+
+    QString searchText = ui->txtSearchMedicalRecord->text().trimmed();
+    currentMedicalRecordPage = 1;
+    loadMedicalRecordData(currentMedicalRecordPage, searchText);
+}
+
+void AdminWindow::on_btnViewMedicalRecordDetail_clicked() {
+    QPushButton* btn = qobject_cast<QPushButton*>(sender());
+    if (!btn) return;
+
+    int recordID = btn->property("recordID").toInt();
+    qDebug() << "[VIEW DETAIL] Medical Record ID:" << recordID;
+
+    try {
+        const MedicalRecord& record = MedicalRecordManager::getInstance().getMedicalRecordByID(recordID);
+
+        QString patientName = "N/A";
+        try {
+            patientName = QString::fromStdString(PatientManager::getInstance().getPatientByID(record.getPatientID()).getName());
+        } catch (...) {}
+
+        QString doctorName = "N/A";
+        try {
+            doctorName = QString::fromStdString(DoctorManager::getInstance().getDoctorByID(record.getDoctorID()).getName());
+        } catch (...) {}
+
+        QString details = QString(
+                              "=== THÔNG TIN HỒ SƠ BỆNH ÁN ===\n\n"
+                              "ID Hồ Sơ: %1\n"
+                              "Bệnh Nhân: %2 (ID: %3)\n"
+                              "Bác Sĩ: %4 (ID: %5)\n"
+                              "Ngày Tạo: %6\n"
+                              "Cập Nhật Lần Cuối: %7\n\n"
+                              "Chẩn Đoán: %8\n"
+                              "Triệu Chứng: %9\n"
+                              "Kết Quả Xét Nghiệm: %10\n\n"
+                              "Huyết Áp: %11\n"
+                              "Nhịp Tim: %12 BPM\n"
+                              "Nhiệt Độ: %13°C\n\n"
+                              "Điều Trị: %14\n"
+                              "Ghi Chú Bác Sĩ: %15\n"
+                              ).arg(record.getID())
+                              .arg(patientName)
+                              .arg(record.getPatientID())
+                              .arg(doctorName)
+                              .arg(record.getDoctorID())
+                              .arg(QString::fromStdString(record.getCreationDate().toString()))
+                              .arg(QString::fromStdString(record.getLastUpdated().toString()))
+                              .arg(QString::fromStdString(record.getDiagnosis()))
+                              .arg(QString::fromStdString(record.getSymptoms()))
+                              .arg(QString::fromStdString(record.getTestResults()))
+                              .arg(QString::fromStdString(record.getBloodPressure()))
+                              .arg(record.getHeartRate())
+                              .arg(record.getBodyTemperature())
+                              .arg(QString::fromStdString(record.getTreatment()))
+                              .arg(QString::fromStdString(record.getDoctorNotes()));
+
+        QMessageBox::information(this, "Chi tiết Hồ Sơ Bệnh Án", details);
+
+    } catch (const std::exception& e) {
+        QMessageBox::critical(this, "Lỗi", QString("Không thể xem chi tiết: %1").arg(e.what()));
+    }
+}
+
+void AdminWindow::on_btnSortAZMedicalRecord_clicked() {
+    qDebug() << "[SORT] Button A-Z clicked";
+
+    currentMedicalRecordSortMode = MedicalRecordSortMode::BY_PATIENT_NAME_ASC;
+
+    ui->btnSortAZMedicalRecord->setStyleSheet("background-color: #4CAF50; color: white; font-weight: bold;");
+    ui->btnSortZAMedicalRecord->setStyleSheet("");
+
+    loadMedicalRecordData(currentMedicalRecordPage, ui->txtSearchMedicalRecord->text().trimmed());
+}
+
+void AdminWindow::on_btnSortZAMedicalRecord_clicked() {
+    qDebug() << "[SORT] Button Z-A clicked";
+
+    currentMedicalRecordSortMode = MedicalRecordSortMode::BY_PATIENT_NAME_DESC;
+
+    ui->btnSortZAMedicalRecord->setStyleSheet("background-color: #4CAF50; color: white; font-weight: bold;");
+    ui->btnSortAZMedicalRecord->setStyleSheet("");
+
+    loadMedicalRecordData(currentMedicalRecordPage, ui->txtSearchMedicalRecord->text().trimmed());
+}
+
+void AdminWindow::on_btnPrevPage_MedicalRecord_clicked() {
+    if (currentMedicalRecordPage > 1) {
+        currentMedicalRecordPage--;
+        loadMedicalRecordData(currentMedicalRecordPage, ui->txtSearchMedicalRecord->text().trimmed());
+    }
+}
+
+void AdminWindow::on_btnNextPage_MedicalRecord_clicked() {
+    if (currentMedicalRecordPage < totalMedicalRecordPages) {
+        currentMedicalRecordPage++;
+        loadMedicalRecordData(currentMedicalRecordPage, ui->txtSearchMedicalRecord->text().trimmed());
+    }
+}
+
+void AdminWindow::on_btnPage_MedicalRecord_1_clicked() {
+    int pageNum = ui->btnPage_MedicalRecord_1->text().toInt();
+    if (pageNum > 0 && pageNum <= totalMedicalRecordPages) {
+        currentMedicalRecordPage = pageNum;
+        loadMedicalRecordData(currentMedicalRecordPage, ui->txtSearchMedicalRecord->text().trimmed());
+    }
+}
+
+void AdminWindow::on_btnPage_MedicalRecord_2_clicked() {
+    int pageNum = ui->btnPage_MedicalRecord_2->text().toInt();
+    if (pageNum > 0 && pageNum <= totalMedicalRecordPages) {
+        currentMedicalRecordPage = pageNum;
+        loadMedicalRecordData(currentMedicalRecordPage, ui->txtSearchMedicalRecord->text().trimmed());
+    }
+}
+
+void AdminWindow::on_btnPage_MedicalRecord_3_clicked() {
+    int pageNum = ui->btnPage_MedicalRecord_3->text().toInt();
+    if (pageNum > 0 && pageNum <= totalMedicalRecordPages) {
+        currentMedicalRecordPage = pageNum;
+        loadMedicalRecordData(currentMedicalRecordPage, ui->txtSearchMedicalRecord->text().trimmed());
     }
 }

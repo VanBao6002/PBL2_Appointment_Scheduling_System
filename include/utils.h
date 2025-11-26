@@ -37,6 +37,9 @@ public:
     static std::string toUpper(const std::string &str);
     static std::string join(const std::vector<std::string>& vec, const std::string& delimiter);
     static std::vector<std::string> parseStringToList(const std::string& str);
+    static std::unordered_map<std::string, double> loadMedicinePrices();
+    static std::vector<std::pair<std::string, double>> getAllMedicinesWithPrices();
+    static std::vector<nlohmann::json> searchMedicines(const std::string& searchText);
 
 
     //validicator
