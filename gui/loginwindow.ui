@@ -6,9 +6,21 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>210</width>
-    <height>189</height>
+    <width>220</width>
+    <height>210</height>
    </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>220</width>
+    <height>210</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>220</width>
+    <height>210</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>LOGIN WINDOW</string>
@@ -16,9 +28,9 @@
   <widget class="QLineEdit" name="userName">
    <property name="geometry">
     <rect>
-     <x>50</x>
-     <y>60</y>
-     <width>113</width>
+     <x>40</x>
+     <y>40</y>
+     <width>141</width>
      <height>20</height>
     </rect>
    </property>
@@ -32,9 +44,9 @@
   <widget class="QLineEdit" name="passWord">
    <property name="geometry">
     <rect>
-     <x>50</x>
-     <y>100</y>
-     <width>113</width>
+     <x>40</x>
+     <y>90</y>
+     <width>141</width>
      <height>20</height>
     </rect>
    </property>
@@ -48,9 +60,9 @@
   <widget class="QPushButton" name="loginButton">
    <property name="geometry">
     <rect>
-     <x>80</x>
-     <y>130</y>
-     <width>51</width>
+     <x>70</x>
+     <y>140</y>
+     <width>81</width>
      <height>21</height>
     </rect>
    </property>
@@ -65,9 +77,9 @@ color: white;</string>
   <widget class="QPushButton" name="cancelButton">
    <property name="geometry">
     <rect>
-     <x>80</x>
-     <y>160</y>
-     <width>51</width>
+     <x>70</x>
+     <y>170</y>
+     <width>81</width>
      <height>21</height>
     </rect>
    </property>
@@ -104,8 +116,8 @@ color: white;</string>
   <widget class="QToolButton" name="showPasswordButton">
    <property name="geometry">
     <rect>
-     <x>170</x>
-     <y>100</y>
+     <x>190</x>
+     <y>90</y>
      <width>18</width>
      <height>19</height>
     </rect>
