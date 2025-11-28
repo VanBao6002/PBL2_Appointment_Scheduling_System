@@ -118,273 +118,181 @@ AdminWindow::~AdminWindow()
     delete ui;
 }
 
-void AdminWindow::loadAppointmentData(int page, const QString& searchText)
-{
-    qDebug() << "Loading appointment data for page" << page << "with search text:" << searchText;
+void AdminWindow::loadPatientData(int page, const QString& searchText) {
+    qDebug() << "Loading patient data for page" << page << "with search text:" << searchText;
 
-    // Lấy dữ liệu từ Singleton
-    std::vector<Appointment> allAppointments = AppointmentManager::getInstance().getAllAppointmentsAsVector();
-    std::vector<Appointment> filteredAppointments;
+    // 1. Lấy dữ liệu từ Singleton
+    const auto& allPatients = PatientManager::getInstance().getAllPatientsTable();
+    std::vector<Patient> filteredPatients;
 
-    for (const auto& appt : allAppointments) {
-        // Lấy tên BN/BS từ Singleton
-        QString patientName = "N/A";
-        try {
-            patientName = QString::fromStdString(PatientManager::getInstance().getPatientByID(appt.getPatientID()).getName());
-        } catch (...) {}
+    // 2. Lọc CHỈ theo ID
+    if (searchText.isEmpty()) {
+        for (const auto& pair : allPatients) {
+            filteredPatients.push_back(pair.second);
+        }
+    } else {
+        bool isNumber = false;
+        int searchID = searchText.toInt(&isNumber);
 
-        QString doctorName = "N/A";
-        try {
-            doctorName = QString::fromStdString(DoctorManager::getInstance().getDoctorByID(appt.getDoctorID()).getName());
-        } catch (...) {}
-
-        // Tạo list để tìm kiếm
-        QStringList apptDetails;
-        apptDetails << QString::number(appt.getID())
-                    << patientName
-                    << doctorName
-                    << QString::fromStdString(appt.getDate().toString())
-                    << QString::fromStdString(appt.getTime())
-                    << QString::fromStdString(Appointment::statusToString(appt.getStatus()));
-
-        bool match = false;
-        if (searchText.isEmpty()) {
-            match = true;
+        if (!isNumber) {
+            QMessageBox::warning(this, "Cảnh báo", "Vui lòng nhập ID (số nguyên) để tìm kiếm!");
+            for (const auto& pair : allPatients) {
+                filteredPatients.push_back(pair.second);
+            }
         } else {
-            QString lowerSearchText = searchText.toLower();
-            for (const QString& item : apptDetails) {
-                if (item.toLower().contains(lowerSearchText)) {
-                    match = true;
-                    break;
+            for (const auto& pair : allPatients) {
+                if (pair.second.getID() == searchID) {
+                    filteredPatients.push_back(pair.second);
+                }
+            }
+
+            if (filteredPatients.empty()) {
+                QMessageBox::information(this, "Kết quả tìm kiếm",
+                                         QString("Không tìm thấy bệnh nhân có ID: %1").arg(searchID));
+                for (const auto& pair : allPatients) {
+                    filteredPatients.push_back(pair.second);
                 }
             }
         }
-
-        if (match) {
-            filteredAppointments.push_back(appt);
-        }
     }
 
-    // Tính toán phân trang
-    int totalItems = filteredAppointments.size();
-    totalAppointmentPages = (totalItems == 0) ? 1 : (totalItems + itemsPerPage - 1) / itemsPerPage;
+    // 3. SẮP XẾP theo mode hiện tại
+    switch (currentPatientSortMode) {
+    case PatientSortMode::BY_ID_ASC:
+        std::sort(filteredPatients.begin(), filteredPatients.end(),
+                  [](const Patient& a, const Patient& b) {
+                      return a.getID() < b.getID();
+                  });
+        qDebug() << "[SORT] Applied: ID Ascending";
+        break;
+
+    case PatientSortMode::BY_NAME_ASC:
+        std::sort(filteredPatients.begin(), filteredPatients.end(),
+                  [](const Patient& a, const Patient& b) {
+                      std::string nameA = Utils::toLower(a.getName());
+                      std::string nameB = Utils::toLower(b.getName());
+                      return nameA < nameB;
+                  });
+        qDebug() << "[SORT] Applied: Name A-Z";
+        break;
+
+    case PatientSortMode::BY_NAME_DESC:
+        std::sort(filteredPatients.begin(), filteredPatients.end(),
+                  [](const Patient& a, const Patient& b) {
+                      std::string nameA = Utils::toLower(a.getName());
+                      std::string nameB = Utils::toLower(b.getName());
+                      return nameA > nameB;
+                  });
+        qDebug() << "[SORT] Applied: Name Z-A";
+        break;
+    }
+
+    // 4. Tính toán phân trang
+    int totalItems = filteredPatients.size();
+    totalPatientPages = (totalItems == 0) ? 1 : (totalItems + itemsPerPage - 1) / itemsPerPage;
 
     if (page < 1) page = 1;
-    if (page > totalAppointmentPages) page = totalAppointmentPages;
-    currentAppointmentPage = page;
+    if (page > totalPatientPages) page = totalPatientPages;
+    currentPatientPage = page;
 
-    // Đổ dữ liệu vào bảng
-    ui->tableAppointment->setRowCount(0);
-    int startIdx = (currentAppointmentPage - 1) * itemsPerPage;
+    qDebug() << "[PATIENT] Total items:" << totalItems
+             << "| Total pages:" << totalPatientPages
+             << "| Current page:" << currentPatientPage;
+
+    // 5. Đặt lại bảng và điền dữ liệu
+    ui->tablePatient->setRowCount(0);
+    int startIdx = (currentPatientPage - 1) * itemsPerPage;
     int endIdx = qMin(startIdx + itemsPerPage, totalItems);
 
     for (int i = startIdx; i < endIdx; ++i) {
-        const Appointment& appt = filteredAppointments.at(i);
-        ui->tableAppointment->insertRow(ui->tableAppointment->rowCount());
-        int rowIdx = ui->tableAppointment->rowCount() - 1;
+        const Patient& patient = filteredPatients.at(i);
+        ui->tablePatient->insertRow(ui->tablePatient->rowCount());
+        int row = ui->tablePatient->rowCount() - 1;
 
-        // Lấy lại tên để hiển thị
-        QString patientName = "N/A";
-        try {
-            patientName = QString::fromStdString(PatientManager::getInstance().getPatientByID(appt.getPatientID()).getName());
-        } catch (...) {}
+        // ✅ Cột 0: ID (căn giữa)
+        QTableWidgetItem* idItem = new QTableWidgetItem(QString::number(patient.getID()));
+        idItem->setTextAlignment(Qt::AlignCenter);
+        ui->tablePatient->setItem(row, 0, idItem);
 
-        QString doctorName = "N/A";
-        try {
-            doctorName = QString::fromStdString(DoctorManager::getInstance().getDoctorByID(appt.getDoctorID()).getName());
-        } catch (...) {}
+        // ✅ Cột 1: Họ tên (căn trái)
+        QTableWidgetItem* nameItem = new QTableWidgetItem(QString::fromStdString(patient.getName()));
+        nameItem->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+        ui->tablePatient->setItem(row, 1, nameItem);
 
-        ui->tableAppointment->setItem(rowIdx, 0, new QTableWidgetItem(QString::number(appt.getID())));
-        ui->tableAppointment->setItem(rowIdx, 1, new QTableWidgetItem(patientName));
-        ui->tableAppointment->setItem(rowIdx, 2, new QTableWidgetItem(doctorName));
-        ui->tableAppointment->setItem(rowIdx, 3, new QTableWidgetItem(QString::fromStdString(appt.getDate().toString())));
-        ui->tableAppointment->setItem(rowIdx, 4, new QTableWidgetItem(QString::fromStdString(appt.getTime())));
-        ui->tableAppointment->setItem(rowIdx, 5, new QTableWidgetItem(QString::fromStdString(Appointment::statusToString(appt.getStatus()))));
-    }
-}
+        // ✅ Cột 2: Giới tính (căn giữa)
+        QString genderDisplay;
+        char gender = patient.getGender();
+        if (gender == 'M') genderDisplay = "Nam";
+        else if (gender == 'F') genderDisplay = "Nữ";
+        else genderDisplay = "Khác";
 
-void AdminWindow::setupPatientTable() {
-    // ✅ Chỉ còn 7 cột (bỏ Email)
-    ui->tablePatient->setColumnCount(7);
+        QTableWidgetItem* genderItem = new QTableWidgetItem(genderDisplay);
+        genderItem->setTextAlignment(Qt::AlignCenter);
+        ui->tablePatient->setItem(row, 2, genderItem);
 
-    // ✅ Đặt tên các cột (không có Email)
-    QStringList headers;
-    headers << "ID Bệnh nhân" << "Họ tên" << "Giới tính" << "Ngày sinh"
-            << "Nhóm máu" << "SĐT" << "Tuỳ chọn";
-    ui->tablePatient->setHorizontalHeaderLabels(headers);
+        // ✅ Cột 3: Ngày sinh (căn giữa)
+        QTableWidgetItem* birthdayItem = new QTableWidgetItem(QString::fromStdString(patient.getBirthday().toString()));
+        birthdayItem->setTextAlignment(Qt::AlignCenter);
+        ui->tablePatient->setItem(row, 3, birthdayItem);
 
-    QHeaderView* header = ui->tablePatient->horizontalHeader();
+        // ✅ Cột 4: Nhóm máu (căn giữa)
+        QTableWidgetItem* bloodTypeItem = new QTableWidgetItem(QString::fromStdString(patient.getBloodType()));
+        bloodTypeItem->setTextAlignment(Qt::AlignCenter);
+        ui->tablePatient->setItem(row, 4, bloodTypeItem);
 
-    // Cột 0: ID (Fixed)
-    header->setSectionResizeMode(0, QHeaderView::Fixed);
-    ui->tablePatient->setColumnWidth(0, 100);
+        // ✅ Cột 5: SĐT (căn giữa)
+        QTableWidgetItem* phoneNumberItem = new QTableWidgetItem(QString::fromStdString(patient.getPhoneNumber()));
+        phoneNumberItem->setTextAlignment(Qt::AlignCenter);
+        ui->tablePatient->setItem(row, 5, phoneNumberItem);
 
-    // Cột 1: Họ tên (Stretch)
-    header->setSectionResizeMode(1, QHeaderView::Stretch);
+        // ✅ Cột 6: Tuỳ chọn - Thêm 2 nút "Xem chi tiết" và "Xoá"
+        QWidget* actionWidget = new QWidget();
+        QHBoxLayout* layout = new QHBoxLayout(actionWidget);
+        layout->setContentsMargins(5, 2, 5, 2);
+        layout->setSpacing(5);
 
-    // Cột 2: Giới tính (Fixed)
-    header->setSectionResizeMode(2, QHeaderView::Fixed);
-    ui->tablePatient->setColumnWidth(2, 80);
-
-    // Cột 3: Ngày sinh (Fixed)
-    header->setSectionResizeMode(3, QHeaderView::Fixed);
-    ui->tablePatient->setColumnWidth(3, 120);
-
-    // Cột 4: Nhóm máu (Fixed)
-    header->setSectionResizeMode(4, QHeaderView::Fixed);
-    ui->tablePatient->setColumnWidth(4, 100);
-
-    // Cột 5: SĐT (Fixed)
-    header->setSectionResizeMode(5, QHeaderView::Fixed);
-    ui->tablePatient->setColumnWidth(5, 120);
-
-    // ✅ Cột 6: Tuỳ chọn (Fixed - đủ cho 2 button)
-    header->setSectionResizeMode(6, QHeaderView::Fixed);
-    ui->tablePatient->setColumnWidth(6, 200);
-
-    // Các thiết lập khác...
-    ui->tablePatient->verticalHeader()->setSectionResizeMode(QHeaderView::Fixed);
-    ui->tablePatient->verticalHeader()->setDefaultSectionSize(75);
-    ui->tablePatient->setSelectionBehavior(QAbstractItemView::SelectRows);
-    ui->tablePatient->setSelectionMode(QAbstractItemView::SingleSelection);
-    ui->tablePatient->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    ui->tablePatient->setAlternatingRowColors(true);
-    ui->tablePatient->verticalHeader()->setVisible(false);
-    header->setDefaultAlignment(Qt::AlignCenter);
-
-    qDebug() << "[TABLE SETUP] Patient table configured successfully (without Email column)";
-}
-
-void AdminWindow::setupDoctorTable() {
-    // ✅ Đặt 9 cột (thêm cột Ngày sinh)
-    ui->tableDoctor->setColumnCount(9);
-
-    // ✅ Đặt tên các cột
-    QStringList headers;
-    headers << "ID Bác sĩ" << "Họ tên" << "Giới tính" << "Ngày sinh"
-            << "Chuyên khoa" << "Email" << "SĐT" << "Trạng thái" << "Tuỳ chọn";
-    ui->tableDoctor->setHorizontalHeaderLabels(headers);
-
-    QHeaderView* header = ui->tableDoctor->horizontalHeader();
-
-    // Cột 0: ID (Fixed)
-    header->setSectionResizeMode(0, QHeaderView::Fixed);
-    ui->tableDoctor->setColumnWidth(0, 80);
-
-    // Cột 1: Họ tên (Stretch)
-    header->setSectionResizeMode(1, QHeaderView::Stretch);
-
-    // Cột 2: Giới tính (Fixed)
-    header->setSectionResizeMode(2, QHeaderView::Fixed);
-    ui->tableDoctor->setColumnWidth(2, 80);
-
-    // Cột 3: Ngày sinh (Fixed)
-    header->setSectionResizeMode(3, QHeaderView::Fixed);
-    ui->tableDoctor->setColumnWidth(3, 120);
-
-    // Cột 4: Chuyên khoa (Stretch)
-    header->setSectionResizeMode(4, QHeaderView::Stretch);
-
-    // Cột 5: Email (Stretch)
-    header->setSectionResizeMode(5, QHeaderView::Stretch);
-
-    // Cột 6: SĐT (Fixed)
-    header->setSectionResizeMode(6, QHeaderView::Fixed);
-    ui->tableDoctor->setColumnWidth(6, 110);
-
-    // Cột 7: Trạng thái (Fixed)
-    header->setSectionResizeMode(7, QHeaderView::Fixed);
-    ui->tableDoctor->setColumnWidth(7, 100);
-
-    // Cột 8: Tuỳ chọn (Fixed)
-    header->setSectionResizeMode(8, QHeaderView::Fixed);
-    ui->tableDoctor->setColumnWidth(8, 200);
-
-    // Các thiết lập khác
-    ui->tableDoctor->verticalHeader()->setSectionResizeMode(QHeaderView::Fixed);
-    ui->tableDoctor->verticalHeader()->setDefaultSectionSize(75);
-    ui->tableDoctor->setSelectionBehavior(QAbstractItemView::SelectRows);
-    ui->tableDoctor->setSelectionMode(QAbstractItemView::SingleSelection);
-    ui->tableDoctor->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    ui->tableDoctor->setAlternatingRowColors(true);
-    ui->tableDoctor->verticalHeader()->setVisible(false);
-    header->setDefaultAlignment(Qt::AlignCenter);
-
-    qDebug() << "[TABLE SETUP] Doctor table configured with Birthday column";
-}
-
-void AdminWindow::updateDoctorPaginationUI() {
-    // Cập nhật label hiển thị trang hiện tại
-    ui->lblCurrentPage_Doctor->setText(QString("Trang %1/%2").arg(currentDoctorPage).arg(totalDoctorPages));
-
-    // ✅ Cập nhật trạng thái nút Prev/Next
-    ui->btnPrevPage_Doctor->setEnabled(currentDoctorPage > 1);
-    ui->btnNextPage_Doctor->setEnabled(currentDoctorPage < totalDoctorPages);
-
-    // ✅ Cập nhật các nút số trang
-    int startPage, endPage;
-
-    if (totalDoctorPages <= 3) {
-        startPage = 1;
-        endPage = totalDoctorPages;
-    } else {
-        startPage = qMax(1, currentDoctorPage - 1);
-        endPage = qMin(totalDoctorPages, currentDoctorPage + 1);
-
-        if (endPage - startPage < 2) {
-            if (currentDoctorPage == 1) {
-                endPage = qMin(3, totalDoctorPages);
-            } else if (currentDoctorPage == totalDoctorPages) {
-                startPage = qMax(1, totalDoctorPages - 2);
+        // Button "Xem chi tiết"
+        QPushButton* btnViewDetail = new QPushButton("Xem chi tiết");
+        btnViewDetail->setProperty("patientID", patient.getID());
+        btnViewDetail->setStyleSheet(R"(
+            QPushButton {
+                background-color: #2196F3;
+                color: white;
+                border: none;
+                padding: 5px 10px;
+                border-radius: 3px;
             }
-        }
+            QPushButton:hover {
+                background-color: #1976D2;
+            }
+        )");
+        connect(btnViewDetail, &QPushButton::clicked, this, &AdminWindow::on_btnViewPatientDetail_clicked);
+
+        // Button "Xoá"
+        QPushButton* btnDelete = new QPushButton("Xoá");
+        btnDelete->setProperty("patientID", patient.getID());
+        btnDelete->setStyleSheet(R"(
+            QPushButton {
+                background-color: #f44336;
+                color: white;
+                border: none;
+                padding: 5px 10px;
+                border-radius: 3px;
+            }
+            QPushButton:hover {
+                background-color: #d32f2f;
+            }
+        )");
+        connect(btnDelete, &QPushButton::clicked, this, &AdminWindow::on_btnRemovePatient_clicked);
+
+        layout->addWidget(btnViewDetail);
+        layout->addWidget(btnDelete);
+        actionWidget->setLayout(layout);
+
+        ui->tablePatient->setCellWidget(row, 6, actionWidget);
     }
 
-    // Nút 1
-    if (startPage <= totalDoctorPages) {
-        ui->btnPage_Doctor_1->setText(QString::number(startPage));
-        ui->btnPage_Doctor_1->setVisible(true);
-        ui->btnPage_Doctor_1->setEnabled(startPage != currentDoctorPage);
-        if (startPage == currentDoctorPage) {
-            ui->btnPage_Doctor_1->setStyleSheet("background-color: #4CAF50; color: white; font-weight: bold;");
-        } else {
-            ui->btnPage_Doctor_1->setStyleSheet("");
-        }
-    } else {
-        ui->btnPage_Doctor_1->setVisible(false);
-    }
-
-    // Nút 2
-    if (startPage + 1 <= totalDoctorPages) {
-        ui->btnPage_Doctor_2->setText(QString::number(startPage + 1));
-        ui->btnPage_Doctor_2->setVisible(true);
-        ui->btnPage_Doctor_2->setEnabled(startPage + 1 != currentDoctorPage);
-        if (startPage + 1 == currentDoctorPage) {
-            ui->btnPage_Doctor_2->setStyleSheet("background-color: #4CAF50; color: white; font-weight: bold;");
-        } else {
-            ui->btnPage_Doctor_2->setStyleSheet("");
-        }
-    } else {
-        ui->btnPage_Doctor_2->setVisible(false);
-    }
-
-    // Nút 3
-    if (startPage + 2 <= totalDoctorPages) {
-        ui->btnPage_Doctor_3->setText(QString::number(startPage + 2));
-        ui->btnPage_Doctor_3->setVisible(true);
-        ui->btnPage_Doctor_3->setEnabled(startPage + 2 != currentDoctorPage);
-        if (startPage + 2 == currentDoctorPage) {
-            ui->btnPage_Doctor_3->setStyleSheet("background-color: #4CAF50; color: white; font-weight: bold;");
-        } else {
-            ui->btnPage_Doctor_3->setStyleSheet("");
-        }
-    } else {
-        ui->btnPage_Doctor_3->setVisible(false);
-    }
-
-    qDebug() << "[DOCTOR PAGINATION] Current:" << currentDoctorPage
-             << "| Total:" << totalDoctorPages
-             << "| Buttons:" << startPage << startPage+1 << startPage+2;
+    updatePatientPaginationUI();
 }
 
 void AdminWindow::loadDoctorData(int page, const QString& searchText) {
@@ -589,6 +497,632 @@ void AdminWindow::loadDoctorData(int page, const QString& searchText) {
     updateDoctorPaginationUI();
 }
 
+void AdminWindow::loadMedicalRecordData(int page, const QString& searchText) {
+    qDebug() << "Loading medical record data for page" << page << "with search text:" << searchText;
+
+    // 1. Lấy dữ liệu từ Singleton
+    const auto& allRecords = MedicalRecordManager::getInstance().getAllMedicalRecords();
+    std::vector<MedicalRecord> filteredRecords;
+
+    // 2. Lọc CHỈ theo ID
+    if (searchText.isEmpty()) {
+        for (const auto& pair : allRecords) {
+            filteredRecords.push_back(pair.second);
+        }
+    } else {
+        bool isNumber = false;
+        int searchID = searchText.toInt(&isNumber);
+
+        if (!isNumber) {
+            QMessageBox::warning(this, "Cảnh báo", "Vui lòng nhập ID (số nguyên) để tìm kiếm!");
+            for (const auto& pair : allRecords) {
+                filteredRecords.push_back(pair.second);
+            }
+        } else {
+            for (const auto& pair : allRecords) {
+                if (pair.second.getID() == searchID) {
+                    filteredRecords.push_back(pair.second);
+                }
+            }
+
+            if (filteredRecords.empty()) {
+                QMessageBox::information(this, "Kết quả tìm kiếm",
+                                         QString("Không tìm thấy hồ sơ bệnh án có ID: %1").arg(searchID));
+                for (const auto& pair : allRecords) {
+                    filteredRecords.push_back(pair.second);
+                }
+            }
+        }
+    }
+
+    // 3. SẮP XẾP theo mode hiện tại
+    switch (currentMedicalRecordSortMode) {
+    case MedicalRecordSortMode::BY_ID_ASC:
+        std::sort(filteredRecords.begin(), filteredRecords.end(),
+                  [](const MedicalRecord& a, const MedicalRecord& b) {
+                      return a.getID() < b.getID();
+                  });
+        qDebug() << "[SORT] Applied: ID Ascending";
+        break;
+
+    case MedicalRecordSortMode::BY_PATIENT_NAME_ASC:
+        std::sort(filteredRecords.begin(), filteredRecords.end(),
+                  [](const MedicalRecord& a, const MedicalRecord& b) {
+                      try {
+                          std::string nameA = Utils::toLower(PatientManager::getInstance().getPatientByID(a.getPatientID()).getName());
+                          std::string nameB = Utils::toLower(PatientManager::getInstance().getPatientByID(b.getPatientID()).getName());
+                          return nameA < nameB;
+                      } catch (...) {
+                          return a.getID() < b.getID();
+                      }
+                  });
+        qDebug() << "[SORT] Applied: Patient Name A-Z";
+        break;
+
+    case MedicalRecordSortMode::BY_PATIENT_NAME_DESC:
+        std::sort(filteredRecords.begin(), filteredRecords.end(),
+                  [](const MedicalRecord& a, const MedicalRecord& b) {
+                      try {
+                          std::string nameA = Utils::toLower(PatientManager::getInstance().getPatientByID(a.getPatientID()).getName());
+                          std::string nameB = Utils::toLower(PatientManager::getInstance().getPatientByID(b.getPatientID()).getName());
+                          return nameA > nameB;
+                      } catch (...) {
+                          return a.getID() < b.getID();
+                      }
+                  });
+        qDebug() << "[SORT] Applied: Patient Name Z-A";
+        break;
+    }
+
+    // 4. Tính toán phân trang
+    int totalItems = filteredRecords.size();
+    totalMedicalRecordPages = (totalItems == 0) ? 1 : (totalItems + itemsPerPage - 1) / itemsPerPage;
+
+    if (page < 1) page = 1;
+    if (page > totalMedicalRecordPages) page = totalMedicalRecordPages;
+    currentMedicalRecordPage = page;
+
+    qDebug() << "[MEDICAL RECORD] Total items:" << totalItems
+             << "| Total pages:" << totalMedicalRecordPages
+             << "| Current page:" << currentMedicalRecordPage;
+
+    // 5. Đặt lại bảng và điền dữ liệu
+    ui->tableMedicalRecord->setRowCount(0);
+    int startIdx = (currentMedicalRecordPage - 1) * itemsPerPage;
+    int endIdx = qMin(startIdx + itemsPerPage, totalItems);
+
+    for (int i = startIdx; i < endIdx; ++i) {
+        const MedicalRecord& record = filteredRecords.at(i);
+        ui->tableMedicalRecord->insertRow(ui->tableMedicalRecord->rowCount());
+        int row = ui->tableMedicalRecord->rowCount() - 1;
+
+        // Cột 0: ID Hồ Sơ
+        QTableWidgetItem* idItem = new QTableWidgetItem(QString::number(record.getID()));
+        idItem->setTextAlignment(Qt::AlignCenter);
+        ui->tableMedicalRecord->setItem(row, 0, idItem);
+
+        // Cột 1: ID Bệnh Nhân
+        QTableWidgetItem* patientIDItem = new QTableWidgetItem(QString::number(record.getPatientID()));
+        patientIDItem->setTextAlignment(Qt::AlignCenter);
+        ui->tableMedicalRecord->setItem(row, 1, patientIDItem);
+
+        // Cột 2: Tên Bệnh Nhân
+        QString patientName = "N/A";
+        try {
+            patientName = QString::fromStdString(PatientManager::getInstance().getPatientByID(record.getPatientID()).getName());
+        } catch (...) {}
+        QTableWidgetItem* patientNameItem = new QTableWidgetItem(patientName);
+        patientNameItem->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+        ui->tableMedicalRecord->setItem(row, 2, patientNameItem);
+
+        // Cột 3: ID Bác Sĩ
+        QTableWidgetItem* doctorIDItem = new QTableWidgetItem(QString::number(record.getDoctorID()));
+        doctorIDItem->setTextAlignment(Qt::AlignCenter);
+        ui->tableMedicalRecord->setItem(row, 3, doctorIDItem);
+
+        // Cột 4: Tên Bác Sĩ
+        QString doctorName = "N/A";
+        try {
+            doctorName = QString::fromStdString(DoctorManager::getInstance().getDoctorByID(record.getDoctorID()).getName());
+        } catch (...) {}
+        QTableWidgetItem* doctorNameItem = new QTableWidgetItem(doctorName);
+        doctorNameItem->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+        ui->tableMedicalRecord->setItem(row, 4, doctorNameItem);
+
+        // Cột 5: Ngày Tạo
+        QTableWidgetItem* dateItem = new QTableWidgetItem(QString::fromStdString(record.getCreationDate().toString()));
+        dateItem->setTextAlignment(Qt::AlignCenter);
+        ui->tableMedicalRecord->setItem(row, 5, dateItem);
+
+        // Cột 6: Chẩn Đoán
+        QString diagnosis = QString::fromStdString(record.getDiagnosis());
+        if (diagnosis.length() > 50) {
+            diagnosis = diagnosis.left(47) + "...";
+        }
+        QTableWidgetItem* diagnosisItem = new QTableWidgetItem(diagnosis);
+        diagnosisItem->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+        ui->tableMedicalRecord->setItem(row, 6, diagnosisItem);
+
+        // Cột 7: Tùy Chọn
+        QWidget* actionWidget = new QWidget();
+        QHBoxLayout* layout = new QHBoxLayout(actionWidget);
+        layout->setContentsMargins(5, 2, 5, 2);
+        layout->setSpacing(5);
+
+        QPushButton* btnViewDetail = new QPushButton("Xem chi tiết");
+        btnViewDetail->setProperty("recordID", record.getID());
+        btnViewDetail->setStyleSheet(R"(
+            QPushButton {
+                background-color: #2196F3;
+                color: white;
+                border: none;
+                padding: 5px 10px;
+                border-radius: 3px;
+            }
+            QPushButton:hover {
+                background-color: #1976D2;
+            }
+        )");
+        connect(btnViewDetail, &QPushButton::clicked, this, &AdminWindow::on_btnViewMedicalRecordDetail_clicked);
+
+        QPushButton* btnDelete = new QPushButton("Xóa");
+        btnDelete->setProperty("recordID", record.getID());
+        btnDelete->setStyleSheet(R"(
+            QPushButton {
+                background-color: #f44336;
+                color: white;
+                border: none;
+                padding: 5px 10px;
+                border-radius: 3px;
+            }
+            QPushButton:hover {
+                background-color: #d32f2f;
+            }
+        )");
+        connect(btnDelete, &QPushButton::clicked, this, &AdminWindow::on_btnRemoveMedicalRecord_clicked);
+
+        layout->addWidget(btnViewDetail);
+        layout->addWidget(btnDelete);
+        actionWidget->setLayout(layout);
+
+        ui->tableMedicalRecord->setCellWidget(row, 7, actionWidget);
+    }
+
+    updateMedicalRecordPaginationUI();
+}
+
+void AdminWindow::loadAppointmentData(int page, const QString& searchText)
+{
+    qDebug() << "Loading appointment data for page" << page << "with search text:" << searchText;
+
+    // Lấy dữ liệu từ Singleton
+    std::vector<Appointment> allAppointments = AppointmentManager::getInstance().getAllAppointmentsAsVector();
+    std::vector<Appointment> filteredAppointments;
+
+    for (const auto& appt : allAppointments) {
+        // Lấy tên BN/BS từ Singleton
+        QString patientName = "N/A";
+        try {
+            patientName = QString::fromStdString(PatientManager::getInstance().getPatientByID(appt.getPatientID()).getName());
+        } catch (...) {}
+
+        QString doctorName = "N/A";
+        try {
+            doctorName = QString::fromStdString(DoctorManager::getInstance().getDoctorByID(appt.getDoctorID()).getName());
+        } catch (...) {}
+
+        // Tạo list để tìm kiếm
+        QStringList apptDetails;
+        apptDetails << QString::number(appt.getID())
+                    << patientName
+                    << doctorName
+                    << QString::fromStdString(appt.getDate().toString())
+                    << QString::fromStdString(appt.getTime())
+                    << QString::fromStdString(Appointment::statusToString(appt.getStatus()));
+
+        bool match = false;
+        if (searchText.isEmpty()) {
+            match = true;
+        } else {
+            QString lowerSearchText = searchText.toLower();
+            for (const QString& item : apptDetails) {
+                if (item.toLower().contains(lowerSearchText)) {
+                    match = true;
+                    break;
+                }
+            }
+        }
+
+        if (match) {
+            filteredAppointments.push_back(appt);
+        }
+    }
+
+    // Tính toán phân trang
+    int totalItems = filteredAppointments.size();
+    totalAppointmentPages = (totalItems == 0) ? 1 : (totalItems + itemsPerPage - 1) / itemsPerPage;
+
+    if (page < 1) page = 1;
+    if (page > totalAppointmentPages) page = totalAppointmentPages;
+    currentAppointmentPage = page;
+
+    // Đổ dữ liệu vào bảng
+    ui->tableAppointment->setRowCount(0);
+    int startIdx = (currentAppointmentPage - 1) * itemsPerPage;
+    int endIdx = qMin(startIdx + itemsPerPage, totalItems);
+
+    for (int i = startIdx; i < endIdx; ++i) {
+        const Appointment& appt = filteredAppointments.at(i);
+        ui->tableAppointment->insertRow(ui->tableAppointment->rowCount());
+        int rowIdx = ui->tableAppointment->rowCount() - 1;
+
+        // Lấy lại tên để hiển thị
+        QString patientName = "N/A";
+        try {
+            patientName = QString::fromStdString(PatientManager::getInstance().getPatientByID(appt.getPatientID()).getName());
+        } catch (...) {}
+
+        QString doctorName = "N/A";
+        try {
+            doctorName = QString::fromStdString(DoctorManager::getInstance().getDoctorByID(appt.getDoctorID()).getName());
+        } catch (...) {}
+
+        ui->tableAppointment->setItem(rowIdx, 0, new QTableWidgetItem(QString::number(appt.getID())));
+        ui->tableAppointment->setItem(rowIdx, 1, new QTableWidgetItem(patientName));
+        ui->tableAppointment->setItem(rowIdx, 2, new QTableWidgetItem(doctorName));
+        ui->tableAppointment->setItem(rowIdx, 3, new QTableWidgetItem(QString::fromStdString(appt.getDate().toString())));
+        ui->tableAppointment->setItem(rowIdx, 4, new QTableWidgetItem(QString::fromStdString(appt.getTime())));
+        ui->tableAppointment->setItem(rowIdx, 5, new QTableWidgetItem(QString::fromStdString(Appointment::statusToString(appt.getStatus()))));
+    }
+}
+
+void AdminWindow::loadUserData(int page, const QString& searchText) {
+    qDebug() << "Loading user data for page" << page << "with search text:" << searchText;
+
+    // 1. Lấy dữ liệu từ Singleton
+    const auto& allUsers = UserManager::getInstance().getAllUsers();
+    std::vector<User> filteredUsers;
+
+    // 2. Lọc CHỈ theo ID
+    if (searchText.isEmpty()) {
+        for (const auto& pair : allUsers) {
+            filteredUsers.push_back(pair.second);
+        }
+    } else {
+        bool isNumber = false;
+        int searchID = searchText.toInt(&isNumber);
+
+        if (!isNumber) {
+            QMessageBox::warning(this, "Cảnh báo", "Vui lòng nhập ID (số nguyên) để tìm kiếm!");
+            for (const auto& pair : allUsers) {
+                filteredUsers.push_back(pair.second);
+            }
+        } else {
+            for (const auto& pair : allUsers) {
+                if (pair.second.getID() == searchID) {
+                    filteredUsers.push_back(pair.second);
+                }
+            }
+
+            if (filteredUsers.empty()) {
+                QMessageBox::information(this, "Kết quả tìm kiếm",
+                                         QString("Không tìm thấy người dùng có ID: %1").arg(searchID));
+                for (const auto& pair : allUsers) {
+                    filteredUsers.push_back(pair.second);
+                }
+            }
+        }
+    }
+
+    // 3. SẮP XẾP theo mode hiện tại
+    switch (currentUserSortMode) {
+    case UserSortMode::BY_ID_ASC:
+        std::sort(filteredUsers.begin(), filteredUsers.end(),
+                  [](const User& a, const User& b) {
+                      return a.getID() < b.getID();
+                  });
+        qDebug() << "[SORT] Applied: ID Ascending";
+        break;
+
+    case UserSortMode::BY_USERNAME_ASC:
+        std::sort(filteredUsers.begin(), filteredUsers.end(),
+                  [](const User& a, const User& b) {
+                      std::string nameA = Utils::toLower(a.getUsername());
+                      std::string nameB = Utils::toLower(b.getUsername());
+                      return nameA < nameB;
+                  });
+        qDebug() << "[SORT] Applied: Username A-Z";
+        break;
+
+    case UserSortMode::BY_USERNAME_DESC:
+        std::sort(filteredUsers.begin(), filteredUsers.end(),
+                  [](const User& a, const User& b) {
+                      std::string nameA = Utils::toLower(a.getUsername());
+                      std::string nameB = Utils::toLower(b.getUsername());
+                      return nameA > nameB;
+                  });
+        qDebug() << "[SORT] Applied: Username Z-A";
+        break;
+    }
+
+    // 4. Tính toán phân trang
+    int totalItems = filteredUsers.size();
+    totalUserPages = (totalItems == 0) ? 1 : (totalItems + itemsPerPage - 1) / itemsPerPage;
+
+    if (page < 1) page = 1;
+    if (page > totalUserPages) page = totalUserPages;
+    currentUserPage = page;
+
+    qDebug() << "[USER] Total items:" << totalItems
+             << "| Total pages:" << totalUserPages
+             << "| Current page:" << currentUserPage;
+
+    ui->tableUser->setRowCount(0);
+    int startIdx = (currentUserPage - 1) * itemsPerPage;
+    int endIdx = qMin(startIdx + itemsPerPage, totalItems);
+
+    for (int i = startIdx; i < endIdx; ++i) {
+        const User& user = filteredUsers.at(i);
+        ui->tableUser->insertRow(ui->tableUser->rowCount());
+        int row = ui->tableUser->rowCount() - 1;
+
+        QTableWidgetItem* idItem = new QTableWidgetItem(QString::number(user.getID()));
+        idItem->setTextAlignment(Qt::AlignCenter);
+        ui->tableUser->setItem(row, 0, idItem);
+
+        QTableWidgetItem* roleItem = new QTableWidgetItem(QString::fromStdString(User::roleToString(user.getRole())));
+        roleItem->setTextAlignment(Qt::AlignCenter);
+
+        // Tô màu theo vai trò
+        if (user.getRole() == User::Role::ADMIN) {
+            roleItem->setBackground(QBrush(QColor(255, 87, 34, 50))); // Cam
+
+        } else if (user.getRole() == User::Role::ASSISTANT) {
+            roleItem->setBackground(QBrush(QColor(76, 175, 80, 50))); // Xanh lá
+        }
+
+        ui->tableUser->setItem(row, 1, roleItem);
+
+        QTableWidgetItem* usernameItem = new QTableWidgetItem(QString::fromStdString(user.getUsername()));
+        usernameItem->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+        ui->tableUser->setItem(row, 2, usernameItem);
+
+        QTableWidgetItem* passwordItem = new QTableWidgetItem(QString::fromStdString(user.getPassword()));
+        passwordItem->setTextAlignment(Qt::AlignCenter);
+        ui->tableUser->setItem(row, 3, passwordItem);
+
+        QWidget* actionWidget = new QWidget();
+        QHBoxLayout* layout = new QHBoxLayout(actionWidget);
+        layout->setContentsMargins(5, 2, 5, 2);
+        layout->setSpacing(5);
+
+        QPushButton* btnDelete = new QPushButton("Xoá");
+        btnDelete->setProperty("userID", user.getID());
+        btnDelete->setStyleSheet(R"(
+            QPushButton {
+                background-color: #f44336;
+                color: white;
+                border: none;
+                padding: 5px 10px;
+                border-radius: 3px;
+            }
+            QPushButton:hover {
+                background-color: #d32f2f;
+            }
+        )");
+        connect(btnDelete, &QPushButton::clicked, this, &AdminWindow::on_btnRemoveUser_clicked);
+
+        layout->addWidget(btnDelete);
+        actionWidget->setLayout(layout);
+
+        ui->tableUser->setCellWidget(row, 4, actionWidget);
+    }
+
+    updateUserPaginationUI();
+}
+
+void AdminWindow::setupPatientTable() {
+    // ✅ Chỉ còn 7 cột (bỏ Email)
+    ui->tablePatient->setColumnCount(7);
+
+    // ✅ Đặt tên các cột (không có Email)
+    QStringList headers;
+    headers << "ID Bệnh nhân" << "Họ tên" << "Giới tính" << "Ngày sinh"
+            << "Nhóm máu" << "SĐT" << "Tuỳ chọn";
+    ui->tablePatient->setHorizontalHeaderLabels(headers);
+
+    QHeaderView* header = ui->tablePatient->horizontalHeader();
+
+    // Cột 0: ID (Fixed)
+    header->setSectionResizeMode(0, QHeaderView::Fixed);
+    ui->tablePatient->setColumnWidth(0, 100);
+
+    // Cột 1: Họ tên (Stretch)
+    header->setSectionResizeMode(1, QHeaderView::Stretch);
+
+    // Cột 2: Giới tính (Fixed)
+    header->setSectionResizeMode(2, QHeaderView::Fixed);
+    ui->tablePatient->setColumnWidth(2, 80);
+
+    // Cột 3: Ngày sinh (Fixed)
+    header->setSectionResizeMode(3, QHeaderView::Fixed);
+    ui->tablePatient->setColumnWidth(3, 120);
+
+    // Cột 4: Nhóm máu (Fixed)
+    header->setSectionResizeMode(4, QHeaderView::Fixed);
+    ui->tablePatient->setColumnWidth(4, 100);
+
+    // Cột 5: SĐT (Fixed)
+    header->setSectionResizeMode(5, QHeaderView::Fixed);
+    ui->tablePatient->setColumnWidth(5, 120);
+
+    // ✅ Cột 6: Tuỳ chọn (Fixed - đủ cho 2 button)
+    header->setSectionResizeMode(6, QHeaderView::Fixed);
+    ui->tablePatient->setColumnWidth(6, 200);
+
+    // Các thiết lập khác...
+    ui->tablePatient->verticalHeader()->setSectionResizeMode(QHeaderView::Fixed);
+    ui->tablePatient->verticalHeader()->setDefaultSectionSize(75);
+    ui->tablePatient->setSelectionBehavior(QAbstractItemView::SelectRows);
+    ui->tablePatient->setSelectionMode(QAbstractItemView::SingleSelection);
+    ui->tablePatient->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    ui->tablePatient->setAlternatingRowColors(true);
+    ui->tablePatient->verticalHeader()->setVisible(false);
+    header->setDefaultAlignment(Qt::AlignCenter);
+
+    qDebug() << "[TABLE SETUP] Patient table configured successfully (without Email column)";
+}
+
+void AdminWindow::setupDoctorTable() {
+    // ✅ Đặt 9 cột (thêm cột Ngày sinh)
+    ui->tableDoctor->setColumnCount(9);
+
+    // ✅ Đặt tên các cột
+    QStringList headers;
+    headers << "ID Bác sĩ" << "Họ tên" << "Giới tính" << "Ngày sinh"
+            << "Chuyên khoa" << "Email" << "SĐT" << "Trạng thái" << "Tuỳ chọn";
+    ui->tableDoctor->setHorizontalHeaderLabels(headers);
+
+    QHeaderView* header = ui->tableDoctor->horizontalHeader();
+
+    // Cột 0: ID (Fixed)
+    header->setSectionResizeMode(0, QHeaderView::Fixed);
+    ui->tableDoctor->setColumnWidth(0, 80);
+
+    // Cột 1: Họ tên (Stretch)
+    header->setSectionResizeMode(1, QHeaderView::Stretch);
+
+    // Cột 2: Giới tính (Fixed)
+    header->setSectionResizeMode(2, QHeaderView::Fixed);
+    ui->tableDoctor->setColumnWidth(2, 80);
+
+    // Cột 3: Ngày sinh (Fixed)
+    header->setSectionResizeMode(3, QHeaderView::Fixed);
+    ui->tableDoctor->setColumnWidth(3, 120);
+
+    // Cột 4: Chuyên khoa (Stretch)
+    header->setSectionResizeMode(4, QHeaderView::Stretch);
+
+    // Cột 5: Email (Stretch)
+    header->setSectionResizeMode(5, QHeaderView::Stretch);
+
+    // Cột 6: SĐT (Fixed)
+    header->setSectionResizeMode(6, QHeaderView::Fixed);
+    ui->tableDoctor->setColumnWidth(6, 110);
+
+    // Cột 7: Trạng thái (Fixed)
+    header->setSectionResizeMode(7, QHeaderView::Fixed);
+    ui->tableDoctor->setColumnWidth(7, 100);
+
+    // Cột 8: Tuỳ chọn (Fixed)
+    header->setSectionResizeMode(8, QHeaderView::Fixed);
+    ui->tableDoctor->setColumnWidth(8, 200);
+
+    // Các thiết lập khác
+    ui->tableDoctor->verticalHeader()->setSectionResizeMode(QHeaderView::Fixed);
+    ui->tableDoctor->verticalHeader()->setDefaultSectionSize(75);
+    ui->tableDoctor->setSelectionBehavior(QAbstractItemView::SelectRows);
+    ui->tableDoctor->setSelectionMode(QAbstractItemView::SingleSelection);
+    ui->tableDoctor->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    ui->tableDoctor->setAlternatingRowColors(true);
+    ui->tableDoctor->verticalHeader()->setVisible(false);
+    header->setDefaultAlignment(Qt::AlignCenter);
+
+    qDebug() << "[TABLE SETUP] Doctor table configured with Birthday column";
+}
+
+void AdminWindow::setupMedicalRecordTable() {
+    ui->tableMedicalRecord->setColumnCount(8);
+
+    QStringList headers;
+    headers << "ID Hồ Sơ" << "ID Bệnh Nhân" << "Tên Bệnh Nhân"
+            << "ID Bác Sĩ" << "Tên Bác Sĩ" << "Ngày Tạo"
+            << "Chẩn Đoán" << "Tùy Chọn";
+    ui->tableMedicalRecord->setHorizontalHeaderLabels(headers);
+
+    QHeaderView* header = ui->tableMedicalRecord->horizontalHeader();
+
+    // Cột 0: ID Hồ Sơ (Fixed)
+    header->setSectionResizeMode(0, QHeaderView::Fixed);
+    ui->tableMedicalRecord->setColumnWidth(0, 80);
+
+    // Cột 1: ID Bệnh Nhân (Fixed)
+    header->setSectionResizeMode(1, QHeaderView::Fixed);
+    ui->tableMedicalRecord->setColumnWidth(1, 100);
+
+    // Cột 2: Tên Bệnh Nhân (Stretch)
+    header->setSectionResizeMode(2, QHeaderView::Stretch);
+
+    // Cột 3: ID Bác Sĩ (Fixed)
+    header->setSectionResizeMode(3, QHeaderView::Fixed);
+    ui->tableMedicalRecord->setColumnWidth(3, 80);
+
+    // Cột 4: Tên Bác Sĩ (Stretch)
+    header->setSectionResizeMode(4, QHeaderView::Stretch);
+
+    // Cột 5: Ngày Tạo (Fixed)
+    header->setSectionResizeMode(5, QHeaderView::Fixed);
+    ui->tableMedicalRecord->setColumnWidth(5, 120);
+
+    // Cột 6: Chẩn Đoán (Stretch)
+    header->setSectionResizeMode(6, QHeaderView::Stretch);
+
+    // Cột 7: Tùy Chọn (Fixed)
+    header->setSectionResizeMode(7, QHeaderView::Fixed);
+    ui->tableMedicalRecord->setColumnWidth(7, 200);
+
+    ui->tableMedicalRecord->verticalHeader()->setSectionResizeMode(QHeaderView::Fixed);
+    ui->tableMedicalRecord->verticalHeader()->setDefaultSectionSize(75);
+    ui->tableMedicalRecord->setSelectionBehavior(QAbstractItemView::SelectRows);
+    ui->tableMedicalRecord->setSelectionMode(QAbstractItemView::SingleSelection);
+    ui->tableMedicalRecord->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    ui->tableMedicalRecord->setAlternatingRowColors(true);
+    ui->tableMedicalRecord->verticalHeader()->setVisible(false);
+    header->setDefaultAlignment(Qt::AlignCenter);
+
+    qDebug() << "[TABLE SETUP] Medical Record table configured successfully";
+}
+
+void AdminWindow::setupUserTable() {
+    ui->tableUser->setColumnCount(5);
+
+    QStringList headers;
+    headers << "ID" << "Vai trò" << "Tên người dùng" << "Mật khẩu" << "Tuỳ chọn";
+    ui->tableUser->setHorizontalHeaderLabels(headers);
+
+    QHeaderView* header = ui->tableUser->horizontalHeader();
+
+    // Cột 0: ID (Fixed)
+    header->setSectionResizeMode(0, QHeaderView::Fixed);
+    ui->tableUser->setColumnWidth(0, 80);
+
+    // Cột 1: Vai trò (Fixed)
+    header->setSectionResizeMode(1, QHeaderView::Fixed);
+    ui->tableUser->setColumnWidth(1, 150);
+
+    // Cột 2: Tên người dùng (Stretch)
+    header->setSectionResizeMode(2, QHeaderView::Stretch);
+
+    // Cột 3: Mật khẩu (Fixed)
+    header->setSectionResizeMode(3, QHeaderView::Fixed);
+    ui->tableUser->setColumnWidth(3, 150);
+
+    // Cột 4: Tuỳ chọn (Fixed)
+    header->setSectionResizeMode(4, QHeaderView::Fixed);
+    ui->tableUser->setColumnWidth(4, 120);
+
+    ui->tableUser->verticalHeader()->setSectionResizeMode(QHeaderView::Fixed);
+    ui->tableUser->verticalHeader()->setDefaultSectionSize(75);
+    ui->tableUser->setSelectionBehavior(QAbstractItemView::SelectRows);
+    ui->tableUser->setSelectionMode(QAbstractItemView::SingleSelection);
+    ui->tableUser->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    ui->tableUser->setAlternatingRowColors(true);
+    ui->tableUser->verticalHeader()->setVisible(false);
+    header->setDefaultAlignment(Qt::AlignCenter);
+
+    qDebug() << "[TABLE SETUP] User table configured successfully";
+}
+
 void AdminWindow::updatePatientPaginationUI() {
     // Cập nhật label hiển thị trang hiện tại
     ui->lblCurrentPage_Appointment->setText(QString("Trang %1/%2").arg(currentPatientPage).arg(totalPatientPages));
@@ -667,196 +1201,239 @@ void AdminWindow::updatePatientPaginationUI() {
              << "| Buttons:" << startPage << startPage+1 << startPage+2;
 }
 
-void AdminWindow::loadPatientData(int page, const QString& searchText) {
-    qDebug() << "Loading patient data for page" << page << "with search text:" << searchText;
+void AdminWindow::updateDoctorPaginationUI() {
+    // Cập nhật label hiển thị trang hiện tại
+    ui->lblCurrentPage_Doctor->setText(QString("Trang %1/%2").arg(currentDoctorPage).arg(totalDoctorPages));
 
-    // 1. Lấy dữ liệu từ Singleton
-    const auto& allPatients = PatientManager::getInstance().getAllPatientsTable();
-    std::vector<Patient> filteredPatients;
+    // ✅ Cập nhật trạng thái nút Prev/Next
+    ui->btnPrevPage_Doctor->setEnabled(currentDoctorPage > 1);
+    ui->btnNextPage_Doctor->setEnabled(currentDoctorPage < totalDoctorPages);
 
-    // 2. Lọc CHỈ theo ID
-    if (searchText.isEmpty()) {
-        for (const auto& pair : allPatients) {
-            filteredPatients.push_back(pair.second);
+    // ✅ Cập nhật các nút số trang
+    int startPage, endPage;
+
+    if (totalDoctorPages <= 3) {
+        startPage = 1;
+        endPage = totalDoctorPages;
+    } else {
+        startPage = qMax(1, currentDoctorPage - 1);
+        endPage = qMin(totalDoctorPages, currentDoctorPage + 1);
+
+        if (endPage - startPage < 2) {
+            if (currentDoctorPage == 1) {
+                endPage = qMin(3, totalDoctorPages);
+            } else if (currentDoctorPage == totalDoctorPages) {
+                startPage = qMax(1, totalDoctorPages - 2);
+            }
+        }
+    }
+
+    // Nút 1
+    if (startPage <= totalDoctorPages) {
+        ui->btnPage_Doctor_1->setText(QString::number(startPage));
+        ui->btnPage_Doctor_1->setVisible(true);
+        ui->btnPage_Doctor_1->setEnabled(startPage != currentDoctorPage);
+        if (startPage == currentDoctorPage) {
+            ui->btnPage_Doctor_1->setStyleSheet("background-color: #4CAF50; color: white; font-weight: bold;");
+        } else {
+            ui->btnPage_Doctor_1->setStyleSheet("");
         }
     } else {
-        bool isNumber = false;
-        int searchID = searchText.toInt(&isNumber);
+        ui->btnPage_Doctor_1->setVisible(false);
+    }
 
-        if (!isNumber) {
-            QMessageBox::warning(this, "Cảnh báo", "Vui lòng nhập ID (số nguyên) để tìm kiếm!");
-            for (const auto& pair : allPatients) {
-                filteredPatients.push_back(pair.second);
-            }
+    // Nút 2
+    if (startPage + 1 <= totalDoctorPages) {
+        ui->btnPage_Doctor_2->setText(QString::number(startPage + 1));
+        ui->btnPage_Doctor_2->setVisible(true);
+        ui->btnPage_Doctor_2->setEnabled(startPage + 1 != currentDoctorPage);
+        if (startPage + 1 == currentDoctorPage) {
+            ui->btnPage_Doctor_2->setStyleSheet("background-color: #4CAF50; color: white; font-weight: bold;");
         } else {
-            for (const auto& pair : allPatients) {
-                if (pair.second.getID() == searchID) {
-                    filteredPatients.push_back(pair.second);
-                }
-            }
+            ui->btnPage_Doctor_2->setStyleSheet("");
+        }
+    } else {
+        ui->btnPage_Doctor_2->setVisible(false);
+    }
 
-            if (filteredPatients.empty()) {
-                QMessageBox::information(this, "Kết quả tìm kiếm",
-                                         QString("Không tìm thấy bệnh nhân có ID: %1").arg(searchID));
-                for (const auto& pair : allPatients) {
-                    filteredPatients.push_back(pair.second);
-                }
+    // Nút 3
+    if (startPage + 2 <= totalDoctorPages) {
+        ui->btnPage_Doctor_3->setText(QString::number(startPage + 2));
+        ui->btnPage_Doctor_3->setVisible(true);
+        ui->btnPage_Doctor_3->setEnabled(startPage + 2 != currentDoctorPage);
+        if (startPage + 2 == currentDoctorPage) {
+            ui->btnPage_Doctor_3->setStyleSheet("background-color: #4CAF50; color: white; font-weight: bold;");
+        } else {
+            ui->btnPage_Doctor_3->setStyleSheet("");
+        }
+    } else {
+        ui->btnPage_Doctor_3->setVisible(false);
+    }
+
+    qDebug() << "[DOCTOR PAGINATION] Current:" << currentDoctorPage
+             << "| Total:" << totalDoctorPages
+             << "| Buttons:" << startPage << startPage+1 << startPage+2;
+}
+
+void AdminWindow::updateMedicalRecordPaginationUI() {
+    ui->lblCurrentPage_MedicalRecord->setText(QString("Trang %1/%2").arg(currentMedicalRecordPage).arg(totalMedicalRecordPages));
+
+    ui->btnPrevPage_MedicalRecord->setEnabled(currentMedicalRecordPage > 1);
+    ui->btnNextPage_MedicalRecord->setEnabled(currentMedicalRecordPage < totalMedicalRecordPages);
+
+    int startPage, endPage;
+
+    if (totalMedicalRecordPages <= 3) {
+        startPage = 1;
+        endPage = totalMedicalRecordPages;
+    } else {
+        startPage = qMax(1, currentMedicalRecordPage - 1);
+        endPage = qMin(totalMedicalRecordPages, currentMedicalRecordPage + 1);
+
+        if (endPage - startPage < 2) {
+            if (currentMedicalRecordPage == 1) {
+                endPage = qMin(3, totalMedicalRecordPages);
+            } else if (currentMedicalRecordPage == totalMedicalRecordPages) {
+                startPage = qMax(1, totalMedicalRecordPages - 2);
             }
         }
     }
 
-    // 3. SẮP XẾP theo mode hiện tại
-    switch (currentPatientSortMode) {
-    case PatientSortMode::BY_ID_ASC:
-        std::sort(filteredPatients.begin(), filteredPatients.end(),
-                  [](const Patient& a, const Patient& b) {
-                      return a.getID() < b.getID();
-                  });
-        qDebug() << "[SORT] Applied: ID Ascending";
-        break;
-
-    case PatientSortMode::BY_NAME_ASC:
-        std::sort(filteredPatients.begin(), filteredPatients.end(),
-                  [](const Patient& a, const Patient& b) {
-                      std::string nameA = Utils::toLower(a.getName());
-                      std::string nameB = Utils::toLower(b.getName());
-                      return nameA < nameB;
-                  });
-        qDebug() << "[SORT] Applied: Name A-Z";
-        break;
-
-    case PatientSortMode::BY_NAME_DESC:
-        std::sort(filteredPatients.begin(), filteredPatients.end(),
-                  [](const Patient& a, const Patient& b) {
-                      std::string nameA = Utils::toLower(a.getName());
-                      std::string nameB = Utils::toLower(b.getName());
-                      return nameA > nameB;
-                  });
-        qDebug() << "[SORT] Applied: Name Z-A";
-        break;
+    // Nút 1
+    if (startPage <= totalMedicalRecordPages) {
+        ui->btnPage_MedicalRecord_1->setText(QString::number(startPage));
+        ui->btnPage_MedicalRecord_1->setVisible(true);
+        ui->btnPage_MedicalRecord_1->setEnabled(startPage != currentMedicalRecordPage);
+        if (startPage == currentMedicalRecordPage) {
+            ui->btnPage_MedicalRecord_1->setStyleSheet("background-color: #4CAF50; color: white; font-weight: bold;");
+        } else {
+            ui->btnPage_MedicalRecord_1->setStyleSheet("");
+        }
+    } else {
+        ui->btnPage_MedicalRecord_1->setVisible(false);
     }
 
-    // 4. Tính toán phân trang
-    int totalItems = filteredPatients.size();
-    totalPatientPages = (totalItems == 0) ? 1 : (totalItems + itemsPerPage - 1) / itemsPerPage;
-
-    if (page < 1) page = 1;
-    if (page > totalPatientPages) page = totalPatientPages;
-    currentPatientPage = page;
-
-    qDebug() << "[PATIENT] Total items:" << totalItems
-             << "| Total pages:" << totalPatientPages
-             << "| Current page:" << currentPatientPage;
-
-    // 5. Đặt lại bảng và điền dữ liệu
-    ui->tablePatient->setRowCount(0);
-    int startIdx = (currentPatientPage - 1) * itemsPerPage;
-    int endIdx = qMin(startIdx + itemsPerPage, totalItems);
-
-    for (int i = startIdx; i < endIdx; ++i) {
-        const Patient& patient = filteredPatients.at(i);
-        ui->tablePatient->insertRow(ui->tablePatient->rowCount());
-        int row = ui->tablePatient->rowCount() - 1;
-
-        // ✅ Cột 0: ID (căn giữa)
-        QTableWidgetItem* idItem = new QTableWidgetItem(QString::number(patient.getID()));
-        idItem->setTextAlignment(Qt::AlignCenter);
-        ui->tablePatient->setItem(row, 0, idItem);
-
-        // ✅ Cột 1: Họ tên (căn trái)
-        QTableWidgetItem* nameItem = new QTableWidgetItem(QString::fromStdString(patient.getName()));
-        nameItem->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-        ui->tablePatient->setItem(row, 1, nameItem);
-
-        // ✅ Cột 2: Giới tính (căn giữa)
-        QString genderDisplay;
-        char gender = patient.getGender();
-        if (gender == 'M') genderDisplay = "Nam";
-        else if (gender == 'F') genderDisplay = "Nữ";
-        else genderDisplay = "Khác";
-
-        QTableWidgetItem* genderItem = new QTableWidgetItem(genderDisplay);
-        genderItem->setTextAlignment(Qt::AlignCenter);
-        ui->tablePatient->setItem(row, 2, genderItem);
-
-        // ✅ Cột 3: Ngày sinh (căn giữa)
-        QTableWidgetItem* birthdayItem = new QTableWidgetItem(QString::fromStdString(patient.getBirthday().toString()));
-        birthdayItem->setTextAlignment(Qt::AlignCenter);
-        ui->tablePatient->setItem(row, 3, birthdayItem);
-
-        // ✅ Cột 4: Nhóm máu (căn giữa)
-        QTableWidgetItem* bloodTypeItem = new QTableWidgetItem(QString::fromStdString(patient.getBloodType()));
-        bloodTypeItem->setTextAlignment(Qt::AlignCenter);
-        ui->tablePatient->setItem(row, 4, bloodTypeItem);
-
-        // ✅ Cột 5: SĐT (căn giữa)
-        QTableWidgetItem* phoneNumberItem = new QTableWidgetItem(QString::fromStdString(patient.getPhoneNumber()));
-        phoneNumberItem->setTextAlignment(Qt::AlignCenter);
-        ui->tablePatient->setItem(row, 5, phoneNumberItem);
-
-        // ✅ Cột 6: Tuỳ chọn - Thêm 2 nút "Xem chi tiết" và "Xoá"
-        QWidget* actionWidget = new QWidget();
-        QHBoxLayout* layout = new QHBoxLayout(actionWidget);
-        layout->setContentsMargins(5, 2, 5, 2);
-        layout->setSpacing(5);
-
-        // Button "Xem chi tiết"
-        QPushButton* btnViewDetail = new QPushButton("Xem chi tiết");
-        btnViewDetail->setProperty("patientID", patient.getID());
-        btnViewDetail->setStyleSheet(R"(
-            QPushButton {
-                background-color: #2196F3;
-                color: white;
-                border: none;
-                padding: 5px 10px;
-                border-radius: 3px;
-            }
-            QPushButton:hover {
-                background-color: #1976D2;
-            }
-        )");
-        connect(btnViewDetail, &QPushButton::clicked, this, &AdminWindow::on_btnViewPatientDetail_clicked);
-
-        // Button "Xoá"
-        QPushButton* btnDelete = new QPushButton("Xoá");
-        btnDelete->setProperty("patientID", patient.getID());
-        btnDelete->setStyleSheet(R"(
-            QPushButton {
-                background-color: #f44336;
-                color: white;
-                border: none;
-                padding: 5px 10px;
-                border-radius: 3px;
-            }
-            QPushButton:hover {
-                background-color: #d32f2f;
-            }
-        )");
-        connect(btnDelete, &QPushButton::clicked, this, &AdminWindow::on_btnRemovePatient_clicked);
-
-        layout->addWidget(btnViewDetail);
-        layout->addWidget(btnDelete);
-        actionWidget->setLayout(layout);
-
-        ui->tablePatient->setCellWidget(row, 6, actionWidget);
+    // Nút 2
+    if (startPage + 1 <= totalMedicalRecordPages) {
+        ui->btnPage_MedicalRecord_2->setText(QString::number(startPage + 1));
+        ui->btnPage_MedicalRecord_2->setVisible(true);
+        ui->btnPage_MedicalRecord_2->setEnabled(startPage + 1 != currentMedicalRecordPage);
+        if (startPage + 1 == currentMedicalRecordPage) {
+            ui->btnPage_MedicalRecord_2->setStyleSheet("background-color: #4CAF50; color: white; font-weight: bold;");
+        } else {
+            ui->btnPage_MedicalRecord_2->setStyleSheet("");
+        }
+    } else {
+        ui->btnPage_MedicalRecord_2->setVisible(false);
     }
 
-    updatePatientPaginationUI();
+    // Nút 3
+    if (startPage + 2 <= totalMedicalRecordPages) {
+        ui->btnPage_MedicalRecord_3->setText(QString::number(startPage + 2));
+        ui->btnPage_MedicalRecord_3->setVisible(true);
+        ui->btnPage_MedicalRecord_3->setEnabled(startPage + 2 != currentMedicalRecordPage);
+        if (startPage + 2 == currentMedicalRecordPage) {
+            ui->btnPage_MedicalRecord_3->setStyleSheet("background-color: #4CAF50; color: white; font-weight: bold;");
+        } else {
+            ui->btnPage_MedicalRecord_3->setStyleSheet("");
+        }
+    } else {
+        ui->btnPage_MedicalRecord_3->setVisible(false);
+    }
+
+    qDebug() << "[MEDICAL RECORD PAGINATION] Current:" << currentMedicalRecordPage
+             << "| Total:" << totalMedicalRecordPages
+             << "| Buttons:" << startPage << startPage+1 << startPage+2;
 }
 
-void AdminWindow::on_logoutButton_clicked()
-{   
-    Core::saveAll();
-    this->hide();
-    if (parentWidget()) {
-        parentWidget()->show();
+void AdminWindow::updateUserPaginationUI() {
+    ui->lblCurrentPage_User->setText(QString("Trang %1/%2").arg(currentUserPage).arg(totalUserPages));
+
+    ui->pushButton_5->setEnabled(currentUserPage > 1);
+    ui->pushButton_4->setEnabled(currentUserPage < totalUserPages);
+
+    int startPage, endPage;
+
+    if (totalUserPages <= 3) {
+        startPage = 1;
+        endPage = totalUserPages;
+    } else {
+        startPage = qMax(1, currentUserPage - 1);
+        endPage = qMin(totalUserPages, currentUserPage + 1);
+
+        if (endPage - startPage < 2) {
+            if (currentUserPage == 1) {
+                endPage = qMin(3, totalUserPages);
+            } else if (currentUserPage == totalUserPages) {
+                startPage = qMax(1, totalUserPages - 2);
+            }
+        }
     }
+
+    // Nút 1
+    if (startPage <= totalUserPages) {
+        ui->pushButton_3->setText(QString::number(startPage));
+        ui->pushButton_3->setVisible(true);
+        ui->pushButton_3->setEnabled(startPage != currentUserPage);
+        if (startPage == currentUserPage) {
+            ui->pushButton_3->setStyleSheet("background-color: #4CAF50; color: white; font-weight: bold;");
+        } else {
+            ui->pushButton_3->setStyleSheet("");
+        }
+    } else {
+        ui->pushButton_3->setVisible(false);
+    }
+
+    // Nút 2
+    if (startPage + 1 <= totalUserPages) {
+        ui->pushButton_2->setText(QString::number(startPage + 1));
+        ui->pushButton_2->setVisible(true);
+        ui->pushButton_2->setEnabled(startPage + 1 != currentUserPage);
+        if (startPage + 1 == currentUserPage) {
+            ui->pushButton_2->setStyleSheet("background-color: #4CAF50; color: white; font-weight: bold;");
+        } else {
+            ui->pushButton_2->setStyleSheet("");
+        }
+    } else {
+        ui->pushButton_2->setVisible(false);
+    }
+
+    // Nút 3
+    if (startPage + 2 <= totalUserPages) {
+        ui->pushButton->setText(QString::number(startPage + 2));
+        ui->pushButton->setVisible(true);
+        ui->pushButton->setEnabled(startPage + 2 != currentUserPage);
+        if (startPage + 2 == currentUserPage) {
+            ui->pushButton->setStyleSheet("background-color: #4CAF50; color: white; font-weight: bold;");
+        } else {
+            ui->pushButton->setStyleSheet("");
+        }
+    } else {
+        ui->pushButton->setVisible(false);
+    }
+
+    qDebug() << "[USER PAGINATION] Current:" << currentUserPage
+             << "| Total:" << totalUserPages
+             << "| Buttons:" << startPage << startPage+1 << startPage+2;
 }
 
 void AdminWindow::on_appointmentManagerButton_clicked()
 {
     ui->mainStack->setCurrentWidget(ui->page_appointment);
     loadAppointmentData(1, "");
+}
+
+void AdminWindow::on_patientManagerButton_clicked()
+{
+    ui->mainStack->setCurrentWidget(ui->page_patient);
+
+    currentPatientSortMode = PatientSortMode::BY_ID_ASC;
+    ui->btnSortAZPatient->setStyleSheet("");
+    ui->btnSortZAPatient->setStyleSheet("");
+    ui->txtSearchPatient->clear();
+    loadPatientData(1, "");
+
+    qDebug() << "[INFO] Switched to Patient Manager, sorted by ID ascending";
 }
 
 void AdminWindow::on_doctorManagerButton_clicked()
@@ -875,19 +1452,6 @@ void AdminWindow::on_doctorManagerButton_clicked()
     qDebug() << "[INFO] Switched to Doctor Manager, sorted by ID ascending";
 }
 
-void AdminWindow::on_patientManagerButton_clicked()
-{
-    ui->mainStack->setCurrentWidget(ui->page_patient);
-
-    currentPatientSortMode = PatientSortMode::BY_ID_ASC;
-    ui->btnSortAZPatient->setStyleSheet("");
-    ui->btnSortZAPatient->setStyleSheet("");
-    ui->txtSearchPatient->clear();
-    loadPatientData(1, "");
-
-    qDebug() << "[INFO] Switched to Patient Manager, sorted by ID ascending";
-}
-
 void AdminWindow::on_userManagerButton_clicked()
 {
     ui->mainStack->setCurrentWidget(ui->page_user);
@@ -897,7 +1461,6 @@ void AdminWindow::on_userManagerButton_clicked()
     ui->btnSortZAUser->setStyleSheet("");
     ui->txtSearchUser->clear();
 
-    // Gọi setupUserTable() trước khi load data
     setupUserTable();
 
     loadUserData(1, "");
@@ -916,6 +1479,15 @@ void AdminWindow::on_medicalRecordButton_clicked()
 
     setupMedicalRecordTable();
     loadMedicalRecordData(1, "");
+}
+
+void AdminWindow::on_logoutButton_clicked()
+{
+    Core::saveAll();
+    this->hide();
+    if (parentWidget()) {
+        parentWidget()->show();
+    }
 }
 
 void AdminWindow::on_btnAddAppointment_clicked()
@@ -970,50 +1542,6 @@ void AdminWindow::on_btnRemoveAppointment_clicked() {
 
 void AdminWindow::on_btnEditAppointment_clicked() {
     QMessageBox::information(this, "Thông báo", "Chức năng Sửa Lịch Hẹn chưa được triển khai.");
-}
-
-void AdminWindow::on_btnViewPatientDetail_clicked() {
-    QPushButton* btn = qobject_cast<QPushButton*>(sender());
-    if (!btn) return;
-
-    int patientID = btn->property("patientID").toInt();
-    qDebug() << "[VIEW DETAIL] Patient ID:" << patientID;
-
-    try {
-        const Patient& patient = PatientManager::getInstance().getPatientByID(patientID);
-
-        QString details = QString(
-                              "=== THÔNG TIN BỆNH NHÂN ===\n\n"
-                              "ID: %1\n"
-                              "Họ tên: %2\n"
-                              "Giới tính: %3\n"
-                              "Ngày sinh: %4\n"
-                              "Nhóm máu: %5\n"
-                              "Số điện thoại: %6\n"
-                              "Mẹ: %7\n"
-                              "Cha: %8\n"
-                              ).arg(patient.getID())
-                              .arg(QString::fromStdString(patient.getName()))
-                              .arg(QString(patient.getGender()))
-                              .arg(QString::fromStdString(patient.getBirthday().toString()))
-                              .arg(QString::fromStdString(patient.getBloodType()))
-                              .arg(QString::fromStdString(patient.getPhoneNumber()))
-                              .arg(QString::fromStdString(patient.getNameMother()))
-                              .arg(QString::fromStdString(patient.getNameFather()));
-
-        if (!patient.getAllergies().empty()) {
-            details += "\nDị ứng: " + QString::fromStdString(Utils::join(patient.getAllergies(), ", "));
-        }
-
-        if (!patient.getChronicDiseases().empty()) {
-            details += "\nBệnh nền: " + QString::fromStdString(Utils::join(patient.getChronicDiseases(), ", "));
-        }
-
-        QMessageBox::information(this, "Chi tiết Bệnh nhân", details);
-
-    } catch (const std::exception& e) {
-        QMessageBox::critical(this, "Lỗi", QString("Không thể xem chi tiết: %1").arg(e.what()));
-    }
 }
 
 void AdminWindow::on_btnNextPage_Appointment_clicked()
@@ -1110,6 +1638,50 @@ void AdminWindow::on_btnEditPatient_clicked() {
         }
     } catch (const std::exception& e) {
         QMessageBox::critical(this, "Lỗi Chỉnh Sửa", QString::fromStdString(e.what()));
+    }
+}
+
+void AdminWindow::on_btnViewPatientDetail_clicked() {
+    QPushButton* btn = qobject_cast<QPushButton*>(sender());
+    if (!btn) return;
+
+    int patientID = btn->property("patientID").toInt();
+    qDebug() << "[VIEW DETAIL] Patient ID:" << patientID;
+
+    try {
+        const Patient& patient = PatientManager::getInstance().getPatientByID(patientID);
+
+        QString details = QString(
+                              "=== THÔNG TIN BỆNH NHÂN ===\n\n"
+                              "ID: %1\n"
+                              "Họ tên: %2\n"
+                              "Giới tính: %3\n"
+                              "Ngày sinh: %4\n"
+                              "Nhóm máu: %5\n"
+                              "Số điện thoại: %6\n"
+                              "Mẹ: %7\n"
+                              "Cha: %8\n"
+                              ).arg(patient.getID())
+                              .arg(QString::fromStdString(patient.getName()))
+                              .arg(QString(patient.getGender()))
+                              .arg(QString::fromStdString(patient.getBirthday().toString()))
+                              .arg(QString::fromStdString(patient.getBloodType()))
+                              .arg(QString::fromStdString(patient.getPhoneNumber()))
+                              .arg(QString::fromStdString(patient.getNameMother()))
+                              .arg(QString::fromStdString(patient.getNameFather()));
+
+        if (!patient.getAllergies().empty()) {
+            details += "\nDị ứng: " + QString::fromStdString(Utils::join(patient.getAllergies(), ", "));
+        }
+
+        if (!patient.getChronicDiseases().empty()) {
+            details += "\nBệnh nền: " + QString::fromStdString(Utils::join(patient.getChronicDiseases(), ", "));
+        }
+
+        QMessageBox::information(this, "Chi tiết Bệnh nhân", details);
+
+    } catch (const std::exception& e) {
+        QMessageBox::critical(this, "Lỗi", QString("Không thể xem chi tiết: %1").arg(e.what()));
     }
 }
 
@@ -1403,734 +1975,6 @@ void AdminWindow::on_btnSortZADoctor_clicked() {
     loadDoctorData(currentDoctorPage, ui->txtSearchDoctor->text().trimmed());
 }
 
-void AdminWindow::setupUserTable() {
-    ui->tableUser->setColumnCount(5);
-
-    QStringList headers;
-    headers << "ID" << "Vai trò" << "Tên người dùng" << "Mật khẩu" << "Tuỳ chọn";
-    ui->tableUser->setHorizontalHeaderLabels(headers);
-
-    QHeaderView* header = ui->tableUser->horizontalHeader();
-
-    // Cột 0: ID (Fixed)
-    header->setSectionResizeMode(0, QHeaderView::Fixed);
-    ui->tableUser->setColumnWidth(0, 80);
-
-    // Cột 1: Vai trò (Fixed)
-    header->setSectionResizeMode(1, QHeaderView::Fixed);
-    ui->tableUser->setColumnWidth(1, 150);
-
-    // Cột 2: Tên người dùng (Stretch)
-    header->setSectionResizeMode(2, QHeaderView::Stretch);
-
-    // Cột 3: Mật khẩu (Fixed)
-    header->setSectionResizeMode(3, QHeaderView::Fixed);
-    ui->tableUser->setColumnWidth(3, 150);
-
-    // Cột 4: Tuỳ chọn (Fixed)
-    header->setSectionResizeMode(4, QHeaderView::Fixed);
-    ui->tableUser->setColumnWidth(4, 120);
-
-    ui->tableUser->verticalHeader()->setSectionResizeMode(QHeaderView::Fixed);
-    ui->tableUser->verticalHeader()->setDefaultSectionSize(75);
-    ui->tableUser->setSelectionBehavior(QAbstractItemView::SelectRows);
-    ui->tableUser->setSelectionMode(QAbstractItemView::SingleSelection);
-    ui->tableUser->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    ui->tableUser->setAlternatingRowColors(true);
-    ui->tableUser->verticalHeader()->setVisible(false);
-    header->setDefaultAlignment(Qt::AlignCenter);
-
-    qDebug() << "[TABLE SETUP] User table configured successfully";
-}
-
-void AdminWindow::updateUserPaginationUI() {
-    ui->lblCurrentPage_User->setText(QString("Trang %1/%2").arg(currentUserPage).arg(totalUserPages));
-
-    ui->pushButton_5->setEnabled(currentUserPage > 1);
-    ui->pushButton_4->setEnabled(currentUserPage < totalUserPages);
-
-    int startPage, endPage;
-
-    if (totalUserPages <= 3) {
-        startPage = 1;
-        endPage = totalUserPages;
-    } else {
-        startPage = qMax(1, currentUserPage - 1);
-        endPage = qMin(totalUserPages, currentUserPage + 1);
-
-        if (endPage - startPage < 2) {
-            if (currentUserPage == 1) {
-                endPage = qMin(3, totalUserPages);
-            } else if (currentUserPage == totalUserPages) {
-                startPage = qMax(1, totalUserPages - 2);
-            }
-        }
-    }
-
-    // Nút 1
-    if (startPage <= totalUserPages) {
-        ui->pushButton_3->setText(QString::number(startPage));
-        ui->pushButton_3->setVisible(true);
-        ui->pushButton_3->setEnabled(startPage != currentUserPage);
-        if (startPage == currentUserPage) {
-            ui->pushButton_3->setStyleSheet("background-color: #4CAF50; color: white; font-weight: bold;");
-        } else {
-            ui->pushButton_3->setStyleSheet("");
-        }
-    } else {
-        ui->pushButton_3->setVisible(false);
-    }
-
-    // Nút 2
-    if (startPage + 1 <= totalUserPages) {
-        ui->pushButton_2->setText(QString::number(startPage + 1));
-        ui->pushButton_2->setVisible(true);
-        ui->pushButton_2->setEnabled(startPage + 1 != currentUserPage);
-        if (startPage + 1 == currentUserPage) {
-            ui->pushButton_2->setStyleSheet("background-color: #4CAF50; color: white; font-weight: bold;");
-        } else {
-            ui->pushButton_2->setStyleSheet("");
-        }
-    } else {
-        ui->pushButton_2->setVisible(false);
-    }
-
-    // Nút 3
-    if (startPage + 2 <= totalUserPages) {
-        ui->pushButton->setText(QString::number(startPage + 2));
-        ui->pushButton->setVisible(true);
-        ui->pushButton->setEnabled(startPage + 2 != currentUserPage);
-        if (startPage + 2 == currentUserPage) {
-            ui->pushButton->setStyleSheet("background-color: #4CAF50; color: white; font-weight: bold;");
-        } else {
-            ui->pushButton->setStyleSheet("");
-        }
-    } else {
-        ui->pushButton->setVisible(false);
-    }
-
-    qDebug() << "[USER PAGINATION] Current:" << currentUserPage
-             << "| Total:" << totalUserPages
-             << "| Buttons:" << startPage << startPage+1 << startPage+2;
-}
-
-void AdminWindow::loadUserData(int page, const QString& searchText) {
-    qDebug() << "Loading user data for page" << page << "with search text:" << searchText;
-
-    // 1. Lấy dữ liệu từ Singleton
-    const auto& allUsers = UserManager::getInstance().getAllUsers();
-    std::vector<User> filteredUsers;
-
-    // 2. Lọc CHỈ theo ID
-    if (searchText.isEmpty()) {
-        for (const auto& pair : allUsers) {
-            filteredUsers.push_back(pair.second);
-        }
-    } else {
-        bool isNumber = false;
-        int searchID = searchText.toInt(&isNumber);
-
-        if (!isNumber) {
-            QMessageBox::warning(this, "Cảnh báo", "Vui lòng nhập ID (số nguyên) để tìm kiếm!");
-            for (const auto& pair : allUsers) {
-                filteredUsers.push_back(pair.second);
-            }
-        } else {
-            for (const auto& pair : allUsers) {
-                if (pair.second.getID() == searchID) {
-                    filteredUsers.push_back(pair.second);
-                }
-            }
-
-            if (filteredUsers.empty()) {
-                QMessageBox::information(this, "Kết quả tìm kiếm",
-                                         QString("Không tìm thấy người dùng có ID: %1").arg(searchID));
-                for (const auto& pair : allUsers) {
-                    filteredUsers.push_back(pair.second);
-                }
-            }
-        }
-    }
-
-    // 3. SẮP XẾP theo mode hiện tại
-    switch (currentUserSortMode) {
-    case UserSortMode::BY_ID_ASC:
-        std::sort(filteredUsers.begin(), filteredUsers.end(),
-                  [](const User& a, const User& b) {
-                      return a.getID() < b.getID();
-                  });
-        qDebug() << "[SORT] Applied: ID Ascending";
-        break;
-
-    case UserSortMode::BY_USERNAME_ASC:
-        std::sort(filteredUsers.begin(), filteredUsers.end(),
-                  [](const User& a, const User& b) {
-                      std::string nameA = Utils::toLower(a.getUsername());
-                      std::string nameB = Utils::toLower(b.getUsername());
-                      return nameA < nameB;
-                  });
-        qDebug() << "[SORT] Applied: Username A-Z";
-        break;
-
-    case UserSortMode::BY_USERNAME_DESC:
-        std::sort(filteredUsers.begin(), filteredUsers.end(),
-                  [](const User& a, const User& b) {
-                      std::string nameA = Utils::toLower(a.getUsername());
-                      std::string nameB = Utils::toLower(b.getUsername());
-                      return nameA > nameB;
-                  });
-        qDebug() << "[SORT] Applied: Username Z-A";
-        break;
-    }
-
-    // 4. Tính toán phân trang
-    int totalItems = filteredUsers.size();
-    totalUserPages = (totalItems == 0) ? 1 : (totalItems + itemsPerPage - 1) / itemsPerPage;
-
-    if (page < 1) page = 1;
-    if (page > totalUserPages) page = totalUserPages;
-    currentUserPage = page;
-
-    qDebug() << "[USER] Total items:" << totalItems
-             << "| Total pages:" << totalUserPages
-             << "| Current page:" << currentUserPage;
-
-    ui->tableUser->setRowCount(0);
-    int startIdx = (currentUserPage - 1) * itemsPerPage;
-    int endIdx = qMin(startIdx + itemsPerPage, totalItems);
-
-    for (int i = startIdx; i < endIdx; ++i) {
-        const User& user = filteredUsers.at(i);
-        ui->tableUser->insertRow(ui->tableUser->rowCount());
-        int row = ui->tableUser->rowCount() - 1;
-
-        QTableWidgetItem* idItem = new QTableWidgetItem(QString::number(user.getID()));
-        idItem->setTextAlignment(Qt::AlignCenter);
-        ui->tableUser->setItem(row, 0, idItem);
-
-        QTableWidgetItem* roleItem = new QTableWidgetItem(QString::fromStdString(User::roleToString(user.getRole())));
-        roleItem->setTextAlignment(Qt::AlignCenter);
-
-        // Tô màu theo vai trò
-        if (user.getRole() == User::Role::ADMIN) {
-            roleItem->setBackground(QBrush(QColor(255, 87, 34, 50))); // Cam
- 
-        } else if (user.getRole() == User::Role::ASSISTANT) {
-            roleItem->setBackground(QBrush(QColor(76, 175, 80, 50))); // Xanh lá
-        }
-
-        ui->tableUser->setItem(row, 1, roleItem);
-
-        QTableWidgetItem* usernameItem = new QTableWidgetItem(QString::fromStdString(user.getUsername()));
-        usernameItem->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-        ui->tableUser->setItem(row, 2, usernameItem);
-
-        QTableWidgetItem* passwordItem = new QTableWidgetItem(QString::fromStdString(user.getPassword()));
-        passwordItem->setTextAlignment(Qt::AlignCenter);
-        ui->tableUser->setItem(row, 3, passwordItem);
-
-        QWidget* actionWidget = new QWidget();
-        QHBoxLayout* layout = new QHBoxLayout(actionWidget);
-        layout->setContentsMargins(5, 2, 5, 2);
-        layout->setSpacing(5);
-
-        QPushButton* btnDelete = new QPushButton("Xoá");
-        btnDelete->setProperty("userID", user.getID());
-        btnDelete->setStyleSheet(R"(
-            QPushButton {
-                background-color: #f44336;
-                color: white;
-                border: none;
-                padding: 5px 10px;
-                border-radius: 3px;
-            }
-            QPushButton:hover {
-                background-color: #d32f2f;
-            }
-        )");
-        connect(btnDelete, &QPushButton::clicked, this, &AdminWindow::on_btnRemoveUser_clicked);
-
-        layout->addWidget(btnDelete);
-        actionWidget->setLayout(layout);
-
-        ui->tableUser->setCellWidget(row, 4, actionWidget);
-    }
-
-    updateUserPaginationUI();
-}
-void AdminWindow::on_btnAddUser_clicked() {
-    qDebug() << "Dialog add user opened";
-    AddEditUserDialog dialog(this);
-    dialog.setDialogTitle("Thêm Người Dùng Mới");
-
-    if (dialog.exec() == QDialog::Accepted) {
-        try {
-            qDebug() << "Dialog accepted, getting data...";
-            User newUser = dialog.getUserData();
-
-            qDebug() << "User data retrieved, ID:" << newUser.getID();
-
-            UserManager::getInstance().addUser(newUser);
-
-            QMessageBox::information(this, "Thành công",
-                                     QString("Đã thêm người dùng mới với ID: %1\nFile đã được lưu tại: %2")
-                                         .arg(newUser.getID())
-                                         .arg(Config::USER_PATH));
-
-            loadUserData(currentUserPage, ui->txtSearchUser->text().trimmed());
-
-        } catch (const std::exception& e) {
-            QMessageBox::critical(this, "Lỗi Thêm Người Dùng",
-                                  QString("Không thể thêm: %1").arg(e.what()));
-            qDebug() << "Error adding user: " << e.what();
-        }
-    }
-}
-void AdminWindow::on_btnRemoveUser_clicked() {
-    QPushButton* btn = qobject_cast<QPushButton*>(sender());
-    int userID = 0;
-
-    if (btn) {
-        userID = btn->property("userID").toInt();
-    } else {
-        QMessageBox::warning(this, "Cảnh báo", "Vui lòng chọn một người dùng để xoá.");
-        return;
-    }
-
-    QMessageBox::StandardButton reply;
-    reply = QMessageBox::question(this, "Xác nhận xoá",
-                                  "Bạn có chắc chắn muốn xoá người dùng ID: " + QString::number(userID) + " không?",
-                                  QMessageBox::Yes|QMessageBox::No);
-    if (reply == QMessageBox::Yes) {
-        try {
-            UserManager::getInstance().removeUser(userID);
-            QMessageBox::information(this, "Thành công", "Đã xoá người dùng ID: " + QString::number(userID));
-
-            loadUserData(currentUserPage, ui->txtSearchUser->text().trimmed());
-        } catch (const std::exception& e) {
-            QMessageBox::critical(this, "Lỗi Xoá Người Dùng", QString::fromStdString(e.what()));
-        }
-    }
-}
-
-void AdminWindow::on_btnSearchUser_clicked() {
-    qDebug() << "page_user: TÌM KIẾM clicked.";
-
-    QString searchText = ui->txtSearchUser->text().trimmed();
-    currentUserPage = 1;
-    loadUserData(currentUserPage, searchText);
-}
-void AdminWindow::on_btnViewUserDetail_clicked() {
-    QPushButton* btn = qobject_cast<QPushButton*>(sender());
-    if (!btn) return;
-
-    int userID = btn->property("userID").toInt();
-    qDebug() << "[VIEW DETAIL] User ID:" << userID;
-
-    try {
-        const User& user = UserManager::getInstance().getUserByID(userID);
-
-        QString details = QString(
-                              "=== THÔNG TIN NGƯỜI DÙNG ===\n\n"
-                              "ID: %1\n"
-                              "Vai trò: %2\n"
-                              "Tên người dùng: %3\n"
-                              ).arg(user.getID())
-                              .arg(QString::fromStdString(User::roleToString(user.getRole())))
-                              .arg(QString::fromStdString(user.getUsername()));
-
-        QMessageBox::information(this, "Chi tiết Người dùng", details);
-
-    } catch (const std::exception& e) {
-        QMessageBox::critical(this, "Lỗi", QString("Không thể xem chi tiết: %1").arg(e.what()));
-    }
-}
-
-void AdminWindow::on_btnSortAZUser_clicked() {
-    qDebug() << "[SORT] Button A-Z clicked";
-
-    currentUserSortMode = UserSortMode::BY_USERNAME_ASC;
-
-    ui->btnSortAZUser->setStyleSheet("background-color: #4CAF50; color: white; font-weight: bold;");
-    ui->btnSortZAUser->setStyleSheet("");
-
-    loadUserData(currentUserPage, ui->txtSearchUser->text().trimmed());
-}
-
-void AdminWindow::on_btnSortZAUser_clicked() {
-    qDebug() << "[SORT] Button Z-A clicked";
-
-    currentUserSortMode = UserSortMode::BY_USERNAME_DESC;
-
-    ui->btnSortZAUser->setStyleSheet("background-color: #4CAF50; color: white; font-weight: bold;");
-    ui->btnSortAZUser->setStyleSheet("");
-
-    loadUserData(currentUserPage, ui->txtSearchUser->text().trimmed());
-}
-
-void AdminWindow::on_btnPrevPage_User_clicked()
-{
-    if (currentUserPage > 1) {
-        currentUserPage--;
-        loadUserData(currentUserPage, ui->txtSearchUser->text().trimmed());
-    }
-}
-
-void AdminWindow::on_btnNextPage_User_clicked()
-{
-    if (currentUserPage < totalUserPages) {
-        currentUserPage++;
-        loadUserData(currentUserPage, ui->txtSearchUser->text().trimmed());
-    }
-}
-
-void AdminWindow::on_btnPage_User_1_clicked()
-{
-    int pageNum = ui->pushButton_3->text().toInt();
-    if (pageNum > 0 && pageNum <= totalUserPages) {
-        currentUserPage = pageNum;
-        loadUserData(currentUserPage, ui->txtSearchUser->text().trimmed());
-    }
-}
-
-void AdminWindow::on_btnPage_User_2_clicked()
-{
-    int pageNum = ui->pushButton_2->text().toInt();
-    if (pageNum > 0 && pageNum <= totalUserPages) {
-        currentUserPage = pageNum;
-        loadUserData(currentUserPage, ui->txtSearchUser->text().trimmed());
-    }
-}
-
-void AdminWindow::on_btnPage_User_3_clicked()
-{
-    int pageNum = ui->pushButton->text().toInt();
-    if (pageNum > 0 && pageNum <= totalUserPages) {
-        currentUserPage = pageNum;
-        loadUserData(currentUserPage, ui->txtSearchUser->text().trimmed());
-    }
-}
-
-// ============== MEDICAL RECORD FUNCTIONS ==============
-
-void AdminWindow::setupMedicalRecordTable() {
-    ui->tableMedicalRecord->setColumnCount(8);
-
-    QStringList headers;
-    headers << "ID Hồ Sơ" << "ID Bệnh Nhân" << "Tên Bệnh Nhân"
-            << "ID Bác Sĩ" << "Tên Bác Sĩ" << "Ngày Tạo"
-            << "Chẩn Đoán" << "Tùy Chọn";
-    ui->tableMedicalRecord->setHorizontalHeaderLabels(headers);
-
-    QHeaderView* header = ui->tableMedicalRecord->horizontalHeader();
-
-    // Cột 0: ID Hồ Sơ (Fixed)
-    header->setSectionResizeMode(0, QHeaderView::Fixed);
-    ui->tableMedicalRecord->setColumnWidth(0, 80);
-
-    // Cột 1: ID Bệnh Nhân (Fixed)
-    header->setSectionResizeMode(1, QHeaderView::Fixed);
-    ui->tableMedicalRecord->setColumnWidth(1, 100);
-
-    // Cột 2: Tên Bệnh Nhân (Stretch)
-    header->setSectionResizeMode(2, QHeaderView::Stretch);
-
-    // Cột 3: ID Bác Sĩ (Fixed)
-    header->setSectionResizeMode(3, QHeaderView::Fixed);
-    ui->tableMedicalRecord->setColumnWidth(3, 80);
-
-    // Cột 4: Tên Bác Sĩ (Stretch)
-    header->setSectionResizeMode(4, QHeaderView::Stretch);
-
-    // Cột 5: Ngày Tạo (Fixed)
-    header->setSectionResizeMode(5, QHeaderView::Fixed);
-    ui->tableMedicalRecord->setColumnWidth(5, 120);
-
-    // Cột 6: Chẩn Đoán (Stretch)
-    header->setSectionResizeMode(6, QHeaderView::Stretch);
-
-    // Cột 7: Tùy Chọn (Fixed)
-    header->setSectionResizeMode(7, QHeaderView::Fixed);
-    ui->tableMedicalRecord->setColumnWidth(7, 200);
-
-    ui->tableMedicalRecord->verticalHeader()->setSectionResizeMode(QHeaderView::Fixed);
-    ui->tableMedicalRecord->verticalHeader()->setDefaultSectionSize(75);
-    ui->tableMedicalRecord->setSelectionBehavior(QAbstractItemView::SelectRows);
-    ui->tableMedicalRecord->setSelectionMode(QAbstractItemView::SingleSelection);
-    ui->tableMedicalRecord->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    ui->tableMedicalRecord->setAlternatingRowColors(true);
-    ui->tableMedicalRecord->verticalHeader()->setVisible(false);
-    header->setDefaultAlignment(Qt::AlignCenter);
-
-    qDebug() << "[TABLE SETUP] Medical Record table configured successfully";
-}
-
-void AdminWindow::updateMedicalRecordPaginationUI() {
-    ui->lblCurrentPage_MedicalRecord->setText(QString("Trang %1/%2").arg(currentMedicalRecordPage).arg(totalMedicalRecordPages));
-
-    ui->btnPrevPage_MedicalRecord->setEnabled(currentMedicalRecordPage > 1);
-    ui->btnNextPage_MedicalRecord->setEnabled(currentMedicalRecordPage < totalMedicalRecordPages);
-
-    int startPage, endPage;
-
-    if (totalMedicalRecordPages <= 3) {
-        startPage = 1;
-        endPage = totalMedicalRecordPages;
-    } else {
-        startPage = qMax(1, currentMedicalRecordPage - 1);
-        endPage = qMin(totalMedicalRecordPages, currentMedicalRecordPage + 1);
-
-        if (endPage - startPage < 2) {
-            if (currentMedicalRecordPage == 1) {
-                endPage = qMin(3, totalMedicalRecordPages);
-            } else if (currentMedicalRecordPage == totalMedicalRecordPages) {
-                startPage = qMax(1, totalMedicalRecordPages - 2);
-            }
-        }
-    }
-
-    // Nút 1
-    if (startPage <= totalMedicalRecordPages) {
-        ui->btnPage_MedicalRecord_1->setText(QString::number(startPage));
-        ui->btnPage_MedicalRecord_1->setVisible(true);
-        ui->btnPage_MedicalRecord_1->setEnabled(startPage != currentMedicalRecordPage);
-        if (startPage == currentMedicalRecordPage) {
-            ui->btnPage_MedicalRecord_1->setStyleSheet("background-color: #4CAF50; color: white; font-weight: bold;");
-        } else {
-            ui->btnPage_MedicalRecord_1->setStyleSheet("");
-        }
-    } else {
-        ui->btnPage_MedicalRecord_1->setVisible(false);
-    }
-
-    // Nút 2
-    if (startPage + 1 <= totalMedicalRecordPages) {
-        ui->btnPage_MedicalRecord_2->setText(QString::number(startPage + 1));
-        ui->btnPage_MedicalRecord_2->setVisible(true);
-        ui->btnPage_MedicalRecord_2->setEnabled(startPage + 1 != currentMedicalRecordPage);
-        if (startPage + 1 == currentMedicalRecordPage) {
-            ui->btnPage_MedicalRecord_2->setStyleSheet("background-color: #4CAF50; color: white; font-weight: bold;");
-        } else {
-            ui->btnPage_MedicalRecord_2->setStyleSheet("");
-        }
-    } else {
-        ui->btnPage_MedicalRecord_2->setVisible(false);
-    }
-
-    // Nút 3
-    if (startPage + 2 <= totalMedicalRecordPages) {
-        ui->btnPage_MedicalRecord_3->setText(QString::number(startPage + 2));
-        ui->btnPage_MedicalRecord_3->setVisible(true);
-        ui->btnPage_MedicalRecord_3->setEnabled(startPage + 2 != currentMedicalRecordPage);
-        if (startPage + 2 == currentMedicalRecordPage) {
-            ui->btnPage_MedicalRecord_3->setStyleSheet("background-color: #4CAF50; color: white; font-weight: bold;");
-        } else {
-            ui->btnPage_MedicalRecord_3->setStyleSheet("");
-        }
-    } else {
-        ui->btnPage_MedicalRecord_3->setVisible(false);
-    }
-
-    qDebug() << "[MEDICAL RECORD PAGINATION] Current:" << currentMedicalRecordPage
-             << "| Total:" << totalMedicalRecordPages
-             << "| Buttons:" << startPage << startPage+1 << startPage+2;
-}
-
-void AdminWindow::loadMedicalRecordData(int page, const QString& searchText) {
-    qDebug() << "Loading medical record data for page" << page << "with search text:" << searchText;
-
-    // 1. Lấy dữ liệu từ Singleton
-    const auto& allRecords = MedicalRecordManager::getInstance().getAllMedicalRecords();
-    std::vector<MedicalRecord> filteredRecords;
-
-    // 2. Lọc CHỈ theo ID
-    if (searchText.isEmpty()) {
-        for (const auto& pair : allRecords) {
-            filteredRecords.push_back(pair.second);
-        }
-    } else {
-        bool isNumber = false;
-        int searchID = searchText.toInt(&isNumber);
-
-        if (!isNumber) {
-            QMessageBox::warning(this, "Cảnh báo", "Vui lòng nhập ID (số nguyên) để tìm kiếm!");
-            for (const auto& pair : allRecords) {
-                filteredRecords.push_back(pair.second);
-            }
-        } else {
-            for (const auto& pair : allRecords) {
-                if (pair.second.getID() == searchID) {
-                    filteredRecords.push_back(pair.second);
-                }
-            }
-
-            if (filteredRecords.empty()) {
-                QMessageBox::information(this, "Kết quả tìm kiếm",
-                                         QString("Không tìm thấy hồ sơ bệnh án có ID: %1").arg(searchID));
-                for (const auto& pair : allRecords) {
-                    filteredRecords.push_back(pair.second);
-                }
-            }
-        }
-    }
-
-    // 3. SẮP XẾP theo mode hiện tại
-    switch (currentMedicalRecordSortMode) {
-    case MedicalRecordSortMode::BY_ID_ASC:
-        std::sort(filteredRecords.begin(), filteredRecords.end(),
-                  [](const MedicalRecord& a, const MedicalRecord& b) {
-                      return a.getID() < b.getID();
-                  });
-        qDebug() << "[SORT] Applied: ID Ascending";
-        break;
-
-    case MedicalRecordSortMode::BY_PATIENT_NAME_ASC:
-        std::sort(filteredRecords.begin(), filteredRecords.end(),
-                  [](const MedicalRecord& a, const MedicalRecord& b) {
-                      try {
-                          std::string nameA = Utils::toLower(PatientManager::getInstance().getPatientByID(a.getPatientID()).getName());
-                          std::string nameB = Utils::toLower(PatientManager::getInstance().getPatientByID(b.getPatientID()).getName());
-                          return nameA < nameB;
-                      } catch (...) {
-                          return a.getID() < b.getID();
-                      }
-                  });
-        qDebug() << "[SORT] Applied: Patient Name A-Z";
-        break;
-
-    case MedicalRecordSortMode::BY_PATIENT_NAME_DESC:
-        std::sort(filteredRecords.begin(), filteredRecords.end(),
-                  [](const MedicalRecord& a, const MedicalRecord& b) {
-                      try {
-                          std::string nameA = Utils::toLower(PatientManager::getInstance().getPatientByID(a.getPatientID()).getName());
-                          std::string nameB = Utils::toLower(PatientManager::getInstance().getPatientByID(b.getPatientID()).getName());
-                          return nameA > nameB;
-                      } catch (...) {
-                          return a.getID() < b.getID();
-                      }
-                  });
-        qDebug() << "[SORT] Applied: Patient Name Z-A";
-        break;
-    }
-
-    // 4. Tính toán phân trang
-    int totalItems = filteredRecords.size();
-    totalMedicalRecordPages = (totalItems == 0) ? 1 : (totalItems + itemsPerPage - 1) / itemsPerPage;
-
-    if (page < 1) page = 1;
-    if (page > totalMedicalRecordPages) page = totalMedicalRecordPages;
-    currentMedicalRecordPage = page;
-
-    qDebug() << "[MEDICAL RECORD] Total items:" << totalItems
-             << "| Total pages:" << totalMedicalRecordPages
-             << "| Current page:" << currentMedicalRecordPage;
-
-    // 5. Đặt lại bảng và điền dữ liệu
-    ui->tableMedicalRecord->setRowCount(0);
-    int startIdx = (currentMedicalRecordPage - 1) * itemsPerPage;
-    int endIdx = qMin(startIdx + itemsPerPage, totalItems);
-
-    for (int i = startIdx; i < endIdx; ++i) {
-        const MedicalRecord& record = filteredRecords.at(i);
-        ui->tableMedicalRecord->insertRow(ui->tableMedicalRecord->rowCount());
-        int row = ui->tableMedicalRecord->rowCount() - 1;
-
-        // Cột 0: ID Hồ Sơ
-        QTableWidgetItem* idItem = new QTableWidgetItem(QString::number(record.getID()));
-        idItem->setTextAlignment(Qt::AlignCenter);
-        ui->tableMedicalRecord->setItem(row, 0, idItem);
-
-        // Cột 1: ID Bệnh Nhân
-        QTableWidgetItem* patientIDItem = new QTableWidgetItem(QString::number(record.getPatientID()));
-        patientIDItem->setTextAlignment(Qt::AlignCenter);
-        ui->tableMedicalRecord->setItem(row, 1, patientIDItem);
-
-        // Cột 2: Tên Bệnh Nhân
-        QString patientName = "N/A";
-        try {
-            patientName = QString::fromStdString(PatientManager::getInstance().getPatientByID(record.getPatientID()).getName());
-        } catch (...) {}
-        QTableWidgetItem* patientNameItem = new QTableWidgetItem(patientName);
-        patientNameItem->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-        ui->tableMedicalRecord->setItem(row, 2, patientNameItem);
-
-        // Cột 3: ID Bác Sĩ
-        QTableWidgetItem* doctorIDItem = new QTableWidgetItem(QString::number(record.getDoctorID()));
-        doctorIDItem->setTextAlignment(Qt::AlignCenter);
-        ui->tableMedicalRecord->setItem(row, 3, doctorIDItem);
-
-        // Cột 4: Tên Bác Sĩ
-        QString doctorName = "N/A";
-        try {
-            doctorName = QString::fromStdString(DoctorManager::getInstance().getDoctorByID(record.getDoctorID()).getName());
-        } catch (...) {}
-        QTableWidgetItem* doctorNameItem = new QTableWidgetItem(doctorName);
-        doctorNameItem->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-        ui->tableMedicalRecord->setItem(row, 4, doctorNameItem);
-
-        // Cột 5: Ngày Tạo
-        QTableWidgetItem* dateItem = new QTableWidgetItem(QString::fromStdString(record.getCreationDate().toString()));
-        dateItem->setTextAlignment(Qt::AlignCenter);
-        ui->tableMedicalRecord->setItem(row, 5, dateItem);
-
-        // Cột 6: Chẩn Đoán
-        QString diagnosis = QString::fromStdString(record.getDiagnosis());
-        if (diagnosis.length() > 50) {
-            diagnosis = diagnosis.left(47) + "...";
-        }
-        QTableWidgetItem* diagnosisItem = new QTableWidgetItem(diagnosis);
-        diagnosisItem->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-        ui->tableMedicalRecord->setItem(row, 6, diagnosisItem);
-
-        // Cột 7: Tùy Chọn
-        QWidget* actionWidget = new QWidget();
-        QHBoxLayout* layout = new QHBoxLayout(actionWidget);
-        layout->setContentsMargins(5, 2, 5, 2);
-        layout->setSpacing(5);
-
-        QPushButton* btnViewDetail = new QPushButton("Xem chi tiết");
-        btnViewDetail->setProperty("recordID", record.getID());
-        btnViewDetail->setStyleSheet(R"(
-            QPushButton {
-                background-color: #2196F3;
-                color: white;
-                border: none;
-                padding: 5px 10px;
-                border-radius: 3px;
-            }
-            QPushButton:hover {
-                background-color: #1976D2;
-            }
-        )");
-        connect(btnViewDetail, &QPushButton::clicked, this, &AdminWindow::on_btnViewMedicalRecordDetail_clicked);
-
-        QPushButton* btnDelete = new QPushButton("Xóa");
-        btnDelete->setProperty("recordID", record.getID());
-        btnDelete->setStyleSheet(R"(
-            QPushButton {
-                background-color: #f44336;
-                color: white;
-                border: none;
-                padding: 5px 10px;
-                border-radius: 3px;
-            }
-            QPushButton:hover {
-                background-color: #d32f2f;
-            }
-        )");
-        connect(btnDelete, &QPushButton::clicked, this, &AdminWindow::on_btnRemoveMedicalRecord_clicked);
-
-        layout->addWidget(btnViewDetail);
-        layout->addWidget(btnDelete);
-        actionWidget->setLayout(layout);
-
-        ui->tableMedicalRecord->setCellWidget(row, 7, actionWidget);
-    }
-
-    updateMedicalRecordPaginationUI();
-}
-
-// SLOT IMPLEMENTATIONS
 void AdminWindow::on_btnAddMedicalRecord_clicked() {
     qDebug() << "page_medicalRecord: + Thêm hồ sơ bệnh án mới clicked.";
 
@@ -2308,5 +2152,158 @@ void AdminWindow::on_btnPage_MedicalRecord_3_clicked() {
     if (pageNum > 0 && pageNum <= totalMedicalRecordPages) {
         currentMedicalRecordPage = pageNum;
         loadMedicalRecordData(currentMedicalRecordPage, ui->txtSearchMedicalRecord->text().trimmed());
+    }
+}
+
+void AdminWindow::on_btnAddUser_clicked() {
+    qDebug() << "Dialog add user opened";
+    AddEditUserDialog dialog(this);
+    dialog.setDialogTitle("Thêm Người Dùng Mới");
+
+    if (dialog.exec() == QDialog::Accepted) {
+        try {
+            qDebug() << "Dialog accepted, getting data...";
+            User newUser = dialog.getUserData();
+
+            qDebug() << "User data retrieved, ID:" << newUser.getID();
+
+            UserManager::getInstance().addUser(newUser);
+
+            QMessageBox::information(this, "Thành công",
+                                     QString("Đã thêm người dùng mới với ID: %1\nFile đã được lưu tại: %2")
+                                         .arg(newUser.getID())
+                                         .arg(Config::USER_PATH));
+
+            loadUserData(currentUserPage, ui->txtSearchUser->text().trimmed());
+
+        } catch (const std::exception& e) {
+            QMessageBox::critical(this, "Lỗi Thêm Người Dùng",
+                                  QString("Không thể thêm: %1").arg(e.what()));
+            qDebug() << "Error adding user: " << e.what();
+        }
+    }
+}
+void AdminWindow::on_btnRemoveUser_clicked() {
+    QPushButton* btn = qobject_cast<QPushButton*>(sender());
+    int userID = 0;
+
+    if (btn) {
+        userID = btn->property("userID").toInt();
+    } else {
+        QMessageBox::warning(this, "Cảnh báo", "Vui lòng chọn một người dùng để xoá.");
+        return;
+    }
+
+    QMessageBox::StandardButton reply;
+    reply = QMessageBox::question(this, "Xác nhận xoá",
+                                  "Bạn có chắc chắn muốn xoá người dùng ID: " + QString::number(userID) + " không?",
+                                  QMessageBox::Yes|QMessageBox::No);
+    if (reply == QMessageBox::Yes) {
+        try {
+            UserManager::getInstance().removeUser(userID);
+            QMessageBox::information(this, "Thành công", "Đã xoá người dùng ID: " + QString::number(userID));
+
+            loadUserData(currentUserPage, ui->txtSearchUser->text().trimmed());
+        } catch (const std::exception& e) {
+            QMessageBox::critical(this, "Lỗi Xoá Người Dùng", QString::fromStdString(e.what()));
+        }
+    }
+}
+
+void AdminWindow::on_btnSearchUser_clicked() {
+    qDebug() << "page_user: TÌM KIẾM clicked.";
+
+    QString searchText = ui->txtSearchUser->text().trimmed();
+    currentUserPage = 1;
+    loadUserData(currentUserPage, searchText);
+}
+void AdminWindow::on_btnViewUserDetail_clicked() {
+    QPushButton* btn = qobject_cast<QPushButton*>(sender());
+    if (!btn) return;
+
+    int userID = btn->property("userID").toInt();
+    qDebug() << "[VIEW DETAIL] User ID:" << userID;
+
+    try {
+        const User& user = UserManager::getInstance().getUserByID(userID);
+
+        QString details = QString(
+                              "=== THÔNG TIN NGƯỜI DÙNG ===\n\n"
+                              "ID: %1\n"
+                              "Vai trò: %2\n"
+                              "Tên người dùng: %3\n"
+                              ).arg(user.getID())
+                              .arg(QString::fromStdString(User::roleToString(user.getRole())))
+                              .arg(QString::fromStdString(user.getUsername()));
+
+        QMessageBox::information(this, "Chi tiết Người dùng", details);
+
+    } catch (const std::exception& e) {
+        QMessageBox::critical(this, "Lỗi", QString("Không thể xem chi tiết: %1").arg(e.what()));
+    }
+}
+
+void AdminWindow::on_btnSortAZUser_clicked() {
+    qDebug() << "[SORT] Button A-Z clicked";
+
+    currentUserSortMode = UserSortMode::BY_USERNAME_ASC;
+
+    ui->btnSortAZUser->setStyleSheet("background-color: #4CAF50; color: white; font-weight: bold;");
+    ui->btnSortZAUser->setStyleSheet("");
+
+    loadUserData(currentUserPage, ui->txtSearchUser->text().trimmed());
+}
+
+void AdminWindow::on_btnSortZAUser_clicked() {
+    qDebug() << "[SORT] Button Z-A clicked";
+
+    currentUserSortMode = UserSortMode::BY_USERNAME_DESC;
+
+    ui->btnSortZAUser->setStyleSheet("background-color: #4CAF50; color: white; font-weight: bold;");
+    ui->btnSortAZUser->setStyleSheet("");
+
+    loadUserData(currentUserPage, ui->txtSearchUser->text().trimmed());
+}
+
+void AdminWindow::on_btnPrevPage_User_clicked()
+{
+    if (currentUserPage > 1) {
+        currentUserPage--;
+        loadUserData(currentUserPage, ui->txtSearchUser->text().trimmed());
+    }
+}
+
+void AdminWindow::on_btnNextPage_User_clicked()
+{
+    if (currentUserPage < totalUserPages) {
+        currentUserPage++;
+        loadUserData(currentUserPage, ui->txtSearchUser->text().trimmed());
+    }
+}
+
+void AdminWindow::on_btnPage_User_1_clicked()
+{
+    int pageNum = ui->pushButton_3->text().toInt();
+    if (pageNum > 0 && pageNum <= totalUserPages) {
+        currentUserPage = pageNum;
+        loadUserData(currentUserPage, ui->txtSearchUser->text().trimmed());
+    }
+}
+
+void AdminWindow::on_btnPage_User_2_clicked()
+{
+    int pageNum = ui->pushButton_2->text().toInt();
+    if (pageNum > 0 && pageNum <= totalUserPages) {
+        currentUserPage = pageNum;
+        loadUserData(currentUserPage, ui->txtSearchUser->text().trimmed());
+    }
+}
+
+void AdminWindow::on_btnPage_User_3_clicked()
+{
+    int pageNum = ui->pushButton->text().toInt();
+    if (pageNum > 0 && pageNum <= totalUserPages) {
+        currentUserPage = pageNum;
+        loadUserData(currentUserPage, ui->txtSearchUser->text().trimmed());
     }
 }

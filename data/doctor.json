@@ -1,20 +1,5 @@
 [
     {
-        "ID": 2,
-        "birthday": {
-            "day": 1,
-            "month": 1,
-            "year": 1980
-        },
-        "doctorStatus": "Active",
-        "email": "MessiLovesRonaldo@gmail.com",
-        "gender": "M",
-        "name": "Messi boucoup",
-        "patientIDs": null,
-        "phoneNumber": "0123456789",
-        "specialization": "Lão khoa"
-    },
-    {
         "ID": 1,
         "birthday": {
             "day": 1,
@@ -25,6 +10,21 @@
         "email": "ronaldoLovesMessi@gmail.com",
         "gender": "M",
         "name": "Ronaldo SIu",
+        "patientIDs": null,
+        "phoneNumber": "0123456789",
+        "specialization": "Lão khoa"
+    },
+    {
+        "ID": 2,
+        "birthday": {
+            "day": 1,
+            "month": 1,
+            "year": 1980
+        },
+        "doctorStatus": "Active",
+        "email": "MessiLovesRonaldo@gmail.com",
+        "gender": "M",
+        "name": "Messi boucoup",
         "patientIDs": null,
         "phoneNumber": "0123456789",
         "specialization": "Lão khoa"
