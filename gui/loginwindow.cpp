@@ -108,12 +108,12 @@ void loginwindow::on_showPasswordButton_toggled(bool checked)
         // Nút được nhấn -> Hiển thị mật khẩu
         ui->passWord->setEchoMode(QLineEdit::Normal);
         // Có thể thay đổi biểu tượng nút thành "👁️"
-        ui->showPasswordButton->setText("Ẩn");
+        ui->showPasswordButton->setText("Hide");
     } else {
         // Nút không được nhấn -> Ẩn mật khẩu
         ui->passWord->setEchoMode(QLineEdit::Password);
         // Có thể thay đổi biểu tượng nút thành "🙈"
-        ui->showPasswordButton->setText("Hiện");
+        ui->showPasswordButton->setText("Show");
     }
 }
 
