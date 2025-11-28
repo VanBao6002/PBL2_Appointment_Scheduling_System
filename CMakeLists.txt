@@ -82,12 +82,18 @@ if(USE_QT_GUI)
         target_link_options(${PROJECT_NAME} PRIVATE "-Wl,--subsystem,console")
     endif()
 
+    # Expose root data directory to C++ code
+    target_compile_definitions(${PROJECT_NAME} PRIVATE DATA_DIR="${CMAKE_SOURCE_DIR}/data")
+
 else()
     add_executable(${PROJECT_NAME}
         main.cpp
         ${SRC_FILES}
     )
     target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/include)
+
+    # Expose root data directory to C++ code
+    target_compile_definitions(${PROJECT_NAME} PRIVATE DATA_DIR="${CMAKE_SOURCE_DIR}/data")
 
     # --- NEW: Post-Build Copy Data Files into 'data' subfolder (for non-GUI build) ---
     if(DATA_FILES)
