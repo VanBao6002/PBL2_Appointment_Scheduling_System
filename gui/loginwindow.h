@@ -27,7 +27,7 @@ private slots:
 protected:
     void resizeEvent(QResizeEvent *event) override;
     void paintEvent(QPaintEvent *event) override;
-
+    
 private:
     Ui::loginwindow *ui;
     QPixmap m_bgPixmap;

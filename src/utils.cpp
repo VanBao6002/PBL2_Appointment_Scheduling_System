@@ -401,31 +401,37 @@ void Utils::validEmail(const std::string& email) {
 // ======================= CONVERTOR =======================
 
 void Utils::writeJsonToFile(const std::string& filePath, const nlohmann::json& j){
-    std::ofstream outFile(filePath);
+    std::string fullPath = filePath;
+#ifdef DATA_DIR
+    // If filePath is not absolute, prepend DATA_DIR
+    if (!filePath.empty() && filePath[0] != '/' && (filePath.size() < 2 || filePath[1] != ':')) {
+        fullPath = std::string(DATA_DIR) + "/" + filePath;
+    }
+#endif
+    std::ofstream outFile(fullPath);
     if (!outFile.is_open()) {
-        throw std::runtime_error("Error: Could not open file \"" + filePath + "\" for writing.");
+        throw std::runtime_error("Error: Could not open file \"" + fullPath + "\" for writing.");
     }
-    
     outFile << j.dump(4);
-    
-    // ✅ QUAN TRỌNG: Đảm bảo dữ liệu được ghi vào đĩa
     outFile.flush();
-    
-    // ✅ Kiểm tra xem có lỗi khi ghi không
     if (outFile.fail()) {
-        throw std::runtime_error("Error: Failed to write to file \"" + filePath + "\".");
+        throw std::runtime_error("Error: Failed to write to file \"" + fullPath + "\".");
     }
-    
     outFile.close();
-    
-    // ✅ Debug: In thông báo thành công
-    std::cout << "[SUCCESS] Data saved to: " << filePath << std::endl;
+    std::cout << "[SUCCESS] Data saved to: " << fullPath << std::endl;
 }
 
 nlohmann::json Utils::readJsonFromFile(const std::string& filePath){
-    std::ifstream inFile(filePath);
+    std::string fullPath = filePath;
+#ifdef DATA_DIR
+    // If filePath is not absolute, prepend DATA_DIR
+    if (!filePath.empty() && filePath[0] != '/' && (filePath.size() < 2 || filePath[1] != ':')) {
+        fullPath = std::string(DATA_DIR) + "/" + filePath;
+    }
+#endif
+    std::ifstream inFile(fullPath);
     if (!inFile.is_open()) {
-        std::cerr << "Error: Could not open file \"" << filePath << "\" for reading.\n";
+        std::cerr << "Error: Could not open file \"" << fullPath << "\" for reading.\n";
         return nlohmann::json();
     }
     std::stringstream ss;

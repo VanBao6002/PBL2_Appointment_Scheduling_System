@@ -16,13 +16,20 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+
 private slots:
     void on_Login_clicked();
+
+protected:
+    void showEvent(QShowEvent *event) override;
 
 private:
     Ui::MainWindow *ui;
     QPixmap pixmap;
-    
+    bool centered = false;
+
+    void centerWindow();
+
 protected:
     void paintEvent(QPaintEvent *event) override;
 
