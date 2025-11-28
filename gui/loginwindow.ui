@@ -79,8 +79,14 @@
         </item>
         <item>
          <widget class="QToolButton" name="showPasswordButton">
+          <property name="toolTip">
+           <string>Show/Hide Password</string>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">font-size: 18px; color: #2196F3; background: transparent; border: none; padding: 0 6px;</string>
+          </property>
           <property name="text">
-           <string>👁️</string>
+           <string notr="true">Show</string>
           </property>
           <property name="checkable">
            <bool>true</bool>
