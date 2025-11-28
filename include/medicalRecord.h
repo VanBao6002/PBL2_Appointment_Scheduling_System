@@ -66,6 +66,7 @@ class MedicalRecord{
         const std::vector<Prescription>& getPrescriptions() const;
         Date getChangeHistory() const;
         
+        void setID(int ID_);
         void setPatientID(int patientID_);
         void setDoctorID(int doctorID_);
         void setCreationDate(const std::string& creationDate_);
@@ -84,7 +85,4 @@ class MedicalRecord{
         // convertor
         nlohmann::json toJson() const;
         void fromJson(const nlohmann::json &j);
-
-    private:
-        void setID(int ID_);
 };

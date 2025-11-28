@@ -11,6 +11,12 @@ MedicalRecord::MedicalRecord() : patientID(0), doctorID(0), creationDate(Date())
 
 MedicalRecord::MedicalRecord(int patientID_, int doctorID_, const std::string& creationDate_, const std::string& lastUpdated_, const std::string& diagnosis_, const std::string& symptoms_, const std::string& testResults_, const std::string& bloodPressure_, int heartRate_, float bodyTemperature_, const std::string& treatment_, const std::string& doctorNotes_, const std::vector<Date>& followUpDates_, const std::vector<Prescription>& prescriptions_, const std::string& changeHistory_) {
 
+    // ✅ QUAN TRỌNG: Khởi tạo ID TRƯỚC
+    int ID = static_cast<int>(IDHandler<MedicalRecord>::generateID());
+    this->ID = ID;
+    IDHandler<MedicalRecord>::registerID(ID);
+
+    // ✅ SAU ĐÓ mới set các giá trị khác (có validation)
     setPatientID(patientID_);
     setDoctorID(doctorID_);
     setCreationDate(creationDate_);
@@ -26,10 +32,6 @@ MedicalRecord::MedicalRecord(int patientID_, int doctorID_, const std::string& c
     followUpDates = followUpDates_;
     prescriptions = prescriptions_;
     setChangeHistory(changeHistory_);
-
-    int ID = static_cast<int>(IDHandler<MedicalRecord>::generateID());
-    setID(ID);
-    IDHandler<MedicalRecord>::registerID(ID);
 }
 
 MedicalRecord::~MedicalRecord(){
@@ -182,17 +184,19 @@ void MedicalRecord::setID(int ID_) {
     ID = ID_;
 }
 
+
 void MedicalRecord::setPatientID(int patientID_) {
-    if (!IDHandler<Patient>::checkDuplicate(patientID_)){
-        throw std::invalid_argument("Patient ID not found.");
-    }
+    Utils::validID(patientID_);
+    
+    // ✅ CHỈ LƯU, KHÔNG VALIDATE Ở ĐÂY
+    // Validation sẽ được thực hiện ở tầng Manager
     patientID = patientID_;
 }
 
 void MedicalRecord::setDoctorID(int doctorID_) {
-    if (!IDHandler<Doctor>::checkDuplicate(doctorID_)) {
-        throw std::invalid_argument("Doctor ID is not found.");
-    }
+    Utils::validID(doctorID_);
+    
+    // ✅ CHỈ LƯU, KHÔNG VALIDATE Ở ĐÂY
     doctorID = doctorID_;
 }
 

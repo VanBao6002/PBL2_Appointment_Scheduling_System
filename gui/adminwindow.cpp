@@ -22,7 +22,9 @@ AdminWindow::AdminWindow(QWidget *parent)
 {
     ui->setupUi(this);
     this->showFullScreen();
-    ui->tableAppointment->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
+
+    PatientManager::getInstance().loadFromFile(Config::PATIENT_PATH);
+    DoctorManager::getInstance().loadFromFile(Config::DOCTOR_PATH);
 
     setupPatientTable();
     setupDoctorTable();
@@ -1983,14 +1985,53 @@ void AdminWindow::on_btnAddMedicalRecord_clicked() {
     if (addDialog.exec() == QDialog::Accepted) {
         try {
             MedicalRecord newRecord = addDialog.getMedicalRecordData();
+            
+            // ✅ Kiểm tra Patient và Doctor tồn tại TRƯỚC khi add
+            int patientID = newRecord.getPatientID();
+            int doctorID = newRecord.getDoctorID();
+            
+            bool patientExists = false;
+            bool doctorExists = false;
+            
+            try {
+                PatientManager::getInstance().getPatientByID(patientID);
+                patientExists = true;
+                qDebug() << "[INFO] Patient ID" << patientID << "exists";
+            } catch (...) { 
+                patientExists = false;
+                qWarning() << "[WARNING] Patient ID" << patientID << "not found";
+            }
+
+            try {
+                DoctorManager::getInstance().getDoctorByID(doctorID);
+                doctorExists = true;
+                qDebug() << "[INFO] Doctor ID" << doctorID << "exists";
+            } catch (...) { 
+                doctorExists = false;
+                qWarning() << "[WARNING] Doctor ID" << doctorID << "not found";
+            }
+
+            if (!patientExists) {
+                QMessageBox::warning(this, "Lỗi", 
+                    QString("Bệnh nhân ID: %1 không tồn tại!").arg(patientID));
+                return;
+            }
+            
+            if (!doctorExists) {
+                QMessageBox::warning(this, "Lỗi", 
+                    QString("Bác sĩ ID: %1 không tồn tại!").arg(doctorID));
+                return;
+            }
 
             MedicalRecordManager::getInstance().addMedicalRecord(newRecord);
 
-            QMessageBox::information(this, "Thành công", "Hồ sơ bệnh án đã được thêm và lưu.");
+            QMessageBox::information(this, "Thành công", 
+                "Hồ sơ bệnh án đã được thêm và lưu.");
             loadMedicalRecordData(currentMedicalRecordPage, ui->txtSearchMedicalRecord->text().trimmed());
 
         } catch (const std::exception& e) {
-            QMessageBox::critical(this, "Lỗi Thêm Hồ Sơ", QString("Không thể thêm hồ sơ: %1").arg(e.what()));
+            QMessageBox::critical(this, "Lỗi Thêm Hồ Sơ", 
+                QString("Không thể thêm hồ sơ: %1").arg(e.what()));
             qDebug() << "Error adding medical record: " << e.what();
         }
     } else {
