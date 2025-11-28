@@ -1,1 +1,19 @@
-null
+[
+    {
+        "ID": 1,
+        "allergies": [],
+        "birthday": {
+            "day": 28,
+            "month": 11,
+            "year": 2015
+        },
+        "bloodType": "A+",
+        "chronicDiseases": [],
+        "gender": "M",
+        "medicalRecordIDs": [],
+        "name": "SHibal sekiya",
+        "nameFather": "SHIBAl",
+        "nameMother": "SHibal",
+        "phoneNumber": "0123456789"
+    }
+]

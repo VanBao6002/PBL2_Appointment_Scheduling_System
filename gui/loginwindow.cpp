@@ -18,12 +18,6 @@ loginwindow::loginwindow(QWidget *parent) :
     ui(new Ui::loginwindow)
 {
     ui->setupUi(this);
-    // Center the window on the screen
-    QScreen *screen = QGuiApplication::primaryScreen();
-    QRect screenGeometry = screen->geometry();
-    int x = (screenGeometry.width() - this->width()) / 2;
-    int y = (screenGeometry.height() - this->height()) / 2;
-    this->move(x, y);
 
     if (!m_bgPixmap.load(Config::LOGIN_IMAGE_PATH)) {
         qDebug() << "Failed to load background image.";
@@ -94,9 +88,9 @@ void loginwindow::on_cancelButton_clicked()
 void loginwindow::resizeEvent(QResizeEvent *event)
 {
     Q_UNUSED(event);
-    if (ui->labelBackground) {
-        ui->labelBackground->setGeometry(0, 0, width(), height());
-    }
+    // if (ui->labelBackground) {
+    //     ui->labelBackground->setGeometry(0, 0, width(), height());
+    // }
 }
 
 void loginwindow::paintEvent(QPaintEvent *event)
