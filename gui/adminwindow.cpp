@@ -2310,3 +2310,8 @@ void AdminWindow::on_btnPage_MedicalRecord_3_clicked() {
         loadMedicalRecordData(currentMedicalRecordPage, ui->txtSearchMedicalRecord->text().trimmed());
     }
 }
+
+void AdminWindow::showEvent(QShowEvent* event) {
+    QMainWindow::showEvent(event);
+    this->showFullScreen();
+}

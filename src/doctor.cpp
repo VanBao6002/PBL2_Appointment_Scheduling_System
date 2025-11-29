@@ -1,3 +1,4 @@
+#include <utility>
 #include "doctor.h"
 
 Doctor::Doctor() : Person(), specialization(""), patientIDs(), doctorStatus(Doctor::Status::Active){ 
@@ -87,6 +88,10 @@ void Doctor::setEmail(const std::string &email_){
     email = Utils::trimmed(email_);
 }
 
+void Doctor::setWorkingSchedule(const WorkingSchedule& schedule_) {
+    workingSchedule = schedule_;
+}
+
 void Doctor::addPatientID(int ID_) {
     if (patientIDs.count(ID_)) {
         throw std::invalid_argument("Patient ID already exists in doctor's list.");
@@ -156,7 +161,8 @@ nlohmann::json Doctor::toJson() const {
         patientIDsJson.push_back(pid);
     }
     j["patientIDs"] = patientIDsJson;
-    j["doctorStatus"] = statusToString(doctorStatus); 
+    j["doctorStatus"] = statusToString(doctorStatus);
+    j["workingSchedule"] = workingSchedule.toJson();
     return j;
 }
 
@@ -201,4 +207,11 @@ void Doctor::fromJson(const nlohmann::json &j) {
     if (j.contains("doctorStatus")) {
         doctorStatus = statusFromString(j.at("doctorStatus").get<std::string>());
     }
+    if (j.contains("workingSchedule")) {
+        workingSchedule.fromJson(j.at("workingSchedule"));
+    }
 }
+
+
+
+

@@ -11,6 +11,38 @@
 #include "person.h"
 #include "patient.h"
 
+
+struct WorkingSchedule {
+    // "Day" / "StartTime" / "EndTime"
+    std::unordered_map<std::string, std::vector<std::pair<std::string, std::string>>> schedule;
+
+    nlohmann::json toJson() const {
+        nlohmann::json j;
+        for (const auto& [day, times] : schedule) {
+            nlohmann::json timesJson = nlohmann::json::array();
+            for (const auto& [start, end] : times) {
+                timesJson.push_back({{"StartTime", start}, {"EndTime", end}});
+            }
+            j[day] = timesJson;
+        }
+        return j;
+    }
+
+    void fromJson(const nlohmann::json& j) {
+        schedule.clear();
+        for (auto it = j.begin(); it != j.end(); ++it) {
+            std::string day = it.key();
+            std::vector<std::pair<std::string, std::string>> times;
+            for (const auto& timeObj : it.value()) {
+                std::string start = timeObj.at("StartTime").get<std::string>();
+                std::string end = timeObj.at("EndTime").get<std::string>();
+                times.emplace_back(start, end);
+            }
+            schedule[day] = times;
+        }
+    }
+};
+
 class Doctor : public Person{
     public:
         enum class Status {Active, OnLeave, Retired};
@@ -20,6 +52,7 @@ class Doctor : public Person{
         std::string specialization; // Chuyên Khoa
         std::unordered_set<int> patientIDs; // ID bệnh nhân được bác sĩ đảm nhận
         Status doctorStatus;
+        WorkingSchedule workingSchedule;
     
     public:
         Doctor();
@@ -36,7 +69,7 @@ class Doctor : public Person{
         void setSpecialization(const std::string &specialization_);
         void setStatus(const std::string& doctorStatus_);
         void setEmail(const std::string &email_);
-
+        void setWorkingSchedule(const WorkingSchedule& schedule_);
 
         void addPatientID(int ID_);
         void removePatientID(int ID_);
@@ -46,6 +79,7 @@ class Doctor : public Person{
         const std::unordered_set<int>& getPatientIDs() const {return patientIDs;}
         std::string getInfo() const override;
         std::string getEmail() const {return email;}
+        const WorkingSchedule& getWorkingSchedule() const {return workingSchedule;}
 
         // convertor
         static std::string statusToString(Status status);
