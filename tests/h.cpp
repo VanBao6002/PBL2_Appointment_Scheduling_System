@@ -11,7 +11,6 @@
 #include "doctor.h"
 #include "patientManager.h"
 #include "doctorManager.h"
-#include <QMouseEvent>
 
 namespace Ui {
 class AddEditMedicalRecordDialog;
@@ -29,11 +28,6 @@ public:
     MedicalRecord getMedicalRecordData() const;
     void setDialogTitle(const QString& title);
 
-protected:
-    void mousePressEvent(QMouseEvent *event) override;
-    void mouseMoveEvent(QMouseEvent *event) override;
-    void mouseReleaseEvent(QMouseEvent *event) override;
-
 private slots:
     void on_buttonBox_accepted();
     void on_buttonBox_rejected();
@@ -48,8 +42,6 @@ private:
     Ui::AddEditMedicalRecordDialog *ui;
     bool isEditMode;
     int editingRecordID;
-    bool m_dragging;
-    QPoint m_dragPosition;
 
     void setupUI();
     void setupValidators();
@@ -57,7 +49,6 @@ private:
     bool validateForm();
     void populatePatientCombo();
     void populateDoctorCombo();
-    void setupConnections();
 };
 
 #endif // ADDEDITMEDICALRECORDDIALOG_H

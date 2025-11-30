@@ -13,6 +13,11 @@ void MedicalRecordManager::addMedicalRecord(const MedicalRecord &record_) {
     }
     medicalRecordTable[ID_] = record_;
     log[ID_] += " Added on: " + Utils::getDateTime();
+    
+    // ✅ Lưu file ngay sau khi thêm
+    saveToFile(Config::MEDICAL_RECORD_PATH);
+    
+    qDebug() << "[INFO] Medical Record" << ID_ << "added and saved successfully";
 }
 
 void MedicalRecordManager::editMedicalRecord(int ID_, const MedicalRecord &newMedicalRecord) {
@@ -21,6 +26,9 @@ void MedicalRecordManager::editMedicalRecord(int ID_, const MedicalRecord &newMe
     }
     medicalRecordTable[ID_] = newMedicalRecord;
     log[ID_] += " Edited on: " + Utils::getDateTime();
+    
+    // ✅ Lưu file ngay sau khi sửa
+    saveToFile(Config::MEDICAL_RECORD_PATH);
 }
 
 void MedicalRecordManager::removeMedicalRecord(int ID_) {
@@ -29,6 +37,9 @@ void MedicalRecordManager::removeMedicalRecord(int ID_) {
     }
     medicalRecordTable.erase(ID_);
     log.erase(ID_);
+    
+    // ✅ Lưu file ngay sau khi xóa
+    saveToFile(Config::MEDICAL_RECORD_PATH);
 }
 
 const MedicalRecord& MedicalRecordManager::getMedicalRecordByID(int ID_) const {

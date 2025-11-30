@@ -9,12 +9,11 @@ AddEditMedicalRecordDialog::AddEditMedicalRecordDialog(QWidget *parent) :
     editingRecordID(-1)
 {
     ui->setupUi(this);
-    setWindowFlags(Qt::FramelessWindowHint);
+    setWindowTitle("Thêm Hồ Sơ Bệnh Án Mới");
     setupUI();
     setupValidators();
     populatePatientCombo();
     populateDoctorCombo();
-    setupConnections();
     qDebug() << "[DIALOG] AddEditMedicalRecordDialog opened in ADD mode";
 }
 
@@ -30,7 +29,6 @@ AddEditMedicalRecordDialog::AddEditMedicalRecordDialog(QWidget *parent, const Me
     setupValidators();
     populatePatientCombo();
     populateDoctorCombo();
-    setupConnections();
     loadMedicalRecordData(recordToEdit);
     qDebug() << "[DIALOG] AddEditMedicalRecordDialog opened in EDIT mode for ID:" << editingRecordID;
 }
@@ -50,42 +48,18 @@ void AddEditMedicalRecordDialog::setupUI() {
     ui->dateLastUpdated->setCalendarPopup(true);
     ui->dateLastUpdated->setDate(QDate::currentDate());
 
-    ui->dateFollowUp->setDisplayFormat("dd/MM/yyyy");
-    ui->dateFollowUp->setCalendarPopup(true);
-    ui->dateFollowUp->setDate(QDate::currentDate());
-
-    // Set proper labels
-    ui->label_9->setText("Nhịp tim:");
-    ui->label_10->setText("Nhiệt độ:");
-
-    // Configure spin boxes
-    ui->spinHeartRate->setRange(30, 220);
-    ui->spinHeartRate->setValue(72);
-    ui->spinHeartRate->setSuffix(" bpm");
-
-    ui->spinBodyTemp->setRange(30.0, 45.0);
-    ui->spinBodyTemp->setValue(36.5);
-    ui->spinBodyTemp->setDecimals(1);
-    ui->spinBodyTemp->setSuffix(" °C");
-
     // Placeholders
     ui->txtDiagnosis->setPlaceholderText("VD: Viêm đường hô hấp trên");
     ui->txtSymptoms->setPlaceholderText("VD: Ho, sốt, đau đầu");
     ui->txtTestResults->setPlaceholderText("VD: XN máu: WBC 12000");
     ui->txtBloodPressure->setPlaceholderText("VD: 120/80");
+    ui->spinHeartRate->setRange(30, 220);
+    ui->spinHeartRate->setValue(72);
+    ui->spinBodyTemp->setRange(30.0, 45.0);
+    ui->spinBodyTemp->setValue(36.5);
+    ui->spinBodyTemp->setDecimals(1);
     ui->txtTreatment->setPlaceholderText("VD: Nghỉ ngơi, uống thuốc theo đơn");
     ui->txtDoctorNotes->setPlaceholderText("Ghi chú của bác sĩ...");
-}
-
-void AddEditMedicalRecordDialog::setupConnections() {
-    connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &AddEditMedicalRecordDialog::on_buttonBox_accepted);
-    connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &AddEditMedicalRecordDialog::on_buttonBox_rejected);
-    connect(ui->btnAddFollowUp, &QPushButton::clicked, this, &AddEditMedicalRecordDialog::on_btnAddFollowUp_clicked);
-    connect(ui->btnRemoveFollowUp, &QPushButton::clicked, this, &AddEditMedicalRecordDialog::on_btnRemoveFollowUp_clicked);
-    connect(ui->btnAddPrescription, &QPushButton::clicked, this, &AddEditMedicalRecordDialog::on_btnAddPrescription_clicked);
-    connect(ui->btnRemovePrescription, &QPushButton::clicked, this, &AddEditMedicalRecordDialog::on_btnRemovePrescription_clicked);
-    connect(ui->btnSearchPatient, &QPushButton::clicked, this, &AddEditMedicalRecordDialog::on_btnSearchPatient_clicked);
-    connect(ui->btnSearchDoctor, &QPushButton::clicked, this, &AddEditMedicalRecordDialog::on_btnSearchDoctor_clicked);
 }
 
 void AddEditMedicalRecordDialog::setupValidators() {
@@ -209,6 +183,29 @@ MedicalRecord AddEditMedicalRecordDialog::getMedicalRecordData() const {
 
     qDebug() << "[DEBUG] Selected Patient ID:" << patientID;
     qDebug() << "[DEBUG] Selected Doctor ID:" << doctorID;
+    
+    // ✅ Debug: Kiểm tra xem Patient và Doctor có tồn tại không
+    bool patientExists = false;
+    bool doctorExists = false;
+    
+    try {
+        PatientManager::getInstance().getPatientByID(patientID);
+        patientExists = true;
+    } catch (...) {}
+    
+    try {
+        DoctorManager::getInstance().getDoctorByID(doctorID);
+        doctorExists = true;
+    } catch (...) {}
+    
+    qDebug() << "[DEBUG] Patient exists in PatientManager:" << patientExists;
+    qDebug() << "[DEBUG] Doctor exists in DoctorManager:" << doctorExists;
+    
+    // ✅ Kiểm tra IDHandler (chỉ mang tính tham khảo)
+    qDebug() << "[DEBUG] Patient exists in IDHandler:" 
+             << IDHandler<Patient>::checkDuplicate(static_cast<size_t>(patientID));
+    qDebug() << "[DEBUG] Doctor exists in IDHandler:" 
+             << IDHandler<Doctor>::checkDuplicate(static_cast<size_t>(doctorID));
 
     QDate qCreation = ui->dateCreation->date();
     std::string creationDate = QString("%1/%2/%3")
@@ -251,7 +248,6 @@ MedicalRecord AddEditMedicalRecordDialog::getMedicalRecordData() const {
                          followUpDates, prescriptions, changeHistory);
 
     if (isEditMode) {
-        record.setID(editingRecordID);
         qDebug() << "[DIALOG] getMedicalRecordData() - EDIT mode, ID:" << editingRecordID;
     } else {
         qDebug() << "[DIALOG] getMedicalRecordData() - ADD mode, new ID:" << record.getID();
@@ -397,27 +393,4 @@ void AddEditMedicalRecordDialog::on_btnSearchDoctor_clicked() {
         QMessageBox::information(this, "Kết quả", "Không tìm thấy bác sĩ phù hợp!");
         populateDoctorCombo();
     }
-}
-
-void AddEditMedicalRecordDialog::mousePressEvent(QMouseEvent *event)
-{
-    if (event->button() == Qt::LeftButton) {
-        m_dragging = true;
-        m_dragPosition = event->globalPos() - frameGeometry().topLeft();
-        event->accept();
-    }
-}
-
-void AddEditMedicalRecordDialog::mouseMoveEvent(QMouseEvent *event)
-{
-    if (m_dragging && (event->buttons() & Qt::LeftButton)) {
-        move(event->globalPos() - m_dragPosition);
-        event->accept();
-    }
-}
-
-void AddEditMedicalRecordDialog::mouseReleaseEvent(QMouseEvent *event)
-{
-    m_dragging = false;
-    event->accept();
 }

@@ -1,5 +1,26 @@
 [
     {
+        "ID": 2,
+        "allergies": [
+            "No"
+        ],
+        "birthday": {
+            "day": 28,
+            "month": 11,
+            "year": 2015
+        },
+        "bloodType": "B-",
+        "chronicDiseases": [
+            "No"
+        ],
+        "gender": "M",
+        "medicalRecordIDs": [],
+        "name": "An Ba To Com",
+        "nameFather": "No",
+        "nameMother": "No",
+        "phoneNumber": "0363636363"
+    },
+    {
         "ID": 1,
         "allergies": [],
         "birthday": {

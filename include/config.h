@@ -4,6 +4,7 @@ namespace Config {
     constexpr const char* SPECIALIZATION_PATH = "doctorSpecializations.json";
     constexpr const char* ROOM_PATH = "room.json";
     constexpr const char* MEDICINE_PRICE_PATH = "medicine_prices.json";
+    constexpr const char* MEDICAL_RECORD_PATH = "medical_Record.json";
     constexpr const char* PRESCRIPTION_PATH = "prescriptions.json";
     constexpr const char* DOCTOR_PATH = "doctor.json";
     constexpr const char* PATIENT_PATH = "patient.json"; 
