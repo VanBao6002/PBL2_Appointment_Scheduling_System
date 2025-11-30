@@ -6,13 +6,14 @@
             "month": 1,
             "year": 1980
         },
-        "doctorStatus": "Active",
-        "email": "ronaldoLovesMessi@gmail.com",
+        "doctorStatus": "Retired",
+        "email": "domixi@gmail.com",
         "gender": "M",
-        "name": "Ronaldo SIu",
+        "name": "ronaldo",
         "patientIDs": null,
         "phoneNumber": "0123456789",
-        "specialization": "Lão khoa"
+        "specialization": "Thần kinh",
+        "workingSchedule": null
     },
     {
         "ID": 2,
@@ -22,11 +23,12 @@
             "year": 1980
         },
         "doctorStatus": "Active",
-        "email": "MessiLovesRonaldo@gmail.com",
+        "email": "ronaldo_bucu_messi@gmail.com",
         "gender": "M",
-        "name": "Messi boucoup",
+        "name": "Messi Kimochi",
         "patientIDs": null,
         "phoneNumber": "0123456789",
-        "specialization": "Lão khoa"
+        "specialization": "Tâm thần",
+        "workingSchedule": null
     }
 ]

@@ -165,6 +165,9 @@ private:
     void updatePatientPaginationUI();
     void updateUserPaginationUI();
     void updateMedicalRecordPaginationUI();
+
+    protected:
+    void showEvent(QShowEvent* event) override;
 };
 
 #endif // ADMINWINDOW_H

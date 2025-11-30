@@ -1,9 +1,11 @@
 #include "addeditdoctordialog.h"
 #include "gui/ui_addeditdoctordialog.h"
+#include "doctor.h"
 #include <QFile>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
+#include <QInputDialog>
 
 // ============================================
 // CONSTRUCTOR - THÊM MỚI
@@ -19,9 +21,15 @@ AddEditDoctorDialog::AddEditDoctorDialog(QWidget *parent) :
 
     setupComboBoxes();
     setupValidators();
+    setupWorkingScheduleTable();
+
+    // Connect working schedule buttons
+    connect(ui->pushButton_3, &QPushButton::clicked, this, &AddEditDoctorDialog::onAddWorkingScheduleClicked);
+    connect(ui->pushButton, &QPushButton::clicked, this, &AddEditDoctorDialog::onDeleteWorkingScheduleClicked);
 
     qDebug() << "[DIALOG] AddEditDoctorDialog opened in ADD mode";
 }
+
 
 // ============================================
 // CONSTRUCTOR - CHỈNH SỬA
@@ -37,9 +45,162 @@ AddEditDoctorDialog::AddEditDoctorDialog(QWidget *parent, const Doctor& doctorTo
 
     setupComboBoxes();
     setupValidators();
+    setupWorkingScheduleTable();
     loadDoctorData(doctorToEdit);
 
+    // Connect working schedule buttons
+    connect(ui->pushButton_3, &QPushButton::clicked, this, &AddEditDoctorDialog::onAddWorkingScheduleClicked);
+    connect(ui->pushButton, &QPushButton::clicked, this, &AddEditDoctorDialog::onDeleteWorkingScheduleClicked);
+
     qDebug() << "[DIALOG] AddEditDoctorDialog opened in EDIT mode for ID:" << editingDoctorID;
+}
+// ============================================
+// WORKING SCHEDULE BUTTON SLOTS
+// ============================================
+void AddEditDoctorDialog::onAddWorkingScheduleClicked() {
+    int row = ui->tableWorkingSchedule->rowCount();
+    ui->tableWorkingSchedule->insertRow(row);
+
+    // Day combo box with placeholder
+    QComboBox* dayCombo = new QComboBox();
+    dayCombo->setMinimumWidth(120);
+    dayCombo->addItem("Chọn ngày...");
+    dayCombo->addItems({"Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7", "Chủ nhật"});
+    dayCombo->setCurrentIndex(0);
+    ui->tableWorkingSchedule->setCellWidget(row, 0, dayCombo);
+
+
+    // Use QTimeEdit for time selection (picker wheel style)
+    QTimeEdit* beginTimeEdit = new QTimeEdit();
+    beginTimeEdit->setDisplayFormat("HH:mm");
+    beginTimeEdit->setTime(QTime(8, 0)); // default start time
+    beginTimeEdit->setMinimumWidth(100);
+    beginTimeEdit->setButtonSymbols(QAbstractSpinBox::NoButtons);
+    beginTimeEdit->setAlignment(Qt::AlignCenter);
+    beginTimeEdit->setKeyboardTracking(false);
+    beginTimeEdit->setWrapping(true);
+    // Snap to 30-minute intervals
+    QObject::connect(beginTimeEdit, &QTimeEdit::timeChanged, beginTimeEdit, [beginTimeEdit](const QTime &t) {
+        int minutes = t.minute();
+        int snapped = (minutes < 15) ? 0 : (minutes < 45 ? 30 : 0);
+        int hour = t.hour();
+        if (minutes >= 45) hour = (hour + 1) % 24;
+        QTime snappedTime(hour, snapped);
+        if (t != snappedTime) beginTimeEdit->setTime(snappedTime);
+    });
+    ui->tableWorkingSchedule->setCellWidget(row, 1, beginTimeEdit);
+
+    QTimeEdit* endTimeEdit = new QTimeEdit();
+    endTimeEdit->setDisplayFormat("HH:mm");
+    endTimeEdit->setTime(QTime(17, 0)); // default end time
+    endTimeEdit->setMinimumWidth(100);
+    endTimeEdit->setButtonSymbols(QAbstractSpinBox::NoButtons);
+    endTimeEdit->setAlignment(Qt::AlignCenter);
+    endTimeEdit->setKeyboardTracking(false);
+    endTimeEdit->setWrapping(true);
+    // Snap to 30-minute intervals
+    QObject::connect(endTimeEdit, &QTimeEdit::timeChanged, endTimeEdit, [endTimeEdit](const QTime &t) {
+        int minutes = t.minute();
+        int snapped = (minutes < 15) ? 0 : (minutes < 45 ? 30 : 0);
+        int hour = t.hour();
+        if (minutes >= 45) hour = (hour + 1) % 24;
+        QTime snappedTime(hour, snapped);
+        if (t != snappedTime) endTimeEdit->setTime(snappedTime);
+    });
+    ui->tableWorkingSchedule->setCellWidget(row, 2, endTimeEdit);
+
+    // Make sure the table is not editable by typing
+    ui->tableWorkingSchedule->setEditTriggers(QAbstractItemView::NoEditTriggers);
+
+    // Visually highlight/select the new row
+    ui->tableWorkingSchedule->selectRow(row);
+    dayCombo->setFocus();
+}
+
+void AddEditDoctorDialog::onDeleteWorkingScheduleClicked() {
+    auto selected = ui->tableWorkingSchedule->selectionModel()->selectedRows();
+    for (const QModelIndex &index : selected) {
+        ui->tableWorkingSchedule->removeRow(index.row());
+    }
+}
+
+// ============================================
+// SETUP WORKING SCHEDULE TABLE
+// ============================================
+void AddEditDoctorDialog::setupWorkingScheduleTable() {
+    ui->tableWorkingSchedule->setColumnCount(3);
+    QStringList headers;
+    headers << "Ngày" << "Giờ bắt đầu" << "Giờ kết thúc";
+    ui->tableWorkingSchedule->setHorizontalHeaderLabels(headers);
+    ui->tableWorkingSchedule->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Stretch);
+    ui->tableWorkingSchedule->horizontalHeader()->setSectionResizeMode(1, QHeaderView::ResizeToContents);
+    ui->tableWorkingSchedule->horizontalHeader()->setSectionResizeMode(2, QHeaderView::ResizeToContents);
+    ui->tableWorkingSchedule->setSelectionBehavior(QAbstractItemView::SelectRows);
+    ui->tableWorkingSchedule->setEditTriggers(QAbstractItemView::NoEditTriggers);
+}
+
+// ============================================
+// LOAD WORKING SCHEDULE TO TABLE
+// ============================================
+void AddEditDoctorDialog::loadWorkingSchedule(const WorkingSchedule& schedule) {
+    ui->tableWorkingSchedule->setRowCount(0);
+    int row = 0;
+
+    for (auto it = schedule.schedule.begin(); it != schedule.schedule.end(); ++it) {
+        const std::string& day = it->first;
+        const std::vector<std::pair<std::string, std::string>>& timeSlots = it->second;
+        for (size_t i = 0; i < timeSlots.size(); ++i) {
+            const std::pair<std::string, std::string>& slot = timeSlots[i];
+            ui->tableWorkingSchedule->insertRow(row);
+            ui->tableWorkingSchedule->setItem(row, 0, new QTableWidgetItem(QString::fromStdString(day)));
+            ui->tableWorkingSchedule->setItem(row, 1, new QTableWidgetItem(QString::fromStdString(slot.first)));
+            ui->tableWorkingSchedule->setItem(row, 2, new QTableWidgetItem(QString::fromStdString(slot.second)));
+            ++row;
+        }
+    }
+}
+
+
+// ============================================
+// EXTRACT WORKING SCHEDULE FROM TABLE
+// ============================================
+WorkingSchedule AddEditDoctorDialog::getWorkingScheduleFromTable() const {
+    WorkingSchedule schedule;
+    int rowCount = ui->tableWorkingSchedule->rowCount();
+    for (int row = 0; row < rowCount; ++row) {
+        // Day
+        QString day;
+        QWidget* dayWidget = ui->tableWorkingSchedule->cellWidget(row, 0);
+        if (auto combo = qobject_cast<QComboBox*>(dayWidget)) {
+            day = combo->currentText();
+        } else if (ui->tableWorkingSchedule->item(row, 0)) {
+            day = ui->tableWorkingSchedule->item(row, 0)->text();
+        }
+
+        // Begin time
+        QString start;
+        QWidget* beginWidget = ui->tableWorkingSchedule->cellWidget(row, 1);
+        if (auto timeEdit = qobject_cast<QTimeEdit*>(beginWidget)) {
+            start = timeEdit->time().toString("HH:mm");
+        } else if (ui->tableWorkingSchedule->item(row, 1)) {
+            start = ui->tableWorkingSchedule->item(row, 1)->text();
+        }
+
+        // End time
+        QString end;
+        QWidget* endWidget = ui->tableWorkingSchedule->cellWidget(row, 2);
+        if (auto timeEdit = qobject_cast<QTimeEdit*>(endWidget)) {
+            end = timeEdit->time().toString("HH:mm");
+        } else if (ui->tableWorkingSchedule->item(row, 2)) {
+            end = ui->tableWorkingSchedule->item(row, 2)->text();
+        }
+
+        if (!day.isEmpty() && !start.isEmpty() && !end.isEmpty() && day != "Chọn ngày..." && start != "Chọn giờ bắt đầu..." && end != "Chọn giờ kết thúc...") {
+            schedule.schedule[day.toStdString()].emplace_back(start.toStdString(), end.toStdString());
+        }
+    }
+    return schedule;
+
 }
 
 AddEditDoctorDialog::~AddEditDoctorDialog()
@@ -141,6 +302,9 @@ void AddEditDoctorDialog::loadDoctorData(const Doctor& doctor) {
         ui->cmbStatus->setCurrentIndex(statusIndex);
     }
 
+    // Lịch làm việc
+    loadWorkingSchedule(doctor.getWorkingSchedule());
+
     qDebug() << "[DIALOG] Loaded doctor data for ID:" << doctor.getID();
 }
 
@@ -241,15 +405,14 @@ Doctor AddEditDoctorDialog::getDoctorData() const {
     std::string specialization = ui->cmbSpecialization->currentText().trimmed().toStdString();
     std::string status = ui->cmbStatus->currentData().toString().toStdString();
 
+    Doctor doctor(name, gender, birthday, phoneNumber, email, specialization, status);
+    doctor.setWorkingSchedule(getWorkingScheduleFromTable());
     if (isEditMode) {
-        Doctor doctor(name, gender, birthday, phoneNumber, email, specialization, status);
         qDebug() << "[DIALOG] getDoctorData() - EDIT mode, original ID:" << editingDoctorID;
-        return doctor;
     } else {
-        Doctor doctor(name, gender, birthday, phoneNumber, email, specialization, status);
         qDebug() << "[DIALOG] getDoctorData() - ADD mode, new ID:" << doctor.getID();
-        return doctor;
     }
+    return doctor;
 }
 
 void AddEditDoctorDialog::setDialogTitle(const QString& title) {
