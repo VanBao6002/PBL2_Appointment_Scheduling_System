@@ -32,9 +32,13 @@ public:
     // Đặt tiêu đề dialog
     void setDialogTitle(const QString& title);
 
+    WorkingSchedule getWorkingScheduleFromTable() const;
+
 private slots:
     void on_buttonBox_accepted();
     void on_buttonBox_rejected();
+     void onAddWorkingScheduleClicked();
+     void onDeleteWorkingScheduleClicked();
 
 private:
     Ui::AddEditDoctorDialog *ui;
@@ -45,10 +49,10 @@ private:
     // Setup UI components
     void setupComboBoxes();
     void setupValidators();
-
+    void setupWorkingScheduleTable();
     // Load dữ liệu khi edit
     void loadDoctorData(const Doctor& doctor);
-
+    void loadWorkingSchedule(const WorkingSchedule& schedule);
     // Validate form
     bool validateForm();
 };

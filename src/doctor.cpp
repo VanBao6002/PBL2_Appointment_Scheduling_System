@@ -84,12 +84,11 @@ void Doctor::setStatus(const std::string& doctorStatus_){
 }
 
 void Doctor::setEmail(const std::string &email_){
-    Utils::validName(Utils::trimmed(email_));
     email = Utils::trimmed(email_);
 }
 
-void Doctor::setWorkingSchedule(const WorkingSchedule& schedule_) {
-    workingSchedule = schedule_;
+void Doctor::setWorkingSchedule(const WorkingSchedule& schedule) {
+    workingSchedule = schedule;
 }
 
 void Doctor::addPatientID(int ID_) {

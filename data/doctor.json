@@ -1,5 +1,21 @@
 [
     {
+        "ID": 1,
+        "birthday": {
+            "day": 1,
+            "month": 1,
+            "year": 1980
+        },
+        "doctorStatus": "Retired",
+        "email": "domixi@gmail.com",
+        "gender": "M",
+        "name": "ronaldo",
+        "patientIDs": null,
+        "phoneNumber": "0123456789",
+        "specialization": "Thần kinh",
+        "workingSchedule": null
+    },
+    {
         "ID": 2,
         "birthday": {
             "day": 1,
@@ -7,26 +23,12 @@
             "year": 1980
         },
         "doctorStatus": "Active",
-        "email": "MessiLovesRonaldo@gmail.com",
+        "email": "ronaldo_bucu_messi@gmail.com",
         "gender": "M",
-        "name": "Messi boucoup",
+        "name": "Messi Kimochi",
         "patientIDs": null,
         "phoneNumber": "0123456789",
-        "specialization": "Lão khoa"
-    },
-    {
-        "ID": 1,
-        "birthday": {
-            "day": 1,
-            "month": 1,
-            "year": 1980
-        },
-        "doctorStatus": "Active",
-        "email": "ronaldoLovesMessi@gmail.com",
-        "gender": "M",
-        "name": "Ronaldo SIu",
-        "patientIDs": null,
-        "phoneNumber": "0123456789",
-        "specialization": "Lão khoa"
+        "specialization": "Tâm thần",
+        "workingSchedule": null
     }
 ]

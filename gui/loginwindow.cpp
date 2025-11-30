@@ -1,7 +1,6 @@
 #include "loginwindow.h"
 #include "gui/ui_loginwindow.h"
 #include "adminwindow.h"
-#include "doctorwindow.h"
 #include "assistantwindow.h"
 #include "userManager.h"
 #include "config.h"
