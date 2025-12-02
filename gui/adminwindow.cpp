@@ -889,7 +889,7 @@ void AdminWindow::loadUserData(int page, const QString& searchText) {
         usernameItem->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
         ui->tableUser->setItem(row, 2, usernameItem);
 
-        QTableWidgetItem* passwordItem = new QTableWidgetItem(QString::fromStdString(user.getPassword()));
+        QTableWidgetItem* passwordItem = new QTableWidgetItem(QString::fromStdString(user.getPlainPassword()));
         passwordItem->setTextAlignment(Qt::AlignCenter);
         ui->tableUser->setItem(row, 3, passwordItem);
 

@@ -91,11 +91,17 @@ std::string Utils::getDateTime() {
 }
 
 std::string Utils::hashFunc(const std::string &password_){
-    std::string result;
-    for (auto c : password_){
-        result += std::to_string(c % password_.size());
-    } 
-    return result;
+    if (password_.empty()) return "";
+
+    // Simple consistent hash
+    unsigned int hash = 0;
+    const int PRIME = 31;
+
+    for (char c : password_) {
+        hash = hash * PRIME + static_cast<unsigned char>(c);
+    }
+
+    return std::to_string(hash);
 }
 
 std::string Utils::generatePrescriptionText(int prescriptionID, const Date& prescriptionDate, 
@@ -182,8 +188,6 @@ std::vector<std::string> Utils::parseStringToList(const std::string& str) {
     }
     return list;
 }
-
-// ======================= VALIDATOR =======================
 
 void Utils::validName(const std::string &name_) {
     std::string trimmed = Utils::trimmed(name_);
@@ -326,10 +330,16 @@ void Utils::validBloodType(const std::string &bloodType_) {
     }
 }
 
-void Utils::validUserName(const std::string &username_){
-    Utils::validName(username_);
-    if (username_.size() < 4 || username_.size() > 20){
-        throw std::invalid_argument("Username: " + username_ + " is not valid.");
+void Utils::validUserName(const std::string &username_) {
+    std::string trimmedUsername = Utils::trimmed(username_);
+    
+    if (trimmedUsername.empty()) {
+        throw std::invalid_argument("Username must not be empty or only whitespace.");
+    }
+    
+    // Chỉ kiểm tra độ dài, không kiểm tra nội dung
+    if (trimmedUsername.size() < 4 || trimmedUsername.size() > 20) {
+        throw std::invalid_argument("Username: " + trimmedUsername + " is not valid. Must be 4-20 characters.");
     }
 }
 

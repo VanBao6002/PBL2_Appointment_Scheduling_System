@@ -14,6 +14,7 @@ private:
     Role userRole;
     std::string username;
     std::string passwordHash;
+    std::string plainPassword;
 
 public:
     User() = default;
@@ -28,12 +29,14 @@ public:
     void setRole(const std::string &role_);
     void setUsername(const std::string &username_);
     void setPassword(const std::string &passwordHash_);
+    void setPlainPassword(const std::string& plainPwd) { plainPassword = plainPwd; }
     void setID(int ID_);
 
     int getID() const { return ID; }
     Role getRole() const { return userRole; }
     const std::string& getUsername() const { return username; }
     const std::string& getPassword() const { return passwordHash; }
+    const std::string& getPlainPassword() const { return plainPassword; }
 
     // converters
     static Role roleFromString (const std::string& str);

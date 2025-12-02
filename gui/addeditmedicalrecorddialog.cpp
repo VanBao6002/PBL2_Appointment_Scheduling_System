@@ -403,7 +403,7 @@ void AddEditMedicalRecordDialog::mousePressEvent(QMouseEvent *event)
 {
     if (event->button() == Qt::LeftButton) {
         m_dragging = true;
-        m_dragPosition = event->globalPos() - frameGeometry().topLeft();
+        m_dragPosition = event->globalPosition().toPoint() - frameGeometry().topLeft();
         event->accept();
     }
 }
@@ -411,7 +411,7 @@ void AddEditMedicalRecordDialog::mousePressEvent(QMouseEvent *event)
 void AddEditMedicalRecordDialog::mouseMoveEvent(QMouseEvent *event)
 {
     if (m_dragging && (event->buttons() & Qt::LeftButton)) {
-        move(event->globalPos() - m_dragPosition);
+        move(event->globalPosition().toPoint() - m_dragPosition);
         event->accept();
     }
 }

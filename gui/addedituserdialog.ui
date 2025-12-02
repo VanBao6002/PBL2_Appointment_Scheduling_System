@@ -6,53 +6,76 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>500</width>
+    <height>400</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Thêm Người Dùng Mới</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QWidget#widgetTitleBar {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+        stop:0 #3498db, stop:1 #2980b9);
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    padding: 15px;
+}
+
+QLabel#lblTitle {
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    font-family: &quot;Arial&quot;;
+}
+
+QPushButton#btnClose {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    padding: 5px 10px;
+    font-weight: bold;
+}
+
+QPushButton#btnClose:hover {
+    background-color: #c0392b;
+}
+
+QGroupBox {
+    font-weight: bold;
+    font-size: 11px;
+    color: #2C3E50;
+    border: 1px solid #CCCCCC;
+    border-radius: 5px;
+    margin-top: 10px;
+    padding-top: 10px;
+    background-color: white;
+}
+
+QGroupBox::title {
+    subcontrol-origin: margin;
+    left: 10px;
+    padding: 0 5px 0 5px;
+    font-size: 11px;
+    font-weight: bold;
+    color: #2C3E50;
+    background-color: white;
+}
+QDialog {
+	background-color: rgb(20, 0, 0);
+}</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QWidget" name="widget" native="true">
-     <layout class="QHBoxLayout" name="horizontalLayout_3">
-      <item>
-       <widget class="QLabel" name="label">
-        <property name="text">
-         <string>Vai trò</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <spacer name="horizontalSpacer_2">
-        <property name="orientation">
-         <enum>Qt::Orientation::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item>
-       <widget class="QComboBox" name="cmbRole"/>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item>
-    <widget class="QWidget" name="widget_4" native="true">
-     <layout class="QHBoxLayout" name="horizontalLayout_4">
-      <item>
-       <widget class="QLabel" name="label_4">
-        <property name="text">
-         <string>Ten người dùng</string>
-        </property>
-       </widget>
-      </item>
+    <widget class="QWidget" name="widgetTitleBar" native="true">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>60</height>
+      </size>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout_5">
       <item>
        <spacer name="horizontalSpacer">
         <property name="orientation">
@@ -67,23 +90,17 @@
        </spacer>
       </item>
       <item>
-       <widget class="QLineEdit" name="txtUsername"/>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item>
-    <widget class="QWidget" name="widget_2" native="true">
-     <layout class="QHBoxLayout" name="horizontalLayout_2">
-      <item>
-       <widget class="QLabel" name="label_2">
+       <widget class="QLabel" name="lblTitle">
         <property name="text">
-         <string>Mật khẩu</string>
+         <string>THÊM NGƯỜI DÙNG MỚI</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignmentFlag::AlignCenter</set>
         </property>
        </widget>
       </item>
       <item>
-       <spacer name="horizontalSpacer_4">
+       <spacer name="horizontalSpacer_5">
         <property name="orientation">
          <enum>Qt::Orientation::Horizontal</enum>
         </property>
@@ -96,36 +113,150 @@
        </spacer>
       </item>
       <item>
-       <widget class="QLineEdit" name="txtPassword"/>
+       <widget class="QPushButton" name="btnClose">
+        <property name="maximumSize">
+         <size>
+          <width>30</width>
+          <height>30</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>X</string>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>
    </item>
    <item>
-    <widget class="QWidget" name="widget_3" native="true">
-     <layout class="QHBoxLayout" name="horizontalLayout">
+    <widget class="QGroupBox" name="groupBoxUserInfo">
+     <property name="styleSheet">
+      <string notr="true">QGroupBox {
+    font: bold 11pt &quot;Arial&quot;;
+    color: #2C3E50;
+    border: 1px solid #CCCCCC;
+    border-radius: 5px;
+    margin-top: 10px;
+    padding-top: 10px;
+    background-color: white;
+}
+
+QGroupBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top left;
+    border: 1px solid #CCCCCC;
+    border-radius: 5px;
+    left: 10px;
+    padding: 0 8px 0 8px;
+    background-color: white;
+}
+QLabel {
+    color: black;
+    background-color: transparent;
+    border: none;
+    font-weight: bold;
+}</string>
+     </property>
+     <property name="title">
+      <string>Thông tin người dùng</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_2" stretch="1,1,1,1,1">
       <item>
-       <widget class="QLabel" name="label_3">
-        <property name="text">
-         <string>Xác nhận mật khẩu</string>
-        </property>
+       <widget class="QWidget" name="widget" native="true">
+        <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <item>
+          <widget class="QLabel" name="label">
+           <property name="text">
+            <string>Vai trò:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="cmbRole"/>
+         </item>
+        </layout>
        </widget>
       </item>
       <item>
-       <spacer name="horizontalSpacer_3">
-        <property name="orientation">
-         <enum>Qt::Orientation::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
+       <widget class="QWidget" name="widget_4" native="true">
+        <layout class="QHBoxLayout" name="horizontalLayout_4">
+         <item>
+          <widget class="QLabel" name="label_4">
+           <property name="text">
+            <string>Tên người dùng:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="txtUsername"/>
+         </item>
+        </layout>
+       </widget>
       </item>
       <item>
-       <widget class="QLineEdit" name="txtConfirmPassword"/>
+       <widget class="QWidget" name="widget_2" native="true">
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <item>
+          <widget class="QLabel" name="label_2">
+           <property name="text">
+            <string>Mật khẩu:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="txtPassword"/>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QWidget" name="widget_3" native="true">
+        <layout class="QHBoxLayout" name="horizontalLayout">
+         <item>
+          <widget class="QLabel" name="label_3">
+           <property name="text">
+            <string>Xác nhận mật khẩu:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="txtConfirmPassword"/>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QWidget" name="widget_5" native="true">
+        <layout class="QHBoxLayout" name="horizontalLayout_6" stretch="5,1,1">
+         <item>
+          <widget class="QLabel" name="label_5">
+           <property name="text">
+            <string>TextLabel</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_2">
+           <property name="orientation">
+            <enum>Qt::Orientation::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButton">
+           <property name="text">
+            <string>PushButton</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
       </item>
      </layout>
     </widget>
@@ -145,34 +276,18 @@
  <resources/>
  <connections>
   <connection>
-   <sender>buttonBox</sender>
-   <signal>accepted()</signal>
-   <receiver>AddEditUserDialog</receiver>
-   <slot>accept()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>248</x>
-     <y>254</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>157</x>
-     <y>274</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>buttonBox</sender>
-   <signal>rejected()</signal>
+   <sender>btnClose</sender>
+   <signal>clicked()</signal>
    <receiver>AddEditUserDialog</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>316</x>
-     <y>260</y>
+     <x>20</x>
+     <y>20</y>
     </hint>
     <hint type="destinationlabel">
-     <x>286</x>
-     <y>274</y>
+     <x>20</x>
+     <y>20</y>
     </hint>
    </hints>
   </connection>

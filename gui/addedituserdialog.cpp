@@ -1,13 +1,16 @@
 #include "addedituserdialog.h"
 #include "gui/ui_addedituserdialog.h"
+#include <QMouseEvent>
 
 AddEditUserDialog::AddEditUserDialog(QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::AddEditUserDialog)
+    ui(new Ui::AddEditUserDialog),
+    m_dragging(false)
 {
     ui->setupUi(this);
-    setWindowTitle("Thêm Người Dùng Mới");
+    setWindowFlags(Qt::FramelessWindowHint);
 
+    setWindowTitle("Thêm Người Dùng Mới");
     setupComboBoxes();
 
     qDebug() << "[DIALOG] AddEditUserDialog opened in ADD mode";
@@ -22,13 +25,13 @@ void AddEditUserDialog::setupComboBoxes() {
     // ComboBox Vai trò
     ui->cmbRole->clear();
     ui->cmbRole->addItem("ADMIN", "ADMIN");
-    ui->cmbRole->addItem("DOCTOR", "DOCTOR");
     ui->cmbRole->addItem("ASSISTANT", "ASSISTANT");
 
     // Set placeholder text
     ui->txtUsername->setPlaceholderText("VD: admin123");
     ui->txtPassword->setPlaceholderText("Tối thiểu 8 ký tự");
     ui->txtPassword->setEchoMode(QLineEdit::Password);
+    ui->txtConfirmPassword->setEchoMode(QLineEdit::Password);
 }
 
 bool AddEditUserDialog::validateForm() {
@@ -82,6 +85,29 @@ User AddEditUserDialog::getUserData() const {
 
 void AddEditUserDialog::setDialogTitle(const QString& title) {
     setWindowTitle(title);
+}
+
+void AddEditUserDialog::mousePressEvent(QMouseEvent *event)
+{
+    if (event->button() == Qt::LeftButton) {
+        m_dragging = true;
+        m_dragPosition = event->globalPos() - frameGeometry().topLeft();
+        event->accept();
+    }
+}
+
+void AddEditUserDialog::mouseMoveEvent(QMouseEvent *event)
+{
+    if (m_dragging && (event->buttons() & Qt::LeftButton)) {
+        move(event->globalPos() - m_dragPosition);
+        event->accept();
+    }
+}
+
+void AddEditUserDialog::mouseReleaseEvent(QMouseEvent *event)
+{
+    m_dragging = false;
+    event->accept();
 }
 
 void AddEditUserDialog::on_buttonBox_accepted() {
