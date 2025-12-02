@@ -43,13 +43,30 @@ void loginwindow::on_loginButton_clicked()
         bool loginSuccess = false;
         User loggedInUser;
 
+        // DEBUG: Xem password nhập vào
+        qDebug() << "[LOGIN DEBUG] Username:" << username;
+        qDebug() << "[LOGIN DEBUG] Password input:" << password;
+
+        // Hash password nhập vào
+        std::string inputPasswordHash = Utils::hashFunc(password.toStdString());
+        qDebug() << "[LOGIN DEBUG] Input password hash:" << QString::fromStdString(inputPasswordHash);
+
         for (const auto& pair : allUsers) {
             const User& user = pair.second;
+
+            // DEBUG cho mỗi user
+            qDebug() << "[LOGIN DEBUG] Checking user:"
+                     << QString::fromStdString(user.getUsername())
+                     << "ID:" << user.getID()
+                     << "Stored hash:" << QString::fromStdString(user.getPassword());
+
             if (user.getUsername() == username.toStdString() &&
-                user.getPassword() == password.toStdString())
+                user.getPassword() == inputPasswordHash)  // SỬA: so sánh hash với hash
             {
                 loginSuccess = true;
                 loggedInUser = user;
+
+                qDebug() << "[LOGIN DEBUG] Match found! User ID:" << user.getID();
                 break;
             }
         }
@@ -57,19 +74,18 @@ void loginwindow::on_loginButton_clicked()
         if (loginSuccess) {
             this->hide();
             if (loggedInUser.getRole() == User::Role::ADMIN) {
-                AdminWindow *adminWindow = new AdminWindow(this); 
+                AdminWindow *adminWindow = new AdminWindow(this);
                 adminWindow->show();
-                this->hide();
                 qDebug() << "Admin login successful.";
             } else if(loggedInUser.getRole() == User::Role::ASSISTANT){
                 AssistantWindow *assistantWindow = new AssistantWindow(this);
                 assistantWindow->show();
-                this->hide();
                 qDebug() << "Assistant login successful.";
             } else {
                 QMessageBox::critical(nullptr, "Lỗi Vai Trò", "Vai trò người dùng không hợp lệ hoặc không được hỗ trợ.");
             }
         } else {
+            qDebug() << "[LOGIN DEBUG] No matching user found.";
             QMessageBox::warning(this, "Lỗi Đăng Nhập", "Sai tên đăng nhập hoặc mật khẩu.");
         }
     } catch (const std::exception& e) {

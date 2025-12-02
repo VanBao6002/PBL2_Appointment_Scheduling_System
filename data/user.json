@@ -1,8 +1,16 @@
 [
     {
         "ID": 1,
-        "passwordHash": "abc",
+        "passwordHash": "96354",
+        "plainPassword": "",
         "userRole": "ADMIN",
         "username": "admin1"
+    },
+    {
+        "ID": 4,
+        "passwordHash": "995454963",
+        "plainPassword": "",
+        "userRole": "ADMIN",
+        "username": "admin36"
     }
 ]

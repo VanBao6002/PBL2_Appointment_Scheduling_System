@@ -5,15 +5,23 @@
 User::User(const std::string &userRole_, const std::string &username_, const std::string &userPassword_) {
     setRole(userRole_);
     setUsername(username_);
-    setPassword(userPassword_);
-
-    int ID = static_cast<int>(IDHandler<Appointment>::generateID());
+    
+    // Lưu cả plain và hash
+    std::string trimmedPwd = Utils::trimmed(userPassword_);
+    Utils::validPassword(trimmedPwd);
+    
+    plainPassword = trimmedPwd;                // Lưu plain để hiển thị
+    passwordHash = Utils::hashFunc(trimmedPwd); // Lưu hash để xác thực
+    
+    int ID = static_cast<int>(IDHandler<User>::generateID());
     setID(ID);
     IDHandler<User>::registerID(ID);
 }
 
 User::~User(){
-    IDHandler<User>::unregisterID(ID);
+    if (ID != 0) {  // Chỉ unregister nếu ID hợp lệ
+        IDHandler<User>::unregisterID(ID);
+    }
 }
 
 // Copy Constructor - Copy ID, do not generate/register new one
@@ -73,11 +81,14 @@ void User::setRole(const std::string &role_){
 void User::setUsername(const std::string &username_){
     Utils::validUserName(Utils::trimmed(username_));
     username = Utils::trimmed(username_);
-}   
+}
 
 void User::setPassword(const std::string &password_){
-    Utils::validPassword(Utils::trimmed(password_));
-    passwordHash = Utils::hashFunc(Utils::trimmed(password_));
+    std::string trimmedPwd = Utils::trimmed(password_);
+    Utils::validPassword(trimmedPwd);
+    
+    plainPassword = trimmedPwd;                // Lưu plain để hiển thị
+    passwordHash = Utils::hashFunc(trimmedPwd); // Lưu hash để xác thực
 }
 
 User::Role User::roleFromString (const std::string& str) {
@@ -100,7 +111,8 @@ nlohmann::json User::toJson() const {
     j["ID"] = ID;
     j["userRole"] = roleToString(userRole);
     j["username"] = username;
-    j["passwordHash"] = passwordHash;
+    j["passwordHash"] = passwordHash;  // Vẫn lưu hash để bảo mật
+    j["plainPassword"] = plainPassword; // Lưu plain để hiển thị (có thể bỏ nếu không muốn)
     return j;
 }
 
@@ -109,4 +121,11 @@ void User::fromJson(const nlohmann::json &j) {
     if (j.contains("userRole")) userRole = roleFromString(j.at("userRole").get<std::string>());
     if (j.contains("username")) username = j.at("username").get<std::string>();
     if (j.contains("passwordHash")) passwordHash = j.at("passwordHash").get<std::string>();
+    
+    // THÊM: đọc plainPassword nếu có, nếu không thì để trống
+    if (j.contains("plainPassword")) {
+        plainPassword = j.at("plainPassword").get<std::string>();
+    } else {
+        plainPassword = "";  // Nếu file cũ không có plainPassword
+    }
 }
