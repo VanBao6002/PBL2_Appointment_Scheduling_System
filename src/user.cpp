@@ -29,7 +29,8 @@ User::User(const User& other)
     : ID(other.ID),
       userRole(other.userRole),
       username(other.username),
-      passwordHash(other.passwordHash)
+      passwordHash(other.passwordHash),
+      plainPassword(other.plainPassword)
 {
     // Do not register ID again (ownership stays with original)
 }
@@ -42,6 +43,7 @@ User& User::operator=(const User& other)
         userRole = other.userRole;
         username = other.username;
         passwordHash = other.passwordHash;
+        plainPassword = other.plainPassword;
         // Do not register/unregister ID
     }
     return *this;
@@ -52,7 +54,8 @@ User::User(User&& other) noexcept
     : ID(other.ID),
       userRole(std::move(other.userRole)),
       username(std::move(other.username)),
-      passwordHash(std::move(other.passwordHash))
+      passwordHash(std::move(other.passwordHash)),
+      plainPassword(std::move(other.plainPassword))
 {
     other.ID = 0;
 }
@@ -65,6 +68,7 @@ User& User::operator=(User&& other) noexcept
         userRole = std::move(other.userRole);
         username = std::move(other.username);
         passwordHash = std::move(other.passwordHash);
+        plainPassword = std::move(other.plainPassword);
         other.ID = 0;
     }
     return *this;
@@ -111,8 +115,8 @@ nlohmann::json User::toJson() const {
     j["ID"] = ID;
     j["userRole"] = roleToString(userRole);
     j["username"] = username;
-    j["passwordHash"] = passwordHash;  // Vẫn lưu hash để bảo mật
-    j["plainPassword"] = plainPassword; // Lưu plain để hiển thị (có thể bỏ nếu không muốn)
+    j["passwordHash"] = passwordHash;
+    j["plainPassword"] = plainPassword;
     return j;
 }
 

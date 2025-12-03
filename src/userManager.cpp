@@ -50,7 +50,8 @@ void UserManager::changePassword(int ID_, const std::string& newPassword){
     if (userTable.find(ID_) == userTable.end()){
         throw std::invalid_argument("Cannot change password. User ID " + std::to_string(ID_) + " not found.");
     }
-    userTable[ID_].setPassword(Utils::hashFunc(newPassword)); 
+    // ✅ Truyền password plain, không hash
+    userTable[ID_].setPassword(newPassword); 
     log[ID_] += " Password changed on " + Utils::getDateTime();
 }
 
