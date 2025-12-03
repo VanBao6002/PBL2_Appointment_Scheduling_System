@@ -868,6 +868,11 @@ void AdminWindow::loadUserData(int page, const QString& searchText) {
         ui->tableUser->insertRow(ui->tableUser->rowCount());
         int row = ui->tableUser->rowCount() - 1;
 
+        qDebug() << "[USER DEBUG] ID:" << user.getID()
+                 << "Username:" << QString::fromStdString(user.getUsername())
+                 << "PlainPassword:" << QString::fromStdString(user.getPlainPassword())
+                 << "PasswordHash:" << QString::fromStdString(user.getPassword());
+
         QTableWidgetItem* idItem = new QTableWidgetItem(QString::number(user.getID()));
         idItem->setTextAlignment(Qt::AlignCenter);
         ui->tableUser->setItem(row, 0, idItem);
@@ -2209,6 +2214,7 @@ void AdminWindow::on_btnAddUser_clicked() {
             qDebug() << "User data retrieved, ID:" << newUser.getID();
 
             UserManager::getInstance().addUser(newUser);
+            UserManager::getInstance().saveToFile(Config::USER_PATH);
 
             QMessageBox::information(this, "Thành công",
                                      QString("Đã thêm người dùng mới với ID: %1\nFile đã được lưu tại: %2")

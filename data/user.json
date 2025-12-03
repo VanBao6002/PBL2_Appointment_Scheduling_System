@@ -1,16 +1,9 @@
 [
     {
-        "ID": 1,
-        "passwordHash": "96354",
-        "plainPassword": "",
+        "ID": 7,
+        "passwordHash": "689486176",
+        "plainPassword": "adminadmin",
         "userRole": "ADMIN",
-        "username": "admin1"
-    },
-    {
-        "ID": 4,
-        "passwordHash": "995454963",
-        "plainPassword": "",
-        "userRole": "ADMIN",
-        "username": "admin36"
+        "username": "admin"
     }
 ]
