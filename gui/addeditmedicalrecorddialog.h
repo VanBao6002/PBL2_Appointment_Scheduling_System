@@ -6,12 +6,14 @@
 #include <QDebug>
 #include <QDate>
 #include <QListWidgetItem>
+#include <vector>
+#include <string>
+#include <QMouseEvent>
 #include "medicalRecord.h"
 #include "patient.h"
 #include "doctor.h"
 #include "patientManager.h"
 #include "doctorManager.h"
-#include <QMouseEvent>
 
 namespace Ui {
 class AddEditMedicalRecordDialog;
@@ -28,6 +30,11 @@ public:
 
     MedicalRecord getMedicalRecordData() const;
     void setDialogTitle(const QString& title);
+        // Getter cho danh sách thuốc
+    const std::vector<Prescription::Medicine>& getMedicines() const { return medicines; }
+    
+    // Setter cho danh sách thuốc (nếu cần)
+    void setMedicines(const std::vector<Prescription::Medicine>& meds) { medicines = meds; }
 
 protected:
     void mousePressEvent(QMouseEvent *event) override;
@@ -50,6 +57,7 @@ private:
     int editingRecordID;
     bool m_dragging;
     QPoint m_dragPosition;
+    std::vector<Prescription::Medicine> medicines;
 
     void setupUI();
     void setupValidators();

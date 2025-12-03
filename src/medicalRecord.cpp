@@ -300,4 +300,3 @@ void MedicalRecord::fromJson(const nlohmann::json &j) {
     }
     setChangeHistory(j.at("history").get<std::string>());
 }
-

@@ -1,21 +1,5 @@
 [
     {
-        "ID": 1,
-        "birthday": {
-            "day": 1,
-            "month": 1,
-            "year": 1980
-        },
-        "doctorStatus": "Retired",
-        "email": "domixi@gmail.com",
-        "gender": "M",
-        "name": "ronaldo",
-        "patientIDs": null,
-        "phoneNumber": "0123456789",
-        "specialization": "Thần kinh",
-        "workingSchedule": null
-    },
-    {
         "ID": 2,
         "birthday": {
             "day": 1,
@@ -29,6 +13,22 @@
         "patientIDs": null,
         "phoneNumber": "0123456789",
         "specialization": "Tâm thần",
+        "workingSchedule": null
+    },
+    {
+        "ID": 1,
+        "birthday": {
+            "day": 1,
+            "month": 1,
+            "year": 1980
+        },
+        "doctorStatus": "Retired",
+        "email": "domixi@gmail.com",
+        "gender": "M",
+        "name": "ronaldo",
+        "patientIDs": null,
+        "phoneNumber": "0123456789",
+        "specialization": "Thần kinh",
         "workingSchedule": null
     }
 ]

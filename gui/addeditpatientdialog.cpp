@@ -29,8 +29,8 @@ void AddEditPatientDialog::setDialogTitle(const QString& title) {
 void AddEditPatientDialog::populateUI(const Patient& patient) {
     if (patient.getID() > 0) {
         // Chế độ Sửa
-        ui->txtID->setText(QString::number(patient.getID()));
-        ui->txtID->setEnabled(false);
+        // ui->txtID->setText(QString::number(patient.getID()));
+        // ui->txtID->setEnabled(false);
         ui->txtName->setText(QString::fromStdString(patient.getName()));
 
         QString genderStr = QString(patient.getGender()).toUpper();
@@ -58,8 +58,8 @@ void AddEditPatientDialog::populateUI(const Patient& patient) {
     } else {
         // Chế độ Thêm mới
         setWindowTitle("Thêm Bệnh Nhân Mới");
-        ui->txtID->setText("Tự động");
-        ui->txtID->setEnabled(false);
+        // ui->txtID->setText("Tự động");
+        // ui->txtID->setEnabled(false);
         int defaultGenderIndex = ui->comboGender->findText("M");
         if (defaultGenderIndex != -1) {
             ui->comboGender->setCurrentIndex(defaultGenderIndex);
