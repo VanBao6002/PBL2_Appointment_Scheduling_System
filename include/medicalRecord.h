@@ -82,6 +82,9 @@ class MedicalRecord{
         void addFollowUpDate(const std::string& date_);
         void setChangeHistory(const std::string& date_);
         
+        // Thêm prescription vào hồ sơ
+        void addPrescription(const Prescription& prescription);
+
         // convertor
         nlohmann::json toJson() const;
         void fromJson(const nlohmann::json &j);

@@ -7,14 +7,6 @@
 class Prescription{
     public:
         enum class Status {Active, Inactive};
-
-    private:
-        // Thông tin cơ bản của đơn thuốc
-        int ID;
-        int medicalRecordID;
-        Date prescriptionDate;    // Ngày kê đơn
-        
-        // Thông tin về thuốc
         struct Medicine {
             std::string name;        // Tên thuốc
             std::string dosage;      // Liều lượng (vd: "500mg")
@@ -22,6 +14,12 @@ class Prescription{
             int duration;            // Số ngày uống
             std::string instruction; // Hướng dẫn sử dụng (vd: "Uống sau ăn")
         };
+        
+    private:
+        int ID;
+        int medicalRecordID;
+        Date prescriptionDate;    // Ngày kê đơn
+        // Thông tin về thuốc
         std::vector<Medicine> medicines;  // Danh sách các thuốc trong đơn        
         std::string additionalNotes;     // Ghi chú thêm của bác sĩ
         Status prescriptionStatus;       // Đơn thuốc còn hiệu lực hay không

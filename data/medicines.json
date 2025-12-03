@@ -1,0 +1,74 @@
+{
+  "medicines": [
+    {
+      "id": 1,
+      "name": "Paracetamol",
+      "common_names": ["Panadol", "Efferalgan", "Tylenol"],
+      "category": "Giảm đau, hạ sốt",
+      "common_dosages": ["500mg", "650mg"]
+    },
+    {
+      "id": 2,
+      "name": "Amoxicillin",
+      "common_names": ["Amoxi", "Clamoxyl", "Amoxypen"],
+      "category": "Kháng sinh",
+      "common_dosages": ["250mg", "500mg", "875mg"]
+    },
+    {
+      "id": 3,
+      "name": "Bromhexine",
+      "common_names": ["Bisolvon", "Exomuc"],
+      "category": "Thuốc long đờm",
+      "common_dosages": ["8mg", "16mg"]
+    },
+    {
+      "id": 4,
+      "name": "Cetirizine",
+      "common_names": ["Zyrtec", "Cetirizin"],
+      "category": "Kháng histamine",
+      "common_dosages": ["10mg"]
+    },
+    {
+      "id": 5,
+      "name": "Omeprazole",
+      "common_names": ["Losec", "Omez", "Gastroprazole"],
+      "category": "Thuốc dạ dày",
+      "common_dosages": ["20mg", "40mg"]
+    },
+    {
+      "id": 6,
+      "name": "Metformin",
+      "common_names": ["Glucophage", "Metfor"],
+      "category": "Đái tháo đường",
+      "common_dosages": ["500mg", "850mg", "1000mg"]
+    },
+    {
+      "id": 7,
+      "name": "Losartan",
+      "common_names": ["Cozaar", "Losacor"],
+      "category": "Huyết áp",
+      "common_dosages": ["50mg", "100mg"]
+    },
+    {
+      "id": 8,
+      "name": "Vitamin C",
+      "common_names": ["Ascorbic acid", "Cevit"],
+      "category": "Vitamin",
+      "common_dosages": ["500mg", "1000mg"]
+    },
+    {
+      "id": 9,
+      "name": "Ibuprofen",
+      "common_names": ["Advil", "Brufen", "Nurofen"],
+      "category": "Kháng viêm",
+      "common_dosages": ["200mg", "400mg", "600mg"]
+    },
+    {
+      "id": 10,
+      "name": "Aspirin",
+      "common_names": ["Aspegic", "Aspi"],
+      "category": "Kháng đông",
+      "common_dosages": ["81mg", "325mg", "500mg"]
+    }
+  ]
+}
