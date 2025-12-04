@@ -17,16 +17,7 @@ int main(int argc, char *argv[])
     Q_INIT_RESOURCE(resources);
     QApplication a(argc, argv);
 
-    // ✅ Load theo thứ tự đúng: Patient -> Doctor -> MedicalRecord -> Core
-    qDebug() << "[LOAD] Loading patients...";
-    PatientManager::getInstance().loadFromFile(Config::PATIENT_PATH);
-
-    qDebug() << "[LOAD] Loading doctors...";
-    DoctorManager::getInstance().loadFromFile(Config::DOCTOR_PATH);
-
-    qDebug() << "[LOAD] Loading medical record...";
-    MedicalRecordManager::getInstance().loadFromFile(Config::MEDICAL_RECORD_PATH);
-
+    
     qDebug() << "[LOAD] Loading core data...";
     try {
         Core::loadAll();

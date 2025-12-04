@@ -3,6 +3,7 @@
 #include "doctorManager.h"
 #include "appointmentManager.h"
 #include "userManager.h"
+#include "medicalRecordManager.h"
 #include "config.h"
 
 
@@ -10,12 +11,14 @@ void Core::loadAll() {
     UserManager::getInstance().loadFromFile(Config::USER_PATH);
     DoctorManager::getInstance().loadFromFile(Config::DOCTOR_PATH);
     PatientManager::getInstance().loadFromFile(Config::PATIENT_PATH);
+    MedicalRecordManager::getInstance().loadFromFile(Config::MEDICAL_RECORD_PATH);
     AppointmentManager::getInstance().loadFromFile(Config::APPOINTMENT_PATH);
 }
 
 void Core::saveAll() {
     DoctorManager::getInstance().saveToFile(Config::DOCTOR_PATH);
     PatientManager::getInstance().saveToFile(Config::PATIENT_PATH);
+    MedicalRecordManager::getInstance().saveToFile(Config::MEDICAL_RECORD_PATH);
     AppointmentManager::getInstance().saveToFile(Config::APPOINTMENT_PATH);
     UserManager::getInstance().saveToFile(Config::USER_PATH);
 }

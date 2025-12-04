@@ -23,9 +23,6 @@ AdminWindow::AdminWindow(QWidget *parent)
     ui->setupUi(this);
     this->showFullScreen();
 
-    PatientManager::getInstance().loadFromFile(Config::PATIENT_PATH);
-    DoctorManager::getInstance().loadFromFile(Config::DOCTOR_PATH);
-
     setupPatientTable();
     setupDoctorTable();
 
