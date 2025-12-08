@@ -29,8 +29,6 @@ void AddEditPatientDialog::setDialogTitle(const QString& title) {
 void AddEditPatientDialog::populateUI(const Patient& patient) {
     if (patient.getID() > 0) {
         // Chế độ Sửa
-        // ui->txtID->setText(QString::number(patient.getID()));
-        // ui->txtID->setEnabled(false);
         ui->txtName->setText(QString::fromStdString(patient.getName()));
 
         QString genderStr = QString(patient.getGender()).toUpper();
@@ -50,6 +48,9 @@ void AddEditPatientDialog::populateUI(const Patient& patient) {
         ui->txtNameMother->setText(QString::fromStdString(patient.getNameMother()));
         ui->txtNameFather->setText(QString::fromStdString(patient.getNameFather()));
 
+        // NEW: Set insuranceID field
+        ui->txtInsuranceID->setText(QString::fromStdString(patient.getInsuranceID()));
+
         // ✅ Cập nhật cách thiết lập ngày sinh
         QDate qDate(patient.getBirthday().getYear(), patient.getBirthday().getMonth(), patient.getBirthday().getDay());
         ui->dateEditBirthday->setDate(qDate);
@@ -58,12 +59,13 @@ void AddEditPatientDialog::populateUI(const Patient& patient) {
     } else {
         // Chế độ Thêm mới
         setWindowTitle("Thêm Bệnh Nhân Mới");
-        // ui->txtID->setText("Tự động");
-        // ui->txtID->setEnabled(false);
         int defaultGenderIndex = ui->comboGender->findText("M");
         if (defaultGenderIndex != -1) {
             ui->comboGender->setCurrentIndex(defaultGenderIndex);
         }
+
+        // NEW: Clear insuranceID field
+        ui->txtInsuranceID->clear();
 
         // ✅ Thiết lập ngày sinh mặc định
         ui->dateEditBirthday->setDate(QDate::currentDate().addYears(-10));
@@ -81,6 +83,7 @@ Patient AddEditPatientDialog::getPatientData() const {
     QString nameMother = ui->txtNameMother->text().trimmed();
     QString nameFather = ui->txtNameFather->text().trimmed();
     QString phoneNumber = ui->txtPhoneNumber->text().trimmed();
+    QString insuranceID = ui->txtInsuranceID->text().trimmed();
 
     try {
         Utils::validName(name.toStdString());
@@ -127,12 +130,13 @@ Patient AddEditPatientDialog::getPatientData() const {
             genderStr.isEmpty() ? 'M' : genderStr.toStdString()[0],
             birthday,
             phoneNumber.toStdString(),
+            insuranceID.toStdString(),
             bloodType.toStdString(),
             allergies.toStdString(),
             chronicDiseases.toStdString(),
             nameMother.toStdString(),
             nameFather.toStdString()
-            );
+        );
 
         return newPatient;
     }

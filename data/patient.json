@@ -1,40 +1,24 @@
 [
     {
-        "ID": 2,
+        "ID": 4,
         "allergies": [
-            "No"
+            "Không"
         ],
         "birthday": {
-            "day": 28,
-            "month": 11,
-            "year": 2015
+            "day": 15,
+            "month": 12,
+            "year": 1994
         },
-        "bloodType": "B-",
+        "bloodType": "O+",
         "chronicDiseases": [
-            "No"
+            "Cao huyết áp"
         ],
         "gender": "M",
+        "insuranceID": "SVN51501291",
         "medicalRecordIDs": [],
-        "name": "An Ba To Com",
-        "nameFather": "No",
-        "nameMother": "No",
-        "phoneNumber": "0363636363"
-    },
-    {
-        "ID": 1,
-        "allergies": [],
-        "birthday": {
-            "day": 28,
-            "month": 11,
-            "year": 2015
-        },
-        "bloodType": "A+",
-        "chronicDiseases": [],
-        "gender": "M",
-        "medicalRecordIDs": [],
-        "name": "SHibal sekiya",
-        "nameFather": "SHIBAl",
-        "nameMother": "SHibal",
+        "name": "Rô nân đô",
+        "nameFather": "Rô nân cha",
+        "nameMother": "Rô nân mẹ",
         "phoneNumber": "0123456789"
     }
 ]

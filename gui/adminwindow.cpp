@@ -1656,23 +1656,26 @@ void AdminWindow::on_btnViewPatientDetail_clicked() {
         const Patient& patient = PatientManager::getInstance().getPatientByID(patientID);
 
         QString details = QString(
-                              "=== THÔNG TIN BỆNH NHÂN ===\n\n"
-                              "ID: %1\n"
-                              "Họ tên: %2\n"
-                              "Giới tính: %3\n"
-                              "Ngày sinh: %4\n"
-                              "Nhóm máu: %5\n"
-                              "Số điện thoại: %6\n"
-                              "Mẹ: %7\n"
-                              "Cha: %8\n"
-                              ).arg(patient.getID())
-                              .arg(QString::fromStdString(patient.getName()))
-                              .arg(QString(patient.getGender()))
-                              .arg(QString::fromStdString(patient.getBirthday().toString()))
-                              .arg(QString::fromStdString(patient.getBloodType()))
-                              .arg(QString::fromStdString(patient.getPhoneNumber()))
-                              .arg(QString::fromStdString(patient.getNameMother()))
-                              .arg(QString::fromStdString(patient.getNameFather()));
+            "=== THÔNG TIN BỆNH NHÂN ===\n\n"
+            "ID: %1\n"
+            "Họ tên: %2\n"
+            "Giới tính: %3\n"
+            "Ngày sinh: %4\n"
+            "Nhóm máu: %5\n"
+            "Số điện thoại: %6\n"
+            "Mã BHYT: %7\n"
+            "Mẹ: %8\n"
+            "Cha: %9\n"
+        )
+            .arg(patient.getID())
+            .arg(QString::fromStdString(patient.getName()))
+            .arg(QString(patient.getGender()))
+            .arg(QString::fromStdString(patient.getBirthday().toString()))
+            .arg(QString::fromStdString(patient.getBloodType()))
+            .arg(QString::fromStdString(patient.getPhoneNumber()))
+            .arg(QString::fromStdString(patient.getInsuranceID()))
+            .arg(QString::fromStdString(patient.getNameMother()))
+            .arg(QString::fromStdString(patient.getNameFather()));
 
         if (!patient.getAllergies().empty()) {
             details += "\nDị ứng: " + QString::fromStdString(Utils::join(patient.getAllergies(), ", "));

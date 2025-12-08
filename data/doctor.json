@@ -1,23 +1,35 @@
 [
     {
-        "ID": 1,
+        "ID": 2,
         "birthday": {
-            "day": 1,
+            "day": 14,
             "month": 1,
             "year": 1980
         },
         "doctorStatus": "Active",
-        "email": "donaldo@gmail.com",
+        "email": "messi123@gmail.com",
         "gender": "M",
-        "name": "Ronlado",
+        "name": "Bác sĩ Si",
         "patientIDs": [],
-        "phoneNumber": "0123456789",
-        "specialization": "Lão khoa",
+        "phoneNumber": "0987654321",
+        "specialization": "Tim mạch",
         "workingSchedule": {
-            "Thứ 4": [
+            "Thứ 2": [
                 {
                     "EndTime": "17:00",
+                    "StartTime": "05:00"
+                }
+            ],
+            "Thứ 4": [
+                {
+                    "EndTime": "15:00",
                     "StartTime": "08:00"
+                }
+            ],
+            "Thứ 6": [
+                {
+                    "EndTime": "21:00",
+                    "StartTime": "12:00"
                 }
             ]
         }

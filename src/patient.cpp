@@ -5,21 +5,20 @@
 
 
 
-Patient::Patient(): Person(), bloodType("AB+"), allergies{}, chronicDiseases{}, nameMother("NGUYEN VAN B"), nameFather("NGUYEN VAN A"), medicalRecordIDs() {
+Patient::Patient(): Person(), insuranceID(""), bloodType("AB+"), allergies{}, chronicDiseases{}, nameMother("NGUYEN VAN B"), nameFather("NGUYEN VAN A"), medicalRecordIDs() {
 }
 
 Patient::Patient(const std::string &name_, char gender_, const std::string &birthday_, 
-                 const std::string &phoneNumber_, const std::string &bloodType_, 
+                 const std::string &phoneNumber_, const std::string &insuranceID_, const std::string &bloodType_, 
                  const std::string &allergies_, const std::string &chronicDisease_, 
-                 const std::string &nameMother_, const std::string &nameFather_) 
+                 const std::string &nameMother_, const std::string &nameFather_)
     : Person(name_, gender_, birthday_, phoneNumber_) {
-    
+    setInsuranceID(insuranceID_);
     setBloodType(bloodType_);
     setAllergies(allergies_);
     setChronicDiseases(chronicDisease_);
     setNameMother(nameMother_);
     setNameFather(nameFather_);
-    
     int newID = static_cast<int>(IDHandler<Patient>::generateID());
     ID = newID;
     IDHandler<Patient>::registerID(static_cast<size_t>(newID));
@@ -28,6 +27,7 @@ Patient::Patient(const std::string &name_, char gender_, const std::string &birt
 // Copy Constructor - CHỈ COPY ID, không tạo mới
 Patient::Patient(const Patient& other) 
     : Person(other) {
+    insuranceID = other.insuranceID;
     bloodType = other.bloodType;
     allergies = other.allergies;
     chronicDiseases = other.chronicDiseases;
@@ -42,14 +42,13 @@ Patient& Patient::operator=(const Patient& other) {
     if (this != &other) {
         // Copy dữ liệu từ Person
         Person::operator=(other);
-        
+        insuranceID = other.insuranceID;
         bloodType = other.bloodType;
         allergies = other.allergies;
         chronicDiseases = other.chronicDiseases;
         nameMother = other.nameMother;
         nameFather = other.nameFather;
         medicalRecordIDs = other.medicalRecordIDs;
-        
         ID = other.ID;
     }
     return *this;
@@ -58,6 +57,7 @@ Patient& Patient::operator=(const Patient& other) {
 // Move Constructor - Di chuyển ID ko tạo mới 
 Patient::Patient(Patient&& other) noexcept 
     : Person(std::move(other)) {
+    insuranceID = std::move(other.insuranceID);
     bloodType = std::move(other.bloodType);
     allergies = std::move(other.allergies);
     chronicDiseases = std::move(other.chronicDiseases);
@@ -71,9 +71,9 @@ Patient::Patient(Patient&& other) noexcept
 // Move Assignment Operator - Di chuyển ID an toàn, ko tạo mới
 Patient& Patient::operator=(Patient&& other) noexcept {
     if (this != &other) {
-       // Move dữ liệu từ Person
+        // Move dữ liệu từ Person
         Person::operator=(std::move(other));
-        
+        insuranceID = std::move(other.insuranceID);
         bloodType = std::move(other.bloodType);
         allergies = std::move(other.allergies);
         chronicDiseases = std::move(other.chronicDiseases);
@@ -102,12 +102,17 @@ void Patient::addMedicalRecord(int recordID) {
 }
 
 std::string Patient::getInfo() const {
-    return "Patient ID: " + std::to_string(ID) + 
-           ", Name: " + name + 
-           ", Gender: " + std::string(1, gender) +
-           ", Blood Type: " + bloodType +
-           ", Mother: " + nameMother + 
-           ", Father: " + nameFather;
+        return "Patient ID: " + std::to_string(ID) + 
+            ", Name: " + name + 
+            ", Gender: " + std::string(1, gender) +
+            ", InsuranceID: " + insuranceID +
+            ", Blood Type: " + bloodType +
+            ", Mother: " + nameMother + 
+            ", Father: " + nameFather;
+}
+
+void Patient::setInsuranceID(const std::string &insuranceID_) {
+    insuranceID = insuranceID_;
 }
 
 void Patient::setBloodType(const std::string &bloodType_) {
@@ -133,6 +138,10 @@ void Patient::setNameFather(const std::string &nameFather_) {
     nameFather = Utils::trimmed(nameFather_);
 }
 
+void Patient::setMedicalRecordIDs(const std::vector<int>& recordIDs) {
+    medicalRecordIDs = recordIDs;
+}
+
 nlohmann::json Patient::toJson() const {
     nlohmann::json j;
     j["ID"] = ID;
@@ -140,6 +149,7 @@ nlohmann::json Patient::toJson() const {
     j["gender"] = std::string(1, gender);
     j["birthday"] = birthday.toJson();
     j["phoneNumber"] = phoneNumber; 
+    j["insuranceID"] = insuranceID;
     j["bloodType"] = bloodType;
     j["nameMother"] = nameMother;
     j["nameFather"] = nameFather;
@@ -164,6 +174,7 @@ void Patient::fromJson(const nlohmann::json &j) {
         birthday = Date(d, m, y);
     }
     if (j.contains("phoneNumber")) phoneNumber = j.at("phoneNumber").get<std::string>();
+    if (j.contains("insuranceID")) insuranceID = j.at("insuranceID").get<std::string>();
     if (j.contains("bloodType")) bloodType = j.at("bloodType").get<std::string>();
     if (j.contains("nameMother")) nameMother = j.at("nameMother").get<std::string>();
     if (j.contains("nameFather")) nameFather = j.at("nameFather").get<std::string>();
@@ -177,7 +188,6 @@ void Patient::fromJson(const nlohmann::json &j) {
     } else {
         chronicDiseases.clear();
     }
-    
     if (j.contains("medicalRecordIDs") && j.at("medicalRecordIDs").is_array()) {
         medicalRecordIDs = j.at("medicalRecordIDs").get<std::vector<int>>();
     } else if (j.contains("medicalRecords") && j.at("medicalRecords").is_array()) {

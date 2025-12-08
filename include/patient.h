@@ -14,6 +14,7 @@
 
 class Patient : public Person {
 private:
+    std::string insuranceID;
     std::string bloodType;
     std::vector<std::string> allergies; // Dị ứng
     std::vector<std::string> chronicDiseases; // Bệnh nền
@@ -24,6 +25,7 @@ private:
 public:
     Patient();
     Patient(const std::string &name_, char gender_, const std::string &birthday_, const std::string &phoneNumber_,  
+            const std::string &insuranceID_,
             const std::string &bloodType_, const std::string &allergies_, const std::string &chronicDisease_, 
             const std::string &nameMother_, const std::string &nameFather_);
 
@@ -36,6 +38,8 @@ public:
 
     std::string getInfo() const override;
     
+    std::string getInsuranceID() const { return insuranceID; }
+    void setInsuranceID(const std::string &insuranceID_);
     std::string getBloodType() const { return bloodType; }
     const std::vector<std::string>& getAllergies() const { return allergies; }
     const std::vector<std::string>& getChronicDiseases() const { return chronicDiseases; }
@@ -44,6 +48,7 @@ public:
     const std::vector<int>& getMedicalRecordIDs() const { return medicalRecordIDs; }
 
     void addMedicalRecord(int recordID);
+    void setMedicalRecordIDs(const std::vector<int>& recordIDs);
     void setBloodType(const std::string &bloodType_);
     void setAllergies(const std::string &allergies_);
     void setChronicDiseases(const std::string &chronicDieases_);
