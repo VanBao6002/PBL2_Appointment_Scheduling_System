@@ -406,7 +406,18 @@ Doctor AddEditDoctorDialog::getDoctorData() const {
     std::string status = ui->cmbStatus->currentData().toString().toStdString();
 
     Doctor doctor(name, gender, birthday, phoneNumber, email, specialization, status);
-    doctor.setWorkingSchedule(getWorkingScheduleFromTable());
+    WorkingSchedule ws = getWorkingScheduleFromTable();
+    doctor.setWorkingSchedule(ws);
+    // Debug output for working schedule
+    qDebug() << "[DEBUG] WorkingSchedule for doctor:";
+    for (const auto& day : ws.schedule) {
+        QString dayStr = QString::fromStdString(day.first);
+        for (const auto& slot : day.second) {
+            QString startStr = QString::fromStdString(slot.first);
+            QString endStr = QString::fromStdString(slot.second);
+            qDebug() << "  " << dayStr << ":" << startStr << "-" << endStr;
+        }
+    }
     if (isEditMode) {
         qDebug() << "[DIALOG] getDoctorData() - EDIT mode, original ID:" << editingDoctorID;
     } else {

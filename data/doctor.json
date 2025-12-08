@@ -1,34 +1,73 @@
 [
     {
-        "ID": 2,
+        "ID": 6,
         "birthday": {
             "day": 1,
             "month": 1,
             "year": 1980
         },
         "doctorStatus": "Active",
-        "email": "ronaldo_bucu_messi@gmail.com",
+        "email": "asdasd@gmail.com",
         "gender": "M",
-        "name": "Messi Kimochi",
-        "patientIDs": null,
+        "name": "SIUSIDUSID",
+        "patientIDs": [],
         "phoneNumber": "0123456789",
-        "specialization": "Tâm thần",
-        "workingSchedule": null
+        "specialization": "Lão khoa",
+        "workingSchedule": {
+            "Thứ 4": [
+                {
+                    "EndTime": "17:00",
+                    "StartTime": "08:00"
+                }
+            ]
+        }
     },
     {
-        "ID": 1,
+        "ID": 4,
         "birthday": {
             "day": 1,
             "month": 1,
             "year": 1980
         },
-        "doctorStatus": "Retired",
-        "email": "domixi@gmail.com",
+        "doctorStatus": "Active",
+        "email": "DODO@gmail.com",
         "gender": "M",
-        "name": "ronaldo",
-        "patientIDs": null,
+        "name": "RODNND",
+        "patientIDs": [],
         "phoneNumber": "0123456789",
-        "specialization": "Thần kinh",
-        "workingSchedule": null
+        "specialization": "Lão khoa",
+        "workingSchedule": {}
+    },
+    {
+        "ID": 3,
+        "birthday": {
+            "day": 1,
+            "month": 1,
+            "year": 1980
+        },
+        "doctorStatus": "Active",
+        "email": "ro7@gmail.com",
+        "gender": "M",
+        "name": "RONALDO SIU",
+        "patientIDs": [],
+        "phoneNumber": "0123456789",
+        "specialization": "Lão khoa",
+        "workingSchedule": {}
+    },
+    {
+        "ID": 5,
+        "birthday": {
+            "day": 1,
+            "month": 1,
+            "year": 1980
+        },
+        "doctorStatus": "Active",
+        "email": "messi13@gmail.com",
+        "gender": "M",
+        "name": "MESSI",
+        "patientIDs": [],
+        "phoneNumber": "0123456789",
+        "specialization": "Lão khoa",
+        "workingSchedule": {}
     }
 ]

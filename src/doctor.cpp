@@ -23,13 +23,14 @@ Doctor::~Doctor(){
 
 // Copy Constructor - Only copy ID, do not generate new one
 Doctor::Doctor(const Doctor& other)
-    : Person(other),
-      specialization(other.specialization),
-      patientIDs(other.patientIDs),
-      doctorStatus(other.doctorStatus),
-      email(other.email)
+        : Person(other),
+            specialization(other.specialization),
+            patientIDs(other.patientIDs),
+            doctorStatus(other.doctorStatus),
+            email(other.email),
+            workingSchedule(other.workingSchedule)
 {
-    ID = other.ID;
+        ID = other.ID;
 }
 
 // Copy Assignment Operator - Safe ID handling, do not generate new ID
@@ -41,6 +42,7 @@ Doctor& Doctor::operator=(const Doctor& other)
         patientIDs = other.patientIDs;
         doctorStatus = other.doctorStatus;
         email = other.email;
+        workingSchedule = other.workingSchedule;
         ID = other.ID;
     }
     return *this;
@@ -48,14 +50,15 @@ Doctor& Doctor::operator=(const Doctor& other)
 
 // Move Constructor - Move ID, do not generate new one
 Doctor::Doctor(Doctor&& other) noexcept
-    : Person(std::move(other)),
-      specialization(std::move(other.specialization)),
-      patientIDs(std::move(other.patientIDs)),
-      doctorStatus(other.doctorStatus),
-      email(std::move(other.email))
+        : Person(std::move(other)),
+            specialization(std::move(other.specialization)),
+            patientIDs(std::move(other.patientIDs)),
+            doctorStatus(other.doctorStatus),
+            email(std::move(other.email)),
+            workingSchedule(std::move(other.workingSchedule))
 {
-    ID = other.ID;
-    other.ID = 0;
+        ID = other.ID;
+        other.ID = 0;
 }
 
 // Move Assignment Operator - Move ID safely, do not generate new one
@@ -67,6 +70,7 @@ Doctor& Doctor::operator=(Doctor&& other) noexcept
         patientIDs = std::move(other.patientIDs);
         doctorStatus = other.doctorStatus;
         email = std::move(other.email);
+        workingSchedule = std::move(other.workingSchedule);
         ID = other.ID;
         other.ID = 0;
     }
@@ -155,13 +159,14 @@ nlohmann::json Doctor::toJson() const {
     j["phoneNumber"] = phoneNumber;
     j["email"] = email;
     j["specialization"] = specialization;
-    nlohmann::json patientIDsJson;
+    nlohmann::json patientIDsJson = nlohmann::json::array();
     for (const auto& pid : patientIDs) {
         patientIDsJson.push_back(pid);
     }
     j["patientIDs"] = patientIDsJson;
     j["doctorStatus"] = statusToString(doctorStatus);
-    j["workingSchedule"] = workingSchedule.toJson();
+    auto wsJson = workingSchedule.toJson();
+    j["workingSchedule"] = wsJson.is_null() ? nlohmann::json::object() : wsJson;
     return j;
 }
 

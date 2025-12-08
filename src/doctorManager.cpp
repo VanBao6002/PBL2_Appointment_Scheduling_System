@@ -8,6 +8,16 @@ void DoctorManager::addDoctor(const Doctor &doc_) {
     if (doctorTable.find(ID_) != doctorTable.end()) {
         throw std::invalid_argument("Adding failed. Doctor ID " + std::to_string(doc_.getID()) + " already exists.");
     }
+    // Debug output for working schedule
+    qDebug() << "[MANAGER DEBUG] Saving doctor ID:" << ID_ << "with working schedule:";
+    for (const auto& day : doc_.getWorkingSchedule().schedule) {
+        QString dayStr = QString::fromStdString(day.first);
+        for (const auto& slot : day.second) {
+            QString startStr = QString::fromStdString(slot.first);
+            QString endStr = QString::fromStdString(slot.second);
+            qDebug() << "  " << dayStr << ":" << startStr << "-" << endStr;
+        }
+    }
     doctorTable[ID_] = doc_;
     log[ID_] += " Added on: " + Utils::getDateTime();
     saveToFile(Config::DOCTOR_PATH);
@@ -16,6 +26,16 @@ void DoctorManager::addDoctor(const Doctor &doc_) {
 void DoctorManager::editDoctor(int ID_, const Doctor &newDoctor){
     if (doctorTable.find(ID_) == doctorTable.end()) {
         throw std::invalid_argument("Editing failed. Doctor ID " + std::to_string(newDoctor.getID()) + " not found.");
+    }
+    // Debug output for working schedule
+    qDebug() << "[MANAGER DEBUG] Editing doctor ID:" << ID_ << "with working schedule:";
+    for (const auto& day : newDoctor.getWorkingSchedule().schedule) {
+        QString dayStr = QString::fromStdString(day.first);
+        for (const auto& slot : day.second) {
+            QString startStr = QString::fromStdString(slot.first);
+            QString endStr = QString::fromStdString(slot.second);
+            qDebug() << "  " << dayStr << ":" << startStr << "-" << endStr;
+        }
     }
     doctorTable[ID_] = newDoctor;
     log[ID_] += " Edited on: " + Utils::getDateTime();
