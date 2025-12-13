@@ -52,7 +52,7 @@ void DoctorManager::removeDoctor(int ID_){
 }
 
 bool DoctorManager::isDoctorExist(int doctorID) const {
-    return IDHandler<Doctor>::checkDuplicate(static_cast<size_t>(doctorID));
+    return IDHandler<Doctor>::checkDuplicateID(static_cast<size_t>(doctorID));
 }
 
 const Doctor& DoctorManager::getDoctorByID(int ID_) const{
@@ -99,7 +99,8 @@ void DoctorManager::loadFromFile(const std::string& path) {
     // clean data before loading
     doctorTable.clear();
     log.clear();
-    IDHandler<Doctor>::reset(); 
+    IDHandler<Doctor>::resetIDTable(); 
+    IDHandler<Doctor>::resetCCCDTable();
 
     // check active path, propriate data
     nlohmann::json jArr = Utils::readJsonFromFile(path);
@@ -119,8 +120,11 @@ void DoctorManager::loadFromFile(const std::string& path) {
             qWarning() << "[WARNING] Duplicate Doctor ID in file:" << ID << "- Skipping";
             continue;
         }
-        if (!IDHandler<Doctor>::checkDuplicate(static_cast<size_t>(ID))) {
+        if (!IDHandler<Doctor>::checkDuplicateID(static_cast<size_t>(ID))) {
             IDHandler<Doctor>::registerID(static_cast<size_t>(ID));
+        }
+        if (!IDHandler<Person>::checkDuplicateCCCD(doctor.getCCCD())) {
+            IDHandler<Person>::registerCCCD(doctor.getCCCD());
         }
         doctorTable[ID] = doctor;
         if (ID > maxID) maxID = ID;

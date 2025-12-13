@@ -4,11 +4,14 @@
 Doctor::Doctor() : Person(), specialization(""), patientIDs(), doctorStatus(Doctor::Status::Active){ 
 }
 
-Doctor::Doctor(const std::string& name_, char gender_, const std::string& birthday_, const std::string &phoneNumber_, const std::string& email_, const std::string& specialization_, const std::string& doctorStatus_) : Person(name_, gender_, birthday_, phoneNumber_) {
+Doctor::Doctor(const std::string& name_, char gender_, const std::string& birthday_, const std::string &phoneNumber_, const std::string &CCCD_, const std::string &email_, 
+                const std::string& specialization_, const std::string& doctorStatus_,
+                const WorkingSchedule& workingSchedule_) 
+    : Person(name_, gender_, birthday_, phoneNumber_, CCCD_, email_) {
 
-    setEmail(email_);
     setSpecialization(specialization_);
     setStatus(doctorStatus_);
+    setWorkingSchedule(workingSchedule_);
 
     int ID = static_cast<int>(IDHandler<Doctor>::generateID());
     setID(ID);
@@ -27,7 +30,6 @@ Doctor::Doctor(const Doctor& other)
             specialization(other.specialization),
             patientIDs(other.patientIDs),
             doctorStatus(other.doctorStatus),
-            email(other.email),
             workingSchedule(other.workingSchedule)
 {
         ID = other.ID;
@@ -41,7 +43,6 @@ Doctor& Doctor::operator=(const Doctor& other)
         specialization = other.specialization;
         patientIDs = other.patientIDs;
         doctorStatus = other.doctorStatus;
-        email = other.email;
         workingSchedule = other.workingSchedule;
         ID = other.ID;
     }
@@ -54,7 +55,6 @@ Doctor::Doctor(Doctor&& other) noexcept
             specialization(std::move(other.specialization)),
             patientIDs(std::move(other.patientIDs)),
             doctorStatus(other.doctorStatus),
-            email(std::move(other.email)),
             workingSchedule(std::move(other.workingSchedule))
 {
         ID = other.ID;
@@ -69,7 +69,6 @@ Doctor& Doctor::operator=(Doctor&& other) noexcept
         specialization = std::move(other.specialization);
         patientIDs = std::move(other.patientIDs);
         doctorStatus = other.doctorStatus;
-        email = std::move(other.email);
         workingSchedule = std::move(other.workingSchedule);
         ID = other.ID;
         other.ID = 0;
@@ -85,10 +84,6 @@ void Doctor::setSpecialization(const std::string &specialization_){
 
 void Doctor::setStatus(const std::string& doctorStatus_){
     doctorStatus = statusFromString(Utils::trimmed(doctorStatus_));
-}
-
-void Doctor::setEmail(const std::string &email_){
-    email = Utils::trimmed(email_);
 }
 
 void Doctor::setWorkingSchedule(const WorkingSchedule& schedule) {
@@ -151,12 +146,9 @@ nlohmann::json Doctor::toJson() const {
     j["ID"] = ID;
     j["name"] = name;
     j["gender"] = std::string(1, gender);
-    j["birthday"] = {
-        {"day", birthday.getDay()},
-        {"month", birthday.getMonth()},
-        {"year", birthday.getYear()}
-    };
-    j["phoneNumber"] = phoneNumber;
+    j["birthday"] = birthday.toJson();
+    j["phoneNumber"] = phoneNumber; 
+    j["CCCD"] = CCCD;
     j["email"] = email;
     j["specialization"] = specialization;
     nlohmann::json patientIDsJson = nlohmann::json::array();
@@ -171,12 +163,8 @@ nlohmann::json Doctor::toJson() const {
 }
 
 void Doctor::fromJson(const nlohmann::json &j) {
-    if (j.contains("ID")) {
-        ID = j.at("ID").get<int>();
-    }
-    if (j.contains("name")) {
-        name = j.at("name").get<std::string>();
-    }
+    if (j.contains("ID")) ID = j.at("ID").get<int>();
+    if (j.contains("name")) name = j.at("name").get<std::string>();
     if (j.contains("gender")) {
         std::string g = j.at("gender").get<std::string>();
         if (!g.empty()) gender = g[0];
@@ -188,17 +176,9 @@ void Doctor::fromJson(const nlohmann::json &j) {
         int y = bd.value("year", 2000);
         birthday = Date(d, m, y);
     }
-    if (j.contains("phoneNumber")) {
-        std::string phone = j.at("phoneNumber").get<std::string>();
-        if (!phone.empty()) {
-            setPhoneNumber(phone);
-        } else {
-            phoneNumber = "None";
-        }
-    }
-    if (j.contains("email")) {
-        email = j.at("email").get<std::string>();
-    }
+    if (j.contains("phoneNumber")) phoneNumber = j.at("phoneNumber").get<std::string>();
+    if (j.contains("CCCD")) CCCD = j.at("CCCD").get<std::string>();
+    if (j.contains("email")) email = j.at("email").get<std::string>();
     if (j.contains("specialization")) {
         specialization = j.at("specialization").get<std::string>();
     }

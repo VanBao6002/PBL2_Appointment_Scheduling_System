@@ -17,11 +17,11 @@ class AddAppointmentDialog : public QDialog
 public:
     explicit AddAppointmentDialog(QWidget *parent = nullptr);
     ~AddAppointmentDialog();
-    Appointment getAppointmentData() const;
+    //Appointment getAppointmentData() const;
     void setupStatusComboBox();
 
 private slots:
-    void on_buttonBox_accepted();
+    // void on_buttonBox_accepted();
     void on_buttonBox_rejected();
 
 private:

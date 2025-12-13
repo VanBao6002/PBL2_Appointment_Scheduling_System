@@ -7,6 +7,8 @@
 #include "doctorManager.h"
 #include "patientManager.h"
 #include "IDHandler.h"
+#include "core.h"
+#include "config.h"
 
 AddAppointmentDialog::AddAppointmentDialog(QWidget *parent) :
     QDialog(parent),
@@ -14,12 +16,6 @@ AddAppointmentDialog::AddAppointmentDialog(QWidget *parent) :
 {
     ui->setupUi(this);
     setupStatusComboBox();
-    ui->dateEditAppointment->setDate(QDate::currentDate());
-    ui->timeEditAppointment->setTime(QTime::currentTime().addSecs(60*15));
-    ui->timeEditAppointment->setDisplayFormat("HH:mm");
-
-    ui->txtDoctorID->setValidator(new QIntValidator(0, 99999, this));
-    ui->txtPatientID->setValidator(new QIntValidator(0, 99999, this));
 }
 
 AddAppointmentDialog::~AddAppointmentDialog()
@@ -28,10 +24,25 @@ AddAppointmentDialog::~AddAppointmentDialog()
 }
 
 void AddAppointmentDialog::setupStatusComboBox() {
-    ui->comboStatus->addItem("Scheduled");
-    ui->comboStatus->addItem("Occupied");
-    ui->comboStatus->addItem("Canceled");
-    ui->comboStatus->addItem("Completed");
+    QComboBox* cmbRooms = ui->stackedWidget->findChild<QComboBox*>("cmbRooms");
+    QComboBox* cmbStatus = ui->stackedWidget->findChild<QComboBox*>("cmbStatus");
+    ui->cmbStatus->addItem("Scheduled");
+    ui->cmbStatus->addItem("Occupied");
+    ui->cmbStatus->addItem("Canceled");
+    ui->cmbStatus->addItem("Completed");
+
+    // ComboBox phòng - Load từ JSON
+    ui->cmbRooms->clear();
+    auto rooms = Core::loadRooms();
+    QStringList roomList;
+    for (const auto& room : rooms) {
+        roomList << QString::fromStdString(room);
+    }
+    for (const QString& room : roomList) {
+        ui->cmbRooms->addItem(room);
+    }
+    ui->cmbRooms->setEditable(true);
+
 }
 
 bool AddAppointmentDialog::isDoctorValid(int doctorID) const {
@@ -58,34 +69,34 @@ bool AddAppointmentDialog::isPatientValid(int patientID) const {
     return exists;
 }
 
-void AddAppointmentDialog::on_buttonBox_accepted()
-{
-    QString doctorIDText = ui->txtDoctorID->text();
-    QString patientIDText = ui->txtPatientID->text();
-    QString roomText = ui->txtRoom->text();
+// void AddAppointmentDialog::on_buttonBox_accepted()
+// {
+//     QString doctorIDText = ui->txtDoctorID->text();
+//     QString patientIDText = ui->txtPatientID->text();
+//     QString roomText = ui->txtRoom->text();
 
-    if (doctorIDText.isEmpty() || patientIDText.isEmpty() || roomText.isEmpty())
-    {
-        QMessageBox::warning(this, "Lỗi Nhập Liệu", "Vui lòng điền đầy đủ thông tin.");
-        return;
-    }
+//     if (doctorIDText.isEmpty() || patientIDText.isEmpty() || roomText.isEmpty())
+//     {
+//         QMessageBox::warning(this, "Lỗi Nhập Liệu", "Vui lòng điền đầy đủ thông tin.");
+//         return;
+//     }
 
-    int doctorID = doctorIDText.toInt();
-    int patientID = patientIDText.toInt();
+//     int doctorID = doctorIDText.toInt();
+//     int patientID = patientIDText.toInt();
 
-    if (!isDoctorValid(doctorID)) {
-        QString errorMsg = QString("Doctor ID %1 không tồn tại hoặc không ở trạng thái Active (hiện tại). Vui lòng kiểm tra lại ID hoặc trạng thái.").arg(doctorID);
-        QMessageBox::critical(this, "Lỗi Dữ liệu", errorMsg);
-        return;
-    }
+//     if (!isDoctorValid(doctorID)) {
+//         QString errorMsg = QString("Doctor ID %1 không tồn tại hoặc không ở trạng thái Active (hiện tại). Vui lòng kiểm tra lại ID hoặc trạng thái.").arg(doctorID);
+//         QMessageBox::critical(this, "Lỗi Dữ liệu", errorMsg);
+//         return;
+//     }
 
-    if (!isPatientValid(patientID)) {
-        QMessageBox::critical(this, "Lỗi Dữ liệu", QString("Patient ID %1 không tồn tại trong hệ thống. Vui lòng kiểm tra lại ID.").arg(patientID));
-        return;
-    }
+//     if (!isPatientValid(patientID)) {
+//         QMessageBox::critical(this, "Lỗi Dữ liệu", QString("Patient ID %1 không tồn tại trong hệ thống. Vui lòng kiểm tra lại ID.").arg(patientID));
+//         return;
+//     }
 
-    accept();
-}
+//     accept();
+// }
 
 void AddAppointmentDialog::on_buttonBox_rejected()
 {

@@ -8,19 +8,21 @@
 Patient::Patient(): Person(), insuranceID(""), bloodType("AB+"), allergies{}, chronicDiseases{}, nameMother("NGUYEN VAN B"), nameFather("NGUYEN VAN A"), medicalRecordIDs() {
 }
 
-Patient::Patient(const std::string &name_, char gender_, const std::string &birthday_, 
-                 const std::string &phoneNumber_, const std::string &insuranceID_, const std::string &bloodType_, 
-                 const std::string &allergies_, const std::string &chronicDisease_, 
-                 const std::string &nameMother_, const std::string &nameFather_)
-    : Person(name_, gender_, birthday_, phoneNumber_) {
+Patient::Patient(const std::string &name_, char gender_, const std::string &birthday_, const std::string &phoneNumber_, const std::string &CCCD_, const std::string &email_,
+            const std::string &insuranceID_,
+            const std::string &bloodType_, const std::string &allergies_, 
+            const std::string &chronicDisease_, 
+            const std::string &nameMother_, const std::string &nameFather_)
+    : Person(name_, gender_, birthday_, phoneNumber_, CCCD_, email_) {
     setInsuranceID(insuranceID_);
     setBloodType(bloodType_);
     setAllergies(allergies_);
     setChronicDiseases(chronicDisease_);
     setNameMother(nameMother_);
     setNameFather(nameFather_);
+
     int newID = static_cast<int>(IDHandler<Patient>::generateID());
-    ID = newID;
+    setID(newID);
     IDHandler<Patient>::registerID(static_cast<size_t>(newID));
 }
 
@@ -102,13 +104,44 @@ void Patient::addMedicalRecord(int recordID) {
 }
 
 std::string Patient::getInfo() const {
-        return "Patient ID: " + std::to_string(ID) + 
-            ", Name: " + name + 
-            ", Gender: " + std::string(1, gender) +
-            ", InsuranceID: " + insuranceID +
-            ", Blood Type: " + bloodType +
-            ", Mother: " + nameMother + 
-            ", Father: " + nameFather;
+    std::ostringstream oss;
+    oss << "Patient ID: " << ID
+        << ", Name: " << name
+        << ", Gender: " << gender
+        << ", Birthday: " << birthday.toString()
+        << ", Phone: " << phoneNumber
+        << ", CCCD: " << CCCD
+        << ", Email: " << email
+        << ", InsuranceID: " << insuranceID
+        << ", Blood Type: " << bloodType
+        << ", Mother: " << nameMother
+        << ", Father: " << nameFather;
+
+    if (!allergies.empty()) {
+        oss << ", Allergies: ";
+        for (size_t i = 0; i < allergies.size(); ++i) {
+            oss << allergies[i];
+            if (i != allergies.size() - 1) oss << "; ";
+        }
+    }
+
+    if (!chronicDiseases.empty()) {
+        oss << ", Chronic Diseases: ";
+        for (size_t i = 0; i < chronicDiseases.size(); ++i) {
+            oss << chronicDiseases[i];
+            if (i != chronicDiseases.size() - 1) oss << "; ";
+        }
+    }
+
+    if (!medicalRecordIDs.empty()) {
+        oss << ", Medical Record IDs: ";
+        for (size_t i = 0; i < medicalRecordIDs.size(); ++i) {
+            oss << medicalRecordIDs[i];
+            if (i != medicalRecordIDs.size() - 1) oss << ", ";
+        }
+    }
+
+    return oss.str();
 }
 
 void Patient::setInsuranceID(const std::string &insuranceID_) {
@@ -149,6 +182,8 @@ nlohmann::json Patient::toJson() const {
     j["gender"] = std::string(1, gender);
     j["birthday"] = birthday.toJson();
     j["phoneNumber"] = phoneNumber; 
+    j["CCCD"] = CCCD;
+    j["email"] = email;
     j["insuranceID"] = insuranceID;
     j["bloodType"] = bloodType;
     j["nameMother"] = nameMother;
@@ -174,6 +209,8 @@ void Patient::fromJson(const nlohmann::json &j) {
         birthday = Date(d, m, y);
     }
     if (j.contains("phoneNumber")) phoneNumber = j.at("phoneNumber").get<std::string>();
+    if (j.contains("CCCD")) CCCD = j.at("CCCD").get<std::string>();
+    if (j.contains("email")) email = j.at("email").get<std::string>();
     if (j.contains("insuranceID")) insuranceID = j.at("insuranceID").get<std::string>();
     if (j.contains("bloodType")) bloodType = j.at("bloodType").get<std::string>();
     if (j.contains("nameMother")) nameMother = j.at("nameMother").get<std::string>();

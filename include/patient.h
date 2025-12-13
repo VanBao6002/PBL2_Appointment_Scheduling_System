@@ -24,9 +24,10 @@ private:
 
 public:
     Patient();
-    Patient(const std::string &name_, char gender_, const std::string &birthday_, const std::string &phoneNumber_,  
+    Patient(const std::string &name_, char gender_, const std::string &birthday_, const std::string &phoneNumber_, const std::string &CCCD_, const std::string &email_,
             const std::string &insuranceID_,
-            const std::string &bloodType_, const std::string &allergies_, const std::string &chronicDisease_, 
+            const std::string &bloodType_, const std::string &allergies_, 
+            const std::string &chronicDisease_, 
             const std::string &nameMother_, const std::string &nameFather_);
 
     Patient(const Patient& other);

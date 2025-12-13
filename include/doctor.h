@@ -48,7 +48,6 @@ class Doctor : public Person{
         enum class Status {Active, OnLeave, Retired};
 
     private:
-        std::string email;
         std::string specialization; // Chuyên Khoa
         std::unordered_set<int> patientIDs; // ID bệnh nhân được bác sĩ đảm nhận
         Status doctorStatus;
@@ -57,7 +56,9 @@ class Doctor : public Person{
     public:
         Doctor();
 
-        Doctor(const std::string& name_, char gender_, const std::string& birthday_, const std::string &phoneNumber_, const std::string& email_, const std::string& specialization_, const std::string& doctorStatus_);
+        Doctor(const std::string& name_, char gender_, const std::string& birthday_, const std::string &phoneNumber_, const std::string &CCCD_, const std::string &email_, 
+                const std::string& specialization_, const std::string& doctorStatus_,
+                const WorkingSchedule& workingSchedule_);
 
         ~Doctor();
 
@@ -68,7 +69,6 @@ class Doctor : public Person{
 
         void setSpecialization(const std::string &specialization_);
         void setStatus(const std::string& doctorStatus_);
-        void setEmail(const std::string &email_);
         void setWorkingSchedule(const WorkingSchedule& schedule_);
 
         void addPatientID(int ID_);
@@ -78,7 +78,6 @@ class Doctor : public Person{
         Status getStatus() const {return doctorStatus;}
         const std::unordered_set<int>& getPatientIDs() const {return patientIDs;}
         std::string getInfo() const override;
-        std::string getEmail() const {return email;}
         const WorkingSchedule& getWorkingSchedule() const {return workingSchedule;}
 
         // convertor

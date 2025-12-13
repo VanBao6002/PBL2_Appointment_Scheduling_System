@@ -28,15 +28,32 @@ std::unordered_set<std::string> Core::loadSpecializations(){
     try {
         nlohmann::json j = Utils::readJsonFromFile(Config::SPECIALIZATION_PATH);
         if (j.contains("specializations") && j["specializations"].is_array()) {
-            for (const auto& spec : j["specializations"]) {
-                specializationTable.insert(Utils::trimmed(spec.get<std::string>()));
+            for (const auto& room : j["specializations"]) {
+                specializationTable.insert(Utils::trimmed(room.get<std::string>()));
             }
         }
-        std::cout << "[INFO] Loaded " << specializationTable.size() << " specializations." << std::endl;
     } catch (const std::exception& e) {
-        std::cerr << "[ERROR] Cannot load specializations: " << e.what() << std::endl;
+        std::cerr << "[ERROR] Cannot load specializations data: " << e.what() << std::endl;
         // Fallback
         specializationTable = {"Da liễu", "Mắt", "Răng hàm mặt"};
     }
     return specializationTable;
+}
+
+std::unordered_set<std::string> Core::loadRooms(){
+    std::unordered_set<std::string> roomsTable;
+    try {
+        nlohmann::json j = Utils::readJsonFromFile(Config::ROOM_PATH);
+        if (j.contains("room") && j["room"].is_array()) {
+            for (const auto& r : j["room"]) {
+                roomsTable.insert(Utils::trimmed(r.get<std::string>()));
+            }
+        }
+
+    } catch (const std::exception& e) {
+        std::cerr << "[ERROR] Cannot load rooms data: " << e.what() << std::endl;
+        // Fallback
+        roomsTable = {"101", "102", "103"};
+    }
+    return roomsTable;
 }

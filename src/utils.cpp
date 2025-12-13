@@ -408,6 +408,12 @@ void Utils::validEmail(const std::string& email) {
     }
 }
 
+void Utils::validCCCD(const std::string& CCCD) {
+    if (CCCD.size() != 12){
+        throw std::invalid_argument("Invalid CCCD format: " + CCCD);
+    }
+}
+
 // ======================= CONVERTOR =======================
 
 void Utils::writeJsonToFile(const std::string& filePath, const nlohmann::json& j){
