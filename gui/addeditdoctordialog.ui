@@ -18,8 +18,8 @@
     <rect>
      <x>9</x>
      <y>9</y>
-     <width>582</width>
-     <height>344</height>
+     <width>648</width>
+     <height>389</height>
     </rect>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -50,6 +50,33 @@
         <widget class="QLineEdit" name="txtName"/>
        </item>
       </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QWidget" name="widget_9" native="true">
+      <widget class="QLabel" name="label_8">
+       <property name="geometry">
+        <rect>
+         <x>5</x>
+         <y>0</y>
+         <width>61</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Số CCCD</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="txtCCCD">
+       <property name="geometry">
+        <rect>
+         <x>352</x>
+         <y>0</y>
+         <width>201</width>
+         <height>26</height>
+        </rect>
+       </property>
+      </widget>
      </widget>
     </item>
     <item>

@@ -65,7 +65,7 @@ bool AddAppointmentDialog::isDoctorValid(int doctorID) const {
 
 bool AddAppointmentDialog::isPatientValid(int patientID) const {
     qDebug() << "Checking Patient ID:" << patientID;
-    bool exists = IDHandler<Patient>::checkDuplicate(static_cast<size_t>(patientID));
+    bool exists = IDHandler<Patient>::checkDuplicateID(static_cast<size_t>(patientID));
     return exists;
 }
 

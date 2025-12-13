@@ -100,14 +100,14 @@ void Appointment::setStatus(const std::string& status_){
 }
 
 void Appointment::setDoctor(int doctorID_){
-    if (!IDHandler<Doctor>::checkDuplicate(doctorID_)) {
+    if (!IDHandler<Doctor>::checkDuplicateID(doctorID_)) {
         throw std::invalid_argument("Doctor ID is not found.");
     }
     doctorID = doctorID_;
 }
 
 void Appointment::setPatient(int patientID_){
-    if (!IDHandler<Patient>::checkDuplicate(patientID_)){
+    if (!IDHandler<Patient>::checkDuplicateID(patientID_)){
         throw std::invalid_argument("Patient ID not found.");
     }
     patientID = patientID_;

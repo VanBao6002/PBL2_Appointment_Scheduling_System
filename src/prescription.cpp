@@ -104,7 +104,7 @@ void Prescription::setID(int ID_){
     ID = ID_;
 }
 void Prescription::setMedicalRecordID(int medicalRecordID_) {
-    if (!IDHandler<MedicalRecord>::checkDuplicate(medicalRecordID_)) {
+    if (!IDHandler<MedicalRecord>::checkDuplicateID(medicalRecordID_)) {
         throw std::invalid_argument("MedicalRecord ID not found.");
     }
     medicalRecordID = medicalRecordID_;

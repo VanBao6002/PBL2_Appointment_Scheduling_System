@@ -84,6 +84,8 @@ Patient AddEditPatientDialog::getPatientData() const {
     QString nameFather = ui->txtNameFather->text().trimmed();
     QString phoneNumber = ui->txtPhoneNumber->text().trimmed();
     QString insuranceID = ui->txtInsuranceID->text().trimmed();
+    QString CCCD = ui->txtCCCD->text().trimmed(); // thêm vào trong QT Creator
+    QString email = ui->txtEmail->text().trimmed(); // thêm vào trong QT Creator
 
     try {
         Utils::validName(name.toStdString());
@@ -130,6 +132,8 @@ Patient AddEditPatientDialog::getPatientData() const {
             genderStr.isEmpty() ? 'M' : genderStr.toStdString()[0],
             birthday,
             phoneNumber.toStdString(),
+            CCCD.toStdString(),
+            email.toStdString(),
             insuranceID.toStdString(),
             bloodType.toStdString(),
             allergies.toStdString(),

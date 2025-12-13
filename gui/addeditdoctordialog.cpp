@@ -401,13 +401,13 @@ Doctor AddEditDoctorDialog::getDoctorData() const {
 
 
     std::string phoneNumber = ui->txtPhoneNumber->text().trimmed().toStdString();
+    std::string CCCD = ui->txtCCCD->text().trimmed().toStdString();
     std::string email = ui->txtEmail->text().trimmed().toStdString();
     std::string specialization = ui->cmbSpecialization->currentText().trimmed().toStdString();
     std::string status = ui->cmbStatus->currentData().toString().toStdString();
-
-    Doctor doctor(name, gender, birthday, phoneNumber, email, specialization, status);
     WorkingSchedule ws = getWorkingScheduleFromTable();
-    doctor.setWorkingSchedule(ws);
+
+    Doctor doctor(name, gender, birthday, phoneNumber, CCCD, email, specialization, status, ws);
     // Debug output for working schedule
     qDebug() << "[DEBUG] WorkingSchedule for doctor:";
     for (const auto& day : ws.schedule) {

@@ -68,7 +68,7 @@ void MedicalRecordManager::loadFromFile(const std::string& path) {
     // clean data before loading
     medicalRecordTable.clear();
     log.clear();
-    IDHandler<MedicalRecord>::reset(); 
+    IDHandler<MedicalRecord>::resetIDTable(); 
 
     // check active path, propriate data
     nlohmann::json jArr = Utils::readJsonFromFile(path);
@@ -88,7 +88,7 @@ void MedicalRecordManager::loadFromFile(const std::string& path) {
             qWarning() << "[WARNING] Duplicate medicalRecord ID in file:" << ID << "- Skipping";
             continue;
         }
-        if (!IDHandler<MedicalRecord>::checkDuplicate(static_cast<size_t>(ID))) {
+        if (!IDHandler<MedicalRecord>::checkDuplicateID(static_cast<size_t>(ID))) {
             IDHandler<MedicalRecord>::registerID(static_cast<size_t>(ID));
         }
         medicalRecordTable[ID] = medRecord;

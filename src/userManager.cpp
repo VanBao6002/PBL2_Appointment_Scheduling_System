@@ -81,7 +81,7 @@ void UserManager::loadFromFile(const std::string& path) {
     // clean data before loading
     userTable.clear();
     log.clear();
-    IDHandler<User>::reset(); 
+    IDHandler<User>::resetIDTable(); 
 
     // check active path, propriate data
     nlohmann::json jArr = Utils::readJsonFromFile(path);
@@ -101,7 +101,7 @@ void UserManager::loadFromFile(const std::string& path) {
             qWarning() << "[WARNING] Duplicate User ID in file:" << ID << "- Skipping";
             continue;
         }
-        if (!IDHandler<User>::checkDuplicate(static_cast<size_t>(ID))) {
+        if (!IDHandler<User>::checkDuplicateID(static_cast<size_t>(ID))) {
             IDHandler<User>::registerID(static_cast<size_t>(ID));
         }
         userTable[ID] = u;

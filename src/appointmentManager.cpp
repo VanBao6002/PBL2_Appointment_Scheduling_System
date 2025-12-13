@@ -61,7 +61,7 @@ void AppointmentManager::loadFromFile(const std::string& path) {
     // clean data before loading
     appointmentTable.clear();
     log.clear();
-    IDHandler<Appointment>::reset(); 
+    IDHandler<Appointment>::resetIDTable(); 
 
     // check active path, propriate data
     nlohmann::json jArr = Utils::readJsonFromFile(path);
@@ -81,13 +81,13 @@ void AppointmentManager::loadFromFile(const std::string& path) {
             qWarning() << "[WARNING] Duplicate appointment ID in file:" << ID << "- Skipping";
             continue;
         }
-        if (!IDHandler<Appointment>::checkDuplicate(static_cast<size_t>(ID))) {
+        if (!IDHandler<Appointment>::checkDuplicateID(static_cast<size_t>(ID))) {
             IDHandler<Appointment>::registerID(static_cast<size_t>(ID));
         }
-        if (!IDHandler<Doctor>::checkDuplicate(static_cast<size_t>(apt.getDoctorID()))) {
+        if (!IDHandler<Doctor>::checkDuplicateID(static_cast<size_t>(apt.getDoctorID()))) {
             throw std::invalid_argument("Doctor ID: " + std::to_string(apt.getDoctorID()) + " not found in appointment:" + std::to_string(ID));
         }
-        if (!IDHandler<Patient>::checkDuplicate(static_cast<size_t>(apt.getPatientID()))) {
+        if (!IDHandler<Patient>::checkDuplicateID(static_cast<size_t>(apt.getPatientID()))) {
             throw std::invalid_argument("Patient ID: " + std::to_string(apt.getPatientID()) + " not found in appointment:" + std::to_string(ID));
         }
         appointmentTable[ID] = apt;
