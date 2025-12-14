@@ -5,14 +5,17 @@
 
 
 
-Patient::Patient(): Person(), insuranceID(""), bloodType("AB+"), allergies{}, chronicDiseases{}, nameMother("NGUYEN VAN B"), nameFather("NGUYEN VAN A"), medicalRecordIDs() {
+Patient::Patient(): Person(), insuranceID(""), bloodType("AB+"), allergies{}, chronicDiseases{}, 
+                   nameMother("NGUYEN VAN B"), nameFather("NGUYEN VAN A"), 
+                   phoneMother(""), phoneFather(""), medicalRecordIDs() {  // Khởi tạo mặc định
 }
 
 Patient::Patient(const std::string &name_, char gender_, const std::string &birthday_, const std::string &phoneNumber_, const std::string &CCCD_, const std::string &email_,
             const std::string &insuranceID_,
             const std::string &bloodType_, const std::string &allergies_, 
             const std::string &chronicDisease_, 
-            const std::string &nameMother_, const std::string &nameFather_)
+            const std::string &nameMother_, const std::string &nameFather_,
+            const std::string &phoneMother_, const std::string &phoneFather_)
     : Person(name_, gender_, birthday_, phoneNumber_, CCCD_, email_) {
     setInsuranceID(insuranceID_);
     setBloodType(bloodType_);
@@ -20,6 +23,8 @@ Patient::Patient(const std::string &name_, char gender_, const std::string &birt
     setChronicDiseases(chronicDisease_);
     setNameMother(nameMother_);
     setNameFather(nameFather_);
+    setPhoneMother(phoneMother_);
+    setPhoneFather(phoneFather_);
 
     int newID = static_cast<int>(IDHandler<Patient>::generateID());
     setID(newID);
@@ -35,6 +40,8 @@ Patient::Patient(const Patient& other)
     chronicDiseases = other.chronicDiseases;
     nameMother = other.nameMother;
     nameFather = other.nameFather;
+    phoneMother = other.phoneMother;    // Copy số điện thoại mẹ
+    phoneFather = other.phoneFather;    // Copy số điện thoại cha
     medicalRecordIDs = other.medicalRecordIDs;
     ID = other.ID;
 }
@@ -50,6 +57,8 @@ Patient& Patient::operator=(const Patient& other) {
         chronicDiseases = other.chronicDiseases;
         nameMother = other.nameMother;
         nameFather = other.nameFather;
+        phoneMother = other.phoneMother;    // Copy số điện thoại mẹ
+        phoneFather = other.phoneFather;    // Copy số điện thoại cha
         medicalRecordIDs = other.medicalRecordIDs;
         ID = other.ID;
     }
@@ -65,6 +74,8 @@ Patient::Patient(Patient&& other) noexcept
     chronicDiseases = std::move(other.chronicDiseases);
     nameMother = std::move(other.nameMother);
     nameFather = std::move(other.nameFather);
+    phoneMother = std::move(other.phoneMother);    // Move số điện thoại mẹ
+    phoneFather = std::move(other.phoneFather);    // Move số điện thoại cha
     medicalRecordIDs = std::move(other.medicalRecordIDs);
     ID = other.ID;
     other.ID = 0;
@@ -81,6 +92,8 @@ Patient& Patient::operator=(Patient&& other) noexcept {
         chronicDiseases = std::move(other.chronicDiseases);
         nameMother = std::move(other.nameMother);
         nameFather = std::move(other.nameFather);
+        phoneMother = std::move(other.phoneMother);    // Move số điện thoại mẹ
+        phoneFather = std::move(other.phoneFather);    // Move số điện thoại cha
         medicalRecordIDs = std::move(other.medicalRecordIDs);
         ID = other.ID;
         other.ID = 0;
@@ -114,8 +127,8 @@ std::string Patient::getInfo() const {
         << ", Email: " << email
         << ", InsuranceID: " << insuranceID
         << ", Blood Type: " << bloodType
-        << ", Mother: " << nameMother
-        << ", Father: " << nameFather;
+        << ", Mother: " << nameMother << " (Phone: " << phoneMother << ")"
+        << ", Father: " << nameFather << " (Phone: " << phoneFather << ")";
 
     if (!allergies.empty()) {
         oss << ", Allergies: ";
@@ -171,6 +184,14 @@ void Patient::setNameFather(const std::string &nameFather_) {
     nameFather = Utils::trimmed(nameFather_);
 }
 
+void Patient::setPhoneMother(const std::string &phoneMother_) {
+    phoneMother = Utils::trimmed(phoneMother_);
+}
+
+void Patient::setPhoneFather(const std::string &phoneFather_) {
+    phoneFather = Utils::trimmed(phoneFather_);
+}
+
 void Patient::setMedicalRecordIDs(const std::vector<int>& recordIDs) {
     medicalRecordIDs = recordIDs;
 }
@@ -188,6 +209,8 @@ nlohmann::json Patient::toJson() const {
     j["bloodType"] = bloodType;
     j["nameMother"] = nameMother;
     j["nameFather"] = nameFather;
+    j["phoneMother"] = phoneMother;    // Thêm số điện thoại mẹ
+    j["phoneFather"] = phoneFather;    // Thêm số điện thoại cha
     j["allergies"] = allergies;
     j["chronicDiseases"] = chronicDiseases;
     j["medicalRecordIDs"] = medicalRecordIDs;
@@ -215,6 +238,11 @@ void Patient::fromJson(const nlohmann::json &j) {
     if (j.contains("bloodType")) bloodType = j.at("bloodType").get<std::string>();
     if (j.contains("nameMother")) nameMother = j.at("nameMother").get<std::string>();
     if (j.contains("nameFather")) nameFather = j.at("nameFather").get<std::string>();
+    // Thêm đọc số điện thoại mẹ và cha (với giá trị mặc định nếu không có)
+    if (j.contains("phoneMother")) phoneMother = j.at("phoneMother").get<std::string>();
+    else phoneMother = "";
+    if (j.contains("phoneFather")) phoneFather = j.at("phoneFather").get<std::string>();
+    else phoneFather = "";
     if (j.contains("allergies") && j.at("allergies").is_array()) {
         allergies = j.at("allergies").get<std::vector<std::string>>();
     } else {

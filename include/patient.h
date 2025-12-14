@@ -20,6 +20,8 @@ private:
     std::vector<std::string> chronicDiseases; // Bệnh nền
     std::string nameMother;
     std::string nameFather;
+    std::string phoneMother;
+    std::string phoneFather;
     std::vector<int> medicalRecordIDs; // Chỉ lưu ID hồ sơ bệnh án (để MedicalRecordManager quản lý chi tiết)
 
 public:
@@ -28,7 +30,8 @@ public:
             const std::string &insuranceID_,
             const std::string &bloodType_, const std::string &allergies_, 
             const std::string &chronicDisease_, 
-            const std::string &nameMother_, const std::string &nameFather_);
+            const std::string &nameMother_, const std::string &nameFather_,
+            const std::string &phoneMother_, const std::string &phoneFather_);
 
     Patient(const Patient& other);
     Patient& operator=(const Patient& other);
@@ -46,6 +49,8 @@ public:
     const std::vector<std::string>& getChronicDiseases() const { return chronicDiseases; }
     std::string getNameMother() const { return nameMother; }
     std::string getNameFather() const { return nameFather; }
+    std::string getPhoneMother() const { return phoneMother; }
+    std::string getPhoneFather() const { return phoneFather; }
     const std::vector<int>& getMedicalRecordIDs() const { return medicalRecordIDs; }
 
     void addMedicalRecord(int recordID);
@@ -55,6 +60,8 @@ public:
     void setChronicDiseases(const std::string &chronicDieases_);
     void setNameMother(const std::string &nameMother_);
     void setNameFather(const std::string &nameFather_);
+    void setPhoneMother(const std::string &phoneMother_);
+    void setPhoneFather(const std::string &phoneFather_);
 
     nlohmann::json toJson() const;
     void fromJson(const nlohmann::json &j);

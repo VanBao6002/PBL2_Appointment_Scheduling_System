@@ -10,6 +10,8 @@
 #include <cmath>
 #include <algorithm>
 #include <QDir>
+#include "patientdetaildialog.h"
+#include "person.h"
 #include "appointmentManager.h"
 #include "patientManager.h"
 #include "doctorManager.h"
@@ -235,9 +237,9 @@ void AdminWindow::loadPatientData(int page, const QString& searchText) {
         ui->tablePatient->setItem(row, 3, birthdayItem);
 
         // ✅ Cột 4: Nhóm máu (căn giữa)
-        QTableWidgetItem* bloodTypeItem = new QTableWidgetItem(QString::fromStdString(patient.getBloodType()));
-        bloodTypeItem->setTextAlignment(Qt::AlignCenter);
-        ui->tablePatient->setItem(row, 4, bloodTypeItem);
+        QTableWidgetItem* CCCDItem = new QTableWidgetItem(QString::fromStdString(patient.getCCCD()));
+        CCCDItem->setTextAlignment(Qt::AlignCenter);
+        ui->tablePatient->setItem(row, 4, CCCDItem);
 
         // ✅ Cột 5: SĐT (căn giữa)
         QTableWidgetItem* phoneNumberItem = new QTableWidgetItem(QString::fromStdString(patient.getPhoneNumber()));
@@ -411,15 +413,20 @@ void AdminWindow::loadDoctorData(int page, const QString& searchText) {
         birthdayItem->setTextAlignment(Qt::AlignCenter);
         ui->tableDoctor->setItem(row, 3, birthdayItem);
 
+        // Cột : CCCD
+        QTableWidgetItem* CCCDItem = new QTableWidgetItem(QString::fromStdString(doctor.getCCCD()));
+        CCCDItem->setTextAlignment(Qt::AlignCenter);
+        ui->tableDoctor->setItem(row, 4, CCCDItem);
+
         // ✅ Cột 4: Chuyên khoa (căn trái)
         QTableWidgetItem* specializationItem = new QTableWidgetItem(QString::fromStdString(doctor.getSpecialization()));
         specializationItem->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-        ui->tableDoctor->setItem(row, 4, specializationItem);
+        ui->tableDoctor->setItem(row, 5, specializationItem);
 
         // ✅ Cột 5: Email (căn trái)
         QTableWidgetItem* emailItem = new QTableWidgetItem(QString::fromStdString(doctor.getEmail()));
         emailItem->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-        ui->tableDoctor->setItem(row, 5, emailItem);
+        ui->tableDoctor->setItem(row, 6, emailItem);
 
         // ✅ Cột 6: SĐT (căn giữa)
         QString phoneDisplay = QString::fromStdString(doctor.getPhoneNumber());
@@ -428,7 +435,7 @@ void AdminWindow::loadDoctorData(int page, const QString& searchText) {
         }
         QTableWidgetItem* phoneNumberItem = new QTableWidgetItem(phoneDisplay);
         phoneNumberItem->setTextAlignment(Qt::AlignCenter);
-        ui->tableDoctor->setItem(row, 6, phoneNumberItem);
+        ui->tableDoctor->setItem(row, 7, phoneNumberItem);
 
         // ✅ Cột 7: Trạng thái (căn giữa)
         QTableWidgetItem* statusItem = new QTableWidgetItem(QString::fromStdString(Doctor::statusToString(doctor.getStatus())));
@@ -443,7 +450,7 @@ void AdminWindow::loadDoctorData(int page, const QString& searchText) {
             statusItem->setBackground(QBrush(QColor(158, 158, 158, 50)));
         }
 
-        ui->tableDoctor->setItem(row, 7, statusItem);
+        ui->tableDoctor->setItem(row, 8, statusItem);
 
         // ✅ Cột 8: Tuỳ chọn - Thêm 2 nút "Xem chi tiết" và "Xoá"
         QWidget* actionWidget = new QWidget();
@@ -489,7 +496,7 @@ void AdminWindow::loadDoctorData(int page, const QString& searchText) {
         layout->addWidget(btnDelete);
         actionWidget->setLayout(layout);
 
-        ui->tableDoctor->setCellWidget(row, 8, actionWidget);
+        ui->tableDoctor->setCellWidget(row, 9, actionWidget);
     }
 
     // 6. Cập nhật UI phân trang
@@ -933,37 +940,34 @@ void AdminWindow::setupPatientTable() {
     // ✅ Đặt tên các cột (không có Email)
     QStringList headers;
     headers << "ID Bệnh nhân" << "Họ tên" << "Giới tính" << "Ngày sinh"
-            << "Nhóm máu" << "SĐT" << "Tuỳ chọn";
+            << "CCCD" << "SĐT" << "Email" << "Tuỳ chọn";
     ui->tablePatient->setHorizontalHeaderLabels(headers);
 
     QHeaderView* header = ui->tablePatient->horizontalHeader();
 
-    // Cột 0: ID (Fixed)
     header->setSectionResizeMode(0, QHeaderView::Fixed);
     ui->tablePatient->setColumnWidth(0, 100);
 
-    // Cột 1: Họ tên (Stretch)
     header->setSectionResizeMode(1, QHeaderView::Stretch);
+    ui->tablePatient->setColumnWidth(1, 100);
 
-    // Cột 2: Giới tính (Fixed)
     header->setSectionResizeMode(2, QHeaderView::Fixed);
     ui->tablePatient->setColumnWidth(2, 80);
 
-    // Cột 3: Ngày sinh (Fixed)
     header->setSectionResizeMode(3, QHeaderView::Fixed);
     ui->tablePatient->setColumnWidth(3, 120);
 
-    // Cột 4: Nhóm máu (Fixed)
     header->setSectionResizeMode(4, QHeaderView::Fixed);
     ui->tablePatient->setColumnWidth(4, 100);
 
-    // Cột 5: SĐT (Fixed)
     header->setSectionResizeMode(5, QHeaderView::Fixed);
-    ui->tablePatient->setColumnWidth(5, 120);
+    ui->tablePatient->setColumnWidth(5, 100);
 
-    // ✅ Cột 6: Tuỳ chọn (Fixed - đủ cho 2 button)
     header->setSectionResizeMode(6, QHeaderView::Fixed);
     ui->tablePatient->setColumnWidth(6, 200);
+
+    header->setSectionResizeMode(7, QHeaderView::Fixed);
+    ui->tablePatient->setColumnWidth(7, 200);
 
     // Các thiết lập khác...
     ui->tablePatient->verticalHeader()->setSectionResizeMode(QHeaderView::Fixed);
@@ -984,7 +988,7 @@ void AdminWindow::setupDoctorTable() {
 
     // ✅ Đặt tên các cột
     QStringList headers;
-    headers << "ID Bác sĩ" << "Họ tên" << "Giới tính" << "Ngày sinh"
+    headers << "ID Bác sĩ" << "Họ tên" << "Giới tính" << "Ngày sinh" << "CCCD"
             << "Chuyên khoa" << "Email" << "SĐT" << "Trạng thái" << "Tuỳ chọn";
     ui->tableDoctor->setHorizontalHeaderLabels(headers);
 
@@ -1005,23 +1009,27 @@ void AdminWindow::setupDoctorTable() {
     header->setSectionResizeMode(3, QHeaderView::Fixed);
     ui->tableDoctor->setColumnWidth(3, 120);
 
-    // Cột 4: Chuyên khoa (Stretch)
-    header->setSectionResizeMode(4, QHeaderView::Stretch);
+    // Cột 4: CCCD (Fixed)
+    header->setSectionResizeMode(4, QHeaderView::Fixed);
+    ui->tablePatient->setColumnWidth(4, 100);
 
-    // Cột 5: Email (Stretch)
+    // Cột 4: Chuyên khoa (Stretch)
     header->setSectionResizeMode(5, QHeaderView::Stretch);
 
+    // Cột 5: Email (Stretch)
+    header->setSectionResizeMode(6, QHeaderView::Stretch);
+
     // Cột 6: SĐT (Fixed)
-    header->setSectionResizeMode(6, QHeaderView::Fixed);
-    ui->tableDoctor->setColumnWidth(6, 110);
+    header->setSectionResizeMode(7, QHeaderView::Fixed);
+    ui->tableDoctor->setColumnWidth(7, 110);
 
     // Cột 7: Trạng thái (Fixed)
-    header->setSectionResizeMode(7, QHeaderView::Fixed);
-    ui->tableDoctor->setColumnWidth(7, 100);
+    header->setSectionResizeMode(8, QHeaderView::Fixed);
+    ui->tableDoctor->setColumnWidth(8, 100);
 
     // Cột 8: Tuỳ chọn (Fixed)
-    header->setSectionResizeMode(8, QHeaderView::Fixed);
-    ui->tableDoctor->setColumnWidth(8, 200);
+    header->setSectionResizeMode(9, QHeaderView::Fixed);
+    ui->tableDoctor->setColumnWidth(9, 200);
 
     // Các thiết lập khác
     ui->tableDoctor->verticalHeader()->setSectionResizeMode(QHeaderView::Fixed);
@@ -1646,6 +1654,52 @@ void AdminWindow::on_btnEditPatient_clicked() {
     }
 }
 
+// void AdminWindow::on_btnViewPatientDetail_clicked() {
+//     QPushButton* btn = qobject_cast<QPushButton*>(sender());
+//     if (!btn) return;
+
+//     int patientID = btn->property("patientID").toInt();
+//     qDebug() << "[VIEW DETAIL] Patient ID:" << patientID;
+
+//     try {
+//         const Patient& patient = PatientManager::getInstance().getPatientByID(patientID);
+
+//         QString details = QString(
+//             "=== THÔNG TIN BỆNH NHÂN ===\n\n"
+//             "ID: %1\n"
+//             "Họ tên: %2\n"
+//             "Giới tính: %3\n"
+//             "Ngày sinh: %4\n"
+//             "Nhóm máu: %5\n"
+//             "Số điện thoại: %6\n"
+//             "Mã BHYT: %7\n"
+//             "Mẹ: %8\n"
+//             "Cha: %9\n"
+//         )
+//             .arg(patient.getID())
+//             .arg(QString::fromStdString(patient.getName()))
+//             .arg(QString(patient.getGender()))
+//             .arg(QString::fromStdString(patient.getBirthday().toString()))
+//             .arg(QString::fromStdString(patient.getBloodType()))
+//             .arg(QString::fromStdString(patient.getPhoneNumber()))
+//             .arg(QString::fromStdString(patient.getInsuranceID()))
+//             .arg(QString::fromStdString(patient.getNameMother()))
+//             .arg(QString::fromStdString(patient.getNameFather()));
+
+//         if (!patient.getAllergies().empty()) {
+//             details += "\nDị ứng: " + QString::fromStdString(Utils::join(patient.getAllergies(), ", "));
+//         }
+
+//         if (!patient.getChronicDiseases().empty()) {
+//             details += "\nBệnh nền: " + QString::fromStdString(Utils::join(patient.getChronicDiseases(), ", "));
+//         }
+
+//         QMessageBox::information(this, "Chi tiết Bệnh nhân", details);
+
+//     } catch (const std::exception& e) {
+//         QMessageBox::critical(this, "Lỗi", QString("Không thể xem chi tiết: %1").arg(e.what()));
+//     }
+// }
 void AdminWindow::on_btnViewPatientDetail_clicked() {
     QPushButton* btn = qobject_cast<QPushButton*>(sender());
     if (!btn) return;
@@ -1656,37 +1710,9 @@ void AdminWindow::on_btnViewPatientDetail_clicked() {
     try {
         const Patient& patient = PatientManager::getInstance().getPatientByID(patientID);
 
-        QString details = QString(
-            "=== THÔNG TIN BỆNH NHÂN ===\n\n"
-            "ID: %1\n"
-            "Họ tên: %2\n"
-            "Giới tính: %3\n"
-            "Ngày sinh: %4\n"
-            "Nhóm máu: %5\n"
-            "Số điện thoại: %6\n"
-            "Mã BHYT: %7\n"
-            "Mẹ: %8\n"
-            "Cha: %9\n"
-        )
-            .arg(patient.getID())
-            .arg(QString::fromStdString(patient.getName()))
-            .arg(QString(patient.getGender()))
-            .arg(QString::fromStdString(patient.getBirthday().toString()))
-            .arg(QString::fromStdString(patient.getBloodType()))
-            .arg(QString::fromStdString(patient.getPhoneNumber()))
-            .arg(QString::fromStdString(patient.getInsuranceID()))
-            .arg(QString::fromStdString(patient.getNameMother()))
-            .arg(QString::fromStdString(patient.getNameFather()));
-
-        if (!patient.getAllergies().empty()) {
-            details += "\nDị ứng: " + QString::fromStdString(Utils::join(patient.getAllergies(), ", "));
-        }
-
-        if (!patient.getChronicDiseases().empty()) {
-            details += "\nBệnh nền: " + QString::fromStdString(Utils::join(patient.getChronicDiseases(), ", "));
-        }
-
-        QMessageBox::information(this, "Chi tiết Bệnh nhân", details);
+        // Sử dụng dialog mới thay vì QMessageBox
+        PatientDetailDialog detailDialog(patient, this);
+        detailDialog.exec();
 
     } catch (const std::exception& e) {
         QMessageBox::critical(this, "Lỗi", QString("Không thể xem chi tiết: %1").arg(e.what()));

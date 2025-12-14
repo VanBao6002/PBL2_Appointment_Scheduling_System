@@ -1,26 +1,28 @@
 [
     {
-        "CCCD": "XXXXXXXXXXXX",
-        "ID": 4,
+        "CCCD": "012471524817",
+        "ID": 3,
         "allergies": [
-            "Không"
+            "ascsaacs"
         ],
         "birthday": {
             "day": 15,
             "month": 12,
-            "year": 1994
+            "year": 2015
         },
-        "bloodType": "O+",
+        "bloodType": "A-",
         "chronicDiseases": [
-            "Cao huyết áp"
+            "ascacs"
         ],
-        "email": "foo@gmail.com",
+        "email": "ascawc@gmail.com",
         "gender": "M",
-        "insuranceID": "SVN51501291",
+        "insuranceID": "123124",
         "medicalRecordIDs": [],
-        "name": "Rô nân đô",
-        "nameFather": "Rô nân cha",
-        "nameMother": "Rô nân mẹ",
-        "phoneNumber": "0123456789"
+        "name": "ascac",
+        "nameFather": "ascasc",
+        "nameMother": "ascasc",
+        "phoneFather": "0123321123",
+        "phoneMother": "0123123123",
+        "phoneNumber": "0321123321"
     }
 ]

@@ -112,19 +112,6 @@ QDialog {
         </property>
        </spacer>
       </item>
-      <item>
-       <widget class="QPushButton" name="btnClose">
-        <property name="maximumSize">
-         <size>
-          <width>30</width>
-          <height>30</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>X</string>
-        </property>
-       </widget>
-      </item>
      </layout>
     </widget>
    </item>
@@ -274,22 +261,5 @@ QLabel {
   </layout>
  </widget>
  <resources/>
- <connections>
-  <connection>
-   <sender>btnClose</sender>
-   <signal>clicked()</signal>
-   <receiver>AddEditUserDialog</receiver>
-   <slot>reject()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>20</x>
-     <y>20</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>20</x>
-     <y>20</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>
