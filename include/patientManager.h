@@ -15,6 +15,7 @@ class PatientManager{
     private:
         std::unordered_map<int, std::string> log;
         std::unordered_map<int, Patient> patientTable;
+        std::unordered_map<std::string, int> CCCDToID;
 
         PatientManager() = default;
         PatientManager(const PatientManager&) = delete;
@@ -36,6 +37,8 @@ class PatientManager{
         const std::unordered_map<int, Patient>& getAllPatientsTable() const;
         const std::unordered_map<int, std::string>& getAllLog() const;
         const std::string& getIDLog(int ID_) const;
+        const Patient& getPatientByCCCD(const std::string& CCCD) const;
+
 
         // loader
         void loadFromFile(const std::string& path);

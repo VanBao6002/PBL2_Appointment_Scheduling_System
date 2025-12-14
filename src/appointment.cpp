@@ -1,17 +1,18 @@
 #include "appointment.h"
 
-Appointment::Appointment(): doctorID(0), patientID(0), date(), time("00:00:00"), room("00A"), status(Status::Scheduled) {
+Appointment::Appointment(): doctorID(0), patientID(0), date(), startTime("00:00"), endTime("01:00") , room("00A"), status(Status::Scheduled) {
     int ID = static_cast<int>(IDHandler<Appointment>::generateID());
     setID(ID);
     IDHandler<Appointment>::registerID(ID);
 }
 
-Appointment::Appointment(int doctorID, int patientID, const std::string& date_, const std::string& time_, const std::string& room_, const std::string& status_) {
+Appointment::Appointment(int doctorID, int patientID, const std::string& date_, const std::string& startTime_, const std::string& endTime_, const std::string& room_, const std::string& status_) {
     
-    setDoctor(doctorID);
-    setPatient(patientID);
+    setDoctorID(doctorID);
+    setPatientID(patientID);
     setDate(date_);
-    setTime(time_);
+    setStartTime(startTime_);
+    setEndTime(endTime_);
     setRoom(room_);
     setStatus(status_);
 
@@ -29,7 +30,8 @@ Appointment::Appointment(const Appointment& other)
     : doctorID(other.doctorID),
       patientID(other.patientID),
       date(other.date),
-      time(other.time),
+      startTime(other.startTime),
+      endTime(other.endTime),
       room(other.room),
       status(other.status),
       ID(other.ID)
@@ -44,7 +46,8 @@ Appointment& Appointment::operator=(const Appointment& other)
         doctorID = other.doctorID;
         patientID = other.patientID;
         date = other.date;
-        time = other.time;
+        startTime = other.startTime;
+        endTime = other.endTime;
         room = other.room;
         status = other.status;
         ID = other.ID;
@@ -57,7 +60,8 @@ Appointment::Appointment(Appointment&& other) noexcept
     : doctorID(other.doctorID),
       patientID(other.patientID),
       date(std::move(other.date)),
-      time(std::move(other.time)),
+      startTime(std::move(other.startTime)),
+      endTime(std::move(other.endTime)),
       room(std::move(other.room)),
       status(other.status),
       ID(other.ID)
@@ -72,7 +76,8 @@ Appointment& Appointment::operator=(Appointment&& other) noexcept
         doctorID = other.doctorID;
         patientID = other.patientID;
         date = std::move(other.date);
-        time = std::move(other.time);
+        startTime = std::move(other.startTime);
+        endTime = std::move(other.endTime);
         room = std::move(other.room);
         status = other.status;
         ID = other.ID;
@@ -90,23 +95,28 @@ void Appointment::setDate(const std::string& date_){
     date = Date::fromString(Utils::trimmed(date_));
 }
 
-void Appointment::setTime(const std::string &time_){
-    Utils::validTime(Utils::trimmed(time_));
-    time = Utils::trimmed(time_);
+void Appointment::setStartTime(const std::string &startTime_){
+    Utils::validTime(Utils::trimmed(startTime_));
+    startTime = Utils::trimmed(startTime_);
+}
+
+void Appointment::setEndTime(const std::string &endTime_){
+    Utils::validTime(Utils::trimmed(endTime_));
+    endTime = Utils::trimmed(endTime_);
 }
 
 void Appointment::setStatus(const std::string& status_){
     status = statusFromString(Utils::trimmed(status_));
 }
 
-void Appointment::setDoctor(int doctorID_){
+void Appointment::setDoctorID(int doctorID_){
     if (!IDHandler<Doctor>::checkDuplicateID(doctorID_)) {
         throw std::invalid_argument("Doctor ID is not found.");
     }
     doctorID = doctorID_;
 }
 
-void Appointment::setPatient(int patientID_){
+void Appointment::setPatientID(int patientID_){
     if (!IDHandler<Patient>::checkDuplicateID(patientID_)){
         throw std::invalid_argument("Patient ID not found.");
     }
@@ -132,10 +142,6 @@ int Appointment::getPatientID() const {
 
 const Date& Appointment::getDate() const {
     return date;
-}
-
-const std::string& Appointment::getTime() const {
-    return time;
 }
 
 Appointment::Status Appointment::getStatus() const{
@@ -176,7 +182,8 @@ nlohmann::json Appointment::toJson() const {
         {"month", date.getMonth()},
         {"year", date.getYear()}
     };
-    j["time"] = time;
+    j["startTime"] = startTime;
+    j["endTime"] = endTime;
     j["room"] = room;
     j["status"] = statusToString(status);
     return j;
@@ -193,7 +200,8 @@ void Appointment::fromJson(const nlohmann::json &j) {
         int y = dt.value("year", 2000);
         date = Date(d, m, y);
     }
-    if (j.contains("time")) time = j.at("time").get<std::string>();
+    if (j.contains("startTime")) startTime = j.at("startTime").get<std::string>();
+    if (j.contains("endTime")) endTime = j.at("endTime").get<std::string>();
     if (j.contains("room")) room = j.at("room").get<std::string>();
     if (j.contains("status")) status = statusFromString(j.at("status").get<std::string>());
 }

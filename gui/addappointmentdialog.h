@@ -2,6 +2,7 @@
 #define ADDAPPOINTMENTDIALOG_H
 
 #include <QDialog>
+#include <string>
 #include "appointment.h"
 #include "doctorManager.h"
 #include "patientManager.h"
@@ -17,16 +18,19 @@ class AddAppointmentDialog : public QDialog
 public:
     explicit AddAppointmentDialog(QWidget *parent = nullptr);
     ~AddAppointmentDialog();
-    //Appointment getAppointmentData() const;
+    Appointment getAppointmentData() const;
     void setupStatusComboBox();
 
 private slots:
-    // void on_buttonBox_accepted();
+    void on_buttonBox_accepted();
     void on_buttonBox_rejected();
 
 private:
     bool isDoctorValid(int doctorID) const;
     bool isPatientValid(int patientID) const;
+    bool isPatientExisted(const std::string& CCCD);
+    void checkOrCreatePatientByCCCD();
+
 
 private:
     Ui::AddAppointmentDialog *ui;

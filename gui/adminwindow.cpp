@@ -695,7 +695,7 @@ void AdminWindow::loadAppointmentData(int page, const QString& searchText)
     qDebug() << "Loading appointment data for page" << page << "with search text:" << searchText;
 
     // Lấy dữ liệu từ Singleton
-    std::vector<Appointment> allAppointments = AppointmentManager::getInstance().getAllAppointmentsAsVector();
+    const auto& allAppointments = AppointmentManager::getInstance().getAllAppointmentsAsVector();
     std::vector<Appointment> filteredAppointments;
 
     for (const auto& appt : allAppointments) {
@@ -716,7 +716,8 @@ void AdminWindow::loadAppointmentData(int page, const QString& searchText)
                     << patientName
                     << doctorName
                     << QString::fromStdString(appt.getDate().toString())
-                    << QString::fromStdString(appt.getTime())
+                    << QString::fromStdString(appt.getStartTime())
+                    << QString::fromStdString(appt.getEndTime())                
                     << QString::fromStdString(Appointment::statusToString(appt.getStatus()));
 
         bool match = false;
@@ -770,7 +771,7 @@ void AdminWindow::loadAppointmentData(int page, const QString& searchText)
         ui->tableAppointment->setItem(rowIdx, 1, new QTableWidgetItem(patientName));
         ui->tableAppointment->setItem(rowIdx, 2, new QTableWidgetItem(doctorName));
         ui->tableAppointment->setItem(rowIdx, 3, new QTableWidgetItem(QString::fromStdString(appt.getDate().toString())));
-        ui->tableAppointment->setItem(rowIdx, 4, new QTableWidgetItem(QString::fromStdString(appt.getTime())));
+        ui->tableAppointment->setItem(rowIdx, 4, new QTableWidgetItem(QString::fromStdString(appt.getStartTime())));
         ui->tableAppointment->setItem(rowIdx, 5, new QTableWidgetItem(QString::fromStdString(Appointment::statusToString(appt.getStatus()))));
     }
 }

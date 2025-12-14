@@ -1,5 +1,6 @@
 [
     {
+        "CCCD": "XXXXXXXXXXXX",
         "ID": 4,
         "allergies": [
             "Không"
@@ -13,6 +14,7 @@
         "chronicDiseases": [
             "Cao huyết áp"
         ],
+        "email": "foo@gmail.com",
         "gender": "M",
         "insuranceID": "SVN51501291",
         "medicalRecordIDs": [],

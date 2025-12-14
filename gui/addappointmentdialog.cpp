@@ -1,5 +1,6 @@
 #include "addappointmentdialog.h"
 #include "gui/ui_addappointmentdialog.h"
+#include "addeditpatientdialog.h"
 #include <QMessageBox>
 #include <QDate>
 #include <QTime>
@@ -16,6 +17,11 @@ AddAppointmentDialog::AddAppointmentDialog(QWidget *parent) :
 {
     ui->setupUi(this);
     setupStatusComboBox();
+
+    QPushButton* searchButton = ui->stackedWidget->findChild<QPushButton*>("search_button");
+    if (searchButton) {
+        connect(searchButton, &QPushButton::clicked, this, &AddAppointmentDialog::checkOrCreatePatientByCCCD);
+    }
 }
 
 AddAppointmentDialog::~AddAppointmentDialog()
@@ -65,38 +71,48 @@ bool AddAppointmentDialog::isDoctorValid(int doctorID) const {
 
 bool AddAppointmentDialog::isPatientValid(int patientID) const {
     qDebug() << "Checking Patient ID:" << patientID;
-    bool exists = IDHandler<Patient>::checkDuplicateID(static_cast<size_t>(patientID));
-    return exists;
+    bool valid = IDHandler<Patient>::checkDuplicateID(static_cast<size_t>(patientID));
+    return valid;
 }
 
-// void AddAppointmentDialog::on_buttonBox_accepted()
-// {
-//     QString doctorIDText = ui->txtDoctorID->text();
-//     QString patientIDText = ui->txtPatientID->text();
-//     QString roomText = ui->txtRoom->text();
+bool AddAppointmentDialog::isPatientExisted(const std::string& cccd) {
+    bool patientExists = true;
+    try {
+        PatientManager::getInstance().getPatientByCCCD(cccd);
+    } catch (...) {
+        patientExists = false;
+    }
+    return patientExists;
+}
 
-//     if (doctorIDText.isEmpty() || patientIDText.isEmpty() || roomText.isEmpty())
-//     {
-//         QMessageBox::warning(this, "Lỗi Nhập Liệu", "Vui lòng điền đầy đủ thông tin.");
-//         return;
-//     }
+void AddAppointmentDialog::on_buttonBox_accepted()
+{
+    // QString doctorIDText = ui->txtDoctorID->text();
+    // QString patientIDText = ui->txtPatientID->text();
+    // QString roomText = ui->txtRoom->text();
 
-//     int doctorID = doctorIDText.toInt();
-//     int patientID = patientIDText.toInt();
+    // if (doctorIDText.isEmpty() || patientIDText.isEmpty() || roomText.isEmpty())
+    // {
+    //     QMessageBox::warning(this, "Lỗi Nhập Liệu", "Vui lòng điền đầy đủ thông tin.");
+    //     return;
+    // }
 
-//     if (!isDoctorValid(doctorID)) {
-//         QString errorMsg = QString("Doctor ID %1 không tồn tại hoặc không ở trạng thái Active (hiện tại). Vui lòng kiểm tra lại ID hoặc trạng thái.").arg(doctorID);
-//         QMessageBox::critical(this, "Lỗi Dữ liệu", errorMsg);
-//         return;
-//     }
+    // int doctorID = doctorIDText.toInt();
+    // int patientID = patientIDText.toInt();
 
-//     if (!isPatientValid(patientID)) {
-//         QMessageBox::critical(this, "Lỗi Dữ liệu", QString("Patient ID %1 không tồn tại trong hệ thống. Vui lòng kiểm tra lại ID.").arg(patientID));
-//         return;
-//     }
+    // if (!isDoctorValid(doctorID)) {
+    //     QString errorMsg = QString("Doctor ID %1 không tồn tại hoặc không ở trạng thái Active (hiện tại). Vui lòng kiểm tra lại ID hoặc trạng thái.").arg(doctorID);
+    //     QMessageBox::critical(this, "Lỗi Dữ liệu", errorMsg);
+    //     return;
+    // }
 
-//     accept();
-// }
+    // if (!isPatientValid(patientID)) {
+    //     QMessageBox::critical(this, "Lỗi Dữ liệu", QString("Patient ID %1 không tồn tại trong hệ thống. Vui lòng kiểm tra lại ID.").arg(patientID));
+    //     return;
+    // }
+
+    // accept();
+}
 
 void AddAppointmentDialog::on_buttonBox_rejected()
 {
@@ -104,15 +120,32 @@ void AddAppointmentDialog::on_buttonBox_rejected()
 }
 
 Appointment AddAppointmentDialog::getAppointmentData() const {
-    int doctorID = ui->txtDoctorID->text().toInt();
-    int patientID = ui->txtPatientID->text().toInt();
+    // int doctorID = ui->txtDoctorID->text().toInt();
+    // int patientID = ui->txtPatientID->text().toInt();
 
-    QDate qDate = ui->dateEditAppointment->date();
-    Date apptDate(qDate.day(), qDate.month(), qDate.year());
-    QString qTime = ui->timeEditAppointment->time().toString("HH:mm");
+    // QDate qDate = ui->dateEditAppointment->date();
+    // Date apptDate(qDate.day(), qDate.month(), qDate.year());
+    // QString qTime = ui->timeEditAppointment->time().toString("HH:mm");
 
-    std::string room = ui->txtRoom->text().toStdString();
-    std::string statusStr = ui->comboStatus->currentText().toStdString();
-    Appointment::Status status = Appointment::statusFromString(statusStr);
-    return Appointment(doctorID, patientID, apptDate.toString(), qTime.toStdString(), room, statusStr);
+    // std::string room = ui->txtRoom->text().toStdString();
+    // std::string statusStr = ui->comboStatus->currentText().toStdString();
+    // Appointment::Status status = Appointment::statusFromString(statusStr);
+    // return Appointment(doctorID, patientID, apptDate.toString(), qTime.toStdString(), room, statusStr);
+}
+
+
+void AddAppointmentDialog::checkOrCreatePatientByCCCD() {
+    QString cccd = ui->txtCCCD->text().trimmed();
+    if (isPatientExisted(cccd.toStdString())) {
+        // Patient exists, proceed to appointment
+    } else {
+        // Patient does not exist, open AddEditPatientDialog
+        AddEditPatientDialog dlg(this);
+        if (dlg.exec() == QDialog::Accepted) {
+            // Patient created, proceed to appointment
+        } else {
+            // Creation cancelled, abort
+            return;
+        }
+    }
 }

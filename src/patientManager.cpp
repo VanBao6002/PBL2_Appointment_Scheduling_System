@@ -13,7 +13,8 @@ void PatientManager::addPatient(const Patient &pat_) {
     // ✅ KHÔNG copy lại, chỉ lưu trực tiếp reference
     // Nếu phải lưu, hãy sử dụng move để tránh copy constructor
     patientTable[ID_] = pat_;
-    
+    CCCDToID[pat_.getCCCD()] = ID_;
+
     log[ID_] += " Added on: " + Utils::getDateTime();
     saveToFile(Config::PATIENT_PATH);
 }
@@ -31,6 +32,7 @@ void PatientManager::removePatient(int ID_){
     if (patientTable.find(ID_) == patientTable.end()){
         throw std::invalid_argument("Removing failed. Patient ID " + std::to_string(ID_) + " not found.");
     }
+    CCCDToID.erase(patientTable[ID_].getCCCD());
     patientTable.erase(ID_);
     log.erase(ID_);
     try {
@@ -77,6 +79,13 @@ const std::string& PatientManager::getIDLog(int ID_) const {
     return log.at(ID_);
 }
 
+const Patient& PatientManager::getPatientByCCCD(const std::string& CCCD) const {
+    if (patientTable.find(CCCDToID.at(CCCD)) == patientTable.end()){
+        throw std::invalid_argument("Failed getting. Patient CCCD " + CCCD + " not found.");
+    }
+    return patientTable.at(CCCDToID.at(CCCD));
+}
+
 void PatientManager::loadFromFile(const std::string& path) {
     // clean data before loading
     patientTable.clear();
@@ -108,6 +117,7 @@ void PatientManager::loadFromFile(const std::string& path) {
             IDHandler<Person>::registerCCCD(pat.getCCCD());
         }
         patientTable[ID] = pat;
+        CCCDToID[pat.getCCCD()] = ID;
         if (ID > maxID) maxID = ID;
     } catch (const std::exception& e) {
         qWarning() << "[ERROR] Failed to load patient record:" << e.what();

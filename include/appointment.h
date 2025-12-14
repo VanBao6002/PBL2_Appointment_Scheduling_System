@@ -22,14 +22,15 @@ class Appointment{
         int doctorID;
         int patientID;
         Date date;
-        std::string time;
+        std::string startTime;
+        std::string endTime;
         std::string room;
         Status status;
 
     public: 
         Appointment();
 
-        Appointment(int doctorID, int patientID, const std::string& date_, const std::string& time_, const std::string& room_, const std::string& status_);
+        Appointment(int doctorID, int patientID, const std::string& date_, const std::string& startTime_, const std::string& endTime_, const std::string& room_, const std::string& status_);
 
         ~Appointment();
 
@@ -41,10 +42,11 @@ class Appointment{
         
 
         void setDate(const std::string& date_);
-        void setTime(const std::string &time_);
+        void setStartTime(const std::string &startTime_);
+        void setEndTime(const std::string &endTime_);
         void setStatus(const std::string& status_);
-        void setDoctor(int doctorID_);
-        void setPatient(int patientID_);
+        void setDoctorID(int doctorID_);
+        void setPatientID(int patientID_);
         void setRoom(const std::string room_);
 
         
@@ -52,7 +54,16 @@ class Appointment{
         int getDoctorID() const;
         int getPatientID() const;
         const Date& getDate() const;
-        const std::string& getTime() const;
+        std::string getStartTime() const {return startTime;}
+        std::string getEndTime() const {return endTime;}
+        std::string getDuration() const {
+            int startHour = std::stoi(startTime.substr(0, 2));
+            int startMin = std::stoi(startTime.substr(3, 2));
+            int endHour = std::stoi(endTime.substr(0, 2));
+            int endMin = std::stoi(endTime.substr(3, 2));
+            int duration = (endHour * 60 + endMin) - (startHour * 60 + startMin);
+            return std::to_string(duration);
+        }
         Status getStatus() const;
         const Doctor& getDoctor(const DoctorManager& mgr) const;
         const Patient& getPatient(const PatientManager& mgr) const;
