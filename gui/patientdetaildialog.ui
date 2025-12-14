@@ -1,0 +1,817 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>PatientDetailDialog</class>
+ <widget class="QDialog" name="PatientDetailDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>950</width>
+    <height>800</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Chi Tiết Bệnh Nhân</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QDialog {
+    background-color: #aaaa7f;
+}
+QLabel {
+    color: black;
+    background-color: transparent;
+    border: none;
+    font-weight: bold;
+}
+QGroupBox {
+    font-weight: bold;
+    border: 1px solid #CCCCCC;
+    border-radius: 5px;
+    margin-top: 10px;
+    padding-top: 10px;
+}
+QGroupBox::title {
+    subcontrol-origin: margin;
+    left: 10px;
+    padding: 0 5px 0 5px;
+}</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QWidget" name="widgetTitleBar" native="true">
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(170, 170, 127);</string>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout_4">
+      <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Orientation::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>225</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QLabel" name="lblMainTitle">
+        <property name="font">
+         <font>
+          <family>Segoe UI</family>
+          <pointsize>24</pointsize>
+          <italic>false</italic>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">font: 700 24pt &quot;Segoe UI&quot;;</string>
+        </property>
+        <property name="text">
+         <string>CHI TIẾT BỆNH NHÂN</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_2">
+        <property name="orientation">
+         <enum>Qt::Orientation::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>225</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QScrollArea" name="scrollArea">
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
+     <property name="widgetResizable">
+      <bool>true</bool>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignHCenter</set>
+     </property>
+     <widget class="QWidget" name="scrollAreaWidgetContents">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>930</width>
+        <height>654</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: white;
+</string>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item>
+        <widget class="QGroupBox" name="groupBasicInfo">
+         <property name="font">
+          <font>
+           <family>Arial</family>
+           <pointsize>11</pointsize>
+           <italic>false</italic>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QGroupBox {
+    font: bold 11pt &quot;Arial&quot;;
+    color: #2C3E50;
+    border: 1px solid #CCCCCC;
+    border-radius: 5px;
+    margin-top: 10px;
+    padding-top: 10px;
+    background-color: white;
+}
+
+QGroupBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top left;
+    border: 1px solid #CCCCCC;
+    border-radius: 5px;
+    left: 10px;
+    padding: 0 8px 0 8px;
+    background-color: white;
+}</string>
+         </property>
+         <property name="title">
+          <string>THÔNG TIN CƠ BẢN</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_1">
+          <item row="0" column="0">
+           <widget class="QLabel" name="lblID">
+            <property name="styleSheet">
+             <string notr="true">QLabel {
+    font-weight: bold;
+    color: #34495e;
+}</string>
+            </property>
+            <property name="text">
+             <string>Mã bệnh nhân:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLabel" name="lblIDValue">
+            <property name="styleSheet">
+             <string notr="true">QLabel {
+    color: #2c3e50;
+    font-weight: bold;  
+    padding: 5px;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 3px;
+}</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QLabel" name="lblName">
+            <property name="styleSheet">
+             <string notr="true">QLabel {
+    font-weight: bold;
+    color: #34495e;
+}</string>
+            </property>
+            <property name="text">
+             <string>Họ và tên:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="3">
+           <widget class="QLabel" name="lblNameValue">
+            <property name="styleSheet">
+             <string notr="true">QLabel {
+    color: #2c3e50;
+    font-weight: bold;  
+    padding: 5px;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 3px;
+}</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="lblGender">
+            <property name="styleSheet">
+             <string notr="true">QLabel {
+    font-weight: bold;
+    color: #34495e;
+}</string>
+            </property>
+            <property name="text">
+             <string>Giới tính:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QLabel" name="lblGenderValue">
+            <property name="styleSheet">
+             <string notr="true">QLabel {
+    color: #2c3e50;
+    font-weight: bold;  
+    padding: 5px;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 3px;
+}</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="2">
+           <widget class="QLabel" name="lblBirthday">
+            <property name="styleSheet">
+             <string notr="true">QLabel {
+    font-weight: bold;
+    color: #34495e;
+}</string>
+            </property>
+            <property name="text">
+             <string>Ngày sinh:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="3">
+           <widget class="QLabel" name="lblBirthdayValue">
+            <property name="styleSheet">
+             <string notr="true">QLabel {
+    color: #2c3e50;
+    font-weight: bold;  
+    padding: 5px;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 3px;
+}</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="groupMedicalInfo">
+         <property name="font">
+          <font>
+           <family>Arial</family>
+           <pointsize>11</pointsize>
+           <italic>false</italic>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QGroupBox {
+    font: bold 11pt &quot;Arial&quot;;
+    color: #2C3E50;
+    border: 1px solid #CCCCCC;
+    border-radius: 5px;
+    margin-top: 10px;
+    padding-top: 10px;
+    background-color: white;
+}
+
+QGroupBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top left;
+    border: 1px solid #CCCCCC;
+    border-radius: 5px;
+    left: 10px;
+    padding: 0 8px 0 8px;
+    background-color: white;
+}</string>
+         </property>
+         <property name="title">
+          <string>THÔNG TIN Y TẾ</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_2">
+          <item row="0" column="0">
+           <widget class="QLabel" name="lblBloodType">
+            <property name="styleSheet">
+             <string notr="true">QLabel {
+    font-weight: bold;
+    color: #34495e;
+}</string>
+            </property>
+            <property name="text">
+             <string>Nhóm máu:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLabel" name="lblBloodTypeValue">
+            <property name="styleSheet">
+             <string notr="true">QLabel {
+    color: #2c3e50;
+    font-weight: bold;  
+    padding: 5px;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 3px;
+}</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QLabel" name="lblInsuranceID">
+            <property name="styleSheet">
+             <string notr="true">QLabel {
+    font-weight: bold;
+    color: #34495e;
+}</string>
+            </property>
+            <property name="text">
+             <string>Mã BHYT:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="3">
+           <widget class="QLabel" name="lblInsuranceIDValue">
+            <property name="styleSheet">
+             <string notr="true">QLabel {
+    color: #2c3e50;
+    font-weight: bold;  
+    padding: 5px;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 3px;
+}</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="lblAllergies">
+            <property name="styleSheet">
+             <string notr="true">QLabel {
+    font-weight: bold;
+    color: #34495e;
+}</string>
+            </property>
+            <property name="text">
+             <string>Dị ứng:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1" colspan="3">
+           <widget class="QLabel" name="lblAllergiesValue">
+            <property name="styleSheet">
+             <string notr="true">QLabel {
+    color: #2c3e50;
+    font-weight: bold;  
+    padding: 5px;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 3px;
+}</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="lblChronicDiseases">
+            <property name="styleSheet">
+             <string notr="true">QLabel {
+    font-weight: bold;
+    color: #34495e;
+}</string>
+            </property>
+            <property name="text">
+             <string>Bệnh nền:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1" colspan="3">
+           <widget class="QLabel" name="lblChronicDiseasesValue">
+            <property name="styleSheet">
+             <string notr="true">QLabel {
+    color: #2c3e50;
+    font-weight: bold;  
+    padding: 5px;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 3px;
+}</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="groupContactInfo">
+         <property name="font">
+          <font>
+           <family>Arial</family>
+           <pointsize>11</pointsize>
+           <italic>false</italic>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QGroupBox {
+    font: bold 11pt &quot;Arial&quot;;
+    color: #2C3E50;
+    border: 1px solid #CCCCCC;
+    border-radius: 5px;
+    margin-top: 10px;
+    padding-top: 10px;
+    background-color: white;
+}
+
+QGroupBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top left;
+    border: 1px solid #CCCCCC;
+    border-radius: 5px;
+    left: 10px;
+    padding: 0 8px 0 8px;
+    background-color: white;
+}</string>
+         </property>
+         <property name="title">
+          <string>THÔNG TIN LIÊN HỆ</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_3">
+          <item row="0" column="0">
+           <widget class="QLabel" name="lblPhoneNumber">
+            <property name="styleSheet">
+             <string notr="true">QLabel {
+    font-weight: bold;
+    color: #34495e;
+}</string>
+            </property>
+            <property name="text">
+             <string>Số điện thoại:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLabel" name="lblPhoneNumberValue">
+            <property name="styleSheet">
+             <string notr="true">QLabel {
+    color: #2c3e50;
+    font-weight: bold;  
+    padding: 5px;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 3px;
+}</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QLabel" name="lblEmail">
+            <property name="styleSheet">
+             <string notr="true">QLabel {
+    font-weight: bold;
+    color: #34495e;
+}</string>
+            </property>
+            <property name="text">
+             <string>Email:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="3">
+           <widget class="QLabel" name="lblEmailValue">
+            <property name="styleSheet">
+             <string notr="true">QLabel {
+    color: #2c3e50;
+    font-weight: bold;  
+    padding: 5px;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 3px;
+}</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="lblCCCD">
+            <property name="styleSheet">
+             <string notr="true">QLabel {
+    font-weight: bold;
+    color: #34495e;
+}</string>
+            </property>
+            <property name="text">
+             <string>Số CCCD:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1" colspan="3">
+           <widget class="QLabel" name="lblCCCDValue">
+            <property name="styleSheet">
+             <string notr="true">QLabel {
+    color: #2c3e50;
+    font-weight: bold;  
+    padding: 5px;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 3px;
+}</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="groupFamilyInfo">
+         <property name="font">
+          <font>
+           <family>Arial</family>
+           <pointsize>11</pointsize>
+           <italic>false</italic>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QGroupBox {
+    font: bold 11pt &quot;Arial&quot;;
+    color: #2C3E50;
+    border: 1px solid #CCCCCC;
+    border-radius: 5px;
+    margin-top: 10px;
+    padding-top: 10px;
+    background-color: white;
+}
+
+QGroupBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top left;
+    border: 1px solid #CCCCCC;
+    border-radius: 5px;
+    left: 10px;
+    padding: 0 8px 0 8px;
+    background-color: white;
+}</string>
+         </property>
+         <property name="title">
+          <string>THÔNG TIN GIA ĐÌNH</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_4">
+          <item row="0" column="0">
+           <widget class="QLabel" name="lblNameMother">
+            <property name="styleSheet">
+             <string notr="true">QLabel {
+    font-weight: bold;
+    color: #34495e;
+}</string>
+            </property>
+            <property name="text">
+             <string>Họ tên mẹ:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1" colspan="3">
+           <widget class="QLabel" name="lblNameMotherValue">
+            <property name="styleSheet">
+             <string notr="true">QLabel {
+    color: #2c3e50;
+    font-weight: bold;  
+    padding: 5px;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 3px;
+}</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="lblNameFather">
+            <property name="styleSheet">
+             <string notr="true">QLabel {
+    font-weight: bold;
+    color: #34495e;
+}</string>
+            </property>
+            <property name="text">
+             <string>Họ tên cha:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1" colspan="3">
+           <widget class="QLabel" name="lblNameFatherValue">
+            <property name="styleSheet">
+             <string notr="true">QLabel {
+    color: #2c3e50;
+    font-weight: bold;  
+    padding: 5px;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 3px;
+}</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="lblPhoneMother">
+            <property name="styleSheet">
+             <string notr="true">QLabel {
+    font-weight: bold;
+    color: #34495e;
+}</string>
+            </property>
+            <property name="text">
+             <string>Số điện thoại mẹ:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1" colspan="3">
+           <widget class="QLabel" name="lblPhoneMotherValue">
+            <property name="styleSheet">
+             <string notr="true">QLabel {
+    color: #2c3e50;
+    font-weight: bold;  
+    padding: 5px;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 3px;
+}</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="lblPhoneFather">
+            <property name="styleSheet">
+             <string notr="true">QLabel {
+    font-weight: bold;
+    color: #34495e;
+}</string>
+            </property>
+            <property name="text">
+             <string>Số điện thoại cha:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1" colspan="3">
+           <widget class="QLabel" name="lblPhoneFatherValue">
+            <property name="styleSheet">
+             <string notr="true">QLabel {
+    color: #2c3e50;
+    font-weight: bold;  
+    padding: 5px;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 3px;
+}</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Orientation::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+   <item>
+    <widget class="QWidget" name="widgetBottom" native="true">
+     <layout class="QHBoxLayout" name="horizontalLayout_5">
+      <item>
+       <spacer name="horizontalSpacer_3">
+        <property name="orientation">
+         <enum>Qt::Orientation::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btnClose">
+        <property name="styleSheet">
+         <string notr="true">QPushButton {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 8px 25px;
+    border-radius: 3px;
+    font-weight: bold;
+    font-size: 14px;
+    min-width: 100px;
+}
+
+QPushButton:hover {
+    background-color: #45A049;
+}
+
+QPushButton:pressed {
+    background-color: #3D8B40;
+}</string>
+        </property>
+        <property name="text">
+         <string>Đóng</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_4">
+        <property name="orientation">
+         <enum>Qt::Orientation::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>btnClose</sender>
+   <signal>clicked()</signal>
+   <receiver>PatientDetailDialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>454</x>
+     <y>659</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>450</x>
+     <y>350</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

@@ -13,6 +13,7 @@ AddEditPatientDialog::AddEditPatientDialog(QWidget *parent, const Patient& patie
     currentPatient(patient)
 {
     ui->setupUi(this);
+    setWindowFlags(Qt::FramelessWindowHint);
     setupDatePicker();
     populateUI(patient);
 }
@@ -48,12 +49,23 @@ void AddEditPatientDialog::populateUI(const Patient& patient) {
         ui->txtNameMother->setText(QString::fromStdString(patient.getNameMother()));
         ui->txtNameFather->setText(QString::fromStdString(patient.getNameFather()));
 
-        // NEW: Set insuranceID field
+        // Số điện thoại cha mẹ
+        ui->txtPhoneMother->setText(QString::fromStdString(patient.getPhoneMother()));
+        ui->txtPhoneFather->setText(QString::fromStdString(patient.getPhoneFather()));
+
+        // Set insuranceID field
         ui->txtInsuranceID->setText(QString::fromStdString(patient.getInsuranceID()));
 
         // ✅ Cập nhật cách thiết lập ngày sinh
         QDate qDate(patient.getBirthday().getYear(), patient.getBirthday().getMonth(), patient.getBirthday().getDay());
         ui->dateEditBirthday->setDate(qDate);
+
+        // Số điện thoại bệnh nhân
+        ui->txtPhoneNumber->setText(QString::fromStdString(patient.getPhoneNumber()));
+
+        // CCCD và Email
+        ui->txtCCCD->setText(QString::fromStdString(patient.getCCCD()));
+        ui->txtEmail->setText(QString::fromStdString(patient.getEmail()));
 
         setWindowTitle("Chỉnh Sửa Thông Tin Bệnh Nhân - ID: " + QString::number(patient.getID()));
     } else {
@@ -64,8 +76,13 @@ void AddEditPatientDialog::populateUI(const Patient& patient) {
             ui->comboGender->setCurrentIndex(defaultGenderIndex);
         }
 
-        // NEW: Clear insuranceID field
+        // Clear các field
         ui->txtInsuranceID->clear();
+        ui->txtPhoneMother->clear();
+        ui->txtPhoneFather->clear();
+        ui->txtPhoneNumber->clear();
+        ui->txtCCCD->clear();
+        ui->txtEmail->clear();
 
         // ✅ Thiết lập ngày sinh mặc định
         ui->dateEditBirthday->setDate(QDate::currentDate().addYears(-10));
@@ -84,8 +101,12 @@ Patient AddEditPatientDialog::getPatientData() const {
     QString nameFather = ui->txtNameFather->text().trimmed();
     QString phoneNumber = ui->txtPhoneNumber->text().trimmed();
     QString insuranceID = ui->txtInsuranceID->text().trimmed();
-    QString CCCD = ui->txtCCCD->text().trimmed(); // thêm vào trong QT Creator
-    QString email = ui->txtEmail->text().trimmed(); // thêm vào trong QT Creator
+    QString CCCD = ui->txtCCCD->text().trimmed();
+    QString email = ui->txtEmail->text().trimmed();
+
+    // Số điện thoại cha mẹ
+    QString phoneMother = ui->txtPhoneMother->text().trimmed();
+    QString phoneFather = ui->txtPhoneFather->text().trimmed();
 
     try {
         Utils::validName(name.toStdString());
@@ -95,6 +116,17 @@ Patient AddEditPatientDialog::getPatientData() const {
         Utils::validDate(dob);
         if (!genderStr.isEmpty()) {
             Utils::validGender(genderStr.toStdString()[0]);
+        }
+        // Validation cho CCCD và Email nếu cần
+        Utils::validCCCD(CCCD.toStdString());
+        Utils::validEmail(email.toStdString());
+
+        // Validation cho số điện thoại cha mẹ (không bắt buộc)
+        if (!phoneMother.isEmpty()) {
+            Utils::validPhoneNumber(phoneMother.toStdString());
+        }
+        if (!phoneFather.isEmpty()) {
+            Utils::validPhoneNumber(phoneFather.toStdString());
         }
     } catch (const std::exception& e) {
         throw std::runtime_error("Validation failed in getPatientData: " + std::string(e.what()));
@@ -116,6 +148,11 @@ Patient AddEditPatientDialog::getPatientData() const {
         updatedPatient.setNameMother(nameMother.toStdString());
         updatedPatient.setNameFather(nameFather.toStdString());
         updatedPatient.setPhoneNumber(phoneNumber.toStdString());
+        updatedPatient.setInsuranceID(insuranceID.toStdString());
+        updatedPatient.setCCCD(CCCD.toStdString());
+        updatedPatient.setEmail(email.toStdString());
+        updatedPatient.setPhoneMother(phoneMother.toStdString());
+        updatedPatient.setPhoneFather(phoneFather.toStdString());
 
         return updatedPatient;
     } else {
@@ -139,8 +176,10 @@ Patient AddEditPatientDialog::getPatientData() const {
             allergies.toStdString(),
             chronicDiseases.toStdString(),
             nameMother.toStdString(),
-            nameFather.toStdString()
-        );
+            nameFather.toStdString(),
+            phoneMother.toStdString(),    // Số điện thoại mẹ
+            phoneFather.toStdString()     // Số điện thoại cha
+            );
 
         return newPatient;
     }
@@ -175,35 +214,45 @@ void AddEditPatientDialog::on_buttonBox_accepted()
         }
         Utils::validName(nameText.toStdString());
 
-        // 2. Kiểm tra số điện thoại
+        // 2. Kiểm tra số điện thoại bệnh nhân
         QString phoneText = ui->txtPhoneNumber->text().trimmed();
         if (phoneText.isEmpty()) {
-            throw std::invalid_argument("Số điện thoại không được để trống!");
+            throw std::invalid_argument("Số điện thoại bệnh nhân không được để trống!");
         }
         Utils::validPhoneNumber(phoneText.toStdString());
 
-        // 3. Kiểm tra email (nếu có field email)
+        // 3. Kiểm tra số điện thoại mẹ (không bắt buộc)
+        QString phoneMotherText = ui->txtPhoneMother->text().trimmed();
+        if (!phoneMotherText.isEmpty()) {
+            Utils::validPhoneNumber(phoneMotherText.toStdString());
+        }
+
+        // 4. Kiểm tra số điện thoại cha (không bắt buộc)
+        QString phoneFatherText = ui->txtPhoneFather->text().trimmed();
+        if (!phoneFatherText.isEmpty()) {
+            Utils::validPhoneNumber(phoneFatherText.toStdString());
+        }
+
+        // 5. Kiểm tra email
         QString emailText = ui->txtEmail->text().trimmed();
         if (!emailText.isEmpty()) {
             Utils::validEmail(emailText.toStdString());
         }
 
-        // 4. Kiểm tra nhóm máu
+        // 6. Kiểm tra nhóm máu
         QString bloodTypeText = ui->txtBloodType->text().trimmed();
         if (bloodTypeText.isEmpty()) {
             throw std::invalid_argument("Nhóm máu không được để trống!");
         }
         Utils::validBloodType(bloodTypeText.toStdString());
 
-        // ✅ 5. Kiểm tra ngày sinh (thêm kiểm tra tuổi hợp lệ)
+        // ✅ 7. Kiểm tra ngày sinh
         QDate qDate = ui->dateEditBirthday->date();
-
-        // Kiểm tra ngày hợp lệ
         if (!qDate.isValid()) {
             throw std::invalid_argument("Ngày sinh không hợp lệ!");
         }
 
-        // Kiểm tra tuổi (tối thiểu 0 tuổi, tối đa 150 tuổi)
+        // Kiểm tra tuổi
         QDate today = QDate::currentDate();
         int age = today.year() - qDate.year();
         if (qDate > today.addYears(-age)) age--;
@@ -211,7 +260,6 @@ void AddEditPatientDialog::on_buttonBox_accepted()
         if (age < 0) {
             throw std::invalid_argument("Ngày sinh không thể trong tương lai!");
         }
-
         if (age > 150) {
             throw std::invalid_argument("Ngày sinh không hợp lệ (quá 150 tuổi)!");
         }
@@ -219,12 +267,19 @@ void AddEditPatientDialog::on_buttonBox_accepted()
         Date dob(qDate.day(), qDate.month(), qDate.year());
         Utils::validDate(dob);
 
-        // 6. Kiểm tra giới tính
+        // 8. Kiểm tra giới tính
         QString genderText = ui->comboGender->currentText().trimmed();
         if (genderText.isEmpty()) {
             throw std::invalid_argument("Vui lòng chọn giới tính!");
         }
         Utils::validGender(genderText.toStdString()[0]);
+
+        // 9. Kiểm tra CCCD
+        QString cccdText = ui->txtCCCD->text().trimmed();
+        if (cccdText.isEmpty()) {
+            throw std::invalid_argument("Số CCCD không được để trống!");
+        }
+        Utils::validCCCD(cccdText.toStdString());
 
         // ✅ TẤT CẢ VALIDATION PASS → CHỈ KHI ĐÓ MỚI ACCEPT
         accept();
@@ -241,6 +296,28 @@ void AddEditPatientDialog::on_buttonBox_accepted()
 
 void AddEditPatientDialog::on_buttonBox_rejected()
 {
-    reject();  // Đóng dialog khi bấm Cancel
+    reject();
 }
 
+void AddEditPatientDialog::mousePressEvent(QMouseEvent *event)
+{
+    if (event->button() == Qt::LeftButton) {
+        m_dragging = true;
+        m_dragPosition = event->globalPosition().toPoint() - frameGeometry().topLeft();
+        event->accept();
+    }
+}
+
+void AddEditPatientDialog::mouseMoveEvent(QMouseEvent *event)
+{
+    if (m_dragging && (event->buttons() & Qt::LeftButton)) {
+        move(event->globalPosition().toPoint() - m_dragPosition);
+        event->accept();
+    }
+}
+
+void AddEditPatientDialog::mouseReleaseEvent(QMouseEvent *event)
+{
+    m_dragging = false;
+    event->accept();
+}

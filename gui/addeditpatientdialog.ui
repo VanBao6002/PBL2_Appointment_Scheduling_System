@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>600</width>
-    <height>650</height>
+    <height>750</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -263,9 +263,74 @@ QGroupBox::title {
 }</string>
      </property>
      <property name="title">
-      <string>Thông tin liên hệ</string>
+      <string>Thông tin liên hệ bệnh nhân</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_10">
+        <property name="text">
+         <string>SĐT bệnh nhân:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1" colspan="3">
+       <widget class="QLineEdit" name="txtPhoneNumber">
+        <property name="placeholderText">
+         <string>Số điện thoại liên hệ</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_11">
+        <property name="text">
+         <string>Email:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1" colspan="3">
+       <widget class="QLineEdit" name="txtEmail">
+        <property name="placeholderText">
+         <string>Địa chỉ email</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBoxFamilyInfo">
+     <property name="font">
+      <font>
+       <family>Arial</family>
+       <pointsize>11</pointsize>
+       <italic>false</italic>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QGroupBox {
+    font: bold 11pt &quot;Arial&quot;;
+    color: #2C3E50;
+    border: 1px solid #CCCCCC;
+    border-radius: 5px;
+    margin-top: 10px;
+    padding-top: 10px;
+    background-color: white;
+}
+QGroupBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top left;
+    border: 1px solid #CCCCCC;
+    border-radius: 5px;
+    left: 10px;
+    padding: 0 8px 0 8px;
+    background-color: white;
+}</string>
+     </property>
+     <property name="title">
+      <string>Thông tin gia đình</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_3">
       <item row="0" column="0">
        <widget class="QLabel" name="label_8">
         <property name="text">
@@ -295,30 +360,30 @@ QGroupBox::title {
        </widget>
       </item>
       <item row="2" column="0">
-       <widget class="QLabel" name="label_10">
+       <widget class="QLabel" name="label_phone_mother">
         <property name="text">
-         <string>SĐT:</string>
+         <string>SĐT mẹ:</string>
         </property>
        </widget>
       </item>
       <item row="2" column="1" colspan="3">
-       <widget class="QLineEdit" name="txtPhoneNumber">
+       <widget class="QLineEdit" name="txtPhoneMother">
         <property name="placeholderText">
-         <string>Số điện thoại liên hệ</string>
+         <string>Số điện thoại của mẹ</string>
         </property>
        </widget>
       </item>
       <item row="3" column="0">
-       <widget class="QLabel" name="label_11">
+       <widget class="QLabel" name="label_phone_father">
         <property name="text">
-         <string>Email:</string>
+         <string>SĐT cha:</string>
         </property>
        </widget>
       </item>
       <item row="3" column="1" colspan="3">
-       <widget class="QLineEdit" name="txtEmail">
+       <widget class="QLineEdit" name="txtPhoneFather">
         <property name="placeholderText">
-         <string>Địa chỉ email</string>
+         <string>Số điện thoại của cha</string>
         </property>
        </widget>
       </item>
@@ -358,7 +423,7 @@ QGroupBox::title {
      <property name="title">
       <string>Thông tin y tế</string>
      </property>
-     <layout class="QGridLayout" name="gridLayout_3">
+     <layout class="QGridLayout" name="gridLayout_4">
       <item row="0" column="0">
        <widget class="QLabel" name="label_6">
         <property name="text">

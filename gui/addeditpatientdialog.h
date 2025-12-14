@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include "patient.h"
+#include <QMouseEvent>
 
 namespace Ui {
 class AddEditPatientDialog;
@@ -18,6 +19,11 @@ public:
     void setDialogTitle(const QString& title);
     Patient getPatientData() const;
 
+protected:
+    void mousePressEvent(QMouseEvent *event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
+
 private slots:
     void on_buttonBox_accepted();
     void on_buttonBox_rejected();
@@ -27,6 +33,8 @@ private:
     Patient currentPatient;
     void populateUI(const Patient& patient);
     void setupDatePicker();
+    bool m_dragging;
+    QPoint m_dragPosition;
 };
 
 #endif // ADDEDITPATIENTDIALOG_H
