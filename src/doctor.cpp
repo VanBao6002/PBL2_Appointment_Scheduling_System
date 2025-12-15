@@ -1,22 +1,23 @@
 #include <utility>
 #include "doctor.h"
 
-Doctor::Doctor() : Person(), specialization(""), patientIDs(), doctorStatus(Doctor::Status::Active){ 
-}
+Doctor::Doctor() : Person(), specialization(""), patientIDs(), doctorStatus(Doctor::Status::Active), room("") { }
+
 
 Doctor::Doctor(const std::string& name_, char gender_, const std::string& birthday_, const std::string &phoneNumber_, const std::string &CCCD_, const std::string &email_, 
                 const std::string& specialization_, const std::string& doctorStatus_,
-                const WorkingSchedule& workingSchedule_) 
+                const WorkingSchedule& workingSchedule_, const std::string& room_) 
     : Person(name_, gender_, birthday_, phoneNumber_, CCCD_, email_) {
-
+    
     setSpecialization(specialization_);
     setStatus(doctorStatus_);
     setWorkingSchedule(workingSchedule_);
-
+    setRoom(room_);  // Thêm dòng này
+    
     int ID = static_cast<int>(IDHandler<Doctor>::generateID());
     setID(ID);
     IDHandler<Doctor>::registerID(ID);
-} 
+}
 
 Doctor::~Doctor(){
     if (ID > 0) {
@@ -90,6 +91,10 @@ void Doctor::setWorkingSchedule(const WorkingSchedule& schedule) {
     workingSchedule = schedule;
 }
 
+void Doctor::setRoom(const std::string &room_) {
+    room = Utils::trimmed(room_);
+}
+
 void Doctor::addPatientID(int ID_) {
     if (patientIDs.count(ID_)) {
         throw std::invalid_argument("Patient ID already exists in doctor's list.");
@@ -113,6 +118,7 @@ std::string Doctor::getInfo() const{
     info += "Birthday: " + getBirthday().toString() + "\n"; 
     info += "Phone Number: " + phoneNumber + "\n";
     info += "Specialization: " + specialization + "\n";
+    info += "Room: " + room + "\n";
     info += "Status: ";
     info += statusToString(doctorStatus) + "\n";
     info += "Email: " + email + "\n";
@@ -122,6 +128,10 @@ std::string Doctor::getInfo() const{
     }
     info += "\n";
     return info;
+}
+
+std::string Doctor::getRoom() const {
+    return room;
 }
 
 std::string Doctor::statusToString(Doctor::Status status) {
@@ -151,6 +161,7 @@ nlohmann::json Doctor::toJson() const {
     j["CCCD"] = CCCD;
     j["email"] = email;
     j["specialization"] = specialization;
+    j["room"] = room;
     nlohmann::json patientIDsJson = nlohmann::json::array();
     for (const auto& pid : patientIDs) {
         patientIDsJson.push_back(pid);
@@ -181,6 +192,9 @@ void Doctor::fromJson(const nlohmann::json &j) {
     if (j.contains("email")) email = j.at("email").get<std::string>();
     if (j.contains("specialization")) {
         specialization = j.at("specialization").get<std::string>();
+    }
+    if (j.contains("room")) {
+        room = j.at("room").get<std::string>();
     }
     if (j.contains("patientIDs")) {
         patientIDs.clear();

@@ -4,7 +4,8 @@
 #include <QDialog>
 #include <QMessageBox>
 #include <QDebug>
-#include <QMouseEvent>  // Thêm include này
+#include <QMouseEvent>
+#include <QDate>
 #include "user.h"
 
 namespace Ui {
@@ -16,11 +17,12 @@ class AddEditUserDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit AddEditUserDialog(QWidget *parent = nullptr);
+    explicit AddEditUserDialog(QWidget *parent = nullptr, const User& user = User());
     ~AddEditUserDialog();
 
     User getUserData() const;
     void setDialogTitle(const QString& title);
+    void populateUI(const User& user); // ✅ THÊM HÀN
 
 protected:
     void mousePressEvent(QMouseEvent *event) override;
@@ -33,10 +35,12 @@ private slots:
 
 private:
     Ui::AddEditUserDialog *ui;
+    User currentUser; // ✅ THÊM BIẾN ĐỂ LƯU USER HIỆN TẠI
     bool m_dragging = false;
     QPoint m_dragPosition;
 
     void setupComboBoxes();
+    void setupDatePicker(); // ✅ THÊM HÀM
     bool validateForm();
 };
 

@@ -6,22 +6,25 @@
 #include <QJsonObject>
 #include <QJsonArray>
 #include <QInputDialog>
+#include <QMouseEvent>
+#include <QTimeEdit>
+#include <QComboBox>
 
-// ============================================
-// CONSTRUCTOR - THÊM MỚI
-// ============================================
 AddEditDoctorDialog::AddEditDoctorDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::AddEditDoctorDialog),
     isEditMode(false),
-    editingDoctorID(-1)
+    editingDoctorID(-1),
+    m_dragging(false)
 {
     ui->setupUi(this);
-    setWindowTitle("Thêm Bác Sĩ Mới");
+    setWindowFlags(Qt::FramelessWindowHint);
+    setDialogTitle("Thêm Bác Sĩ Mới");
 
     setupComboBoxes();
     setupValidators();
     setupWorkingScheduleTable();
+    setupDatePicker();
 
     // Connect working schedule buttons
     connect(ui->pushButton_3, &QPushButton::clicked, this, &AddEditDoctorDialog::onAddWorkingScheduleClicked);
@@ -30,23 +33,22 @@ AddEditDoctorDialog::AddEditDoctorDialog(QWidget *parent) :
     qDebug() << "[DIALOG] AddEditDoctorDialog opened in ADD mode";
 }
 
-
-// ============================================
-// CONSTRUCTOR - CHỈNH SỬA
-// ============================================
 AddEditDoctorDialog::AddEditDoctorDialog(QWidget *parent, const Doctor& doctorToEdit) :
     QDialog(parent),
     ui(new Ui::AddEditDoctorDialog),
     isEditMode(true),
-    editingDoctorID(doctorToEdit.getID())
+    editingDoctorID(doctorToEdit.getID()),
+    m_dragging(false)
 {
     ui->setupUi(this);
-    setWindowTitle("Chỉnh Sửa Thông Tin Bác Sĩ");
+    setWindowFlags(Qt::FramelessWindowHint);
+    setDialogTitle("Chỉnh Sửa Thông Tin Bác Sĩ");
 
     setupComboBoxes();
     setupValidators();
     setupWorkingScheduleTable();
-    loadDoctorData(doctorToEdit);
+    setupDatePicker();
+    populateUI(doctorToEdit);
 
     // Connect working schedule buttons
     connect(ui->pushButton_3, &QPushButton::clicked, this, &AddEditDoctorDialog::onAddWorkingScheduleClicked);
@@ -54,6 +56,142 @@ AddEditDoctorDialog::AddEditDoctorDialog(QWidget *parent, const Doctor& doctorTo
 
     qDebug() << "[DIALOG] AddEditDoctorDialog opened in EDIT mode for ID:" << editingDoctorID;
 }
+
+AddEditDoctorDialog::~AddEditDoctorDialog()
+{
+    delete ui;
+}
+
+// ============================================
+// SETUP DATE PICKER
+// ============================================
+void AddEditDoctorDialog::setupDatePicker() {
+    ui->dateBirthday->setDisplayFormat("dd/MM/yyyy");
+    ui->dateBirthday->setCalendarPopup(true);
+
+    // Đặt ngày mặc định là 30 năm trước
+    QDate defaultDate = QDate::currentDate().addYears(-30);
+    ui->dateBirthday->setDate(defaultDate);
+
+    // Giới hạn ngày (không quá 100 tuổi, không quá ngày hôm nay)
+    QDate minDate = QDate::currentDate().addYears(-100);
+    QDate maxDate = QDate::currentDate().addYears(-22); // Ít nhất 22 tuổi
+
+    ui->dateBirthday->setMinimumDate(minDate);
+    ui->dateBirthday->setMaximumDate(maxDate);
+
+    qDebug() << "[DATE PICKER] Setup completed for doctor birthday";
+}
+
+// ============================================
+// LOAD DANH SÁCH PHÒNG
+// ============================================
+QStringList AddEditDoctorDialog::loadRoomList() {
+    QStringList rooms;
+
+    // Load từ file room.json
+    QFile file("room.json");
+    if (file.open(QIODevice::ReadOnly)) {
+        QByteArray data = file.readAll();
+        QJsonDocument doc = QJsonDocument::fromJson(data);
+        if (doc.isObject()) {
+            QJsonObject obj = doc.object();
+            if (obj.contains("rooms") && obj["rooms"].isArray()) {
+                QJsonArray roomArray = obj["rooms"].toArray();
+                for (const QJsonValue& value : roomArray) {
+                    rooms.append(value.toString());
+                }
+            }
+        }
+        file.close();
+    }
+
+    // Nếu không load được, thêm một số phòng mặc định
+    if (rooms.isEmpty()) {
+        rooms << "101" << "102" << "103" << "201" << "202" << "203"
+              << "301" << "302" << "303" << "Phòng Khám 1" << "Phòng Khám 2";
+    }
+
+    return rooms;
+}
+
+// ============================================
+// POPULATE UI
+// ============================================
+void AddEditDoctorDialog::populateUI(const Doctor& doctor) {
+    if (doctor.getID() > 0) {
+        // Chế độ Sửa
+        ui->txtName->setText(QString::fromStdString(doctor.getName()));
+
+        char gender = doctor.getGender();
+        int genderIndex = 0;
+        if (gender == 'M') genderIndex = 0;
+        else if (gender == 'F') genderIndex = 1;
+        else genderIndex = 2;
+        ui->cmbGender->setCurrentIndex(genderIndex);
+
+        // Ngày sinh
+        Date birthday = doctor.getBirthday();
+        ui->dateBirthday->setDate(QDate(birthday.getYear(), birthday.getMonth(), birthday.getDay()));
+
+        // Chuyên khoa
+        QString specialization = QString::fromStdString(doctor.getSpecialization());
+        int specIndex = ui->cmbSpecialization->findText(specialization);
+        if (specIndex >= 0) {
+            ui->cmbSpecialization->setCurrentIndex(specIndex);
+        } else {
+            ui->cmbSpecialization->setCurrentText(specialization);
+        }
+
+        // CCCD
+        ui->txtCCCD->setText(QString::fromStdString(doctor.getCCCD()));
+
+        // Phòng làm việc
+        QString room = QString::fromStdString(doctor.getRoom());
+        int roomIndex = ui->cmbRoom->findText(room);
+        if (roomIndex >= 0) {
+            ui->cmbRoom->setCurrentIndex(roomIndex);
+        } else {
+            ui->cmbRoom->setCurrentText(room);
+        }
+
+        // Email
+        ui->txtEmail->setText(QString::fromStdString(doctor.getEmail()));
+
+        // SĐT
+        ui->txtPhoneNumber->setText(QString::fromStdString(doctor.getPhoneNumber()));
+
+        // Trạng thái
+        QString statusStr = QString::fromStdString(Doctor::statusToString(doctor.getStatus()));
+        int statusIndex = ui->cmbStatus->findData(statusStr);
+        if (statusIndex >= 0) {
+            ui->cmbStatus->setCurrentIndex(statusIndex);
+        }
+
+        // Lịch làm việc
+        loadWorkingSchedule(doctor.getWorkingSchedule());
+
+        // Đặt tiêu đề
+        ui->labelTitle->setText("CHỈNH SỬA BÁC SĨ - ID: " + QString::number(doctor.getID()));
+
+    } else {
+        // Chế độ Thêm mới
+        ui->labelTitle->setText("THÊM BÁC SĨ MỚI");
+
+        // Clear các field
+        ui->txtCCCD->clear();
+        ui->txtEmail->clear();
+        ui->txtPhoneNumber->clear();
+        ui->cmbRoom->setCurrentIndex(0);
+
+        // Đặt giá trị mặc định cho giới tính
+        ui->cmbGender->setCurrentIndex(0);
+
+        // Đặt trạng thái mặc định
+        ui->cmbStatus->setCurrentIndex(0);
+    }
+}
+
 // ============================================
 // WORKING SCHEDULE BUTTON SLOTS
 // ============================================
@@ -69,7 +207,6 @@ void AddEditDoctorDialog::onAddWorkingScheduleClicked() {
     dayCombo->setCurrentIndex(0);
     ui->tableWorkingSchedule->setCellWidget(row, 0, dayCombo);
 
-
     // Use QTimeEdit for time selection (picker wheel style)
     QTimeEdit* beginTimeEdit = new QTimeEdit();
     beginTimeEdit->setDisplayFormat("HH:mm");
@@ -79,6 +216,7 @@ void AddEditDoctorDialog::onAddWorkingScheduleClicked() {
     beginTimeEdit->setAlignment(Qt::AlignCenter);
     beginTimeEdit->setKeyboardTracking(false);
     beginTimeEdit->setWrapping(true);
+
     // Snap to 30-minute intervals
     QObject::connect(beginTimeEdit, &QTimeEdit::timeChanged, beginTimeEdit, [beginTimeEdit](const QTime &t) {
         int minutes = t.minute();
@@ -98,6 +236,7 @@ void AddEditDoctorDialog::onAddWorkingScheduleClicked() {
     endTimeEdit->setAlignment(Qt::AlignCenter);
     endTimeEdit->setKeyboardTracking(false);
     endTimeEdit->setWrapping(true);
+
     // Snap to 30-minute intervals
     QObject::connect(endTimeEdit, &QTimeEdit::timeChanged, endTimeEdit, [endTimeEdit](const QTime &t) {
         int minutes = t.minute();
@@ -160,7 +299,6 @@ void AddEditDoctorDialog::loadWorkingSchedule(const WorkingSchedule& schedule) {
     }
 }
 
-
 // ============================================
 // EXTRACT WORKING SCHEDULE FROM TABLE
 // ============================================
@@ -195,19 +333,13 @@ WorkingSchedule AddEditDoctorDialog::getWorkingScheduleFromTable() const {
             end = ui->tableWorkingSchedule->item(row, 2)->text();
         }
 
-        if (!day.isEmpty() && !start.isEmpty() && !end.isEmpty() && day != "Chọn ngày..." && start != "Chọn giờ bắt đầu..." && end != "Chọn giờ kết thúc...") {
+        if (!day.isEmpty() && !start.isEmpty() && !end.isEmpty() &&
+            day != "Chọn ngày..." && start != "Chọn giờ bắt đầu..." && end != "Chọn giờ kết thúc...") {
             schedule.schedule[day.toStdString()].emplace_back(start.toStdString(), end.toStdString());
         }
     }
     return schedule;
-
 }
-
-AddEditDoctorDialog::~AddEditDoctorDialog()
-{
-    delete ui;
-}
-
 
 // ============================================
 // SETUP COMBOBOXES
@@ -231,34 +363,31 @@ void AddEditDoctorDialog::setupComboBoxes() {
     }
     ui->cmbSpecialization->setEditable(true);
 
+    // ComboBox Phòng làm việc - Load từ file room.json
+    ui->cmbRoom->clear();
+    QStringList rooms = loadRoomList();
+    for (const QString& room : rooms) {
+        ui->cmbRoom->addItem(room);
+    }
+    ui->cmbRoom->setEditable(true);
+
     // ComboBox Trạng thái
     ui->cmbStatus->clear();
     ui->cmbStatus->addItem("Đang làm việc", "Active");
     ui->cmbStatus->addItem("Đang nghỉ phép", "OnLeave");
     ui->cmbStatus->addItem("Đã nghỉ hưu", "Retired");
-
-    // Setup DateEdit cho ngày sinh
-    ui->dateBirthday->setDisplayFormat("dd/MM/yyyy");
-    ui->dateBirthday->setCalendarPopup(true);
-    ui->dateBirthday->setDate(QDate(1980, 1, 1));
-    ui->dateBirthday->setMaximumDate(QDate::currentDate().addYears(-22));
-    ui->dateBirthday->setMinimumDate(QDate(1940, 1, 1));
 }
 
 // ============================================
 // SETUP VALIDATORS
 // ============================================
 void AddEditDoctorDialog::setupValidators() {
-    // ✅ KHÔNG dùng validator cho SĐT - chỉ dùng placeholder
-    // Validator regex chặn người dùng nhập, gây khó chịu
-    ui->txtPhoneNumber->setPlaceholderText("VD: 0901234567");
-    ui->txtPhoneNumber->setMaxLength(11); // Giới hạn 11 ký tự
-
-    // ✅ KHÔNG dùng validator cho Email - validate khi submit
-    ui->txtEmail->setPlaceholderText("VD: bacsi@gmail.com");
-
-    // Placeholder cho tên
+    // Placeholder cho các trường
     ui->txtName->setPlaceholderText("VD: Nguyễn Văn A");
+    ui->txtCCCD->setPlaceholderText("VD: 012345678912");
+    ui->txtEmail->setPlaceholderText("VD: bacsi@gmail.com");
+    ui->txtPhoneNumber->setPlaceholderText("VD: 0901234567");
+    ui->cmbRoom->setPlaceholderText("Chọn phòng làm việc");
 }
 
 // ============================================
@@ -289,11 +418,23 @@ void AddEditDoctorDialog::loadDoctorData(const Doctor& doctor) {
         ui->cmbSpecialization->setCurrentText(specialization);
     }
 
-    // ✅ Email - dùng txtEmail (QLineEdit)
+    // Email
     ui->txtEmail->setText(QString::fromStdString(doctor.getEmail()));
 
-    // ✅ SĐT - dùng txtPhoneNumber (QLineEdit)
+    // SĐT
     ui->txtPhoneNumber->setText(QString::fromStdString(doctor.getPhoneNumber()));
+
+    // CCCD
+    ui->txtCCCD->setText(QString::fromStdString(doctor.getCCCD()));
+
+    // Phòng làm việc
+    QString room = QString::fromStdString(doctor.getRoom());
+    int roomIndex = ui->cmbRoom->findText(room);
+    if (roomIndex >= 0) {
+        ui->cmbRoom->setCurrentIndex(roomIndex);
+    } else {
+        ui->cmbRoom->setCurrentText(room);
+    }
 
     // Trạng thái
     QString statusStr = QString::fromStdString(Doctor::statusToString(doctor.getStatus()));
@@ -333,14 +474,14 @@ bool AddEditDoctorDialog::validateForm() {
         return false;
     }
 
-    // ✅ Kiểm tra Email - dùng txtEmail
+    // Kiểm tra Email
     QString email = ui->txtEmail->text().trimmed();
     if (email.isEmpty()) {
         QMessageBox::warning(this, "Lỗi", "Vui lòng nhập địa chỉ email!");
         ui->txtEmail->setFocus();
         return false;
     }
-    // Kiểm tra định dạng email (cho phép @gmail.com và các domain khác)
+    // Kiểm tra định dạng email
     QRegularExpression emailRegex("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
     if (!emailRegex.match(email).hasMatch()) {
         QMessageBox::warning(this, "Lỗi", "Email không đúng định dạng!\nVD: bacsi@gmail.com");
@@ -348,7 +489,7 @@ bool AddEditDoctorDialog::validateForm() {
         return false;
     }
 
-    // ✅ Kiểm tra SĐT - dùng txtPhoneNumber
+    // Kiểm tra SĐT
     QString phone = ui->txtPhoneNumber->text().trimmed();
     if (phone.isEmpty()) {
         QMessageBox::warning(this, "Lỗi", "Vui lòng nhập số điện thoại!");
@@ -356,11 +497,33 @@ bool AddEditDoctorDialog::validateForm() {
         return false;
     }
 
-    // ✅ Kiểm tra SĐT chỉ chứa số và có độ dài 10-11
+    // Kiểm tra SĐT chỉ chứa số và có độ dài 10-11
     QRegularExpression phoneRegex("^[0-9]{10,11}$");
     if (!phoneRegex.match(phone).hasMatch()) {
         QMessageBox::warning(this, "Lỗi", "Số điện thoại phải có 10-11 chữ số!\nVD: 0901234567");
         ui->txtPhoneNumber->setFocus();
+        return false;
+    }
+
+    // Kiểm tra CCCD
+    QString cccd = ui->txtCCCD->text().trimmed();
+    if (cccd.isEmpty()) {
+        QMessageBox::warning(this, "Lỗi", "Vui lòng nhập số CCCD!");
+        ui->txtCCCD->setFocus();
+        return false;
+    }
+    QRegularExpression cccdRegex("^[0-9]{12}$");
+    if (!cccdRegex.match(cccd).hasMatch()) {
+        QMessageBox::warning(this, "Lỗi", "Số CCCD phải có đúng 12 chữ số!");
+        ui->txtCCCD->setFocus();
+        return false;
+    }
+
+    // Kiểm tra phòng làm việc
+    QString room = ui->cmbRoom->currentText().trimmed();
+    if (room.isEmpty()) {
+        QMessageBox::warning(this, "Lỗi", "Vui lòng chọn hoặc nhập phòng làm việc!");
+        ui->cmbRoom->setFocus();
         return false;
     }
 
@@ -399,15 +562,17 @@ Doctor AddEditDoctorDialog::getDoctorData() const {
                                .arg(qBirthday.year())
                                .toStdString();
 
-
     std::string phoneNumber = ui->txtPhoneNumber->text().trimmed().toStdString();
     std::string CCCD = ui->txtCCCD->text().trimmed().toStdString();
     std::string email = ui->txtEmail->text().trimmed().toStdString();
     std::string specialization = ui->cmbSpecialization->currentText().trimmed().toStdString();
     std::string status = ui->cmbStatus->currentData().toString().toStdString();
+    std::string room = ui->cmbRoom->currentText().trimmed().toStdString();
     WorkingSchedule ws = getWorkingScheduleFromTable();
 
-    Doctor doctor(name, gender, birthday, phoneNumber, CCCD, email, specialization, status, ws);
+    // Sử dụng constructor mới với room
+    Doctor doctor(name, gender, birthday, phoneNumber, CCCD, email, specialization, status, ws, room);
+
     // Debug output for working schedule
     qDebug() << "[DEBUG] WorkingSchedule for doctor:";
     for (const auto& day : ws.schedule) {
@@ -418,7 +583,11 @@ Doctor AddEditDoctorDialog::getDoctorData() const {
             qDebug() << "  " << dayStr << ":" << startStr << "-" << endStr;
         }
     }
+
+    qDebug() << "[DEBUG] Room for doctor:" << QString::fromStdString(room);
+
     if (isEditMode) {
+        doctor.setID(editingDoctorID); // Giữ nguyên ID khi chỉnh sửa
         qDebug() << "[DIALOG] getDoctorData() - EDIT mode, original ID:" << editingDoctorID;
     } else {
         qDebug() << "[DIALOG] getDoctorData() - ADD mode, new ID:" << doctor.getID();
@@ -443,4 +612,30 @@ void AddEditDoctorDialog::on_buttonBox_accepted() {
 void AddEditDoctorDialog::on_buttonBox_rejected() {
     qDebug() << "[DIALOG] Dialog rejected/cancelled";
     reject();
+}
+
+// ============================================
+// MOUSE EVENTS FOR DRAGGING
+// ============================================
+void AddEditDoctorDialog::mousePressEvent(QMouseEvent *event)
+{
+    if (event->button() == Qt::LeftButton) {
+        m_dragging = true;
+        m_dragPosition = event->globalPosition().toPoint() - frameGeometry().topLeft();
+        event->accept();
+    }
+}
+
+void AddEditDoctorDialog::mouseMoveEvent(QMouseEvent *event)
+{
+    if (m_dragging && (event->buttons() & Qt::LeftButton)) {
+        move(event->globalPosition().toPoint() - m_dragPosition);
+        event->accept();
+    }
+}
+
+void AddEditDoctorDialog::mouseReleaseEvent(QMouseEvent *event)
+{
+    m_dragging = false;
+    event->accept();
 }

@@ -18,7 +18,25 @@ void UserManager::editUser(int ID_, const User &newUser){
     if (userTable.find(ID_) == userTable.end()){
         throw std::invalid_argument("Editing failed. User ID " + std::to_string(newUser.getID()) + " not found.");
     }
-    userTable[ID_] = newUser;
+    
+    // ✅ CẬP NHẬT: Sao chép tất cả thông tin, không chỉ ID
+    User& existingUser = userTable[ID_];
+    
+    // Sao chép thông tin cá nhân
+    existingUser.setFullName(newUser.getFullName());
+    existingUser.setPhoneNumber(newUser.getPhoneNumber());
+    existingUser.setCCCD(newUser.getCCCD());
+    existingUser.setBirthday(newUser.getBirthday());
+    
+    // Sao chép thông tin tài khoản
+    existingUser.setRole(User::roleToString(newUser.getRole()));
+    existingUser.setUsername(newUser.getUsername());
+    
+    // Chỉ cập nhật mật khẩu nếu có thay đổi
+    if (newUser.getPlainPassword() != existingUser.getPlainPassword()) {
+        existingUser.setPassword(newUser.getPlainPassword());
+    }
+    
     log[ID_] += " Edited on " + Utils::getDateTime();
 }
 
