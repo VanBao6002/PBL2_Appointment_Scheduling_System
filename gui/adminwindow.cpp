@@ -11,12 +11,15 @@
 #include <algorithm>
 #include <QDir>
 #include "patientdetaildialog.h"
+#include "doctordetaildialog.h"
+#include "userdetaildialog.h"
 #include "person.h"
 #include "appointmentManager.h"
 #include "patientManager.h"
 #include "doctorManager.h"
 #include "medicalRecordManager.h"
 #include "userManager.h"
+
 
 AdminWindow::AdminWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -387,17 +390,17 @@ void AdminWindow::loadDoctorData(int page, const QString& searchText) {
         ui->tableDoctor->insertRow(ui->tableDoctor->rowCount());
         int row = ui->tableDoctor->rowCount() - 1;
 
-        // ✅ Cột 0: ID (căn giữa)
+        // Cột 0: ID (căn giữa)
         QTableWidgetItem* idItem = new QTableWidgetItem(QString::number(doctor.getID()));
         idItem->setTextAlignment(Qt::AlignCenter);
         ui->tableDoctor->setItem(row, 0, idItem);
 
-        // ✅ Cột 1: Họ tên (căn trái)
+        // Cột 1: Họ tên (căn trái)
         QTableWidgetItem* nameItem = new QTableWidgetItem(QString::fromStdString(doctor.getName()));
         nameItem->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
         ui->tableDoctor->setItem(row, 1, nameItem);
 
-        // ✅ Cột 2: Giới tính (hiển thị "Nam/Nữ/Khác")
+        // Cột 2: Giới tính (hiển thị "Nam/Nữ/Khác")
         QString genderDisplay;
         char gender = doctor.getGender();
         if (gender == 'M') genderDisplay = "Nam";
@@ -408,27 +411,27 @@ void AdminWindow::loadDoctorData(int page, const QString& searchText) {
         genderItem->setTextAlignment(Qt::AlignCenter);
         ui->tableDoctor->setItem(row, 2, genderItem);
 
-        // ✅ Cột 3: Ngày sinh (căn giữa)
+        // Cột 3: Ngày sinh (căn giữa)
         QTableWidgetItem* birthdayItem = new QTableWidgetItem(QString::fromStdString(doctor.getBirthday().toString()));
         birthdayItem->setTextAlignment(Qt::AlignCenter);
         ui->tableDoctor->setItem(row, 3, birthdayItem);
 
-        // Cột : CCCD
+        // Cột 4: CCCD
         QTableWidgetItem* CCCDItem = new QTableWidgetItem(QString::fromStdString(doctor.getCCCD()));
         CCCDItem->setTextAlignment(Qt::AlignCenter);
         ui->tableDoctor->setItem(row, 4, CCCDItem);
 
-        // ✅ Cột 4: Chuyên khoa (căn trái)
+        // Cột 5: Chuyên khoa (căn trái)
         QTableWidgetItem* specializationItem = new QTableWidgetItem(QString::fromStdString(doctor.getSpecialization()));
         specializationItem->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
         ui->tableDoctor->setItem(row, 5, specializationItem);
 
-        // ✅ Cột 5: Email (căn trái)
+        // Cột 6: Email (căn trái)
         QTableWidgetItem* emailItem = new QTableWidgetItem(QString::fromStdString(doctor.getEmail()));
         emailItem->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
         ui->tableDoctor->setItem(row, 6, emailItem);
 
-        // ✅ Cột 6: SĐT (căn giữa)
+        // Cột 7: SĐT (căn giữa)
         QString phoneDisplay = QString::fromStdString(doctor.getPhoneNumber());
         if (phoneDisplay.isEmpty()) {
             phoneDisplay = "None";
@@ -437,11 +440,11 @@ void AdminWindow::loadDoctorData(int page, const QString& searchText) {
         phoneNumberItem->setTextAlignment(Qt::AlignCenter);
         ui->tableDoctor->setItem(row, 7, phoneNumberItem);
 
-        // ✅ Cột 7: Trạng thái (căn giữa)
+        // Cột 8: Trạng thái (căn giữa)
         QTableWidgetItem* statusItem = new QTableWidgetItem(QString::fromStdString(Doctor::statusToString(doctor.getStatus())));
         statusItem->setTextAlignment(Qt::AlignCenter);
 
-        // ✅ Tô màu theo trạng thái
+        // Tô màu theo trạng thái
         if (doctor.getStatus() == Doctor::Status::Active) {
             statusItem->setBackground(QBrush(QColor(76, 175, 80, 50)));
         } else if (doctor.getStatus() == Doctor::Status::OnLeave) {
@@ -452,7 +455,7 @@ void AdminWindow::loadDoctorData(int page, const QString& searchText) {
 
         ui->tableDoctor->setItem(row, 8, statusItem);
 
-        // ✅ Cột 8: Tuỳ chọn - Thêm 2 nút "Xem chi tiết" và "Xoá"
+        // Cột 9: Tuỳ chọn - Thêm 2 nút "Xem chi tiết" và "Xoá"
         QWidget* actionWidget = new QWidget();
         QHBoxLayout* layout = new QHBoxLayout(actionWidget);
         layout->setContentsMargins(5, 2, 5, 2);
@@ -498,10 +501,9 @@ void AdminWindow::loadDoctorData(int page, const QString& searchText) {
 
         ui->tableDoctor->setCellWidget(row, 9, actionWidget);
     }
-
-    // 6. Cập nhật UI phân trang
-    updateDoctorPaginationUI();
+        updateDoctorPaginationUI();
 }
+
 
 void AdminWindow::loadMedicalRecordData(int page, const QString& searchText) {
     qDebug() << "Loading medical record data for page" << page << "with search text:" << searchText;
@@ -908,6 +910,24 @@ void AdminWindow::loadUserData(int page, const QString& searchText) {
         layout->setContentsMargins(5, 2, 5, 2);
         layout->setSpacing(5);
 
+        // Button "Xem chi tiết"
+        QPushButton* btnViewDetail = new QPushButton("Xem chi tiết");
+        btnViewDetail->setProperty("userID", user.getID());
+        btnViewDetail->setStyleSheet(R"(
+            QPushButton {
+                background-color: #2196F3;
+                color: white;
+                border: none;
+                padding: 5px 10px;
+                border-radius: 3px;
+            }
+            QPushButton:hover {
+                background-color: #1976D2;
+            }
+        )");
+        connect(btnViewDetail, &QPushButton::clicked, this, &AdminWindow::on_btnViewUserDetail_clicked);
+
+        // Button "Xoá"
         QPushButton* btnDelete = new QPushButton("Xoá");
         btnDelete->setProperty("userID", user.getID());
         btnDelete->setStyleSheet(R"(
@@ -924,6 +944,7 @@ void AdminWindow::loadUserData(int page, const QString& searchText) {
         )");
         connect(btnDelete, &QPushButton::clicked, this, &AdminWindow::on_btnRemoveUser_clicked);
 
+        layout->addWidget(btnViewDetail);
         layout->addWidget(btnDelete);
         actionWidget->setLayout(layout);
 
@@ -983,8 +1004,8 @@ void AdminWindow::setupPatientTable() {
 }
 
 void AdminWindow::setupDoctorTable() {
-    // ✅ Đặt 9 cột (thêm cột Ngày sinh)
-    ui->tableDoctor->setColumnCount(9);
+    // ✅ Đặt 10 cột
+    ui->tableDoctor->setColumnCount(10);
 
     // ✅ Đặt tên các cột
     QStringList headers;
@@ -1011,23 +1032,23 @@ void AdminWindow::setupDoctorTable() {
 
     // Cột 4: CCCD (Fixed)
     header->setSectionResizeMode(4, QHeaderView::Fixed);
-    ui->tablePatient->setColumnWidth(4, 100);
+    ui->tableDoctor->setColumnWidth(4, 100);
 
-    // Cột 4: Chuyên khoa (Stretch)
+    // Cột 5: Chuyên khoa (Stretch)
     header->setSectionResizeMode(5, QHeaderView::Stretch);
 
-    // Cột 5: Email (Stretch)
+    // Cột 6: Email (Stretch)
     header->setSectionResizeMode(6, QHeaderView::Stretch);
 
-    // Cột 6: SĐT (Fixed)
+    // Cột 7: SĐT (Fixed)
     header->setSectionResizeMode(7, QHeaderView::Fixed);
     ui->tableDoctor->setColumnWidth(7, 110);
 
-    // Cột 7: Trạng thái (Fixed)
+    // Cột 8: Trạng thái (Fixed)
     header->setSectionResizeMode(8, QHeaderView::Fixed);
     ui->tableDoctor->setColumnWidth(8, 100);
 
-    // Cột 8: Tuỳ chọn (Fixed)
+    // Cột 9: Tuỳ chọn (Fixed)
     header->setSectionResizeMode(9, QHeaderView::Fixed);
     ui->tableDoctor->setColumnWidth(9, 200);
 
@@ -1041,7 +1062,7 @@ void AdminWindow::setupDoctorTable() {
     ui->tableDoctor->verticalHeader()->setVisible(false);
     header->setDefaultAlignment(Qt::AlignCenter);
 
-    qDebug() << "[TABLE SETUP] Doctor table configured with Birthday column";
+    qDebug() << "[TABLE SETUP] Doctor table configured with 10 columns including Action column";
 }
 
 void AdminWindow::setupMedicalRecordTable() {
@@ -1883,6 +1904,9 @@ void AdminWindow::on_btnEditDoctor_clicked() {
     QMessageBox::information(this, "Thông báo", "Chức năng Sửa Lịch Hẹn chưa được triển khai.");
 }
 
+// Thêm include
+#include "doctordetaildialog.h"
+
 void AdminWindow::on_btnViewDoctorDetail_clicked() {
     QPushButton* btn = qobject_cast<QPushButton*>(sender());
     if (!btn) return;
@@ -1893,43 +1917,9 @@ void AdminWindow::on_btnViewDoctorDetail_clicked() {
     try {
         const Doctor& doctor = DoctorManager::getInstance().getDoctorByID(doctorID);
 
-        QString details = QString(
-                              "=== THÔNG TIN BÁC SĨ ===\n\n"
-                              "ID: %1\n"
-                              "Họ tên: %2\n"
-                              "Giới tính: %3\n"
-                              "Ngày sinh: %4\n"
-                              "Chuyên khoa: %5\n"
-                              "Email: %6\n"
-                              "Số điện thoại: %7\n"
-                              "Trạng thái: %8\n"
-                              ).arg(doctor.getID())
-                              .arg(QString::fromStdString(doctor.getName()))
-                              .arg(QString(doctor.getGender()))
-                              .arg(QString::fromStdString(doctor.getBirthday().toString()))
-                              .arg(QString::fromStdString(doctor.getSpecialization()))
-                              .arg(QString::fromStdString(doctor.getEmail()))
-                              .arg(QString::fromStdString(doctor.getPhoneNumber()))
-                              .arg(QString::fromStdString(Doctor::statusToString(doctor.getStatus())));
-
-        // Thêm danh sách bệnh nhân
-        if (!doctor.getPatientIDs().empty()) {
-            details += "\nDanh sách bệnh nhân đang điều trị:\n";
-            for (int patientID : doctor.getPatientIDs()) {
-                try {
-                    const Patient& patient = PatientManager::getInstance().getPatientByID(patientID);
-                    details += QString("  - ID %1: %2\n")
-                                   .arg(patientID)
-                                   .arg(QString::fromStdString(patient.getName()));
-                } catch (...) {
-                    details += QString("  - ID %1: (không tìm thấy)\n").arg(patientID);
-                }
-            }
-        } else {
-            details += "\nChưa có bệnh nhân nào.";
-        }
-
-        QMessageBox::information(this, "Chi tiết Bác sĩ", details);
+        // Sử dụng DoctorDetailDialog thay vì QMessageBox
+        DoctorDetailDialog detailDialog(doctor, this);
+        detailDialog.exec();
 
     } catch (const std::exception& e) {
         QMessageBox::critical(this, "Lỗi", QString("Không thể xem chi tiết: %1").arg(e.what()));
@@ -2291,7 +2281,8 @@ void AdminWindow::on_btnSearchUser_clicked() {
     currentUserPage = 1;
     loadUserData(currentUserPage, searchText);
 }
-void AdminWindow::on_btnViewUserDetail_clicked() {
+void AdminWindow::on_btnViewUserDetail_clicked()
+{
     QPushButton* btn = qobject_cast<QPushButton*>(sender());
     if (!btn) return;
 
@@ -2301,16 +2292,9 @@ void AdminWindow::on_btnViewUserDetail_clicked() {
     try {
         const User& user = UserManager::getInstance().getUserByID(userID);
 
-        QString details = QString(
-                              "=== THÔNG TIN NGƯỜI DÙNG ===\n\n"
-                              "ID: %1\n"
-                              "Vai trò: %2\n"
-                              "Tên người dùng: %3\n"
-                              ).arg(user.getID())
-                              .arg(QString::fromStdString(User::roleToString(user.getRole())))
-                              .arg(QString::fromStdString(user.getUsername()));
-
-        QMessageBox::information(this, "Chi tiết Người dùng", details);
+        // Sử dụng UserDetailDialog
+        UserDetailDialog detailDialog(user, this);
+        detailDialog.exec();
 
     } catch (const std::exception& e) {
         QMessageBox::critical(this, "Lỗi", QString("Không thể xem chi tiết: %1").arg(e.what()));

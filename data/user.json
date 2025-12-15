@@ -1,7 +1,16 @@
 [
     {
+        "CCCD": "",
         "ID": 7,
+        "birthday": "",
+        "creationDate": {
+            "day": 1,
+            "month": 1,
+            "year": 2000
+        },
+        "fullName": "",
         "passwordHash": "689486176",
+        "phoneNumber": "",
         "plainPassword": "adminadmin",
         "userRole": "ADMIN",
         "username": "admin"

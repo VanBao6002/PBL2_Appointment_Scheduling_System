@@ -7,8 +7,10 @@
 #include <QRegularExpression>
 #include <QRegularExpressionValidator>
 #include <QStringList>
+#include <QMouseEvent>
 #include "doctor.h"
 #include "core.h"
+
 namespace Ui {
 class AddEditDoctorDialog;
 }
@@ -34,11 +36,16 @@ public:
 
     WorkingSchedule getWorkingScheduleFromTable() const;
 
+protected:
+    void mousePressEvent(QMouseEvent *event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
+
 private slots:
     void on_buttonBox_accepted();
     void on_buttonBox_rejected();
-     void onAddWorkingScheduleClicked();
-     void onDeleteWorkingScheduleClicked();
+    void onAddWorkingScheduleClicked();
+    void onDeleteWorkingScheduleClicked();
 
 private:
     Ui::AddEditDoctorDialog *ui;
@@ -46,15 +53,26 @@ private:
     bool isEditMode;
     int editingDoctorID;
 
+    // Biến cho chức năng kéo cửa sổ
+    bool m_dragging;
+    QPoint m_dragPosition;
+
     // Setup UI components
     void setupComboBoxes();
     void setupValidators();
     void setupWorkingScheduleTable();
+    void setupDatePicker();
+    void populateUI(const Doctor& doctor);
+
     // Load dữ liệu khi edit
     void loadDoctorData(const Doctor& doctor);
     void loadWorkingSchedule(const WorkingSchedule& schedule);
+
     // Validate form
     bool validateForm();
+
+    // Load danh sách phòng
+    QStringList loadRoomList();
 };
 
 #endif // ADDEDITDOCTORDIALOG_H

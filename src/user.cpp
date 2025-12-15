@@ -2,7 +2,9 @@
 #include "appointment.h"
 #include "IDHandler.h"
 
-User::User(const std::string &userRole_, const std::string &username_, const std::string &userPassword_) {
+User::User(const std::string &userRole_, const std::string &username_, const std::string &userPassword_,
+           const std::string &fullName_, const std::string &cccd_, const std::string &phone_, 
+           const std::string &birthday_) {
     setRole(userRole_);
     setUsername(username_);
     
@@ -10,12 +12,26 @@ User::User(const std::string &userRole_, const std::string &username_, const std
     std::string trimmedPwd = Utils::trimmed(userPassword_);
     Utils::validPassword(trimmedPwd);
     
-    plainPassword = trimmedPwd;                // Lưu plain để hiển thị
-    passwordHash = Utils::hashFunc(trimmedPwd); // Lưu hash để xác thực
+    plainPassword = trimmedPwd;
+    passwordHash = Utils::hashFunc(trimmedPwd);
     
     int ID = static_cast<int>(IDHandler<User>::generateID());
     setID(ID);
     IDHandler<User>::registerID(ID);
+    
+    // Thông tin cá nhân
+    setFullName(fullName_);
+    setCCCD(cccd_);
+    setPhoneNumber(phone_);
+    setBirthday(birthday_);
+    
+    // Ngày tạo là ngày hiện tại
+    auto now = std::chrono::system_clock::now();
+    std::time_t now_c = std::chrono::system_clock::to_time_t(now);
+    std::tm* now_tm = std::localtime(&now_c);
+    
+    Date currentDate(now_tm->tm_mday, now_tm->tm_mon + 1, now_tm->tm_year + 1900);
+    setCreationDate(currentDate);
 }
 
 User::~User(){
@@ -91,8 +107,32 @@ void User::setPassword(const std::string &password_){
     std::string trimmedPwd = Utils::trimmed(password_);
     Utils::validPassword(trimmedPwd);
     
-    plainPassword = trimmedPwd;                // Lưu plain để hiển thị
-    passwordHash = Utils::hashFunc(trimmedPwd); // Lưu hash để xác thực
+    plainPassword = trimmedPwd;               
+    passwordHash = Utils::hashFunc(trimmedPwd);
+}
+
+void User::setPlainPassword(const std::string& plainPwd) { 
+    plainPassword = plainPwd; 
+}
+
+void User::setFullName(const std::string &name){ 
+    fullName = Utils::trimmed(name);
+}
+
+void User::setPhoneNumber(const std::string &phone) {
+        phoneNumber = Utils::trimmed(phone); 
+}
+
+void User::setCCCD(const std::string &cccd) { 
+    CCCD = Utils::trimmed(cccd); 
+}
+
+void User::setBirthday(const std::string &bd) { 
+    birthday = Utils::trimmed(bd); 
+}
+
+void User::setCreationDate(const Date& date) {
+     creationDate = date; 
 }
 
 User::Role User::roleFromString (const std::string& str) {
@@ -117,6 +157,11 @@ nlohmann::json User::toJson() const {
     j["username"] = username;
     j["passwordHash"] = passwordHash;
     j["plainPassword"] = plainPassword;
+    j["fullName"] = fullName;
+    j["phoneNumber"] = phoneNumber;
+    j["CCCD"] = CCCD;
+    j["birthday"] = birthday;
+    j["creationDate"] = creationDate.toJson();
     return j;
 }
 
@@ -125,11 +170,13 @@ void User::fromJson(const nlohmann::json &j) {
     if (j.contains("userRole")) userRole = roleFromString(j.at("userRole").get<std::string>());
     if (j.contains("username")) username = j.at("username").get<std::string>();
     if (j.contains("passwordHash")) passwordHash = j.at("passwordHash").get<std::string>();
-    
-    // THÊM: đọc plainPassword nếu có, nếu không thì để trống
     if (j.contains("plainPassword")) {
         plainPassword = j.at("plainPassword").get<std::string>();
     } else {
         plainPassword = "";  // Nếu file cũ không có plainPassword
     }
+    if (j.contains("fullName")) fullName = j.at("fullName").get<std::string>();
+    if (j.contains("phoneNumber")) phoneNumber = j.at("phoneNumber").get<std::string>();
+    if (j.contains("CCCD")) CCCD = j.at("CCCD").get<std::string>();
+    if (j.contains("birthday")) birthday = j.at("birthday").get<std::string>();
 }

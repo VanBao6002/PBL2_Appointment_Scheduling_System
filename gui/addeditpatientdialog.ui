@@ -48,6 +48,38 @@ QPushButton:hover {
 }
 QPushButton:pressed {
     background-color: #3D8B40;
+}
+/* ButtonBox - nút Cancel (màu đỏ) */
+QDialogButtonBox QPushButton[text="Cancel"] {
+    background-color: #f44336;
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 3px;
+    font-weight: bold;
+    min-width: 80px;
+}
+QDialogButtonBox QPushButton[text="Cancel"]:hover {
+    background-color: #d32f2f;
+}
+QDialogButtonBox QPushButton[text="Cancel"]:pressed {
+    background-color: #b71c1c;
+}
+/* ButtonBox - nút OK (màu xanh) */
+QDialogButtonBox QPushButton[text="OK"] {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 3px;
+    font-weight: bold;
+    min-width: 80px;
+}
+QDialogButtonBox QPushButton[text="OK"]:hover {
+    background-color: #45A049;
+}
+QDialogButtonBox QPushButton[text="OK"]:pressed {
+    background-color: #3D8B40;
 }</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
@@ -220,7 +252,11 @@ QGroupBox::title {
        </widget>
       </item>
       <item row="1" column="1">
-       <widget class="QLineEdit" name="txtCCCD"/>
+       <widget class="QLineEdit" name="txtCCCD">
+        <property name="placeholderText">
+         <string>Số căn cước công dân</string>
+        </property>
+       </widget>
       </item>
       <item row="1" column="0">
        <widget class="QLabel" name="label_12">

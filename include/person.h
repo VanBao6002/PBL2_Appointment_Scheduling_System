@@ -32,7 +32,7 @@ public:
     std::string getCCCD() const { return CCCD; }
     std::string getEmail() const { return email; }
 
-
+    void setID(int ID_);
     void setName(const std::string &name_);
     void setGender(char gender_); 
     void setBirthday(const std::string &birthday_);
@@ -45,6 +45,6 @@ public:
     virtual nlohmann::json toJson() const = 0;
     virtual void fromJson(const nlohmann::json &j) = 0;
 
-protected:
-    void setID(int ID_);
+// protected:
+//     void setID(int ID_);
 };

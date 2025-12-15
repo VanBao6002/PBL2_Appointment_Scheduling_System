@@ -1,1 +1,52 @@
-null
+[
+    {
+        "CCCD": "012312312312",
+        "ID": 4,
+        "birthday": {
+            "day": 16,
+            "month": 12,
+            "year": 1995
+        },
+        "doctorStatus": "OnLeave",
+        "email": "baroibeo@gmail.com",
+        "gender": "M",
+        "name": "Ba Roi Beo",
+        "patientIDs": [],
+        "phoneNumber": "0123123123",
+        "room": "",
+        "specialization": "Lão khoa",
+        "workingSchedule": {
+            "Chủ nhật": [
+                {
+                    "EndTime": "17:00",
+                    "StartTime": "08:00"
+                }
+            ]
+        }
+    },
+    {
+        "CCCD": "012312312312",
+        "ID": 3,
+        "birthday": {
+            "day": 15,
+            "month": 12,
+            "year": 1995
+        },
+        "doctorStatus": "Active",
+        "email": "domixi@gmail.com",
+        "gender": "M",
+        "name": "Nguyen Van Do Mixi",
+        "patientIDs": [],
+        "phoneNumber": "0123123123",
+        "room": "",
+        "specialization": "Lão khoa",
+        "workingSchedule": {
+            "Thứ 4": [
+                {
+                    "EndTime": "17:00",
+                    "StartTime": "08:00"
+                }
+            ]
+        }
+    }
+]
