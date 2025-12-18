@@ -28,9 +28,6 @@ AdminWindow::AdminWindow(QWidget *parent)
     ui->setupUi(this);
     this->showFullScreen();
 
-    setupPatientTable();
-    setupDoctorTable();
-
     QDir dir("data");
     if (!dir.exists()) {
         dir.mkpath(".");
@@ -1454,6 +1451,7 @@ void AdminWindow::updateUserPaginationUI() {
 void AdminWindow::on_appointmentManagerButton_clicked()
 {
     ui->mainStack->setCurrentWidget(ui->page_appointment);
+
     loadAppointmentData(1, "");
 }
 
@@ -1465,6 +1463,8 @@ void AdminWindow::on_patientManagerButton_clicked()
     ui->btnSortAZPatient->setStyleSheet("");
     ui->btnSortZAPatient->setStyleSheet("");
     ui->txtSearchPatient->clear();
+
+    setupPatientTable(); 
     loadPatientData(1, "");
 
     qDebug() << "[INFO] Switched to Patient Manager, sorted by ID ascending";
@@ -1475,12 +1475,11 @@ void AdminWindow::on_doctorManagerButton_clicked()
     ui->mainStack->setCurrentWidget(ui->page_doctor);
 
     currentDoctorSortMode = DoctorSortMode::BY_ID_ASC;
-
     ui->btnSortAZDoctor->setStyleSheet("");
     ui->btnSortZADoctor->setStyleSheet("");
-
     ui->txtSearchDoctor->clear();
 
+    setupDoctorTable();
     loadDoctorData(1, "");
 
     qDebug() << "[INFO] Switched to Doctor Manager, sorted by ID ascending";

@@ -1,19 +1,19 @@
 #include <utility>
 #include "doctor.h"
 
-Doctor::Doctor() : Person(), specialization(""), patientIDs(), doctorStatus(Doctor::Status::Active), room("") { }
-
+Doctor::Doctor() : Person(), specialization(""), patientIDs(), doctorStatus(Doctor::Status::Active), room(""), description("") { }
 
 Doctor::Doctor(const std::string& name_, char gender_, const std::string& birthday_, const std::string &phoneNumber_, const std::string &CCCD_, const std::string &email_, 
                 const std::string& specialization_, const std::string& doctorStatus_,
-                const WorkingSchedule& workingSchedule_, const std::string& room_) 
+                const WorkingSchedule& workingSchedule_, const std::string& room_, const std::string& description_)
     : Person(name_, gender_, birthday_, phoneNumber_, CCCD_, email_) {
-    
+
     setSpecialization(specialization_);
     setStatus(doctorStatus_);
     setWorkingSchedule(workingSchedule_);
-    setRoom(room_);  // Thêm dòng này
-    
+    setRoom(room_);
+    setDescription(description_);
+
     int ID = static_cast<int>(IDHandler<Doctor>::generateID());
     setID(ID);
     IDHandler<Doctor>::registerID(ID);
@@ -21,7 +21,7 @@ Doctor::Doctor(const std::string& name_, char gender_, const std::string& birthd
 
 Doctor::~Doctor(){
     if (ID > 0) {
-    IDHandler<Doctor>::unregisterID(ID);
+        IDHandler<Doctor>::unregisterID(ID);
     }
 }
 
@@ -31,9 +31,11 @@ Doctor::Doctor(const Doctor& other)
             specialization(other.specialization),
             patientIDs(other.patientIDs),
             doctorStatus(other.doctorStatus),
-            workingSchedule(other.workingSchedule)
+            workingSchedule(other.workingSchedule),
+            room(other.room),
+            description(other.description)
 {
-        ID = other.ID;
+    ID = other.ID;
 }
 
 // Copy Assignment Operator - Safe ID handling, do not generate new ID
@@ -45,6 +47,8 @@ Doctor& Doctor::operator=(const Doctor& other)
         patientIDs = other.patientIDs;
         doctorStatus = other.doctorStatus;
         workingSchedule = other.workingSchedule;
+        room = other.room;
+        description = other.description;
         ID = other.ID;
     }
     return *this;
@@ -56,10 +60,12 @@ Doctor::Doctor(Doctor&& other) noexcept
             specialization(std::move(other.specialization)),
             patientIDs(std::move(other.patientIDs)),
             doctorStatus(other.doctorStatus),
-            workingSchedule(std::move(other.workingSchedule))
+            workingSchedule(std::move(other.workingSchedule)),
+            room(std::move(other.room)),
+            description(std::move(other.description))
 {
-        ID = other.ID;
-        other.ID = 0;
+    ID = other.ID;
+    other.ID = 0;
 }
 
 // Move Assignment Operator - Move ID safely, do not generate new one
@@ -71,12 +77,13 @@ Doctor& Doctor::operator=(Doctor&& other) noexcept
         patientIDs = std::move(other.patientIDs);
         doctorStatus = other.doctorStatus;
         workingSchedule = std::move(other.workingSchedule);
+        room = std::move(other.room);
+        description = std::move(other.description);
         ID = other.ID;
         other.ID = 0;
     }
     return *this;
 }
-
 
 void Doctor::setSpecialization(const std::string &specialization_){
     Utils::validSpecialization(Utils::trimmed(specialization_));
@@ -95,6 +102,10 @@ void Doctor::setRoom(const std::string &room_) {
     room = Utils::trimmed(room_);
 }
 
+void Doctor::setDescription(const std::string &description_) {
+    description = Utils::trimmed(description_);
+}
+
 void Doctor::addPatientID(int ID_) {
     if (patientIDs.count(ID_)) {
         throw std::invalid_argument("Patient ID already exists in doctor's list.");
@@ -109,7 +120,6 @@ void Doctor::removePatientID(int ID_) {
     patientIDs.erase(ID_);
 }
 
-
 std::string Doctor::getInfo() const{
     std::string info = "Doctor Info:\n";
     info += "ID: " + std::to_string(getID()) + "\n";
@@ -119,6 +129,7 @@ std::string Doctor::getInfo() const{
     info += "Phone Number: " + phoneNumber + "\n";
     info += "Specialization: " + specialization + "\n";
     info += "Room: " + room + "\n";
+    info += "Description: " + description + "\n";
     info += "Status: ";
     info += statusToString(doctorStatus) + "\n";
     info += "Email: " + email + "\n";
@@ -139,7 +150,7 @@ std::string Doctor::statusToString(Doctor::Status status) {
         case Doctor::Status::Active: return "Active";
         case Doctor::Status::OnLeave: return "OnLeave";
         case Doctor::Status::Retired: return "Retired";
-        default: return "Unknown"; // Tránh lỗi nếu có trạng thái mới
+        default: return "Unknown";
     }
 }
 
@@ -162,6 +173,7 @@ nlohmann::json Doctor::toJson() const {
     j["email"] = email;
     j["specialization"] = specialization;
     j["room"] = room;
+    j["description"] = description;
     nlohmann::json patientIDsJson = nlohmann::json::array();
     for (const auto& pid : patientIDs) {
         patientIDsJson.push_back(pid);
@@ -196,6 +208,9 @@ void Doctor::fromJson(const nlohmann::json &j) {
     if (j.contains("room")) {
         room = j.at("room").get<std::string>();
     }
+    if (j.contains("description")) {
+        description = j.at("description").get<std::string>();
+    }
     if (j.contains("patientIDs")) {
         patientIDs.clear();
         for (const auto& pid : j.at("patientIDs")) {
@@ -209,7 +224,3 @@ void Doctor::fromJson(const nlohmann::json &j) {
         workingSchedule.fromJson(j.at("workingSchedule"));
     }
 }
-
-
-
-

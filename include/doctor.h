@@ -53,13 +53,14 @@ class Doctor : public Person{
         Status doctorStatus;
         std::string room;
         WorkingSchedule workingSchedule;
+        std::string description;
     
     public:
         Doctor();
 
         Doctor(const std::string& name_, char gender_, const std::string& birthday_, const std::string &phoneNumber_, const std::string &CCCD_, const std::string &email_, 
                 const std::string& specialization_, const std::string& doctorStatus_,
-                const WorkingSchedule& workingSchedule_, const std::string& room_ = "");
+                const WorkingSchedule& workingSchedule_, const std::string& room_ = "", const std::string& description_ = "");
 
         ~Doctor();
 
@@ -72,6 +73,7 @@ class Doctor : public Person{
         void setSpecialization(const std::string &specialization_);
         void setStatus(const std::string& doctorStatus_);
         void setWorkingSchedule(const WorkingSchedule& schedule_);
+        void setDescription(const std::string& description_);
 
         void addPatientID(int ID_);
         void removePatientID(int ID_);
@@ -82,6 +84,7 @@ class Doctor : public Person{
         std::string getInfo() const override;
         std::string getRoom() const;
         const WorkingSchedule& getWorkingSchedule() const {return workingSchedule;}
+        std::string getDescription() const {return description;}
 
         // convertor
         static std::string statusToString(Status status);

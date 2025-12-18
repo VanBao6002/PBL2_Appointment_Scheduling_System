@@ -3,10 +3,13 @@
 
 #include <QDialog>
 #include <string>
+#include <QPushButton>
+#include <QList>
+#include <QString>
 #include "appointment.h"
 #include "doctorManager.h"
 #include "patientManager.h"
-
+#include "patient.h"
 namespace Ui {
 class AddAppointmentDialog;
 }
@@ -22,6 +25,7 @@ public:
     void setupStatusComboBox();
 
 private slots:
+    void on_searchButton_clicked();
     void on_buttonBox_accepted();
     void on_buttonBox_rejected();
 
@@ -29,11 +33,16 @@ private:
     bool isDoctorValid(int doctorID) const;
     bool isPatientValid(int patientID) const;
     bool isPatientExisted(const std::string& CCCD);
-    void checkOrCreatePatientByCCCD();
-
+    void updateAvailableTimeSlots(const QStringList& slots, const QSet<QString>& occupiedSlots);
+    void populateDoctorCards();
 
 private:
     Ui::AddAppointmentDialog *ui;
+    Patient selectedPatient;
+    QList<QPushButton*> timeSlotButtons;
+    QString selectedTimeSlot;
+    QButtonGroup* doctorButtonGroup = nullptr;
+    int selectedDoctorID = -1;
 };
 
 #endif // ADDAPPOINTMENTDIALOG_H
