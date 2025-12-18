@@ -161,6 +161,7 @@ private:
     void setupUserTable();
     void setupMedicalRecordTable();
 
+    void updateAppointmentPaginationUI();
     void updateDoctorPaginationUI();
     void updatePatientPaginationUI();
     void updateUserPaginationUI();

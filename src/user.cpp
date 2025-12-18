@@ -20,10 +20,10 @@ User::User(const std::string &userRole_, const std::string &username_, const std
     IDHandler<User>::registerID(ID);
     
     // Thông tin cá nhân
-    setFullName(fullName_);
-    setCCCD(cccd_);
-    setPhoneNumber(phone_);
-    setBirthday(birthday_);
+    fullName = Utils::trimmed(fullName_);
+    CCCD = Utils::trimmed(cccd_);
+    phoneNumber = Utils::trimmed(phone_);
+    birthday = Utils::trimmed(birthday_);
     
     // Ngày tạo là ngày hiện tại
     auto now = std::chrono::system_clock::now();
@@ -46,7 +46,12 @@ User::User(const User& other)
       userRole(other.userRole),
       username(other.username),
       passwordHash(other.passwordHash),
-      plainPassword(other.plainPassword)
+      plainPassword(other.plainPassword),
+      fullName(other.fullName),           // ✅ THÊM
+      phoneNumber(other.phoneNumber),     // ✅ THÊM
+      CCCD(other.CCCD),                   // ✅ THÊM
+      birthday(other.birthday),           // ✅ THÊM
+      creationDate(other.creationDate)    // ✅ THÊM
 {
     // Do not register ID again (ownership stays with original)
 }
@@ -60,6 +65,14 @@ User& User::operator=(const User& other)
         username = other.username;
         passwordHash = other.passwordHash;
         plainPassword = other.plainPassword;
+        
+        // ✅ THÊM CÁC DÒNG NÀY
+        fullName = other.fullName;
+        phoneNumber = other.phoneNumber;
+        CCCD = other.CCCD;
+        birthday = other.birthday;
+        creationDate = other.creationDate;
+        
         // Do not register/unregister ID
     }
     return *this;
@@ -71,7 +84,12 @@ User::User(User&& other) noexcept
       userRole(std::move(other.userRole)),
       username(std::move(other.username)),
       passwordHash(std::move(other.passwordHash)),
-      plainPassword(std::move(other.plainPassword))
+      plainPassword(std::move(other.plainPassword)),
+      fullName(std::move(other.fullName)),           // ✅ THÊM
+      phoneNumber(std::move(other.phoneNumber)),     // ✅ THÊM
+      CCCD(std::move(other.CCCD)),                   // ✅ THÊM
+      birthday(std::move(other.birthday)),           // ✅ THÊM
+      creationDate(std::move(other.creationDate))    // ✅ THÊM
 {
     other.ID = 0;
 }
@@ -85,6 +103,11 @@ User& User::operator=(User&& other) noexcept
         username = std::move(other.username);
         passwordHash = std::move(other.passwordHash);
         plainPassword = std::move(other.plainPassword);
+        fullName = std::move(other.fullName);           // ✅ THÊM
+        phoneNumber = std::move(other.phoneNumber);     // ✅ THÊM
+        CCCD = std::move(other.CCCD);                   // ✅ THÊM
+        birthday = std::move(other.birthday);           // ✅ THÊM
+        creationDate = std::move(other.creationDate);   // ✅ THÊM
         other.ID = 0;
     }
     return *this;
