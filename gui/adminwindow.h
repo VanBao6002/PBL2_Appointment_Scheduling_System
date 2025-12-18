@@ -167,6 +167,9 @@ private:
     void updateUserPaginationUI();
     void updateMedicalRecordPaginationUI();
 
+    void applyModernStyles();
+    void setActiveSidebarButton(QPushButton* activeButton);
+
     protected:
 };
 
