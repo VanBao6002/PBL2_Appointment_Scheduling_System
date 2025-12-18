@@ -228,6 +228,12 @@ User AddEditUserDialog::getUserData() const {
     std::string fullName = ui->txtFullName->text().trimmed().toStdString();
     std::string cccd = ui->txtCCCD->text().trimmed().toStdString();
     std::string phone = ui->txtPhone->text().trimmed().toStdString();
+
+    // ✅ THÊM DEBUG LOG
+    qDebug() << "[DEBUG getUserData] fullName:" << QString::fromStdString(fullName);
+    qDebug() << "[DEBUG getUserData] CCCD:" << QString::fromStdString(cccd);
+    qDebug() << "[DEBUG getUserData] phone:" << QString::fromStdString(phone);
+
     QDate qBirthday = ui->dateEditBirthday->date();
     std::string birthday = QString("%1/%2/%3")
                                .arg(qBirthday.day())
@@ -235,34 +241,52 @@ User AddEditUserDialog::getUserData() const {
                                .arg(qBirthday.year())
                                .toStdString();
 
+    qDebug() << "[DEBUG getUserData] birthday:" << QString::fromStdString(birthday);
+
     User user;
 
     if (currentUser.getID() > 0) {
         // Chế độ SỬA
         user = currentUser;
+        user.setFullName(fullName);
+        user.setCCCD(cccd);
+        user.setPhoneNumber(phone);
+        user.setBirthday(birthday);
 
-        // Chỉ cập nhật mật khẩu nếu có nhập mới
         std::string password = ui->txtPassword->text().toStdString();
         if (!password.empty()) {
             user.setPassword(password);
         }
 
-        // Cập nhật vai trò và username
         user.setRole(role);
         user.setUsername(username);
     } else {
         // Chế độ THÊM MỚI
         std::string password = ui->txtPassword->text().toStdString();
+
+        qDebug() << "[DEBUG] Creating new user with:";
+        qDebug() << "  - role:" << QString::fromStdString(role);
+        qDebug() << "  - username:" << QString::fromStdString(username);
+        qDebug() << "  - fullName:" << QString::fromStdString(fullName);
+        qDebug() << "  - cccd:" << QString::fromStdString(cccd);
+        qDebug() << "  - phone:" << QString::fromStdString(phone);
+        qDebug() << "  - birthday:" << QString::fromStdString(birthday);
+
         user = User(role, username, password, fullName, cccd, phone, birthday);
+
+        // ✅ VERIFY sau khi tạo
+        qDebug() << "[DEBUG] After construction:";
+        qDebug() << "  - User ID:" << user.getID();
+        qDebug() << "  - User fullName:" << QString::fromStdString(user.getFullName());
+        qDebug() << "  - User CCCD:" << QString::fromStdString(user.getCCCD());
+        qDebug() << "  - User phone:" << QString::fromStdString(user.getPhoneNumber());
+        qDebug() << "  - User birthday:" << QString::fromStdString(user.getBirthday());
     }
 
     // Ngày tạo
     QDate qCreationDate = ui->dateEditCreation->date();
     Date creationDate(qCreationDate.day(), qCreationDate.month(), qCreationDate.year());
     user.setCreationDate(creationDate);
-
-    qDebug() << "[DIALOG] getUserData() - ID:" << user.getID();
-    qDebug() << "[DIALOG] Creation Date:" << QString::fromStdString(creationDate.toString());
 
     return user;
 }

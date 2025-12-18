@@ -1,22 +1,37 @@
 #ifndef MEDICALRECORDDETAILDIALOG_H
 #define MEDICALRECORDDETAILDIALOG_H
 
-#include <QWidget>
+#include <QDialog>
+#include <QMouseEvent>
+#include "medicalRecord.h"
 
 namespace Ui {
-class medicalrecorddetaildialog;
+class MedicalRecordDetailDialog;
 }
 
-class medicalrecorddetaildialog : public QWidget
+class MedicalRecordDetailDialog : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit medicalrecorddetaildialog(QWidget *parent = nullptr);
-    ~medicalrecorddetaildialog();
+    explicit MedicalRecordDetailDialog(const MedicalRecord& record, QWidget *parent = nullptr);
+    ~MedicalRecordDetailDialog();
+
+protected:
+    void mousePressEvent(QMouseEvent *event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
+
+private slots:
+    void on_btnClose_clicked();
 
 private:
-    Ui::medicalrecorddetaildialog *ui;
+    Ui::MedicalRecordDetailDialog *ui;
+    MedicalRecord m_record;
+    bool m_dragging;
+    QPoint m_dragPosition;
+
+    void populateData();
 };
 
 #endif // MEDICALRECORDDETAILDIALOG_H
