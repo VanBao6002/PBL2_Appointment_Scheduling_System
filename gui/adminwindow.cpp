@@ -13,6 +13,7 @@
 #include "patientdetaildialog.h"
 #include "doctordetaildialog.h"
 #include "userdetaildialog.h"
+#include "medicalrecorddetaildialog.h"
 #include "person.h"
 #include "appointmentManager.h"
 #include "patientManager.h"
@@ -2110,48 +2111,9 @@ void AdminWindow::on_btnViewMedicalRecordDetail_clicked() {
     try {
         const MedicalRecord& record = MedicalRecordManager::getInstance().getMedicalRecordByID(recordID);
 
-        QString patientName = "N/A";
-        try {
-            patientName = QString::fromStdString(PatientManager::getInstance().getPatientByID(record.getPatientID()).getName());
-        } catch (...) {}
-
-        QString doctorName = "N/A";
-        try {
-            doctorName = QString::fromStdString(DoctorManager::getInstance().getDoctorByID(record.getDoctorID()).getName());
-        } catch (...) {}
-
-        QString details = QString(
-                              "=== THÔNG TIN HỒ SƠ BỆNH ÁN ===\n\n"
-                              "ID Hồ Sơ: %1\n"
-                              "Bệnh Nhân: %2 (ID: %3)\n"
-                              "Bác Sĩ: %4 (ID: %5)\n"
-                              "Ngày Tạo: %6\n"
-                              "Cập Nhật Lần Cuối: %7\n\n"
-                              "Chẩn Đoán: %8\n"
-                              "Triệu Chứng: %9\n"
-                              "Kết Quả Xét Nghiệm: %10\n\n"
-                              "Huyết Áp: %11\n"
-                              "Nhịp Tim: %12 BPM\n"
-                              "Nhiệt Độ: %13°C\n\n"
-                              "Điều Trị: %14\n"
-                              "Ghi Chú Bác Sĩ: %15\n"
-                              ).arg(record.getID())
-                              .arg(patientName)
-                              .arg(record.getPatientID())
-                              .arg(doctorName)
-                              .arg(record.getDoctorID())
-                              .arg(QString::fromStdString(record.getCreationDate().toString()))
-                              .arg(QString::fromStdString(record.getLastUpdated().toString()))
-                              .arg(QString::fromStdString(record.getDiagnosis()))
-                              .arg(QString::fromStdString(record.getSymptoms()))
-                              .arg(QString::fromStdString(record.getTestResults()))
-                              .arg(QString::fromStdString(record.getBloodPressure()))
-                              .arg(record.getHeartRate())
-                              .arg(record.getBodyTemperature())
-                              .arg(QString::fromStdString(record.getTreatment()))
-                              .arg(QString::fromStdString(record.getDoctorNotes()));
-
-        QMessageBox::information(this, "Chi tiết Hồ Sơ Bệnh Án", details);
+        // Sử dụng dialog mới thay vì QMessageBox
+        MedicalRecordDetailDialog detailDialog(record, this);
+        detailDialog.exec();
 
     } catch (const std::exception& e) {
         QMessageBox::critical(this, "Lỗi", QString("Không thể xem chi tiết: %1").arg(e.what()));
