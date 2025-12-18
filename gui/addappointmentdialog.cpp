@@ -23,10 +23,54 @@ AddAppointmentDialog::AddAppointmentDialog(QWidget *parent) :
     ui->setupUi(this);
     setupStatusComboBox();
 
+    // Connect searchButton
     QPushButton* searchButton = ui->stackedWidget->findChild<QPushButton*>("searchButton");
     if (searchButton) {
         connect(searchButton, &QPushButton::clicked, this, &AddAppointmentDialog::on_searchButton_clicked);
     }
+
+    // Connect backToPage0Button (on page_1)
+    QPushButton* backToPage0Button = ui->stackedWidget->findChild<QPushButton*>("backToPage0Button");
+    if (backToPage0Button) {
+        connect(backToPage0Button, &QPushButton::clicked, this, [this]() {
+            ui->stackedWidget->setCurrentIndex(0);
+        });
+    }
+
+    // Connect backToPage1button (on page_2)
+    QPushButton* backToPage1button = ui->stackedWidget->findChild<QPushButton*>("backToPage1button");
+    if (backToPage1button) {
+        connect(backToPage1button, &QPushButton::clicked, this, [this]() {
+            ui->stackedWidget->setCurrentIndex(1);
+        });
+    }
+
+    // Connect cancelButton (on dialog)
+    QPushButton* cancelButton = this->findChild<QPushButton*>("cancelButton");
+    if (cancelButton) {
+        connect(cancelButton, &QPushButton::clicked, this, &AddAppointmentDialog::reject);
+    }
+
+    // --- Specialization ComboBox setup ---
+    QWidget* page1 = ui->stackedWidget->findChild<QWidget*>("page_1");
+    QComboBox* cmbSpecialization = page1 ? page1->findChild<QComboBox*>("cmbSpecialization") : nullptr;
+    if (cmbSpecialization) {
+        cmbSpecialization->clear();
+        QSet<QString> specializations;
+        auto& doctorManager = DoctorManager::getInstance();
+        for (const auto& pair : doctorManager.getAllDoctors()) {
+            specializations.insert(QString::fromStdString(pair.second.getSpecialization()));
+        }
+        cmbSpecialization->addItems(specializations.values());
+        connect(cmbSpecialization, &QComboBox::currentTextChanged, this, [this]() {
+            populateDoctorCards();
+        });
+        if (cmbSpecialization->count() > 0)
+            cmbSpecialization->setCurrentIndex(0);
+    }
+    populateDoctorCards();
+
+    ui->stackedWidget->setCurrentIndex(0);
 }
 
 AddAppointmentDialog::~AddAppointmentDialog()
@@ -43,7 +87,6 @@ void AddAppointmentDialog::setupStatusComboBox() {
     cmbStatus->clear();
     cmbStatus->addItem("Occupied");
     cmbStatus->addItem("Scheduled");
-
     cmbStatus->addItem("Cancelled");
 }
 
@@ -139,12 +182,12 @@ void AddAppointmentDialog::populateDoctorCards() {
     doctorButtonGroup->setExclusive(true);
 
     auto& doctorManager = DoctorManager::getInstance();
+    QWidget* page1 = ui->stackedWidget->findChild<QWidget*>("page_1");
+    QComboBox* cmbSpecialization = page1 ? page1->findChild<QComboBox*>("cmbSpecialization") : nullptr;
+    QString selectedSpecialization = cmbSpecialization ? cmbSpecialization->currentText() : QString();
     for (const auto& pair : doctorManager.getAllDoctors()) {
         const Doctor& doctor = pair.second;
-        QWidget* page1 = ui->stackedWidget->findChild<QWidget*>("page_1");
-        QComboBox* cmbSpecialization = page1 ? page1->findChild<QComboBox*>("cmbSpecialization") : nullptr;
-        QString selectedSpecialization = cmbSpecialization ? cmbSpecialization->currentText() : QString();
-        if (doctor.getStatus() != Doctor::Status::Active || 
+        if (doctor.getStatus() != Doctor::Status::Active ||
             QString::fromStdString(doctor.getSpecialization()) != selectedSpecialization) {
             continue;
         }
@@ -163,20 +206,13 @@ void AddAppointmentDialog::populateDoctorCards() {
 
         doctorButtonGroup->addButton(selectBtn, doctor.getID());
         layout->addWidget(card);
-    }
 
-    connect(doctorButtonGroup, &QButtonGroup::buttonClicked, this, [this](QAbstractButton* button){
-        selectedDoctorID = doctorButtonGroup->id(button);
-        // Optionally update UI to highlight the selected card
-        for (auto btn : doctorButtonGroup->buttons()) {
-            QWidget* card = btn->parentWidget();
-            if (doctorButtonGroup->id(btn) == selectedDoctorID) {
-                card->setStyleSheet("background-color: #d0f0c0;"); // light green
-            } else {
-                card->setStyleSheet("");
-            }
-        }
-    });
+        connect(selectBtn, &QPushButton::clicked, this, [this, selectBtn]() {
+            selectedDoctorID = doctorButtonGroup->id(selectBtn);
+            // Move to the next page (e.g., time slot selection)
+            ui->stackedWidget->setCurrentIndex(2);
+        });
+    }
 }
 
 Appointment AddAppointmentDialog::getAppointmentData() const {
@@ -212,40 +248,6 @@ void AddAppointmentDialog::on_searchButton_clicked() {
             ui->stackedWidget->setCurrentIndex(1); // Go to page 1
         }
     }
-}
-
-void AddAppointmentDialog::on_buttonBox_accepted()
-{
-    // QString doctorIDText = ui->txtDoctorID->text();
-    // QString patientIDText = ui->txtPatientID->text();
-    // QString roomText = ui->txtRoom->text();
-
-    // if (doctorIDText.isEmpty() || patientIDText.isEmpty() || roomText.isEmpty())
-    // {
-    //     QMessageBox::warning(this, "Lỗi Nhập Liệu", "Vui lòng điền đầy đủ thông tin.");
-    //     return;
-    // }
-
-    // int doctorID = doctorIDText.toInt();
-    // int patientID = patientIDText.toInt();
-
-    // if (!isDoctorValid(doctorID)) {
-    //     QString errorMsg = QString("Doctor ID %1 không tồn tại hoặc không ở trạng thái Active (hiện tại). Vui lòng kiểm tra lại ID hoặc trạng thái.").arg(doctorID);
-    //     QMessageBox::critical(this, "Lỗi Dữ liệu", errorMsg);
-    //     return;
-    // }
-
-    // if (!isPatientValid(patientID)) {
-    //     QMessageBox::critical(this, "Lỗi Dữ liệu", QString("Patient ID %1 không tồn tại trong hệ thống. Vui lòng kiểm tra lại ID.").arg(patientID));
-    //     return;
-    // }
-
-    // accept();
-}
-
-void AddAppointmentDialog::on_buttonBox_rejected()
-{
-    reject();
 }
 
 
