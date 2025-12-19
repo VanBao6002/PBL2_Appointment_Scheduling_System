@@ -26,6 +26,8 @@ public:
 
 private slots:
     void on_searchButton_clicked();
+    void on_cancelButton_clicked();
+    void on_confirmButton_clicked();
 
 private:
     bool isDoctorValid(int doctorID) const;

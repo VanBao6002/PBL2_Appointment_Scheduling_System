@@ -39,7 +39,7 @@ public:
     void addAppointment(const Appointment &doc_);
     void editAppointment(int ID_, const Appointment &newAppointment);
     void removeAppointment(int ID_);
-
+    const std::vector<std::pair<std::string, std::string>>& getBookedSlotsForDoctorDate(int selectedDoctorID, const std::string& selectedDate);
     const Appointment& getAppointmentByID(int ID_) const;
     // Chỉnh sửa: Trả về vector để dễ thao tác với QList và phân trang
     std::vector<Appointment> getAllAppointmentsAsVector() const; 
