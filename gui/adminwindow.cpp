@@ -2338,3 +2338,355 @@ void AdminWindow::on_btnPage_User_3_clicked()
         loadUserData(currentUserPage, ui->txtSearchUser->text().trimmed());
     }
 }
+
+void AdminWindow::setActiveSidebarButton(QPushButton* activeButton)
+{
+    // Reset tất cả button sidebar về trạng thái không active
+    QList<QPushButton*> sidebarButtons = {
+        ui->appointmentManagerButton,
+        ui->doctorManagerButton,
+        ui->patientManagerButton,
+        ui->userManagerButton,
+        ui->medicalRecordButton
+    };
+
+    for (QPushButton* btn : sidebarButtons) {
+        if (btn == activeButton) {
+            btn->setProperty("active", true);
+            btn->style()->unpolish(btn);
+            btn->style()->polish(btn);
+        } else {
+            btn->setProperty("active", false);
+            btn->style()->unpolish(btn);
+            btn->style()->polish(btn);
+        }
+    }
+}
+
+void AdminWindow::applyModernStyles()
+{
+    // Main Window Background
+    this->setStyleSheet(R"(
+        QMainWindow {
+            background: #f5f7fa;
+        }
+    )");
+
+    // Modern Sidebar Styling
+    ui->sidebarWidget->setStyleSheet(R"(
+        QWidget#sidebarWidget {
+            background: #0d47a1;
+            border-right: 2px solid #0a3d8f;
+        }
+
+        QLabel#lblSystemTitle {
+            color: white;
+            font-size: 14pt;
+            font-weight: bold;
+            padding: 20px 15px;
+            background: rgba(0, 0, 0, 0.1);
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Style cho các button sidebar */
+        QPushButton {
+            color: white;
+            background: transparent;
+            border: none;
+            padding: 12px 20px;
+            text-align: left;
+            font-size: 11pt;
+            font-weight: 600;
+            margin: 2px 10px;
+            border-radius: 6px;
+        }
+
+        QPushButton:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        QPushButton[active="true"] {
+            background: rgba(255, 255, 255, 0.2);
+            border-left: 4px solid #FFD700;
+            font-weight: bold;
+        }
+
+        QPushButton#logoutButton {
+            background: #d32f2f;
+            margin-top: 20px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        QPushButton#logoutButton:hover {
+            background: #b71c1c;
+        }
+    )");
+
+    // Content Area Modern Styling - QUAN TRỌNG: Thêm màu chữ rõ ràng
+    ui->contentAreaWidget->setStyleSheet(R"(
+        QWidget#contentAreaWidget {
+            background: #ffffff;
+            border-radius: 8px;
+            margin: 10px;
+            border: 1px solid #e0e0e0;
+        }
+
+        /* Tiêu đề trang */
+        QLabel[styleSheet*="font-size: 18pt"],
+        QLabel[styleSheet*="font-size: 24pt"] {
+            color: #1565c0;
+            font-size: 20pt;
+            font-weight: bold;
+            padding: 15px;
+            background: linear-gradient(to right, #e3f2fd, #f8f9fa);
+            border-radius: 8px;
+            border-bottom: 3px solid #2196f3;
+            margin: 10px;
+        }
+
+        /* QUAN TRỌNG: Nút chung trong content area - MÀU CHỮ TRẮNG RÕ RÀNG */
+        QPushButton {
+            background: #2196f3;
+            color: white !important;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 10pt;
+            min-height: 40px;
+            min-width: 120px;
+        }
+
+        QPushButton:hover {
+            background: #1976d2;
+            color: white !important;
+        }
+
+        QPushButton:pressed {
+            background: #1565c0;
+            color: white !important;
+        }
+
+        /* Nút THÊM - màu xanh lá */
+        QPushButton[text*="THÊM"] {
+            background: #4caf50;
+            color: white !important;
+        }
+
+        QPushButton[text*="THÊM"]:hover {
+            background: #388e3c;
+            color: white !important;
+        }
+
+        /* Nút TÌM KIẾM - màu cam */
+        QPushButton[text*="TÌM KIẾM"] {
+            background: #ff9800;
+            color: white !important;
+        }
+
+        QPushButton[text*="TÌM KIẾM"]:hover {
+            background: #f57c00;
+            color: white !important;
+        }
+
+        /* Nút SẮP XẾP - màu tím */
+        QPushButton[text*="SẮP XẾP"] {
+            background: #9c27b0;
+            color: white !important;
+        }
+
+        QPushButton[text*="SẮP XẾP"]:hover {
+            background: #7b1fa2;
+            color: white !important;
+        }
+
+        /* Nút có icon sắp xếp */
+        QPushButton[text*="🔼"],
+        QPushButton[text*="🔽"] {
+            background: #673ab7;
+            color: white !important;
+            font-size: 11pt;
+        }
+
+        QPushButton[text*="🔼"]:hover,
+        QPushButton[text*="🔽"]:hover {
+            background: #5e35b1;
+            color: white !important;
+        }
+
+        /* Nút phân trang */
+        QPushButton[text*="Trang"],
+        QPushButton[text*="<"],
+        QPushButton[text*=">"] {
+            background: #78909c;
+            color: white !important;
+            min-width: 100px;
+        }
+
+        QPushButton[text*="Trang"]:hover,
+        QPushButton[text*="<"]:hover,
+        QPushButton[text*=">"]:hover {
+            background: #546e7a;
+            color: white !important;
+        }
+
+        /* Nút số trang */
+        QPushButton:has-text[0-9] {
+            background: #b0bec5;
+            color: #263238 !important;
+            min-width: 40px;
+            font-weight: normal;
+        }
+
+        QPushButton:has-text[0-9]:hover {
+            background: #90a4ae;
+            color: #263238 !important;
+        }
+
+        /* Nút số trang active */
+        QPushButton[active="true"] {
+            background: #2196f3 !important;
+            color: white !important;
+            font-weight: bold;
+        }
+
+        /* LineEdit */
+        QLineEdit {
+            padding: 10px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            background: white;
+            font-size: 10pt;
+            color: #263238;
+            min-height: 40px;
+            selection-background-color: #2196f3;
+            selection-color: white;
+        }
+
+        QLineEdit:focus {
+            border: 2px solid #2196f3;
+            background: #f8f9fa;
+        }
+
+        QLineEdit::placeholder {
+            color: #90a4ae;
+            font-style: italic;
+        }
+
+        /* Table */
+        QTableWidget {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            gridline-color: #e0e0e0;
+            selection-background-color: #e3f2fd;
+            selection-color: #1565c0;
+            color: #263238;
+            font-size: 10pt;
+            alternate-background-color: #f8f9fa;
+        }
+
+        QTableWidget::item {
+            padding: 8px 4px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        QTableWidget::item:selected {
+            background: #e3f2fd;
+            color: #1565c0;
+            font-weight: bold;
+        }
+
+        QHeaderView::section {
+            background: #1565c0;
+            color: white;
+            padding: 12px 4px;
+            border: none;
+            font-weight: bold;
+            font-size: 10pt;
+            border-right: 1px solid #0d47a1;
+        }
+
+        QHeaderView::section:last {
+            border-right: none;
+        }
+
+        QHeaderView::section:hover {
+            background: #0d47a1;
+        }
+
+        /* Label thông tin */
+        QLabel {
+            color: #546e7a;
+            background: transparent;
+            font-size: 10pt;
+            font-weight: 500;
+        }
+
+        QLabel[text*="TextLabel"] {
+            color: #37474f;
+            font-weight: 600;
+            font-size: 11pt;
+        }
+
+        /* Toolbar */
+        QWidget[toolbar] {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 10px;
+            border: 2px solid #e3f2fd;
+            margin: 5px;
+        }
+    )");
+//
+    // Style pagination buttons - Đảm bảo màu chữ rõ ràng
+    QString paginationStyle = R"(
+        QPushButton {
+            min-width: 40px;
+            min-height: 40px;
+            border-radius: 6px;
+            background: #78909c;
+            color: white !important;
+            border: none;
+            font-weight: 600;
+            font-size: 10pt;
+            margin: 2px;
+        }
+
+        QPushButton:hover:enabled {
+            background: #546e7a;
+            color: white !important;
+        }
+
+        QPushButton:disabled {
+            background: #cfd8dc;
+            color: #90a4ae !important;
+        }
+
+        QPushButton[active="true"] {
+            background: #2196f3 !important;
+            color: white !important;
+            font-weight: bold;
+        }
+    )";
+
+    // Apply to all pagination buttons
+    QStringList paginationButtons = {
+        "btnPrevPage_Appointment", "btnNextPage_Appointment", "btnPage_Appointment_1", "btnPage_Appointment_2", "btnPage_Appointment_3",
+        "btnPrevPage_Patient", "btnNextPage_Patient", "btnPage_Patient_1", "btnPage_Patient_2", "btnPage_Patient_3",
+        "btnPrevPage_Doctor", "btnNextPage_Doctor", "btnPage_Doctor_1", "btnPage_Doctor_2", "btnPage_Doctor_3",
+        "btnPrevPage_MedicalRecord", "btnNextPage_MedicalRecord", "btnPage_MedicalRecord_1", "btnPage_MedicalRecord_2", "btnPage_MedicalRecord_3",
+        "btnPrevPage_User", "btnNextPage_User", "btnPage_User_1", "btnPage_User_2", "btnPage_User_3"
+    };
+
+    for (const QString& btnName : paginationButtons) {
+        QPushButton* btn = findChild<QPushButton*>(btnName);
+        if (btn) {
+            btn->setStyleSheet(paginationStyle);
+        }
+    }
+
+    // Thiết lập active cho button sidebar ban đầu
+    setActiveSidebarButton(ui->appointmentManagerButton);
+}
