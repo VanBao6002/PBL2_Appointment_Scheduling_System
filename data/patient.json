@@ -1,223 +1,29 @@
 [
     {
-        "CCCD": "012471524826",
-        "ID": 10,
-        "allergies": [],
-        "birthday": {
-            "day": 5,
-            "month": 6,
-            "year": 2019
-        },
-        "bloodType": "B+",
-        "chronicDiseases": [
-            "epilepsy"
-        ],
-        "email": "nguyenthix@gmail.com",
-        "gender": "F",
-        "insuranceID": "123133",
-        "medicalRecordIDs": [],
-        "name": "Nguyen Thi X",
-        "nameFather": "Nguyen Van Y",
-        "nameMother": "Pham Thi Z",
-        "phoneFather": "0123887654",
-        "phoneMother": "0987223344",
-        "phoneNumber": "0321887654"
-    },
-    {
-        "CCCD": "012471524825",
-        "ID": 9,
+        "CCCD": "012312312312",
+        "ID": 11,
         "allergies": [
-            "gluten"
+            "N"
         ],
-        "birthday": {
-            "day": 12,
-            "month": 4,
-            "year": 2018
-        },
-        "bloodType": "A-",
-        "chronicDiseases": [],
-        "email": "dangthiu@gmail.com",
-        "gender": "F",
-        "insuranceID": "123132",
-        "medicalRecordIDs": [],
-        "name": "Dang Thi U",
-        "nameFather": "Dang Van V",
-        "nameMother": "Le Thi W",
-        "phoneFather": "0123776543",
-        "phoneMother": "0987112233",
-        "phoneNumber": "0321776543"
-    },
-    {
-        "CCCD": "012471524824",
-        "ID": 8,
-        "allergies": [
-            "milk"
-        ],
-        "birthday": {
-            "day": 30,
-            "month": 9,
-            "year": 2017
-        },
-        "bloodType": "AB+",
-        "chronicDiseases": [
-            "hypertension"
-        ],
-        "email": "phamthir@gmail.com",
-        "gender": "F",
-        "insuranceID": "123131",
-        "medicalRecordIDs": [],
-        "name": "Pham Thi R",
-        "nameFather": "Pham Van S",
-        "nameMother": "Tran Thi T",
-        "phoneFather": "0123665432",
-        "phoneMother": "0987998765",
-        "phoneNumber": "0321665432"
-    },
-    {
-        "CCCD": "012471524823",
-        "ID": 7,
-        "allergies": [],
         "birthday": {
             "day": 19,
-            "month": 11,
-            "year": 2016
-        },
-        "bloodType": "O-",
-        "chronicDiseases": [],
-        "email": "buitheo@gmail.com",
-        "gender": "M",
-        "insuranceID": "123130",
-        "medicalRecordIDs": [],
-        "name": "Bui The O",
-        "nameFather": "Bui Van P",
-        "nameMother": "Nguyen Thi Q",
-        "phoneFather": "0123554321",
-        "phoneMother": "0987887654",
-        "phoneNumber": "0321554321"
-    },
-    {
-        "CCCD": "012471524822",
-        "ID": 6,
-        "allergies": [
-            "dust"
-        ],
-        "birthday": {
-            "day": 8,
-            "month": 3,
-            "year": 2014
-        },
-        "bloodType": "B-",
-        "chronicDiseases": [
-            "eczema"
-        ],
-        "email": "doanthil@gmail.com",
-        "gender": "F",
-        "insuranceID": "123129",
-        "medicalRecordIDs": [],
-        "name": "Doan Thi L",
-        "nameFather": "Doan Van M",
-        "nameMother": "Le Thi N",
-        "phoneFather": "0123345678",
-        "phoneMother": "0987765432",
-        "phoneNumber": "0321345678"
-    },
-    {
-        "CCCD": "012471524821",
-        "ID": 5,
-        "allergies": [
-            "seafood"
-        ],
-        "birthday": {
-            "day": 25,
-            "month": 7,
-            "year": 2013
-        },
-        "bloodType": "A+",
-        "chronicDiseases": [],
-        "email": "nguyenvani@gmail.com",
-        "gender": "M",
-        "insuranceID": "123128",
-        "medicalRecordIDs": [],
-        "name": "Nguyen Van I",
-        "nameFather": "Nguyen Van J",
-        "nameMother": "Pham Thi K",
-        "phoneFather": "0123765432",
-        "phoneMother": "0987654322",
-        "phoneNumber": "0321765432"
-    },
-    {
-        "CCCD": "012471524820",
-        "ID": 4,
-        "allergies": [],
-        "birthday": {
-            "day": 10,
-            "month": 1,
-            "year": 2011
+            "month": 12,
+            "year": 2015
         },
         "bloodType": "AB-",
         "chronicDiseases": [
-            "diabetes"
+            "N"
         ],
-        "email": "tranthif@gmail.com",
-        "gender": "F",
-        "insuranceID": "123127",
-        "medicalRecordIDs": [],
-        "name": "Tran Thi F",
-        "nameFather": "Tran Van G",
-        "nameMother": "Le Thi H",
-        "phoneFather": "0123123456",
-        "phoneMother": "0987345678",
-        "phoneNumber": "0321123456"
-    },
-    {
-        "CCCD": "012471524819",
-        "ID": 3,
-        "allergies": [
-            "pollen"
-        ],
-        "birthday": {
-            "day": 3,
-            "month": 8,
-            "year": 2012
-        },
-        "bloodType": "O+",
-        "chronicDiseases": [],
-        "email": "phamc@gmail.com",
+        "email": "tasenu@gmail.com",
         "gender": "M",
-        "insuranceID": "123126",
+        "insuranceID": "0123456789",
         "medicalRecordIDs": [],
-        "name": "Pham Van C",
-        "nameFather": "Pham Van D",
-        "nameMother": "Nguyen Thi E",
-        "phoneFather": "0123987654",
-        "phoneMother": "0987123456",
-        "phoneNumber": "0321987654"
-    },
-    {
-        "CCCD": "012471524818",
-        "ID": 2,
-        "allergies": [
-            "peanuts"
-        ],
-        "birthday": {
-            "day": 22,
-            "month": 5,
-            "year": 2010
-        },
-        "bloodType": "B+",
-        "chronicDiseases": [
-            "asthma"
-        ],
-        "email": "lethib@gmail.com",
-        "gender": "F",
-        "insuranceID": "123125",
-        "medicalRecordIDs": [],
-        "name": "Le Thi B",
-        "nameFather": "Le Van B",
-        "nameMother": "Tran Thi C",
-        "phoneFather": "0123456789",
-        "phoneMother": "0987654321",
-        "phoneNumber": "0321456789"
+        "name": "Truong Tuan Tu",
+        "nameFather": "N",
+        "nameMother": "N",
+        "phoneFather": "0123123123",
+        "phoneMother": "0123123123",
+        "phoneNumber": "0363636363"
     },
     {
         "CCCD": "012471524817",
@@ -246,29 +52,223 @@
         "phoneNumber": "0321123321"
     },
     {
-        "CCCD": "012312312312",
-        "ID": 11,
+        "CCCD": "012471524818",
+        "ID": 2,
         "allergies": [
-            "N"
+            "peanuts"
         ],
         "birthday": {
-            "day": 19,
-            "month": 12,
-            "year": 2015
+            "day": 22,
+            "month": 5,
+            "year": 2010
+        },
+        "bloodType": "B+",
+        "chronicDiseases": [
+            "asthma"
+        ],
+        "email": "lethib@gmail.com",
+        "gender": "F",
+        "insuranceID": "123125",
+        "medicalRecordIDs": [],
+        "name": "Le Thi B",
+        "nameFather": "Le Van B",
+        "nameMother": "Tran Thi C",
+        "phoneFather": "0123456789",
+        "phoneMother": "0987654321",
+        "phoneNumber": "0321456789"
+    },
+    {
+        "CCCD": "012471524819",
+        "ID": 3,
+        "allergies": [
+            "pollen"
+        ],
+        "birthday": {
+            "day": 3,
+            "month": 8,
+            "year": 2012
+        },
+        "bloodType": "O+",
+        "chronicDiseases": [],
+        "email": "phamc@gmail.com",
+        "gender": "M",
+        "insuranceID": "123126",
+        "medicalRecordIDs": [],
+        "name": "Pham Van C",
+        "nameFather": "Pham Van D",
+        "nameMother": "Nguyen Thi E",
+        "phoneFather": "0123987654",
+        "phoneMother": "0987123456",
+        "phoneNumber": "0321987654"
+    },
+    {
+        "CCCD": "012471524820",
+        "ID": 4,
+        "allergies": [],
+        "birthday": {
+            "day": 10,
+            "month": 1,
+            "year": 2011
         },
         "bloodType": "AB-",
         "chronicDiseases": [
-            "N"
+            "diabetes"
         ],
-        "email": "tasenu@gmail.com",
-        "gender": "M",
-        "insuranceID": "0123456789",
+        "email": "tranthif@gmail.com",
+        "gender": "F",
+        "insuranceID": "123127",
         "medicalRecordIDs": [],
-        "name": "Truong Tuan Tu",
-        "nameFather": "N",
-        "nameMother": "N",
-        "phoneFather": "0123123123",
-        "phoneMother": "0123123123",
-        "phoneNumber": "0363636363"
+        "name": "Tran Thi F",
+        "nameFather": "Tran Van G",
+        "nameMother": "Le Thi H",
+        "phoneFather": "0123123456",
+        "phoneMother": "0987345678",
+        "phoneNumber": "0321123456"
+    },
+    {
+        "CCCD": "012471524821",
+        "ID": 5,
+        "allergies": [
+            "seafood"
+        ],
+        "birthday": {
+            "day": 25,
+            "month": 7,
+            "year": 2013
+        },
+        "bloodType": "A+",
+        "chronicDiseases": [],
+        "email": "nguyenvani@gmail.com",
+        "gender": "M",
+        "insuranceID": "123128",
+        "medicalRecordIDs": [],
+        "name": "Nguyen Van I",
+        "nameFather": "Nguyen Van J",
+        "nameMother": "Pham Thi K",
+        "phoneFather": "0123765432",
+        "phoneMother": "0987654322",
+        "phoneNumber": "0321765432"
+    },
+    {
+        "CCCD": "012471524822",
+        "ID": 6,
+        "allergies": [
+            "dust"
+        ],
+        "birthday": {
+            "day": 8,
+            "month": 3,
+            "year": 2014
+        },
+        "bloodType": "B-",
+        "chronicDiseases": [
+            "eczema"
+        ],
+        "email": "doanthil@gmail.com",
+        "gender": "F",
+        "insuranceID": "123129",
+        "medicalRecordIDs": [],
+        "name": "Doan Thi L",
+        "nameFather": "Doan Van M",
+        "nameMother": "Le Thi N",
+        "phoneFather": "0123345678",
+        "phoneMother": "0987765432",
+        "phoneNumber": "0321345678"
+    },
+    {
+        "CCCD": "012471524823",
+        "ID": 7,
+        "allergies": [],
+        "birthday": {
+            "day": 19,
+            "month": 11,
+            "year": 2016
+        },
+        "bloodType": "O-",
+        "chronicDiseases": [],
+        "email": "buitheo@gmail.com",
+        "gender": "M",
+        "insuranceID": "123130",
+        "medicalRecordIDs": [],
+        "name": "Bui The O",
+        "nameFather": "Bui Van P",
+        "nameMother": "Nguyen Thi Q",
+        "phoneFather": "0123554321",
+        "phoneMother": "0987887654",
+        "phoneNumber": "0321554321"
+    },
+    {
+        "CCCD": "012471524824",
+        "ID": 8,
+        "allergies": [
+            "milk"
+        ],
+        "birthday": {
+            "day": 30,
+            "month": 9,
+            "year": 2017
+        },
+        "bloodType": "AB+",
+        "chronicDiseases": [
+            "hypertension"
+        ],
+        "email": "phamthir@gmail.com",
+        "gender": "F",
+        "insuranceID": "123131",
+        "medicalRecordIDs": [],
+        "name": "Pham Thi R",
+        "nameFather": "Pham Van S",
+        "nameMother": "Tran Thi T",
+        "phoneFather": "0123665432",
+        "phoneMother": "0987998765",
+        "phoneNumber": "0321665432"
+    },
+    {
+        "CCCD": "012471524825",
+        "ID": 9,
+        "allergies": [
+            "gluten"
+        ],
+        "birthday": {
+            "day": 12,
+            "month": 4,
+            "year": 2018
+        },
+        "bloodType": "A-",
+        "chronicDiseases": [],
+        "email": "dangthiu@gmail.com",
+        "gender": "F",
+        "insuranceID": "123132",
+        "medicalRecordIDs": [],
+        "name": "Dang Thi U",
+        "nameFather": "Dang Van V",
+        "nameMother": "Le Thi W",
+        "phoneFather": "0123776543",
+        "phoneMother": "0987112233",
+        "phoneNumber": "0321776543"
+    },
+    {
+        "CCCD": "012471524826",
+        "ID": 10,
+        "allergies": [],
+        "birthday": {
+            "day": 5,
+            "month": 6,
+            "year": 2019
+        },
+        "bloodType": "B+",
+        "chronicDiseases": [
+            "epilepsy"
+        ],
+        "email": "nguyenthix@gmail.com",
+        "gender": "F",
+        "insuranceID": "123133",
+        "medicalRecordIDs": [],
+        "name": "Nguyen Thi X",
+        "nameFather": "Nguyen Van Y",
+        "nameMother": "Pham Thi Z",
+        "phoneFather": "0123887654",
+        "phoneMother": "0987223344",
+        "phoneNumber": "0321887654"
     }
 ]
