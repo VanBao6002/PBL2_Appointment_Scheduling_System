@@ -2460,7 +2460,7 @@ void AdminWindow::on_btnPage_User_2_clicked()
         loadUserData(currentUserPage, ui->txtSearchUser->text().trimmed());
     }
 }
-
+//
 void AdminWindow::on_btnPage_User_3_clicked()
 {
     int pageNum = ui->btnPage_User_3->text().toInt();
