@@ -31,7 +31,8 @@ private:
     bool isDoctorValid(int doctorID) const;
     bool isPatientValid(int patientID) const;
     bool isPatientExisted(const std::string& CCCD);
-    void updateAvailableTimeSlots(const QStringList& slots, const QSet<QString>& occupiedSlots);
+    void updateAvailableTimeSlot(const QStringList& allSlots, const QSet<QString>& occupiedSlots);
+    void updateAvailableCalendarDaysAndTimeSlots(int doctorID);
     void populateDoctorCards();
 
 private:
@@ -41,6 +42,7 @@ private:
     QString selectedTimeSlot;
     QButtonGroup* doctorButtonGroup = nullptr;
     int selectedDoctorID = -1;
+
 };
 
 #endif // ADDAPPOINTMENTDIALOG_H
