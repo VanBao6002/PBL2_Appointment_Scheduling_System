@@ -10,8 +10,10 @@
 #include <QLayout>
 #include <QButtonGroup>
 #include <QCalendarWidget>
+#include <QListWidget>
 #include "doctorManager.h"
 #include "patientManager.h"
+#include "appointmentManager.h"
 #include "IDHandler.h"
 #include "core.h"
 #include "config.h"
@@ -37,18 +39,40 @@ AddAppointmentDialog::AddAppointmentDialog(QWidget *parent) :
         });
     }
 
-    // Connect backToPage1button (on page_2)
-    QPushButton* backToPage1button = ui->stackedWidget->findChild<QPushButton*>("backToPage1button");
-    if (backToPage1button) {
-        connect(backToPage1button, &QPushButton::clicked, this, [this]() {
+    // Connect backToPage1Button (on page_2)
+    QPushButton* backToPage1Button = ui->stackedWidget->findChild<QPushButton*>("backToPage1Button");
+    if (backToPage1Button) {
+        connect(backToPage1Button, &QPushButton::clicked, this, [this]() {
             ui->stackedWidget->setCurrentIndex(1);
         });
     }
 
+    // Connect nextToPage3Button (on page_2)
+    QPushButton* nextToPage3Button = ui->stackedWidget->findChild<QPushButton*>("nextToPage3Button");
+    if (nextToPage3Button) {
+        connect(nextToPage3Button, &QPushButton::clicked, this, [this]() {
+            ui->stackedWidget->setCurrentIndex(3);
+        });
+    }
+
+    // Connect backToPage2Button (on page_3)
+    QPushButton* backToPage2Button = ui->stackedWidget->findChild<QPushButton*>("backToPage2button");
+    if (backToPage2Button) {
+        connect(backToPage2Button, &QPushButton::clicked, this, [this]() {
+            ui->stackedWidget->setCurrentIndex(2);
+        });
+    }
+
     // Connect cancelButton (on dialog)
-    QPushButton* cancelButton = this->findChild<QPushButton*>("cancelButton");
+    QPushButton* cancelButton = ui->stackedWidget->findChild<QPushButton*>("cancelButton");
     if (cancelButton) {
-        connect(cancelButton, &QPushButton::clicked, this, &AddAppointmentDialog::reject);
+        connect(cancelButton, &QPushButton::clicked, this, &AddAppointmentDialog::on_cancelButton_clicked);
+    }
+
+    // Connect confirmButton (on page_3)
+    QPushButton* confirmButton = ui->stackedWidget->findChild<QPushButton*>("confirmButton");
+    if (confirmButton) {
+        connect(confirmButton, &QPushButton::clicked, this, &AddAppointmentDialog::on_confirmButton_clicked);
     }
 
     // --- Specialization ComboBox setup ---
@@ -85,49 +109,161 @@ void AddAppointmentDialog::setupStatusComboBox() {
     if (!cmbStatus) return;
 
     cmbStatus->clear();
-    cmbStatus->addItem("Occupied");
     cmbStatus->addItem("Scheduled");
+    cmbStatus->addItem("Occupied");
     cmbStatus->addItem("Cancelled");
 }
 
-void AddAppointmentDialog::updateAvailableTimeSlots(const QStringList& timeSlots, const QSet<QString>& occupiedSlots) {
-    QWidget* page = ui->stackedWidget->currentWidget();
-    QWidget* timeSlotWidget = page->findChild<QWidget*>("timeSlotWidget");
-    if (!timeSlotWidget) return;
-    QGridLayout* layout = qobject_cast<QGridLayout*>(timeSlotWidget->layout());
-    if (!layout) return;
-    // Remove old buttons
-    QLayoutItem* item;
-    while ((item = layout->takeAt(0)) != nullptr) {
-        delete item->widget();
-        delete item;
-    }
-    timeSlotButtons.clear();
+void AddAppointmentDialog::updateAvailableTimeSlot(const QStringList& inputSlots, const QSet<QString>& occupiedSlots) {
+    QWidget* page2 = ui->stackedWidget->findChild<QWidget*>("page_2");
+    if (!page2) return;
 
-    int row = 0, col = 0, columns = 4; // Adjust columns as needed
-    for (int i = 0; i < timeSlots.size(); ++i) {
-        const QString& slot = timeSlots.at(i);
-        QPushButton* btn = new QPushButton(slot, this);
-        bool isOccupied = occupiedSlots.contains(slot);
-        btn->setCheckable(true);
-        btn->setEnabled(!isOccupied);
-        if (isOccupied) {
-            btn->setStyleSheet("color: gray;"); // Optional: visually indicate occupied
-            btn->setToolTip("This time slot is occupied.");
-        }
-        layout->addWidget(btn, row, col);
-        timeSlotButtons.append(btn);
-        if (!isOccupied) {
-            connect(btn, &QPushButton::clicked, this, [this, slot, btn]() {
-                selectedTimeSlot = slot;
-                for (auto b : timeSlotButtons) b->setChecked(false);
-                btn->setChecked(true);
-            });
-        }
-        col++;
-        if (col >= columns) { col = 0; row++; }
+    QCalendarWidget* calendar = page2->findChild<QCalendarWidget*>("calendarWidget");
+    if (!calendar) return;
+
+    QDate selectedDate = calendar->selectedDate();
+    if (!selectedDate.isValid() || selectedDoctorID < 0) return;
+
+    Doctor doctor;
+    try {
+        doctor = DoctorManager::getInstance().getDoctorByID(selectedDoctorID);
+    } catch (...) {
+        return;
     }
+
+    // Get weekday name in 'Thứ N' format to match JSON
+    QString weekdayName = "Thứ " + QString::number(selectedDate.dayOfWeek());
+
+    // Get booked slots for this doctor and date (implement this as needed)
+    std::vector<std::pair<std::string, std::string>> bookedSlots;
+    bookedSlots = AppointmentManager::getInstance().getBookedSlotsForDoctorDate(selectedDoctorID, selectedDate.toString("dd-MM-yyyy").toStdString());
+
+    // Get all intervals for the day
+    auto intervals = doctor.getWorkingSchedule().getIntervalsWithBooking(
+        weekdayName.toStdString(), bookedSlots
+    );
+
+    // Prepare available slots
+    QStringList allSlots;
+    for (const auto& [start, end, isBooked] : intervals) {
+        if (!isBooked)
+            allSlots.append(QString::fromStdString(start + " - " + end));
+    }
+
+    // Update your time slot selection widget here (QListWidget version)
+    QListWidget* listTimeSlots = page2->findChild<QListWidget*>("listTimeSlots");
+    if (listTimeSlots) {
+        listTimeSlots->blockSignals(true);
+        listTimeSlots->clear();
+        listTimeSlots->addItems(allSlots);
+        listTimeSlots->blockSignals(false);
+        // Set selectedTimeSlot to first available slot if exists
+        if (!allSlots.isEmpty()) {
+            selectedTimeSlot = allSlots.first();
+            listTimeSlots->setCurrentRow(0);
+        } else {
+            selectedTimeSlot.clear();
+        }
+        // Connect signal to update selectedTimeSlot
+        static bool connected = false;
+        if (!connected) {
+            connect(listTimeSlots, &QListWidget::currentTextChanged, this, [this](const QString& text) {
+                selectedTimeSlot = text;
+            });
+            connected = true;
+        }
+    }
+
 }
+
+void AddAppointmentDialog::updateAvailableCalendarDaysAndTimeSlots(int doctorID) {
+    QWidget* page2 = ui->stackedWidget->findChild<QWidget*>("page_2");
+    if (!page2) return;
+
+    QCalendarWidget* calendar = page2->findChild<QCalendarWidget*>("calendarWidget");
+    if (!calendar) return;
+
+    Doctor doctor;
+    try {
+        doctor = DoctorManager::getInstance().getDoctorByID(doctorID);
+    } catch (...) {
+        return;
+    }
+
+    QSet<QDate> workingDays;
+    const auto& daysVec = doctor.getWorkingSchedule().getDays();
+    QDate today = QDate::currentDate();
+
+    for (int i = 0; i < Config::MAGIC_MARKED_AVAILABLE_WORKING_DAYS_NUMBER; ++i) {
+        QDate date = today.addDays(i);
+        QString weekdayName = "Thứ " + QString::number(date.dayOfWeek());
+        for (const auto& dayStr : daysVec) {
+            if (weekdayName.compare(QString::fromStdString(dayStr), Qt::CaseInsensitive) == 0) {
+                workingDays.insert(date);
+                break;
+            }
+        }
+    }
+
+    // Mark working days on calendar (using QTextCharFormat)
+    QTextCharFormat fmt;
+    fmt.setBackground(Qt::green);
+    for (const QDate& d : workingDays) {
+        calendar->setDateTextFormat(d, fmt);
+    }
+
+    // Disconnect previous connections to avoid duplicate slots
+    disconnect(calendar, nullptr, nullptr, nullptr);
+
+    // Connect calendar selection to update time slots
+    connect(calendar, &QCalendarWidget::selectionChanged, this, [this, doctorID, calendar, daysVec]() {
+        QDate selected = calendar->selectedDate();
+        QString weekdayName = "Thứ " + QString::number(selected.dayOfWeek());
+
+        // Check if selected day is a working day
+        bool isWorkingDay = false;
+        for (const auto& dayStr : daysVec) {
+            if (weekdayName.compare(QString::fromStdString(dayStr), Qt::CaseInsensitive) == 0) {
+                isWorkingDay = true;
+                break;
+            }
+        }
+        if (!isWorkingDay) {
+            updateAvailableTimeSlot(QStringList(), QSet<QString>());
+            return;
+        }
+
+        Doctor doctor;
+        try {
+            doctor = DoctorManager::getInstance().getDoctorByID(doctorID);
+        } catch (...) {
+            updateAvailableTimeSlot(QStringList(), QSet<QString>());
+            return;
+        }
+
+        // Get booked slots for this doctor and date (implement as needed)
+        std::vector<std::pair<std::string, std::string>> bookedSlots;
+        bookedSlots = AppointmentManager::getInstance().getBookedSlotsForDoctorDate(selectedDoctorID, selected.toString("dd-MM-yyyy").toStdString());
+
+        // Get all intervals for the day
+        auto intervals = doctor.getWorkingSchedule().getIntervalsWithBooking(
+            weekdayName.toStdString(), bookedSlots
+        );
+
+        // Prepare available slots
+        QStringList allSlots;
+        for (const auto& [start, end, isBooked] : intervals) {
+            if (!isBooked)
+                allSlots.append(QString::fromStdString(start + " - " + end));
+        }
+
+        updateAvailableTimeSlot(allSlots, QSet<QString>());
+    });
+
+    // Initial trigger for current selection
+    calendar->selectionChanged();
+}
+
 
 bool AddAppointmentDialog::isDoctorValid(int doctorID) const {
     qDebug() << "Checking Doctor ID:" << doctorID;
@@ -211,6 +347,8 @@ void AddAppointmentDialog::populateDoctorCards() {
             selectedDoctorID = doctorButtonGroup->id(selectBtn);
             // Move to the next page (e.g., time slot selection)
             ui->stackedWidget->setCurrentIndex(2);
+            // Initialize calendar and time slots for the selected doctor
+            updateAvailableCalendarDaysAndTimeSlots(selectedDoctorID);
         });
     }
 }
@@ -222,7 +360,6 @@ Appointment AddAppointmentDialog::getAppointmentData() const {
     QWidget* page2 = ui->stackedWidget->findChild<QWidget*>("page_2");
     QDate qDate = page2 ? page2->findChild<QCalendarWidget*>("calendarWidget")->selectedDate() : QDate();
     Date apptDate(qDate.day(), qDate.month(), qDate.year());
-    // Use selectedTimeSlot, which should be in format "HH:mm - HH:mm"
     QString qStartTime = selectedTimeSlot.section(" - ", 0, 0);
     QString qEndTime = selectedTimeSlot.section(" - ", 1, 1);
     std::string room = DoctorManager::getInstance().getDoctorByID(selectedDoctorID).getRoom();
@@ -248,6 +385,51 @@ void AddAppointmentDialog::on_searchButton_clicked() {
             ui->stackedWidget->setCurrentIndex(1); // Go to page 1
         }
     }
+}
+
+void AddAppointmentDialog::on_cancelButton_clicked() {
+    reject();
+}
+
+void AddAppointmentDialog::on_confirmButton_clicked() {
+    // Check if doctor and patient are valid
+    if (!isDoctorValid(selectedDoctorID)) {
+        QMessageBox::warning(this, "Invalid Doctor", "Selected doctor is not valid or not active.");
+        return;
+    }
+    if (!isPatientValid(selectedPatient.getID())) {
+        QMessageBox::warning(this, "Invalid Patient", "Selected patient is not valid.");
+        return;
+    }
+
+    // Check if time slot is still available
+    QWidget* page2 = ui->stackedWidget->findChild<QWidget*>("page_2");
+    QListWidget* listTimeSlots = page2 ? page2->findChild<QListWidget*>("listTimeSlots") : nullptr;
+    if (!listTimeSlots || selectedTimeSlot.isEmpty()) {
+        QMessageBox::warning(this, "Invalid Time Slot", "Please select a valid time slot.");
+        return;
+    }
+    bool slotAvailable = false;
+    for (int i = 0; i < listTimeSlots->count(); ++i) {
+        if (listTimeSlots->item(i)->text() == selectedTimeSlot) {
+            slotAvailable = true;
+            break;
+        }
+    }
+    if (!slotAvailable) {
+        QMessageBox::warning(this, "Time Slot Unavailable", "The selected time slot is no longer available.");
+        return;
+    }
+
+    // Set the time slot as booked (you may need to update your AppointmentManager here)
+    // Example:
+    // AppointmentManager::getInstance().bookSlot(selectedDoctorID, selectedPatient.getID(), selectedTimeSlot, ...);
+
+    // Optionally, update UI or internal state to reflect the booking
+    // ...
+
+    // Proceed to accept the dialog
+    accept();
 }
 
 

@@ -133,7 +133,7 @@
       </rect>
      </property>
     </widget>
-    <widget class="QPushButton" name="backToPage1button">
+    <widget class="QPushButton" name="backToPage1Button">
      <property name="geometry">
       <rect>
        <x>20</x>
@@ -149,13 +149,17 @@
     <widget class="QWidget" name="timeSlotWidget" native="true">
      <property name="geometry">
       <rect>
-       <x>40</x>
-       <y>330</y>
-       <width>431</width>
+       <x>33</x>
+       <y>333</y>
+       <width>441</width>
        <height>221</height>
       </rect>
      </property>
-     <layout class="QGridLayout" name="gridLayout"/>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <widget class="QListWidget" name="listTimeSlots"/>
+      </item>
+     </layout>
     </widget>
     <widget class="QComboBox" name="cmbStatus">
      <property name="geometry">
@@ -165,6 +169,47 @@
        <width>86</width>
        <height>26</height>
       </rect>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="nextToPage3Button">
+     <property name="geometry">
+      <rect>
+       <x>90</x>
+       <y>10</y>
+       <width>94</width>
+       <height>26</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Next</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="page_3">
+    <widget class="QPushButton" name="backtoPage2Button">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>10</y>
+       <width>94</width>
+       <height>26</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Back</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="confirmButton">
+     <property name="geometry">
+      <rect>
+       <x>580</x>
+       <y>80</y>
+       <width>94</width>
+       <height>26</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Confirm</string>
      </property>
     </widget>
    </widget>
