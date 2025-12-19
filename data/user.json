@@ -1,5 +1,21 @@
 [
     {
+        "CCCD": "012345678911",
+        "ID": 1,
+        "birthday": "19/12/2007",
+        "creationDate": {
+            "day": 1,
+            "month": 1,
+            "year": 2000
+        },
+        "fullName": "ROO NAN SU",
+        "passwordHash": "689486176",
+        "phoneNumber": "0123456789",
+        "plainPassword": "adminadmin",
+        "userRole": "ADMIN",
+        "username": "admin"
+    },
+    {
         "CCCD": "012345678910",
         "ID": 2,
         "birthday": "1/1/2006",
@@ -12,22 +28,6 @@
         "passwordHash": "2433490820",
         "phoneNumber": "0123456789",
         "plainPassword": "12341234",
-        "userRole": "ADMIN",
-        "username": "admin"
-    },
-    {
-        "CCCD": "012345678911",
-        "ID": 3,
-        "birthday": "19/12/2007",
-        "creationDate": {
-            "day": 1,
-            "month": 1,
-            "year": 2000
-        },
-        "fullName": "ROO NAN SU",
-        "passwordHash": "689486176",
-        "phoneNumber": "0123456789",
-        "plainPassword": "adminadmin",
         "userRole": "ADMIN",
         "username": "admin"
     }
