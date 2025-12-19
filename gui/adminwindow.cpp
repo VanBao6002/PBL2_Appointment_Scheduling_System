@@ -2686,7 +2686,7 @@ void AdminWindow::applyModernStyles()
             btn->setStyleSheet(paginationStyle);
         }
     }
-
+     
     // Thiết lập active cho button sidebar ban đầu
     setActiveSidebarButton(ui->appointmentManagerButton);
 }
