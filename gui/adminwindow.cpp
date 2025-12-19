@@ -2770,7 +2770,7 @@ void AdminWindow::applyModernStyles()
             margin: 5px;
         }
     )");
-
+//
     // Style pagination buttons - Đảm bảo màu chữ rõ ràng
     QString paginationStyle = R"(
         QPushButton {
