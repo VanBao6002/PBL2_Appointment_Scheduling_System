@@ -1662,20 +1662,6 @@ void AdminWindow::on_btnAddAppointment_clicked()
     if (addDialog.exec() == QDialog::Accepted) {
         try {
             Appointment newAppt = addDialog.getAppointmentData();
-            bool doctorExists = true;
-            bool patientExists = true;
-            try {
-                DoctorManager::getInstance().getDoctorByID(newAppt.getDoctorID());
-            } catch (...) { doctorExists = false; }
-
-            try {
-                PatientManager::getInstance().getPatientByID(newAppt.getPatientID());
-            } catch (...) { patientExists = false; }
-
-            if (!doctorExists || !patientExists) {
-                QMessageBox::warning(this, "Lỗi", "ID Bác sĩ hoặc Bệnh nhân không tồn tại!");
-                return;
-            }
 
             AppointmentManager::getInstance().addAppointment(newAppt);
 
