@@ -211,76 +211,24 @@
         "CCCD": "100000000005",
         "ID": 5,
         "birthday": {
-            "day": 5,
-            "month": 5,
-            "year": 1984
+            "day": 20,
+            "month": 8,
+            "year": 1999
         },
         "description": "",
         "doctorStatus": "Active",
-        "email": "doctor5@gmail.com",
-        "gender": "M",
-        "name": "Doctor Five",
+        "email": "doctor20@gmail.com",
+        "gender": "F",
+        "name": "Doctor Twenty",
         "patientIDs": [],
-        "phoneNumber": "0900000005",
+        "phoneNumber": "0900000020",
         "room": "",
-        "specialization": "Nhi khoa",
+        "specialization": "Nội tiết",
         "workingSchedule": {
             "Thứ 6": [
                 {
                     "EndTime": "20:00",
                     "StartTime": "13:00"
-                }
-            ]
-        }
-    },
-    {
-        "CCCD": "100000000018",
-        "ID": 18,
-        "birthday": {
-            "day": 18,
-            "month": 6,
-            "year": 1997
-        },
-        "description": "",
-        "doctorStatus": "Active",
-        "email": "doctor18@gmail.com",
-        "gender": "F",
-        "name": "Doctor Eighteen",
-        "patientIDs": [],
-        "phoneNumber": "0900000018",
-        "room": "",
-        "specialization": "Nội tiết",
-        "workingSchedule": {
-            "Thứ 4": [
-                {
-                    "EndTime": "18:00",
-                    "StartTime": "11:00"
-                }
-            ]
-        }
-    },
-    {
-        "CCCD": "100000000006",
-        "ID": 6,
-        "birthday": {
-            "day": 6,
-            "month": 6,
-            "year": 1985
-        },
-        "description": "",
-        "doctorStatus": "Active",
-        "email": "doctor6@gmail.com",
-        "gender": "F",
-        "name": "Doctor Six",
-        "patientIDs": [],
-        "phoneNumber": "0900000006",
-        "room": "",
-        "specialization": "Tim mạch",
-        "workingSchedule": {
-            "Thứ 2": [
-                {
-                    "EndTime": "16:00",
-                    "StartTime": "09:00"
                 }
             ]
         }
@@ -312,74 +260,22 @@
         }
     },
     {
-        "CCCD": "100000000020",
-        "ID": 20,
+        "CCCD": "100000000006",
+        "ID": 6,
         "birthday": {
-            "day": 20,
-            "month": 8,
-            "year": 1999
+            "day": 6,
+            "month": 6,
+            "year": 1985
         },
         "description": "",
         "doctorStatus": "Active",
-        "email": "doctor20@gmail.com",
+        "email": "doctor6@gmail.com",
         "gender": "F",
-        "name": "Doctor Twenty",
+        "name": "Doctor Six",
         "patientIDs": [],
-        "phoneNumber": "0900000020",
-        "room": "",
-        "specialization": "Nội tiết",
-        "workingSchedule": {
-            "Thứ 6": [
-                {
-                    "EndTime": "20:00",
-                    "StartTime": "13:00"
-                }
-            ]
-        }
-    },
-    {
-        "CCCD": "100000000007",
-        "ID": 7,
-        "birthday": {
-            "day": 7,
-            "month": 7,
-            "year": 1986
-        },
-        "description": "",
-        "doctorStatus": "OnLeave",
-        "email": "doctor7@gmail.com",
-        "gender": "M",
-        "name": "Doctor Seven",
-        "patientIDs": [],
-        "phoneNumber": "0900000007",
+        "phoneNumber": "0900000006",
         "room": "",
         "specialization": "Tim mạch",
-        "workingSchedule": {
-            "Thứ 3": [
-                {
-                    "EndTime": "17:00",
-                    "StartTime": "10:00"
-                }
-            ]
-        }
-    },
-    {
-        "CCCD": "100000000001",
-        "ID": 1,
-        "birthday": {
-            "day": 1,
-            "month": 1,
-            "year": 1980
-        },
-        "description": "",
-        "doctorStatus": "Active",
-        "email": "doctor1@gmail.com",
-        "gender": "M",
-        "name": "Doctor One",
-        "patientIDs": [],
-        "phoneNumber": "0900000001",
-        "room": "",
-        "specialization": "Nhi khoa",
         "workingSchedule": {
             "Thứ 2": [
                 {
@@ -390,48 +286,74 @@
         }
     },
     {
-        "CCCD": "100000000014",
-        "ID": 14,
+        "CCCD": "100000000018",
+        "ID": 18,
         "birthday": {
-            "day": 14,
-            "month": 2,
-            "year": 1993
+            "day": 18,
+            "month": 6,
+            "year": 1997
         },
         "description": "",
         "doctorStatus": "Active",
-        "email": "doctor14@gmail.com",
+        "email": "doctor18@gmail.com",
         "gender": "F",
-        "name": "Doctor Fourteen",
+        "name": "Doctor Eighteen",
         "patientIDs": [],
-        "phoneNumber": "0900000014",
+        "phoneNumber": "0900000018",
         "room": "",
-        "specialization": "Da liễu",
+        "specialization": "Nội tiết",
         "workingSchedule": {
-            "Thứ 5": [
+            "Thứ 4": [
                 {
-                    "EndTime": "19:00",
-                    "StartTime": "12:00"
+                    "EndTime": "18:00",
+                    "StartTime": "11:00"
                 }
             ]
         }
     },
     {
-        "CCCD": "100000000002",
-        "ID": 2,
+        "CCCD": "100000000005",
+        "ID": 5,
         "birthday": {
-            "day": 2,
-            "month": 2,
-            "year": 1981
+            "day": 5,
+            "month": 5,
+            "year": 1984
         },
         "description": "",
         "doctorStatus": "Active",
-        "email": "doctor2@gmail.com",
-        "gender": "F",
-        "name": "Doctor Two",
+        "email": "doctor5@gmail.com",
+        "gender": "M",
+        "name": "Doctor Five",
         "patientIDs": [],
-        "phoneNumber": "0900000002",
+        "phoneNumber": "0900000005",
         "room": "",
         "specialization": "Nhi khoa",
+        "workingSchedule": {
+            "Thứ 6": [
+                {
+                    "EndTime": "20:00",
+                    "StartTime": "13:00"
+                }
+            ]
+        }
+    },
+    {
+        "CCCD": "100000000017",
+        "ID": 17,
+        "birthday": {
+            "day": 17,
+            "month": 5,
+            "year": 1996
+        },
+        "description": "",
+        "doctorStatus": "OnLeave",
+        "email": "doctor17@gmail.com",
+        "gender": "M",
+        "name": "Doctor Seventeen",
+        "patientIDs": [],
+        "phoneNumber": "0900000017",
+        "room": "",
+        "specialization": "Nội tiết",
         "workingSchedule": {
             "Thứ 3": [
                 {
@@ -442,27 +364,53 @@
         }
     },
     {
-        "CCCD": "100000000015",
-        "ID": 15,
+        "CCCD": "100000000004",
+        "ID": 4,
         "birthday": {
-            "day": 15,
-            "month": 3,
-            "year": 1994
+            "day": 4,
+            "month": 4,
+            "year": 1983
         },
         "description": "",
         "doctorStatus": "Active",
-        "email": "doctor15@gmail.com",
-        "gender": "M",
-        "name": "Doctor Fifteen",
+        "email": "doctor4@gmail.com",
+        "gender": "F",
+        "name": "Doctor Four",
         "patientIDs": [],
-        "phoneNumber": "0900000015",
+        "phoneNumber": "0900000004",
         "room": "",
-        "specialization": "Da liễu",
+        "specialization": "Nhi khoa",
         "workingSchedule": {
-            "Thứ 6": [
+            "Thứ 5": [
                 {
-                    "EndTime": "20:00",
-                    "StartTime": "13:00"
+                    "EndTime": "19:00",
+                    "StartTime": "12:00"
+                }
+            ]
+        }
+    },
+    {
+        "CCCD": "100000000016",
+        "ID": 16,
+        "birthday": {
+            "day": 16,
+            "month": 4,
+            "year": 1995
+        },
+        "description": "",
+        "doctorStatus": "Active",
+        "email": "doctor16@gmail.com",
+        "gender": "F",
+        "name": "Doctor Sixteen",
+        "patientIDs": [],
+        "phoneNumber": "0900000016",
+        "room": "",
+        "specialization": "Nội tiết",
+        "workingSchedule": {
+            "Thứ 2": [
+                {
+                    "EndTime": "16:00",
+                    "StartTime": "09:00"
                 }
             ]
         }
@@ -494,27 +442,79 @@
         }
     },
     {
-        "CCCD": "100000000016",
-        "ID": 16,
+        "CCCD": "100000000015",
+        "ID": 15,
         "birthday": {
-            "day": 16,
-            "month": 4,
-            "year": 1995
+            "day": 15,
+            "month": 3,
+            "year": 1994
         },
         "description": "",
         "doctorStatus": "Active",
-        "email": "doctor16@gmail.com",
-        "gender": "F",
-        "name": "Doctor Sixteen",
+        "email": "doctor15@gmail.com",
+        "gender": "M",
+        "name": "Doctor Fifteen",
         "patientIDs": [],
-        "phoneNumber": "0900000016",
+        "phoneNumber": "0900000015",
         "room": "",
-        "specialization": "Nội tiết",
+        "specialization": "Da liễu",
         "workingSchedule": {
-            "Thứ 2": [
+            "Thứ 6": [
                 {
-                    "EndTime": "16:00",
-                    "StartTime": "09:00"
+                    "EndTime": "20:00",
+                    "StartTime": "13:00"
+                }
+            ]
+        }
+    },
+    {
+        "CCCD": "100000000002",
+        "ID": 2,
+        "birthday": {
+            "day": 2,
+            "month": 2,
+            "year": 1981
+        },
+        "description": "",
+        "doctorStatus": "Active",
+        "email": "doctor2@gmail.com",
+        "gender": "F",
+        "name": "Doctor Two",
+        "patientIDs": [],
+        "phoneNumber": "0900000002",
+        "room": "",
+        "specialization": "Nhi khoa",
+        "workingSchedule": {
+            "Thứ 3": [
+                {
+                    "EndTime": "17:00",
+                    "StartTime": "10:00"
+                }
+            ]
+        }
+    },
+    {
+        "CCCD": "100000000014",
+        "ID": 14,
+        "birthday": {
+            "day": 14,
+            "month": 2,
+            "year": 1993
+        },
+        "description": "",
+        "doctorStatus": "Active",
+        "email": "doctor14@gmail.com",
+        "gender": "F",
+        "name": "Doctor Fourteen",
+        "patientIDs": [],
+        "phoneNumber": "0900000014",
+        "room": "",
+        "specialization": "Da liễu",
+        "workingSchedule": {
+            "Thứ 5": [
+                {
+                    "EndTime": "19:00",
+                    "StartTime": "12:00"
                 }
             ]
         }
