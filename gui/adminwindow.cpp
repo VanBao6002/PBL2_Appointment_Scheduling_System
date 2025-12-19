@@ -16,6 +16,7 @@
 #include "medicalRecordManager.h"
 #include "userManager.h"
 
+//
 AdminWindow::AdminWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::AdminWindow)
