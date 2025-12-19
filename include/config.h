@@ -15,5 +15,5 @@ namespace Config {
     constexpr const char* MEDICINES_PATH = "data/medicines.json";
     constexpr const char* PRESCRIPTION_PATH = "data/prescriptions.json";
     constexpr const char* MEDICINE_PRICE_PATH = "data/medicine_prices.json";
-
+    constexpr const int   MAGIC_MARKED_AVAILABLE_WORKING_DAYS_NUMBER = 30;
 }

@@ -41,6 +41,91 @@ struct WorkingSchedule {
             schedule[day] = times;
         }
     }
+
+    // Returns a vector of all days in the schedule
+    std::vector<std::string> getDays() const {
+        std::vector<std::string> days;
+        for (const auto& [day, _] : schedule) {
+            days.push_back(day);
+        }
+        return days;
+    }
+
+    std::vector<std::tuple<std::string, std::string, bool>> getIntervalsWithBooking(
+        const std::string& day,
+        const std::vector<std::pair<std::string, std::string>>& bookedSlots
+    ) const {
+        std::vector<std::tuple<std::string, std::string, bool>> intervals;
+        auto it = schedule.find(day);
+        if (it == schedule.end()) return intervals;
+
+        for (const auto& [start, end] : it->second) {
+            int startHour = std::stoi(start.substr(0,2));
+            int endHour = std::stoi(end.substr(0,2));
+            for (int h = startHour; h < endHour; ++h) {
+                std::string intervalStart = (h < 10 ? "0" : "") + std::to_string(h) + ":00";
+                std::string intervalEnd = (h+1 < 10 ? "0" : "") + std::to_string(h+1) + ":00";
+                bool isBooked = false;
+                for (const auto& [bookedStart, bookedEnd] : bookedSlots) {
+                    if (!(bookedEnd <= intervalStart || bookedStart >= intervalEnd)) {
+                        isBooked = true;
+                        break;
+                    }
+                }
+                intervals.emplace_back(intervalStart, intervalEnd, isBooked);
+            }
+        }
+        return intervals;
+    }
+
+    std::vector<std::pair<std::string, std::string>> getAvailableTimeSlotsForDay(const std::string& day, const std::vector<std::pair<std::string, std::string>>& bookedSlots) const {
+        std::vector<std::pair<std::string, std::string>> availableSlots;
+        auto it = schedule.find(day);
+        if (it == schedule.end()) return availableSlots;
+        // Sort booked slots by start time
+        std::vector<std::pair<std::string, std::string>> sortedBooked = bookedSlots;
+        std::sort(sortedBooked.begin(), sortedBooked.end());
+
+        for (const auto& [schedStart, schedEnd] : it->second) {
+            std::string currentStart = schedStart;
+            for (const auto& [bookedStart, bookedEnd] : sortedBooked) {
+                if (bookedStart > currentStart && bookedStart < schedEnd) {
+                    availableSlots.emplace_back(currentStart, bookedStart);
+                    currentStart = bookedEnd;
+                } else if (bookedStart <= currentStart && bookedEnd > currentStart) {
+                    currentStart = bookedEnd;
+                }
+            }
+            if (currentStart < schedEnd) {
+                availableSlots.emplace_back(currentStart, schedEnd);
+            }
+        }
+        return availableSlots;
+    }
+
+    std::vector<std::pair<std::string, std::string>> getBookedIntervals(
+        const std::string& day,
+        const std::vector<std::pair<std::string, std::string>>& bookedSlots
+    ) const {
+        std::vector<std::pair<std::string, std::string>> bookedIntervals;
+        auto it = schedule.find(day);
+        if (it == schedule.end()) return bookedIntervals;
+
+        for (const auto& [schedStart, schedEnd] : it->second) {
+            for (const auto& [bookedStart, bookedEnd] : bookedSlots) {
+                // Check for overlap
+                if (!(bookedEnd <= schedStart || bookedStart >= schedEnd)) {
+                    // Compute the overlapping interval
+                    std::string overlapStart = std::max(schedStart, bookedStart);
+                    std::string overlapEnd = std::min(schedEnd, bookedEnd);
+                    if (overlapStart < overlapEnd) {
+                        bookedIntervals.emplace_back(overlapStart, overlapEnd);
+                    }
+                }
+            }
+        }
+        return bookedIntervals;
+    }
 };
 
 class Doctor : public Person{
