@@ -10,11 +10,6 @@
 #include <cmath>
 #include <algorithm>
 #include <QDir>
-#include "patientdetaildialog.h"
-#include "doctordetaildialog.h"
-#include "userdetaildialog.h"
-#include "medicalrecorddetaildialog.h"
-#include "person.h"
 #include "appointmentManager.h"
 #include "patientManager.h"
 #include "doctorManager.h"
@@ -27,8 +22,10 @@ AdminWindow::AdminWindow(QWidget *parent)
     , ui(new Ui::AdminWindow)
 {
     ui->setupUi(this);
-    applyModernStyles();
     this->showFullScreen();
+
+    setupPatientTable();
+    setupDoctorTable();
 
     QDir dir("data");
     if (!dir.exists()) {
@@ -99,10 +96,13 @@ AdminWindow::AdminWindow(QWidget *parent)
     ui->btnSortZAMedicalRecord->setText("🔽 Z → A");
 
     //User
-    connect(ui->btnPrevPage_User, &QPushButton::clicked, this, &AdminWindow::on_btnPrevPage_User_clicked);
-    connect(ui->btnNextPage_User, &QPushButton::clicked, this, &AdminWindow::on_btnNextPage_User_clicked);
     connect(ui->btnSortAZUser, &QPushButton::clicked, this, &AdminWindow::on_btnSortAZUser_clicked);
     connect(ui->btnSortZAUser, &QPushButton::clicked, this, &AdminWindow::on_btnSortZAUser_clicked);
+    connect(ui->pushButton_5, &QPushButton::clicked, this, &AdminWindow::on_btnPrevPage_User_clicked);
+    connect(ui->pushButton_4, &QPushButton::clicked, this, &AdminWindow::on_btnNextPage_User_clicked);
+    connect(ui->pushButton_3, &QPushButton::clicked, this, &AdminWindow::on_btnPage_User_1_clicked);
+    connect(ui->pushButton_2, &QPushButton::clicked, this, &AdminWindow::on_btnPage_User_2_clicked);
+    connect(ui->pushButton, &QPushButton::clicked, this, &AdminWindow::on_btnPage_User_3_clicked);
 
     ui->btnSortAZUser->setText("🔼 A → Z");
     ui->btnSortZAUser->setText("🔽 Z → A");
@@ -235,22 +235,17 @@ void AdminWindow::loadPatientData(int page, const QString& searchText) {
         birthdayItem->setTextAlignment(Qt::AlignCenter);
         ui->tablePatient->setItem(row, 3, birthdayItem);
 
-        // ✅ Cột 4: CCCD (căn giữa)
-        QTableWidgetItem* CCCDItem = new QTableWidgetItem(QString::fromStdString(patient.getCCCD()));
-        CCCDItem->setTextAlignment(Qt::AlignCenter);
-        ui->tablePatient->setItem(row, 4, CCCDItem);
+        // ✅ Cột 4: Nhóm máu (căn giữa)
+        QTableWidgetItem* bloodTypeItem = new QTableWidgetItem(QString::fromStdString(patient.getBloodType()));
+        bloodTypeItem->setTextAlignment(Qt::AlignCenter);
+        ui->tablePatient->setItem(row, 4, bloodTypeItem);
 
         // ✅ Cột 5: SĐT (căn giữa)
         QTableWidgetItem* phoneNumberItem = new QTableWidgetItem(QString::fromStdString(patient.getPhoneNumber()));
         phoneNumberItem->setTextAlignment(Qt::AlignCenter);
         ui->tablePatient->setItem(row, 5, phoneNumberItem);
 
-        // ✅ Cột 6: Email (căn trái)
-        QTableWidgetItem* emailItem = new QTableWidgetItem(QString::fromStdString(patient.getEmail()));
-        emailItem->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-        ui->tablePatient->setItem(row, 6, emailItem);
-
-        // ✅ Cột 7: Tuỳ chọn - Thêm 2 nút "Xem chi tiết" và "Xoá"
+        // ✅ Cột 6: Tuỳ chọn - Thêm 2 nút "Xem chi tiết" và "Xoá"
         QWidget* actionWidget = new QWidget();
         QHBoxLayout* layout = new QHBoxLayout(actionWidget);
         layout->setContentsMargins(5, 2, 5, 2);
@@ -261,17 +256,14 @@ void AdminWindow::loadPatientData(int page, const QString& searchText) {
         btnViewDetail->setProperty("patientID", patient.getID());
         btnViewDetail->setStyleSheet(R"(
             QPushButton {
-                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                    stop:0 #2196F3, stop:1 #1976D2);
+                background-color: #2196F3;
                 color: white;
                 border: none;
-                padding: 8px 15px;
-                border-radius: 6px;
-                font-weight: 600;
+                padding: 5px 10px;
+                border-radius: 3px;
             }
             QPushButton:hover {
-                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                    stop:0 #1976D2, stop:1 #1565C0);
+                background-color: #1976D2;
             }
         )");
         connect(btnViewDetail, &QPushButton::clicked, this, &AdminWindow::on_btnViewPatientDetail_clicked);
@@ -281,17 +273,14 @@ void AdminWindow::loadPatientData(int page, const QString& searchText) {
         btnDelete->setProperty("patientID", patient.getID());
         btnDelete->setStyleSheet(R"(
             QPushButton {
-                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                    stop:0 #f44336, stop:1 #d32f2f);
+                background-color: #f44336;
                 color: white;
                 border: none;
-                padding: 8px 15px;
-                border-radius: 6px;
-                font-weight: 600;
+                padding: 5px 10px;
+                border-radius: 3px;
             }
             QPushButton:hover {
-                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                    stop:0 #d32f2f, stop:1 #c62828);
+                background-color: #d32f2f;
             }
         )");
         connect(btnDelete, &QPushButton::clicked, this, &AdminWindow::on_btnRemovePatient_clicked);
@@ -300,7 +289,7 @@ void AdminWindow::loadPatientData(int page, const QString& searchText) {
         layout->addWidget(btnDelete);
         actionWidget->setLayout(layout);
 
-        ui->tablePatient->setCellWidget(row, 7, actionWidget);
+        ui->tablePatient->setCellWidget(row, 6, actionWidget);
     }
 
     updatePatientPaginationUI();
@@ -397,17 +386,17 @@ void AdminWindow::loadDoctorData(int page, const QString& searchText) {
         ui->tableDoctor->insertRow(ui->tableDoctor->rowCount());
         int row = ui->tableDoctor->rowCount() - 1;
 
-        // Cột 0: ID (căn giữa)
+        // ✅ Cột 0: ID (căn giữa)
         QTableWidgetItem* idItem = new QTableWidgetItem(QString::number(doctor.getID()));
         idItem->setTextAlignment(Qt::AlignCenter);
         ui->tableDoctor->setItem(row, 0, idItem);
 
-        // Cột 1: Họ tên (căn trái)
+        // ✅ Cột 1: Họ tên (căn trái)
         QTableWidgetItem* nameItem = new QTableWidgetItem(QString::fromStdString(doctor.getName()));
         nameItem->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
         ui->tableDoctor->setItem(row, 1, nameItem);
 
-        // Cột 2: Giới tính (hiển thị "Nam/Nữ/Khác")
+        // ✅ Cột 2: Giới tính (hiển thị "Nam/Nữ/Khác")
         QString genderDisplay;
         char gender = doctor.getGender();
         if (gender == 'M') genderDisplay = "Nam";
@@ -418,40 +407,35 @@ void AdminWindow::loadDoctorData(int page, const QString& searchText) {
         genderItem->setTextAlignment(Qt::AlignCenter);
         ui->tableDoctor->setItem(row, 2, genderItem);
 
-        // Cột 3: Ngày sinh (căn giữa)
+        // ✅ Cột 3: Ngày sinh (căn giữa)
         QTableWidgetItem* birthdayItem = new QTableWidgetItem(QString::fromStdString(doctor.getBirthday().toString()));
         birthdayItem->setTextAlignment(Qt::AlignCenter);
         ui->tableDoctor->setItem(row, 3, birthdayItem);
 
-        // Cột 4: CCCD
-        QTableWidgetItem* CCCDItem = new QTableWidgetItem(QString::fromStdString(doctor.getCCCD()));
-        CCCDItem->setTextAlignment(Qt::AlignCenter);
-        ui->tableDoctor->setItem(row, 4, CCCDItem);
-
-        // Cột 5: Chuyên khoa (căn trái)
+        // ✅ Cột 4: Chuyên khoa (căn trái)
         QTableWidgetItem* specializationItem = new QTableWidgetItem(QString::fromStdString(doctor.getSpecialization()));
         specializationItem->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-        ui->tableDoctor->setItem(row, 5, specializationItem);
+        ui->tableDoctor->setItem(row, 4, specializationItem);
 
-        // Cột 6: Email (căn trái)
+        // ✅ Cột 5: Email (căn trái)
         QTableWidgetItem* emailItem = new QTableWidgetItem(QString::fromStdString(doctor.getEmail()));
         emailItem->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-        ui->tableDoctor->setItem(row, 6, emailItem);
+        ui->tableDoctor->setItem(row, 5, emailItem);
 
-        // Cột 7: SĐT (căn giữa)
+        // ✅ Cột 6: SĐT (căn giữa)
         QString phoneDisplay = QString::fromStdString(doctor.getPhoneNumber());
         if (phoneDisplay.isEmpty()) {
             phoneDisplay = "None";
         }
         QTableWidgetItem* phoneNumberItem = new QTableWidgetItem(phoneDisplay);
         phoneNumberItem->setTextAlignment(Qt::AlignCenter);
-        ui->tableDoctor->setItem(row, 7, phoneNumberItem);
+        ui->tableDoctor->setItem(row, 6, phoneNumberItem);
 
-        // Cột 8: Trạng thái (căn giữa)
+        // ✅ Cột 7: Trạng thái (căn giữa)
         QTableWidgetItem* statusItem = new QTableWidgetItem(QString::fromStdString(Doctor::statusToString(doctor.getStatus())));
         statusItem->setTextAlignment(Qt::AlignCenter);
 
-        // Tô màu theo trạng thái
+        // ✅ Tô màu theo trạng thái
         if (doctor.getStatus() == Doctor::Status::Active) {
             statusItem->setBackground(QBrush(QColor(76, 175, 80, 50)));
         } else if (doctor.getStatus() == Doctor::Status::OnLeave) {
@@ -460,9 +444,9 @@ void AdminWindow::loadDoctorData(int page, const QString& searchText) {
             statusItem->setBackground(QBrush(QColor(158, 158, 158, 50)));
         }
 
-        ui->tableDoctor->setItem(row, 8, statusItem);
+        ui->tableDoctor->setItem(row, 7, statusItem);
 
-        // Cột 9: Tuỳ chọn - Thêm 2 nút "Xem chi tiết" và "Xoá"
+        // ✅ Cột 8: Tuỳ chọn - Thêm 2 nút "Xem chi tiết" và "Xoá"
         QWidget* actionWidget = new QWidget();
         QHBoxLayout* layout = new QHBoxLayout(actionWidget);
         layout->setContentsMargins(5, 2, 5, 2);
@@ -473,17 +457,14 @@ void AdminWindow::loadDoctorData(int page, const QString& searchText) {
         btnViewDetail->setProperty("doctorID", doctor.getID());
         btnViewDetail->setStyleSheet(R"(
             QPushButton {
-                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                    stop:0 #2196F3, stop:1 #1976D2);
+                background-color: #2196F3;
                 color: white;
                 border: none;
-                padding: 8px 15px;
-                border-radius: 6px;
-                font-weight: 600;
+                padding: 5px 10px;
+                border-radius: 3px;
             }
             QPushButton:hover {
-                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                    stop:0 #1976D2, stop:1 #1565C0);
+                background-color: #1976D2;
             }
         )");
         connect(btnViewDetail, &QPushButton::clicked, this, &AdminWindow::on_btnViewDoctorDetail_clicked);
@@ -493,17 +474,14 @@ void AdminWindow::loadDoctorData(int page, const QString& searchText) {
         btnDelete->setProperty("doctorID", doctor.getID());
         btnDelete->setStyleSheet(R"(
             QPushButton {
-                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                    stop:0 #f44336, stop:1 #d32f2f);
+                background-color: #f44336;
                 color: white;
                 border: none;
-                padding: 8px 15px;
-                border-radius: 6px;
-                font-weight: 600;
+                padding: 5px 10px;
+                border-radius: 3px;
             }
             QPushButton:hover {
-                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                    stop:0 #d32f2f, stop:1 #c62828);
+                background-color: #d32f2f;
             }
         )");
         connect(btnDelete, &QPushButton::clicked, this, &AdminWindow::on_btnRemoveDoctor_clicked);
@@ -512,11 +490,12 @@ void AdminWindow::loadDoctorData(int page, const QString& searchText) {
         layout->addWidget(btnDelete);
         actionWidget->setLayout(layout);
 
-        ui->tableDoctor->setCellWidget(row, 9, actionWidget);
+        ui->tableDoctor->setCellWidget(row, 8, actionWidget);
     }
-        updateDoctorPaginationUI();
-}
 
+    // 6. Cập nhật UI phân trang
+    updateDoctorPaginationUI();
+}
 
 void AdminWindow::loadMedicalRecordData(int page, const QString& searchText) {
     qDebug() << "Loading medical record data for page" << page << "with search text:" << searchText;
@@ -674,17 +653,14 @@ void AdminWindow::loadMedicalRecordData(int page, const QString& searchText) {
         btnViewDetail->setProperty("recordID", record.getID());
         btnViewDetail->setStyleSheet(R"(
             QPushButton {
-                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                    stop:0 #2196F3, stop:1 #1976D2);
+                background-color: #2196F3;
                 color: white;
                 border: none;
-                padding: 8px 15px;
-                border-radius: 6px;
-                font-weight: 600;
+                padding: 5px 10px;
+                border-radius: 3px;
             }
             QPushButton:hover {
-                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                    stop:0 #1976D2, stop:1 #1565C0);
+                background-color: #1976D2;
             }
         )");
         connect(btnViewDetail, &QPushButton::clicked, this, &AdminWindow::on_btnViewMedicalRecordDetail_clicked);
@@ -693,17 +669,14 @@ void AdminWindow::loadMedicalRecordData(int page, const QString& searchText) {
         btnDelete->setProperty("recordID", record.getID());
         btnDelete->setStyleSheet(R"(
             QPushButton {
-                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                    stop:0 #f44336, stop:1 #d32f2f);
+                background-color: #f44336;
                 color: white;
                 border: none;
-                padding: 8px 15px;
-                border-radius: 6px;
-                font-weight: 600;
+                padding: 5px 10px;
+                border-radius: 3px;
             }
             QPushButton:hover {
-                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                    stop:0 #d32f2f, stop:1 #c62828);
+                background-color: #d32f2f;
             }
         )");
         connect(btnDelete, &QPushButton::clicked, this, &AdminWindow::on_btnRemoveMedicalRecord_clicked);
@@ -721,13 +694,10 @@ void AdminWindow::loadMedicalRecordData(int page, const QString& searchText) {
 void AdminWindow::loadAppointmentData(int page, const QString& searchText)
 {
     qDebug() << "Loading appointment data for page" << page << "with search text:" << searchText;
-
-    // Lấy dữ liệu từ Singleton
-    const auto& allAppointments = AppointmentManager::getInstance().getAllAppointmentsAsVector();
+    std::vector<Appointment> allAppointments = AppointmentManager::getInstance().getAllAppointmentsAsVector();
     std::vector<Appointment> filteredAppointments;
 
     for (const auto& appt : allAppointments) {
-        // Lấy tên BN/BS từ Singleton
         QString patientName = "N/A";
         try {
             patientName = QString::fromStdString(PatientManager::getInstance().getPatientByID(appt.getPatientID()).getName());
@@ -745,7 +715,6 @@ void AdminWindow::loadAppointmentData(int page, const QString& searchText)
                     << doctorName
                     << QString::fromStdString(appt.getDate().toString())
                     << QString::fromStdString(appt.getStartTime())
-                    << QString::fromStdString(appt.getEndTime())                
                     << QString::fromStdString(Appointment::statusToString(appt.getStatus()));
 
         bool match = false;
@@ -773,8 +742,6 @@ void AdminWindow::loadAppointmentData(int page, const QString& searchText)
     if (page < 1) page = 1;
     if (page > totalAppointmentPages) page = totalAppointmentPages;
     currentAppointmentPage = page;
-
-    updateAppointmentPaginationUI();
 
     // Đổ dữ liệu vào bảng
     ui->tableAppointment->setRowCount(0);
@@ -890,105 +857,67 @@ void AdminWindow::loadUserData(int page, const QString& searchText) {
     ui->tableUser->setRowCount(0);
     int startIdx = (currentUserPage - 1) * itemsPerPage;
     int endIdx = qMin(startIdx + itemsPerPage, totalItems);
-    
+
     for (int i = startIdx; i < endIdx; ++i) {
         const User& user = filteredUsers.at(i);
         ui->tableUser->insertRow(ui->tableUser->rowCount());
         int row = ui->tableUser->rowCount() - 1;
 
-        // Cột 0: ID
+        qDebug() << "[USER DEBUG] ID:" << user.getID()
+                 << "Username:" << QString::fromStdString(user.getUsername())
+                 << "PlainPassword:" << QString::fromStdString(user.getPlainPassword())
+                 << "PasswordHash:" << QString::fromStdString(user.getPassword());
+
         QTableWidgetItem* idItem = new QTableWidgetItem(QString::number(user.getID()));
         idItem->setTextAlignment(Qt::AlignCenter);
         ui->tableUser->setItem(row, 0, idItem);
 
-        // Cột 1: Vai trò
         QTableWidgetItem* roleItem = new QTableWidgetItem(QString::fromStdString(User::roleToString(user.getRole())));
         roleItem->setTextAlignment(Qt::AlignCenter);
+
+        // Tô màu theo vai trò
         if (user.getRole() == User::Role::ADMIN) {
-            roleItem->setBackground(QBrush(QColor(255, 87, 34, 50)));
+            roleItem->setBackground(QBrush(QColor(255, 87, 34, 50))); // Cam
+
         } else if (user.getRole() == User::Role::ASSISTANT) {
-            roleItem->setBackground(QBrush(QColor(76, 175, 80, 50)));
+            roleItem->setBackground(QBrush(QColor(76, 175, 80, 50))); // Xanh lá
         }
+
         ui->tableUser->setItem(row, 1, roleItem);
 
-        // Cột 2: Username
         QTableWidgetItem* usernameItem = new QTableWidgetItem(QString::fromStdString(user.getUsername()));
         usernameItem->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
         ui->tableUser->setItem(row, 2, usernameItem);
 
-        // ✅ Cột 3: Họ và tên
-        QString fullName = QString::fromStdString(user.getFullName());
-        if (fullName.isEmpty()) fullName = "N/A";
-        QTableWidgetItem* fullNameItem = new QTableWidgetItem(fullName);
-        fullNameItem->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-        ui->tableUser->setItem(row, 3, fullNameItem);
-
-        // ✅ Cột 4: CCCD
-        QString cccd = QString::fromStdString(user.getCCCD());
-        if (cccd.isEmpty()) cccd = "N/A";
-        QTableWidgetItem* cccdItem = new QTableWidgetItem(cccd);
-        cccdItem->setTextAlignment(Qt::AlignCenter);
-        ui->tableUser->setItem(row, 4, cccdItem);
-
-        // Cột 5: Mật khẩu (ẨN)
-        QString plainPassword = QString::fromStdString(user.getPlainPassword());
-        QString maskedPassword = QString("●").repeated(qMin(plainPassword.length(), 12));
-
-        QTableWidgetItem* passwordItem = new QTableWidgetItem(maskedPassword);
+        QTableWidgetItem* passwordItem = new QTableWidgetItem(QString::fromStdString(user.getPlainPassword()));
         passwordItem->setTextAlignment(Qt::AlignCenter);
-        passwordItem->setForeground(QBrush(QColor(120, 120, 120)));
-        passwordItem->setToolTip(QString("Độ dài: %1 ký tự").arg(plainPassword.length()));
-        ui->tableUser->setItem(row, 5, passwordItem);
+        ui->tableUser->setItem(row, 3, passwordItem);
 
-        // Cột 6: Tùy chọn
         QWidget* actionWidget = new QWidget();
         QHBoxLayout* layout = new QHBoxLayout(actionWidget);
         layout->setContentsMargins(5, 2, 5, 2);
         layout->setSpacing(5);
 
-        QPushButton* btnViewDetail = new QPushButton("Xem chi tiết");
-        btnViewDetail->setProperty("userID", user.getID());
-        btnViewDetail->setStyleSheet(R"(
-            QPushButton {
-                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                    stop:0 #2196F3, stop:1 #1976D2);
-                color: white;
-                border: none;
-                padding: 8px 15px;
-                border-radius: 6px;
-                font-weight: 600;
-            }
-            QPushButton:hover {
-                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                    stop:0 #1976D2, stop:1 #1565C0);
-            }
-        )");
-        connect(btnViewDetail, &QPushButton::clicked, this, &AdminWindow::on_btnViewUserDetail_clicked);
-
-        QPushButton* btnDelete = new QPushButton("Xóa");
+        QPushButton* btnDelete = new QPushButton("Xoá");
         btnDelete->setProperty("userID", user.getID());
         btnDelete->setStyleSheet(R"(
             QPushButton {
-                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                    stop:0 #f44336, stop:1 #d32f2f);
+                background-color: #f44336;
                 color: white;
                 border: none;
-                padding: 8px 15px;
-                border-radius: 6px;
-                font-weight: 600;
+                padding: 5px 10px;
+                border-radius: 3px;
             }
             QPushButton:hover {
-                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                    stop:0 #d32f2f, stop:1 #c62828);
+                background-color: #d32f2f;
             }
         )");
         connect(btnDelete, &QPushButton::clicked, this, &AdminWindow::on_btnRemoveUser_clicked);
 
-        layout->addWidget(btnViewDetail);
         layout->addWidget(btnDelete);
         actionWidget->setLayout(layout);
 
-        ui->tableUser->setCellWidget(row, 6, actionWidget);
+        ui->tableUser->setCellWidget(row, 4, actionWidget);
     }
 
     updateUserPaginationUI();
@@ -996,39 +925,42 @@ void AdminWindow::loadUserData(int page, const QString& searchText) {
 
 void AdminWindow::setupPatientTable() {
     // ✅ Chỉ còn 7 cột (bỏ Email)
-    ui->tablePatient->setColumnCount(8);
+    ui->tablePatient->setColumnCount(7);
 
     // ✅ Đặt tên các cột (không có Email)
     QStringList headers;
     headers << "ID Bệnh nhân" << "Họ tên" << "Giới tính" << "Ngày sinh"
-            << "CCCD" << "SĐT" << "Email" << "Tuỳ chọn";
+            << "Nhóm máu" << "SĐT" << "Tuỳ chọn";
     ui->tablePatient->setHorizontalHeaderLabels(headers);
 
     QHeaderView* header = ui->tablePatient->horizontalHeader();
 
+    // Cột 0: ID (Fixed)
     header->setSectionResizeMode(0, QHeaderView::Fixed);
     ui->tablePatient->setColumnWidth(0, 100);
 
+    // Cột 1: Họ tên (Stretch)
     header->setSectionResizeMode(1, QHeaderView::Stretch);
-    ui->tablePatient->setColumnWidth(1, 100);
 
+    // Cột 2: Giới tính (Fixed)
     header->setSectionResizeMode(2, QHeaderView::Fixed);
     ui->tablePatient->setColumnWidth(2, 80);
 
+    // Cột 3: Ngày sinh (Fixed)
     header->setSectionResizeMode(3, QHeaderView::Fixed);
     ui->tablePatient->setColumnWidth(3, 120);
 
+    // Cột 4: Nhóm máu (Fixed)
     header->setSectionResizeMode(4, QHeaderView::Fixed);
     ui->tablePatient->setColumnWidth(4, 100);
 
+    // Cột 5: SĐT (Fixed)
     header->setSectionResizeMode(5, QHeaderView::Fixed);
-    ui->tablePatient->setColumnWidth(5, 100);
+    ui->tablePatient->setColumnWidth(5, 120);
 
+    // ✅ Cột 6: Tuỳ chọn (Fixed - đủ cho 2 button)
     header->setSectionResizeMode(6, QHeaderView::Fixed);
     ui->tablePatient->setColumnWidth(6, 200);
-
-    header->setSectionResizeMode(7, QHeaderView::Fixed);
-    ui->tablePatient->setColumnWidth(7, 200);
 
     // Các thiết lập khác...
     ui->tablePatient->verticalHeader()->setSectionResizeMode(QHeaderView::Fixed);
@@ -1044,12 +976,12 @@ void AdminWindow::setupPatientTable() {
 }
 
 void AdminWindow::setupDoctorTable() {
-    // ✅ Đặt 10 cột
-    ui->tableDoctor->setColumnCount(10);
+    // ✅ Đặt 9 cột (thêm cột Ngày sinh)
+    ui->tableDoctor->setColumnCount(9);
 
     // ✅ Đặt tên các cột
     QStringList headers;
-    headers << "ID Bác sĩ" << "Họ tên" << "Giới tính" << "Ngày sinh" << "CCCD"
+    headers << "ID Bác sĩ" << "Họ tên" << "Giới tính" << "Ngày sinh"
             << "Chuyên khoa" << "Email" << "SĐT" << "Trạng thái" << "Tuỳ chọn";
     ui->tableDoctor->setHorizontalHeaderLabels(headers);
 
@@ -1070,27 +1002,23 @@ void AdminWindow::setupDoctorTable() {
     header->setSectionResizeMode(3, QHeaderView::Fixed);
     ui->tableDoctor->setColumnWidth(3, 120);
 
-    // Cột 4: CCCD (Fixed)
-    header->setSectionResizeMode(4, QHeaderView::Fixed);
-    ui->tableDoctor->setColumnWidth(4, 100);
+    // Cột 4: Chuyên khoa (Stretch)
+    header->setSectionResizeMode(4, QHeaderView::Stretch);
 
-    // Cột 5: Chuyên khoa (Stretch)
+    // Cột 5: Email (Stretch)
     header->setSectionResizeMode(5, QHeaderView::Stretch);
 
-    // Cột 6: Email (Stretch)
-    header->setSectionResizeMode(6, QHeaderView::Stretch);
+    // Cột 6: SĐT (Fixed)
+    header->setSectionResizeMode(6, QHeaderView::Fixed);
+    ui->tableDoctor->setColumnWidth(6, 110);
 
-    // Cột 7: SĐT (Fixed)
+    // Cột 7: Trạng thái (Fixed)
     header->setSectionResizeMode(7, QHeaderView::Fixed);
-    ui->tableDoctor->setColumnWidth(7, 110);
+    ui->tableDoctor->setColumnWidth(7, 100);
 
-    // Cột 8: Trạng thái (Fixed)
+    // Cột 8: Tuỳ chọn (Fixed)
     header->setSectionResizeMode(8, QHeaderView::Fixed);
-    ui->tableDoctor->setColumnWidth(8, 100);
-
-    // Cột 9: Tuỳ chọn (Fixed)
-    header->setSectionResizeMode(9, QHeaderView::Fixed);
-    ui->tableDoctor->setColumnWidth(9, 200);
+    ui->tableDoctor->setColumnWidth(8, 200);
 
     // Các thiết lập khác
     ui->tableDoctor->verticalHeader()->setSectionResizeMode(QHeaderView::Fixed);
@@ -1102,7 +1030,7 @@ void AdminWindow::setupDoctorTable() {
     ui->tableDoctor->verticalHeader()->setVisible(false);
     header->setDefaultAlignment(Qt::AlignCenter);
 
-    qDebug() << "[TABLE SETUP] Doctor table configured with 10 columns including Action column";
+    qDebug() << "[TABLE SETUP] Doctor table configured with Birthday column";
 }
 
 void AdminWindow::setupMedicalRecordTable() {
@@ -1158,11 +1086,10 @@ void AdminWindow::setupMedicalRecordTable() {
 }
 
 void AdminWindow::setupUserTable() {
-    // ✅ Tăng từ 5 lên 7 cột
-    ui->tableUser->setColumnCount(7);
+    ui->tableUser->setColumnCount(5);
 
     QStringList headers;
-    headers << "ID" << "Vai trò" << "Tên người dùng" << "Họ và tên" << "CCCD" << "Mật khẩu" << "Tùy chọn";
+    headers << "ID" << "Vai trò" << "Tên người dùng" << "Mật khẩu" << "Tuỳ chọn";
     ui->tableUser->setHorizontalHeaderLabels(headers);
 
     QHeaderView* header = ui->tableUser->horizontalHeader();
@@ -1173,26 +1100,18 @@ void AdminWindow::setupUserTable() {
 
     // Cột 1: Vai trò (Fixed)
     header->setSectionResizeMode(1, QHeaderView::Fixed);
-    ui->tableUser->setColumnWidth(1, 120);
+    ui->tableUser->setColumnWidth(1, 150);
 
-    // Cột 2: Tên người dùng (Fixed)
-    header->setSectionResizeMode(2, QHeaderView::Fixed);
-    ui->tableUser->setColumnWidth(2, 150);
+    // Cột 2: Tên người dùng (Stretch)
+    header->setSectionResizeMode(2, QHeaderView::Stretch);
 
-    // ✅ Cột 3: Họ và tên (Stretch)
-    header->setSectionResizeMode(3, QHeaderView::Stretch);
+    // Cột 3: Mật khẩu (Fixed)
+    header->setSectionResizeMode(3, QHeaderView::Fixed);
+    ui->tableUser->setColumnWidth(3, 150);
 
-    // ✅ Cột 4: CCCD (Fixed)
+    // Cột 4: Tuỳ chọn (Fixed)
     header->setSectionResizeMode(4, QHeaderView::Fixed);
     ui->tableUser->setColumnWidth(4, 120);
-
-    // Cột 5: Mật khẩu (Fixed)
-    header->setSectionResizeMode(5, QHeaderView::Fixed);
-    ui->tableUser->setColumnWidth(5, 120);
-
-    // Cột 6: Tùy chọn (Fixed)
-    header->setSectionResizeMode(6, QHeaderView::Fixed);
-    ui->tableUser->setColumnWidth(6, 200);
 
     ui->tableUser->verticalHeader()->setSectionResizeMode(QHeaderView::Fixed);
     ui->tableUser->verticalHeader()->setDefaultSectionSize(75);
@@ -1203,85 +1122,12 @@ void AdminWindow::setupUserTable() {
     ui->tableUser->verticalHeader()->setVisible(false);
     header->setDefaultAlignment(Qt::AlignCenter);
 
-    qDebug() << "[TABLE SETUP] User table configured successfully with 7 columns";
-}
-
-void AdminWindow::updateAppointmentPaginationUI() {
-    ui->lblCurrentPage_Appointment->setText(QString("Trang %1/%2").arg(currentAppointmentPage).arg(totalAppointmentPages));
-
-    // Cập nhật trạng thái nút Prev/Next
-    ui->btnPrevPage_Appointment->setEnabled(currentAppointmentPage > 1);
-    ui->btnNextPage_Appointment->setEnabled(currentAppointmentPage < totalAppointmentPages);
-
-    // Cập nhật các nút số trang
-    int startPage, endPage;
-
-    if (totalAppointmentPages <= 3) {
-        startPage = 1;
-        endPage = totalAppointmentPages;
-    } else {
-        startPage = qMax(1, currentAppointmentPage - 1);
-        endPage = qMin(totalAppointmentPages, currentAppointmentPage + 1);
-
-        if (endPage - startPage < 2) {
-            if (currentAppointmentPage == 1) {
-                endPage = qMin(3, totalAppointmentPages);
-            } else if (currentAppointmentPage == totalAppointmentPages) {
-                startPage = qMax(1, totalAppointmentPages - 2);
-            }
-        }
-    }
-
-    // Nút 1
-    if (startPage <= totalAppointmentPages) {
-        ui->btnPage_Appointment_1->setText(QString::number(startPage));
-        ui->btnPage_Appointment_1->setVisible(true);
-        ui->btnPage_Appointment_1->setEnabled(startPage != currentAppointmentPage);
-        if (startPage == currentAppointmentPage) {
-            ui->btnPage_Appointment_1->setStyleSheet("background-color: #4CAF50; color: white; font-weight: bold;");
-        } else {
-            ui->btnPage_Appointment_1->setStyleSheet("");
-        }
-    } else {
-        ui->btnPage_Appointment_1->setVisible(false);
-    }
-
-    // Nút 2
-    if (startPage + 1 <= totalAppointmentPages) {
-        ui->btnPage_Appointment_2->setText(QString::number(startPage + 1));
-        ui->btnPage_Appointment_2->setVisible(true);
-        ui->btnPage_Appointment_2->setEnabled(startPage + 1 != currentAppointmentPage);
-        if (startPage + 1 == currentAppointmentPage) {
-            ui->btnPage_Appointment_2->setStyleSheet("background-color: #4CAF50; color: white; font-weight: bold;");
-        } else {
-            ui->btnPage_Appointment_2->setStyleSheet("");
-        }
-    } else {
-        ui->btnPage_Appointment_2->setVisible(false);
-    }
-
-    // Nút 3
-    if (startPage + 2 <= totalAppointmentPages) {
-        ui->btnPage_Appointment_3->setText(QString::number(startPage + 2));
-        ui->btnPage_Appointment_3->setVisible(true);
-        ui->btnPage_Appointment_3->setEnabled(startPage + 2 != currentAppointmentPage);
-        if (startPage + 2 == currentAppointmentPage) {
-            ui->btnPage_Appointment_3->setStyleSheet("background-color: #4CAF50; color: white; font-weight: bold;");
-        } else {
-            ui->btnPage_Appointment_3->setStyleSheet("");
-        }
-    } else {
-        ui->btnPage_Appointment_3->setVisible(false);
-    }
-
-    qDebug() << "[APPOINTMENT PAGINATION] Current:" << currentAppointmentPage
-             << "| Total:" << totalAppointmentPages
-             << "| Buttons:" << startPage << startPage+1 << startPage+2;
+    qDebug() << "[TABLE SETUP] User table configured successfully";
 }
 
 void AdminWindow::updatePatientPaginationUI() {
     // Cập nhật label hiển thị trang hiện tại
-    ui->lblCurrentPage_Patient->setText(QString("Trang %1/%2").arg(currentPatientPage).arg(totalPatientPages));
+    ui->lblCurrentPage_Appointment->setText(QString("Trang %1/%2").arg(currentPatientPage).arg(totalPatientPages));
 
     // ✅ Cập nhật trạng thái nút Prev/Next
     ui->btnPrevPage_Patient->setEnabled(currentPatientPage > 1);
@@ -1505,9 +1351,8 @@ void AdminWindow::updateMedicalRecordPaginationUI() {
 void AdminWindow::updateUserPaginationUI() {
     ui->lblCurrentPage_User->setText(QString("Trang %1/%2").arg(currentUserPage).arg(totalUserPages));
 
-    // Sửa tên biến: pushButton_5 → btnPrevPage_User, pushButton_4 → btnNextPage_User
-    ui->btnPrevPage_User->setEnabled(currentUserPage > 1);
-    ui->btnNextPage_User->setEnabled(currentUserPage < totalUserPages);
+    ui->pushButton_5->setEnabled(currentUserPage > 1);
+    ui->pushButton_4->setEnabled(currentUserPage < totalUserPages);
 
     int startPage, endPage;
 
@@ -1527,46 +1372,46 @@ void AdminWindow::updateUserPaginationUI() {
         }
     }
 
-    // Nút 1 - sửa tên biến: pushButton_3 → btnPage_User_1
+    // Nút 1
     if (startPage <= totalUserPages) {
-        ui->btnPage_User_1->setText(QString::number(startPage));
-        ui->btnPage_User_1->setVisible(true);
-        ui->btnPage_User_1->setEnabled(startPage != currentUserPage);
+        ui->pushButton_3->setText(QString::number(startPage));
+        ui->pushButton_3->setVisible(true);
+        ui->pushButton_3->setEnabled(startPage != currentUserPage);
         if (startPage == currentUserPage) {
-            ui->btnPage_User_1->setStyleSheet("background-color: #4CAF50; color: white; font-weight: bold;");
+            ui->pushButton_3->setStyleSheet("background-color: #4CAF50; color: white; font-weight: bold;");
         } else {
-            ui->btnPage_User_1->setStyleSheet("");
+            ui->pushButton_3->setStyleSheet("");
         }
     } else {
-        ui->btnPage_User_1->setVisible(false);
+        ui->pushButton_3->setVisible(false);
     }
 
-    // Nút 2 - sửa tên biến: pushButton_2 → btnPage_User_2
+    // Nút 2
     if (startPage + 1 <= totalUserPages) {
-        ui->btnPage_User_2->setText(QString::number(startPage + 1));
-        ui->btnPage_User_2->setVisible(true);
-        ui->btnPage_User_2->setEnabled(startPage + 1 != currentUserPage);
+        ui->pushButton_2->setText(QString::number(startPage + 1));
+        ui->pushButton_2->setVisible(true);
+        ui->pushButton_2->setEnabled(startPage + 1 != currentUserPage);
         if (startPage + 1 == currentUserPage) {
-            ui->btnPage_User_2->setStyleSheet("background-color: #4CAF50; color: white; font-weight: bold;");
+            ui->pushButton_2->setStyleSheet("background-color: #4CAF50; color: white; font-weight: bold;");
         } else {
-            ui->btnPage_User_2->setStyleSheet("");
+            ui->pushButton_2->setStyleSheet("");
         }
     } else {
-        ui->btnPage_User_2->setVisible(false);
+        ui->pushButton_2->setVisible(false);
     }
 
-    // Nút 3 - sửa tên biến: pushButton → btnPage_User_3
+    // Nút 3
     if (startPage + 2 <= totalUserPages) {
-        ui->btnPage_User_3->setText(QString::number(startPage + 2));
-        ui->btnPage_User_3->setVisible(true);
-        ui->btnPage_User_3->setEnabled(startPage + 2 != currentUserPage);
+        ui->pushButton->setText(QString::number(startPage + 2));
+        ui->pushButton->setVisible(true);
+        ui->pushButton->setEnabled(startPage + 2 != currentUserPage);
         if (startPage + 2 == currentUserPage) {
-            ui->btnPage_User_3->setStyleSheet("background-color: #4CAF50; color: white; font-weight: bold;");
+            ui->pushButton->setStyleSheet("background-color: #4CAF50; color: white; font-weight: bold;");
         } else {
-            ui->btnPage_User_3->setStyleSheet("");
+            ui->pushButton->setStyleSheet("");
         }
     } else {
-        ui->btnPage_User_3->setVisible(false);
+        ui->pushButton->setVisible(false);
     }
 
     qDebug() << "[USER PAGINATION] Current:" << currentUserPage
@@ -1576,22 +1421,18 @@ void AdminWindow::updateUserPaginationUI() {
 
 void AdminWindow::on_appointmentManagerButton_clicked()
 {
-    setActiveSidebarButton(ui->appointmentManagerButton);
     ui->mainStack->setCurrentWidget(ui->page_appointment);
     loadAppointmentData(1, "");
 }
 
 void AdminWindow::on_patientManagerButton_clicked()
 {
-    setActiveSidebarButton(ui->patientManagerButton);
     ui->mainStack->setCurrentWidget(ui->page_patient);
 
     currentPatientSortMode = PatientSortMode::BY_ID_ASC;
     ui->btnSortAZPatient->setStyleSheet("");
     ui->btnSortZAPatient->setStyleSheet("");
     ui->txtSearchPatient->clear();
-
-    setupPatientTable();
     loadPatientData(1, "");
 
     qDebug() << "[INFO] Switched to Patient Manager, sorted by ID ascending";
@@ -1599,24 +1440,22 @@ void AdminWindow::on_patientManagerButton_clicked()
 
 void AdminWindow::on_doctorManagerButton_clicked()
 {
-    setActiveSidebarButton(ui->doctorManagerButton);
     ui->mainStack->setCurrentWidget(ui->page_doctor);
 
     currentDoctorSortMode = DoctorSortMode::BY_ID_ASC;
+
     ui->btnSortAZDoctor->setStyleSheet("");
     ui->btnSortZADoctor->setStyleSheet("");
+
     ui->txtSearchDoctor->clear();
 
-    setupDoctorTable();
     loadDoctorData(1, "");
 
     qDebug() << "[INFO] Switched to Doctor Manager, sorted by ID ascending";
 }
 
-
 void AdminWindow::on_userManagerButton_clicked()
 {
-    setActiveSidebarButton(ui->userManagerButton);
     ui->mainStack->setCurrentWidget(ui->page_user);
 
     currentUserSortMode = UserSortMode::BY_ID_ASC;
@@ -1625,6 +1464,7 @@ void AdminWindow::on_userManagerButton_clicked()
     ui->txtSearchUser->clear();
 
     setupUserTable();
+
     loadUserData(1, "");
 
     qDebug() << "[INFO] Switched to User Manager, sorted by ID ascending";
@@ -1632,7 +1472,6 @@ void AdminWindow::on_userManagerButton_clicked()
 
 void AdminWindow::on_medicalRecordButton_clicked()
 {
-    setActiveSidebarButton(ui->medicalRecordButton);
     ui->mainStack->setCurrentWidget(ui->page_medicalRecord);
 
     currentMedicalRecordSortMode = MedicalRecordSortMode::BY_ID_ASC;
@@ -1662,21 +1501,7 @@ void AdminWindow::on_btnAddAppointment_clicked()
     if (addDialog.exec() == QDialog::Accepted) {
         try {
             Appointment newAppt = addDialog.getAppointmentData();
-            bool doctorExists = true;
-            bool patientExists = true;
-            try {
-                DoctorManager::getInstance().getDoctorByID(newAppt.getDoctorID());
-            } catch (...) { doctorExists = false; }
-
-            try {
-                PatientManager::getInstance().getPatientByID(newAppt.getPatientID());
-            } catch (...) { patientExists = false; }
-
-            if (!doctorExists || !patientExists) {
-                QMessageBox::warning(this, "Lỗi", "ID Bác sĩ hoặc Bệnh nhân không tồn tại!");
-                return;
-            }
-
+        
             AppointmentManager::getInstance().addAppointment(newAppt);
 
             QMessageBox::information(this, "Thành công", "Cuộc hẹn đã được thêm và lưu.");
@@ -1804,52 +1629,6 @@ void AdminWindow::on_btnEditPatient_clicked() {
     }
 }
 
-// void AdminWindow::on_btnViewPatientDetail_clicked() {
-//     QPushButton* btn = qobject_cast<QPushButton*>(sender());
-//     if (!btn) return;
-
-//     int patientID = btn->property("patientID").toInt();
-//     qDebug() << "[VIEW DETAIL] Patient ID:" << patientID;
-
-//     try {
-//         const Patient& patient = PatientManager::getInstance().getPatientByID(patientID);
-
-//         QString details = QString(
-//             "=== THÔNG TIN BỆNH NHÂN ===\n\n"
-//             "ID: %1\n"
-//             "Họ tên: %2\n"
-//             "Giới tính: %3\n"
-//             "Ngày sinh: %4\n"
-//             "Nhóm máu: %5\n"
-//             "Số điện thoại: %6\n"
-//             "Mã BHYT: %7\n"
-//             "Mẹ: %8\n"
-//             "Cha: %9\n"
-//         )
-//             .arg(patient.getID())
-//             .arg(QString::fromStdString(patient.getName()))
-//             .arg(QString(patient.getGender()))
-//             .arg(QString::fromStdString(patient.getBirthday().toString()))
-//             .arg(QString::fromStdString(patient.getBloodType()))
-//             .arg(QString::fromStdString(patient.getPhoneNumber()))
-//             .arg(QString::fromStdString(patient.getInsuranceID()))
-//             .arg(QString::fromStdString(patient.getNameMother()))
-//             .arg(QString::fromStdString(patient.getNameFather()));
-
-//         if (!patient.getAllergies().empty()) {
-//             details += "\nDị ứng: " + QString::fromStdString(Utils::join(patient.getAllergies(), ", "));
-//         }
-
-//         if (!patient.getChronicDiseases().empty()) {
-//             details += "\nBệnh nền: " + QString::fromStdString(Utils::join(patient.getChronicDiseases(), ", "));
-//         }
-
-//         QMessageBox::information(this, "Chi tiết Bệnh nhân", details);
-
-//     } catch (const std::exception& e) {
-//         QMessageBox::critical(this, "Lỗi", QString("Không thể xem chi tiết: %1").arg(e.what()));
-//     }
-// }
 void AdminWindow::on_btnViewPatientDetail_clicked() {
     QPushButton* btn = qobject_cast<QPushButton*>(sender());
     if (!btn) return;
@@ -1860,9 +1639,37 @@ void AdminWindow::on_btnViewPatientDetail_clicked() {
     try {
         const Patient& patient = PatientManager::getInstance().getPatientByID(patientID);
 
-        // Sử dụng dialog mới thay vì QMessageBox
-        PatientDetailDialog detailDialog(patient, this);
-        detailDialog.exec();
+        QString details = QString(
+            "=== THÔNG TIN BỆNH NHÂN ===\n\n"
+            "ID: %1\n"
+            "Họ tên: %2\n"
+            "Giới tính: %3\n"
+            "Ngày sinh: %4\n"
+            "Nhóm máu: %5\n"
+            "Số điện thoại: %6\n"
+            "Mã BHYT: %7\n"
+            "Mẹ: %8\n"
+            "Cha: %9\n"
+        )
+            .arg(patient.getID())
+            .arg(QString::fromStdString(patient.getName()))
+            .arg(QString(patient.getGender()))
+            .arg(QString::fromStdString(patient.getBirthday().toString()))
+            .arg(QString::fromStdString(patient.getBloodType()))
+            .arg(QString::fromStdString(patient.getPhoneNumber()))
+            .arg(QString::fromStdString(patient.getInsuranceID()))
+            .arg(QString::fromStdString(patient.getNameMother()))
+            .arg(QString::fromStdString(patient.getNameFather()));
+
+        if (!patient.getAllergies().empty()) {
+            details += "\nDị ứng: " + QString::fromStdString(Utils::join(patient.getAllergies(), ", "));
+        }
+
+        if (!patient.getChronicDiseases().empty()) {
+            details += "\nBệnh nền: " + QString::fromStdString(Utils::join(patient.getChronicDiseases(), ", "));
+        }
+
+        QMessageBox::information(this, "Chi tiết Bệnh nhân", details);
 
     } catch (const std::exception& e) {
         QMessageBox::critical(this, "Lỗi", QString("Không thể xem chi tiết: %1").arg(e.what()));
@@ -2033,9 +1840,6 @@ void AdminWindow::on_btnEditDoctor_clicked() {
     QMessageBox::information(this, "Thông báo", "Chức năng Sửa Lịch Hẹn chưa được triển khai.");
 }
 
-// Thêm include
-#include "doctordetaildialog.h"
-
 void AdminWindow::on_btnViewDoctorDetail_clicked() {
     QPushButton* btn = qobject_cast<QPushButton*>(sender());
     if (!btn) return;
@@ -2046,9 +1850,43 @@ void AdminWindow::on_btnViewDoctorDetail_clicked() {
     try {
         const Doctor& doctor = DoctorManager::getInstance().getDoctorByID(doctorID);
 
-        // Sử dụng DoctorDetailDialog thay vì QMessageBox
-        DoctorDetailDialog detailDialog(doctor, this);
-        detailDialog.exec();
+        QString details = QString(
+                              "=== THÔNG TIN BÁC SĨ ===\n\n"
+                              "ID: %1\n"
+                              "Họ tên: %2\n"
+                              "Giới tính: %3\n"
+                              "Ngày sinh: %4\n"
+                              "Chuyên khoa: %5\n"
+                              "Email: %6\n"
+                              "Số điện thoại: %7\n"
+                              "Trạng thái: %8\n"
+                              ).arg(doctor.getID())
+                              .arg(QString::fromStdString(doctor.getName()))
+                              .arg(QString(doctor.getGender()))
+                              .arg(QString::fromStdString(doctor.getBirthday().toString()))
+                              .arg(QString::fromStdString(doctor.getSpecialization()))
+                              .arg(QString::fromStdString(doctor.getEmail()))
+                              .arg(QString::fromStdString(doctor.getPhoneNumber()))
+                              .arg(QString::fromStdString(Doctor::statusToString(doctor.getStatus())));
+
+        // Thêm danh sách bệnh nhân
+        if (!doctor.getPatientIDs().empty()) {
+            details += "\nDanh sách bệnh nhân đang điều trị:\n";
+            for (int patientID : doctor.getPatientIDs()) {
+                try {
+                    const Patient& patient = PatientManager::getInstance().getPatientByID(patientID);
+                    details += QString("  - ID %1: %2\n")
+                                   .arg(patientID)
+                                   .arg(QString::fromStdString(patient.getName()));
+                } catch (...) {
+                    details += QString("  - ID %1: (không tìm thấy)\n").arg(patientID);
+                }
+            }
+        } else {
+            details += "\nChưa có bệnh nhân nào.";
+        }
+
+        QMessageBox::information(this, "Chi tiết Bác sĩ", details);
 
     } catch (const std::exception& e) {
         QMessageBox::critical(this, "Lỗi", QString("Không thể xem chi tiết: %1").arg(e.what()));
@@ -2239,9 +2077,48 @@ void AdminWindow::on_btnViewMedicalRecordDetail_clicked() {
     try {
         const MedicalRecord& record = MedicalRecordManager::getInstance().getMedicalRecordByID(recordID);
 
-        // Sử dụng dialog mới thay vì QMessageBox
-        MedicalRecordDetailDialog detailDialog(record, this);
-        detailDialog.exec();
+        QString patientName = "N/A";
+        try {
+            patientName = QString::fromStdString(PatientManager::getInstance().getPatientByID(record.getPatientID()).getName());
+        } catch (...) {}
+
+        QString doctorName = "N/A";
+        try {
+            doctorName = QString::fromStdString(DoctorManager::getInstance().getDoctorByID(record.getDoctorID()).getName());
+        } catch (...) {}
+
+        QString details = QString(
+                              "=== THÔNG TIN HỒ SƠ BỆNH ÁN ===\n\n"
+                              "ID Hồ Sơ: %1\n"
+                              "Bệnh Nhân: %2 (ID: %3)\n"
+                              "Bác Sĩ: %4 (ID: %5)\n"
+                              "Ngày Tạo: %6\n"
+                              "Cập Nhật Lần Cuối: %7\n\n"
+                              "Chẩn Đoán: %8\n"
+                              "Triệu Chứng: %9\n"
+                              "Kết Quả Xét Nghiệm: %10\n\n"
+                              "Huyết Áp: %11\n"
+                              "Nhịp Tim: %12 BPM\n"
+                              "Nhiệt Độ: %13°C\n\n"
+                              "Điều Trị: %14\n"
+                              "Ghi Chú Bác Sĩ: %15\n"
+                              ).arg(record.getID())
+                              .arg(patientName)
+                              .arg(record.getPatientID())
+                              .arg(doctorName)
+                              .arg(record.getDoctorID())
+                              .arg(QString::fromStdString(record.getCreationDate().toString()))
+                              .arg(QString::fromStdString(record.getLastUpdated().toString()))
+                              .arg(QString::fromStdString(record.getDiagnosis()))
+                              .arg(QString::fromStdString(record.getSymptoms()))
+                              .arg(QString::fromStdString(record.getTestResults()))
+                              .arg(QString::fromStdString(record.getBloodPressure()))
+                              .arg(record.getHeartRate())
+                              .arg(record.getBodyTemperature())
+                              .arg(QString::fromStdString(record.getTreatment()))
+                              .arg(QString::fromStdString(record.getDoctorNotes()));
+
+        QMessageBox::information(this, "Chi tiết Hồ Sơ Bệnh Án", details);
 
     } catch (const std::exception& e) {
         QMessageBox::critical(this, "Lỗi", QString("Không thể xem chi tiết: %1").arg(e.what()));
@@ -2318,23 +2195,9 @@ void AdminWindow::on_btnAddUser_clicked() {
             qDebug() << "Dialog accepted, getting data...";
             User newUser = dialog.getUserData();
 
-            // ✅ VERIFY dữ liệu trước khi add
-            qDebug() << "[VERIFY] User data before adding:";
-            qDebug() << "  - ID:" << newUser.getID();
-            qDebug() << "  - Username:" << QString::fromStdString(newUser.getUsername());
-            qDebug() << "  - FullName:" << QString::fromStdString(newUser.getFullName());
-            qDebug() << "  - CCCD:" << QString::fromStdString(newUser.getCCCD());
-            qDebug() << "  - Phone:" << QString::fromStdString(newUser.getPhoneNumber());
-            qDebug() << "  - Birthday:" << QString::fromStdString(newUser.getBirthday());
+            qDebug() << "User data retrieved, ID:" << newUser.getID();
 
             UserManager::getInstance().addUser(newUser);
-
-            // ✅ VERIFY sau khi add
-            const User& addedUser = UserManager::getInstance().getUserByID(newUser.getID());
-            qDebug() << "[VERIFY] User data after adding from manager:";
-            qDebug() << "  - FullName:" << QString::fromStdString(addedUser.getFullName());
-            qDebug() << "  - CCCD:" << QString::fromStdString(addedUser.getCCCD());
-
             UserManager::getInstance().saveToFile(Config::USER_PATH);
 
             QMessageBox::information(this, "Thành công",
@@ -2385,8 +2248,7 @@ void AdminWindow::on_btnSearchUser_clicked() {
     currentUserPage = 1;
     loadUserData(currentUserPage, searchText);
 }
-void AdminWindow::on_btnViewUserDetail_clicked()
-{
+void AdminWindow::on_btnViewUserDetail_clicked() {
     QPushButton* btn = qobject_cast<QPushButton*>(sender());
     if (!btn) return;
 
@@ -2396,9 +2258,16 @@ void AdminWindow::on_btnViewUserDetail_clicked()
     try {
         const User& user = UserManager::getInstance().getUserByID(userID);
 
-        // Sử dụng UserDetailDialog
-        UserDetailDialog detailDialog(user, this);
-        detailDialog.exec();
+        QString details = QString(
+                              "=== THÔNG TIN NGƯỜI DÙNG ===\n\n"
+                              "ID: %1\n"
+                              "Vai trò: %2\n"
+                              "Tên người dùng: %3\n"
+                              ).arg(user.getID())
+                              .arg(QString::fromStdString(User::roleToString(user.getRole())))
+                              .arg(QString::fromStdString(user.getUsername()));
+
+        QMessageBox::information(this, "Chi tiết Người dùng", details);
 
     } catch (const std::exception& e) {
         QMessageBox::critical(this, "Lỗi", QString("Không thể xem chi tiết: %1").arg(e.what()));
@@ -2445,7 +2314,7 @@ void AdminWindow::on_btnNextPage_User_clicked()
 
 void AdminWindow::on_btnPage_User_1_clicked()
 {
-    int pageNum = ui->btnPage_User_1->text().toInt();
+    int pageNum = ui->pushButton_3->text().toInt();
     if (pageNum > 0 && pageNum <= totalUserPages) {
         currentUserPage = pageNum;
         loadUserData(currentUserPage, ui->txtSearchUser->text().trimmed());
@@ -2454,7 +2323,7 @@ void AdminWindow::on_btnPage_User_1_clicked()
 
 void AdminWindow::on_btnPage_User_2_clicked()
 {
-    int pageNum = ui->btnPage_User_2->text().toInt();
+    int pageNum = ui->pushButton_2->text().toInt();
     if (pageNum > 0 && pageNum <= totalUserPages) {
         currentUserPage = pageNum;
         loadUserData(currentUserPage, ui->txtSearchUser->text().trimmed());
@@ -2463,361 +2332,9 @@ void AdminWindow::on_btnPage_User_2_clicked()
 //
 void AdminWindow::on_btnPage_User_3_clicked()
 {
-    int pageNum = ui->btnPage_User_3->text().toInt();
+    int pageNum = ui->pushButton->text().toInt();
     if (pageNum > 0 && pageNum <= totalUserPages) {
         currentUserPage = pageNum;
         loadUserData(currentUserPage, ui->txtSearchUser->text().trimmed());
     }
-}
-
-void AdminWindow::setActiveSidebarButton(QPushButton* activeButton)
-{
-    // Reset tất cả button sidebar về trạng thái không active
-    QList<QPushButton*> sidebarButtons = {
-        ui->appointmentManagerButton,
-        ui->doctorManagerButton,
-        ui->patientManagerButton,
-        ui->userManagerButton,
-        ui->medicalRecordButton
-    };
-
-    for (QPushButton* btn : sidebarButtons) {
-        if (btn == activeButton) {
-            btn->setProperty("active", true);
-            btn->style()->unpolish(btn);
-            btn->style()->polish(btn);
-        } else {
-            btn->setProperty("active", false);
-            btn->style()->unpolish(btn);
-            btn->style()->polish(btn);
-        }
-    }
-}
-
-void AdminWindow::applyModernStyles()
-{
-    // Main Window Background
-    this->setStyleSheet(R"(
-        QMainWindow {
-            background: #f5f7fa;
-        }
-    )");
-
-    // Modern Sidebar Styling
-    ui->sidebarWidget->setStyleSheet(R"(
-        QWidget#sidebarWidget {
-            background: #0d47a1;
-            border-right: 2px solid #0a3d8f;
-        }
-
-        QLabel#lblSystemTitle {
-            color: white;
-            font-size: 14pt;
-            font-weight: bold;
-            padding: 20px 15px;
-            background: rgba(0, 0, 0, 0.1);
-            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
-        }
-
-        /* Style cho các button sidebar */
-        QPushButton {
-            color: white;
-            background: transparent;
-            border: none;
-            padding: 12px 20px;
-            text-align: left;
-            font-size: 11pt;
-            font-weight: 600;
-            margin: 2px 10px;
-            border-radius: 6px;
-        }
-
-        QPushButton:hover {
-            background: rgba(255, 255, 255, 0.15);
-        }
-
-        QPushButton[active="true"] {
-            background: rgba(255, 255, 255, 0.2);
-            border-left: 4px solid #FFD700;
-            font-weight: bold;
-        }
-
-        QPushButton#logoutButton {
-            background: #d32f2f;
-            margin-top: 20px;
-            font-weight: 600;
-            text-align: center;
-        }
-
-        QPushButton#logoutButton:hover {
-            background: #b71c1c;
-        }
-    )");
-
-    // Content Area Modern Styling - QUAN TRỌNG: Thêm màu chữ rõ ràng
-    ui->contentAreaWidget->setStyleSheet(R"(
-        QWidget#contentAreaWidget {
-            background: #ffffff;
-            border-radius: 8px;
-            margin: 10px;
-            border: 1px solid #e0e0e0;
-        }
-
-        /* Tiêu đề trang */
-        QLabel[styleSheet*="font-size: 18pt"],
-        QLabel[styleSheet*="font-size: 24pt"] {
-            color: #1565c0;
-            font-size: 20pt;
-            font-weight: bold;
-            padding: 15px;
-            background: linear-gradient(to right, #e3f2fd, #f8f9fa);
-            border-radius: 8px;
-            border-bottom: 3px solid #2196f3;
-            margin: 10px;
-        }
-
-        /* QUAN TRỌNG: Nút chung trong content area - MÀU CHỮ TRẮNG RÕ RÀNG */
-        QPushButton {
-            background: #2196f3;
-            color: white !important;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 6px;
-            font-weight: bold;
-            font-size: 10pt;
-            min-height: 40px;
-            min-width: 120px;
-        }
-
-        QPushButton:hover {
-            background: #1976d2;
-            color: white !important;
-        }
-
-        QPushButton:pressed {
-            background: #1565c0;
-            color: white !important;
-        }
-
-        /* Nút THÊM - màu xanh lá */
-        QPushButton[text*="THÊM"] {
-            background: #4caf50;
-            color: white !important;
-        }
-
-        QPushButton[text*="THÊM"]:hover {
-            background: #388e3c;
-            color: white !important;
-        }
-
-        /* Nút TÌM KIẾM - màu cam */
-        QPushButton[text*="TÌM KIẾM"] {
-            background: #ff9800;
-            color: white !important;
-        }
-
-        QPushButton[text*="TÌM KIẾM"]:hover {
-            background: #f57c00;
-            color: white !important;
-        }
-
-        /* Nút SẮP XẾP - màu tím */
-        QPushButton[text*="SẮP XẾP"] {
-            background: #9c27b0;
-            color: white !important;
-        }
-
-        QPushButton[text*="SẮP XẾP"]:hover {
-            background: #7b1fa2;
-            color: white !important;
-        }
-
-        /* Nút có icon sắp xếp */
-        QPushButton[text*="🔼"],
-        QPushButton[text*="🔽"] {
-            background: #673ab7;
-            color: white !important;
-            font-size: 11pt;
-        }
-
-        QPushButton[text*="🔼"]:hover,
-        QPushButton[text*="🔽"]:hover {
-            background: #5e35b1;
-            color: white !important;
-        }
-
-        /* Nút phân trang */
-        QPushButton[text*="Trang"],
-        QPushButton[text*="<"],
-        QPushButton[text*=">"] {
-            background: #78909c;
-            color: white !important;
-            min-width: 100px;
-        }
-
-        QPushButton[text*="Trang"]:hover,
-        QPushButton[text*="<"]:hover,
-        QPushButton[text*=">"]:hover {
-            background: #546e7a;
-            color: white !important;
-        }
-
-        /* Nút số trang */
-        QPushButton:has-text[0-9] {
-            background: #b0bec5;
-            color: #263238 !important;
-            min-width: 40px;
-            font-weight: normal;
-        }
-
-        QPushButton:has-text[0-9]:hover {
-            background: #90a4ae;
-            color: #263238 !important;
-        }
-
-        /* Nút số trang active */
-        QPushButton[active="true"] {
-            background: #2196f3 !important;
-            color: white !important;
-            font-weight: bold;
-        }
-
-        /* LineEdit */
-        QLineEdit {
-            padding: 10px 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 6px;
-            background: white;
-            font-size: 10pt;
-            color: #263238;
-            min-height: 40px;
-            selection-background-color: #2196f3;
-            selection-color: white;
-        }
-
-        QLineEdit:focus {
-            border: 2px solid #2196f3;
-            background: #f8f9fa;
-        }
-
-        QLineEdit::placeholder {
-            color: #90a4ae;
-            font-style: italic;
-        }
-
-        /* Table */
-        QTableWidget {
-            background: white;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            gridline-color: #e0e0e0;
-            selection-background-color: #e3f2fd;
-            selection-color: #1565c0;
-            color: #263238;
-            font-size: 10pt;
-            alternate-background-color: #f8f9fa;
-        }
-
-        QTableWidget::item {
-            padding: 8px 4px;
-            border-bottom: 1px solid #f0f0f0;
-        }
-
-        QTableWidget::item:selected {
-            background: #e3f2fd;
-            color: #1565c0;
-            font-weight: bold;
-        }
-
-        QHeaderView::section {
-            background: #1565c0;
-            color: white;
-            padding: 12px 4px;
-            border: none;
-            font-weight: bold;
-            font-size: 10pt;
-            border-right: 1px solid #0d47a1;
-        }
-
-        QHeaderView::section:last {
-            border-right: none;
-        }
-
-        QHeaderView::section:hover {
-            background: #0d47a1;
-        }
-
-        /* Label thông tin */
-        QLabel {
-            color: #546e7a;
-            background: transparent;
-            font-size: 10pt;
-            font-weight: 500;
-        }
-
-        QLabel[text*="TextLabel"] {
-            color: #37474f;
-            font-weight: 600;
-            font-size: 11pt;
-        }
-
-        /* Toolbar */
-        QWidget[toolbar] {
-            background: #f8f9fa;
-            border-radius: 8px;
-            padding: 10px;
-            border: 2px solid #e3f2fd;
-            margin: 5px;
-        }
-    )");
-
-    // Style pagination buttons - Đảm bảo màu chữ rõ ràng
-    QString paginationStyle = R"(
-        QPushButton {
-            min-width: 40px;
-            min-height: 40px;
-            border-radius: 6px;
-            background: #78909c;
-            color: white !important;
-            border: none;
-            font-weight: 600;
-            font-size: 10pt;
-            margin: 2px;
-        }
-
-        QPushButton:hover:enabled {
-            background: #546e7a;
-            color: white !important;
-        }
-
-        QPushButton:disabled {
-            background: #cfd8dc;
-            color: #90a4ae !important;
-        }
-
-        QPushButton[active="true"] {
-            background: #2196f3 !important;
-            color: white !important;
-            font-weight: bold;
-        }
-    )";
-
-    // Apply to all pagination buttons
-    QStringList paginationButtons = {
-        "btnPrevPage_Appointment", "btnNextPage_Appointment", "btnPage_Appointment_1", "btnPage_Appointment_2", "btnPage_Appointment_3",
-        "btnPrevPage_Patient", "btnNextPage_Patient", "btnPage_Patient_1", "btnPage_Patient_2", "btnPage_Patient_3",
-        "btnPrevPage_Doctor", "btnNextPage_Doctor", "btnPage_Doctor_1", "btnPage_Doctor_2", "btnPage_Doctor_3",
-        "btnPrevPage_MedicalRecord", "btnNextPage_MedicalRecord", "btnPage_MedicalRecord_1", "btnPage_MedicalRecord_2", "btnPage_MedicalRecord_3",
-        "btnPrevPage_User", "btnNextPage_User", "btnPage_User_1", "btnPage_User_2", "btnPage_User_3"
-    };
-
-    for (const QString& btnName : paginationButtons) {
-        QPushButton* btn = findChild<QPushButton*>(btnName);
-        if (btn) {
-            btn->setStyleSheet(paginationStyle);
-        }
-    }
-
-    // Thiết lập active cho button sidebar ban đầu
-    setActiveSidebarButton(ui->appointmentManagerButton);
 }

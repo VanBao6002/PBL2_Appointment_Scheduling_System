@@ -6,6 +6,19 @@ void AppointmentManager::addAppointment(const Appointment &apt_) {
     if (appointmentTable.find(ID_) != appointmentTable.end()) {
         throw std::invalid_argument("Adding failed. Appointment ID " + std::to_string(apt_.getID()) + " already exists.");
     }
+    bool doctorExists = true;
+    bool patientExists = true;
+    try {
+        DoctorManager::getInstance().getDoctorByID(apt_.getDoctorID());
+    } catch (...) { doctorExists = false; }
+
+    try {
+        PatientManager::getInstance().getPatientByID(apt_.getPatientID());
+    } catch (...) { patientExists = false; }
+
+    if (!doctorExists || !patientExists) {
+        throw std::invalid_argument("Lỗi, ID Bác sĩ hoặc Bệnh nhân không tồn tại!");
+    }
     appointmentTable[ID_] = apt_;
     log[ID_] += " Added on: " + Utils::getDateTime();
 }
@@ -57,6 +70,18 @@ const std::string& AppointmentManager::getIDLog(int ID_) const {
     return log.at(ID_);
 }
 
+const std::vector<std::pair<std::string, std::string>>& AppointmentManager::getBookedSlotsForDoctorDate(int selectedDoctorID, const std::string& selectedDate) {
+    static std::vector<std::pair<std::string, std::string>> bookedSlots;
+    bookedSlots.clear();
+    for (const auto& pair : appointmentTable) {
+        const Appointment& apt = pair.second;
+        if (apt.getDoctorID() == selectedDoctorID && apt.getDate().toString() == selectedDate) {
+            bookedSlots.emplace_back(apt.getStartTime(), apt.getEndTime());
+        }
+    }
+    return bookedSlots;
+}
+
 void AppointmentManager::loadFromFile(const std::string& path) {
     // clean data before loading
     appointmentTable.clear();
@@ -91,6 +116,7 @@ void AppointmentManager::loadFromFile(const std::string& path) {
             throw std::invalid_argument("Patient ID: " + std::to_string(apt.getPatientID()) + " not found in appointment:" + std::to_string(ID));
         }
         appointmentTable[ID] = apt;
+
         if (ID > maxID) maxID = ID;
     } catch (const std::exception& e) {
         qWarning() << "[ERROR] Failed to load appointment record:" << e.what();
