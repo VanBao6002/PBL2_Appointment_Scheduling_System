@@ -2,6 +2,7 @@
 #include <QDebug>
 
 void AppointmentManager::addAppointment(const Appointment &apt_) {
+        qDebug() << "[DEBUG][addAppointment] Entered function.";
     int ID_ = apt_.getID();
     if (appointmentTable.find(ID_) != appointmentTable.end()) {
         throw std::invalid_argument("Adding failed. Appointment ID " + std::to_string(apt_.getID()) + " already exists.");
