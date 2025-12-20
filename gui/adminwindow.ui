@@ -62,7 +62,7 @@
           <enum>Qt::LayoutDirection::LeftToRight</enum>
          </property>
          <property name="text">
-          <string>HỆ THỐNG QUẢN LÍ BỆNH NHÂN - ADMIN</string>
+          <string>HỆ THỐNG QUẢN LÍ BỆNH NHÂN </string>
          </property>
         </widget>
        </item>

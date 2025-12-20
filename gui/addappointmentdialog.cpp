@@ -137,24 +137,28 @@ void AddAppointmentDialog::updateAvailableTimeSlot(const QStringList& inputSlots
         weekdayName.toStdString(), DoctorManager::getInstance().getDoctorByID(selectedDoctorID).getWorkingSchedule(), bookedSlots
     );
 
-    // Prepare available slots
-    QStringList allSlots;
-    for (const auto& [start, end, isBooked] : intervals) {
-        if (!isBooked)
-            allSlots.append(QString::fromStdString(start + " - " + end));
-    }
-
-    // Update your time slot selection widget here (QListWidget version)
+    // Prepare all slots and mark booked ones
     QListWidget* listTimeSlots = page2->findChild<QListWidget*>("listTimeSlots");
     if (listTimeSlots) {
         listTimeSlots->blockSignals(true);
         listTimeSlots->clear();
-        listTimeSlots->addItems(allSlots);
+        int firstAvailableRow = -1;
+        for (const auto& [start, end, isBooked] : intervals) {
+            QString slotText = QString::fromStdString(start + " - " + end);
+            QListWidgetItem* item = new QListWidgetItem(slotText);
+            if (isBooked) {
+                item->setFlags(item->flags() & ~Qt::ItemIsEnabled);
+                item->setForeground(Qt::gray);
+            } else {
+                if (firstAvailableRow == -1) firstAvailableRow = listTimeSlots->count();
+            }
+            listTimeSlots->addItem(item);
+        }
         listTimeSlots->blockSignals(false);
         // Set selectedTimeSlot to first available slot if exists
-        if (!allSlots.isEmpty()) {
-            selectedTimeSlot = allSlots.first();
-            listTimeSlots->setCurrentRow(0);
+        if (firstAvailableRow != -1) {
+            selectedTimeSlot = listTimeSlots->item(firstAvailableRow)->text();
+            listTimeSlots->setCurrentRow(firstAvailableRow);
         } else {
             selectedTimeSlot.clear();
         }
@@ -437,6 +441,26 @@ void AddAppointmentDialog::on_confirmButton_clicked() {
         QMessageBox::warning(this, "Invalid Doctor", "Please select a doctor before confirming the appointment.");
         return;
     }
+    // Prevent double booking for the same patient at the same date and time
+    QCalendarWidget* calendar = page2 ? page2->findChild<QCalendarWidget*>("calendarWidget") : nullptr;
+    QDate selectedDate = calendar ? calendar->selectedDate() : QDate();
+    std::string selectedDateStr = selectedDate.toString("dd-MM-yyyy").toStdString();
+    std::string selectedStart = selectedTimeSlot.section(" - ", 0, 0).toStdString();
+    std::string selectedEnd = selectedTimeSlot.section(" - ", 1, 1).toStdString();
+
+    // Check all appointments for this patient on this date
+    const auto& allAppointments = AppointmentManager::getInstance().getAllAppointmentsMap();
+    for (const auto& pair : allAppointments) {
+        const Appointment& apt = pair.second;
+        if (apt.getPatientID() == selectedPatientID && apt.getDate().toString() == selectedDateStr) {
+            // Check for time overlap
+            if (!(apt.getEndTime() <= selectedStart || apt.getStartTime() >= selectedEnd)) {
+                QMessageBox::warning(this, "Double Booking", "Bệnh nhân đã có cuộc hẹn khác trong khung giờ này!");
+                return;
+            }
+        }
+    }
+
     // set booked for choosen time slot
     Doctor doctor;
     try {
@@ -445,16 +469,14 @@ void AddAppointmentDialog::on_confirmButton_clicked() {
         QMessageBox::critical(this, "Doctor Not Found", "The selected doctor could not be found. Please select another doctor.");
         return;
     }
-    QCalendarWidget* calendar = page2 ? page2->findChild<QCalendarWidget*>("calendarWidget") : nullptr;
-    QDate selectedDate = calendar ? calendar->selectedDate() : QDate();
     QString weekdayName = "Thứ " + QString::number(selectedDate.dayOfWeek());
-    std::vector<std::pair<std::string, std::string>> bookedSlots = AppointmentManager::getInstance().getBookedSlotsForDoctorDate(selectedDoctorID, selectedDate.toString("dd-MM-yyyy").toStdString());
+    std::vector<std::pair<std::string, std::string>> bookedSlots = AppointmentManager::getInstance().getBookedSlotsForDoctorDate(selectedDoctorID, selectedDateStr);
     auto intervals = TimeInterval::getIntervalsWithBooking(
         weekdayName.toStdString(), doctor.getWorkingSchedule(), bookedSlots
     );
 
     for (auto& interval : intervals) {
-        if (interval.start == selectedTimeSlot.section(" - ", 0, 0).toStdString() && interval.end == selectedTimeSlot.section(" - ", 1, 1).toStdString()) {
+        if (interval.start == selectedStart && interval.end == selectedEnd) {
             interval.setBooked(true);
             break;
         }

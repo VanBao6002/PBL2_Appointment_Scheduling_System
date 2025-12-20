@@ -106,8 +106,18 @@ private slots:
     void loadUserData(int page = 1, const QString& searchText = "");
    
 
+public:
+    void setUserID(int id) { userID = id; }
+    int getUserID() const { return userID; }
 private:
     Ui::AdminWindow *ui;
+    int userID = 0;
+    bool hasAppointmentAccess(bool write = false) const;
+    bool hasPatientAccess(bool write = false) const;
+    bool hasDoctorAccess(bool write = false) const;
+    bool hasUserAccess(bool write = false) const;
+    bool hasMedicalRecordAccess(bool write = false) const;
+    void showNoPermissionMessage() const;
     //Appointment
     int currentAppointmentPage;
     int totalAppointmentPages;
