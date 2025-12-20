@@ -376,16 +376,39 @@ void AddAppointmentDialog::on_searchButton_clicked() {
     if (isPatientExisted(cccd)) {
         selectedPatientID = PatientManager::getInstance().getPatientByCCCD(cccd).getID();
         ui->stackedWidget->setCurrentIndex(1); // Go to page 1
-    } else {    
+    } else {
         AddEditPatientDialog dlg(this);
         if (dlg.exec() == QDialog::Accepted) {
-            selectedPatientID = dlg.getPatientData().getID();
-            ui->stackedWidget->setCurrentIndex(1); // Go to page 1
+            Patient newPatient = dlg.getPatientData();
+            try {
+                PatientManager::getInstance().getPatientByID(newPatient.getID());
+            } catch (...) {
+                PatientManager::getInstance().addPatient(newPatient);
+            }
+            selectedPatientID = newPatient.getID();
+            // Set CCCD field to new patient's CCCD and block signals to prevent retrigger
+            bool oldBlock = ui->txtCCCD->blockSignals(true);
+            ui->txtCCCD->setText(QString::fromStdString(newPatient.getCCCD()));
+            ui->txtCCCD->blockSignals(oldBlock);
+            // Only set page if not already on page 1
+            if (ui->stackedWidget->currentIndex() != 1) {
+                ui->stackedWidget->setCurrentIndex(1); // Go to page 1
+            }
         }
     }
 }
 
 void AddAppointmentDialog::on_cancelButton_clicked() {
+    // If a new patient was created in this dialog session, remove them from PatientManager and unregister their ID
+    if (selectedPatientID > 0) {
+        try {
+            Patient patient = PatientManager::getInstance().getPatientByID(selectedPatientID);
+            PatientManager::getInstance().removePatient(selectedPatientID);
+            IDHandler<Patient>::unregisterID(selectedPatientID);
+        } catch (...) {
+            // Patient not found, nothing to remove
+        }
+    }
     reject();
 }
 
