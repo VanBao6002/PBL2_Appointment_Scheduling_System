@@ -22,5 +22,31 @@
         "phoneFather": "",
         "phoneMother": "",
         "phoneNumber": "0909876543"
+    },
+    {
+        "CCCD": "123443211234",
+        "ID": 2,
+        "allergies": [
+            "khong"
+        ],
+        "birthday": {
+            "day": 20,
+            "month": 12,
+            "year": 2015
+        },
+        "bloodType": "O+",
+        "chronicDiseases": [
+            "khong"
+        ],
+        "email": "bich@gmail.com",
+        "gender": "F",
+        "insuranceID": "12341234",
+        "medicalRecordIDs": [],
+        "name": "mít tơ bít",
+        "nameFather": "Trống",
+        "nameMother": "Trống",
+        "phoneFather": "Trống",
+        "phoneMother": "Trống",
+        "phoneNumber": "0967676767"
     }
 ]

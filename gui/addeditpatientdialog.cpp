@@ -27,6 +27,117 @@ void AddEditPatientDialog::setDialogTitle(const QString& title) {
     setWindowTitle(title);
 }
 
+bool AddEditPatientDialog::validateForm() {
+    // Kiểm tra họ tên
+    QString name = ui->txtName->text().trimmed();
+    if (name.isEmpty()) {
+        QMessageBox::warning(this, "Lỗi", "Vui lòng nhập họ tên bệnh nhân!");
+        ui->txtName->setFocus();
+        return false;
+    }
+    if (name.length() < 2) {
+        QMessageBox::warning(this, "Lỗi", "Họ tên phải có ít nhất 2 ký tự!");
+        ui->txtName->setFocus();
+        return false;
+    }
+
+    // Kiểm tra giới tính
+    QString gender = ui->comboGender->currentText().trimmed();
+    if (gender.isEmpty()) {
+        QMessageBox::warning(this, "Lỗi", "Vui lòng chọn giới tính!");
+        ui->comboGender->setFocus();
+        return false;
+    }
+
+    // Kiểm tra nhóm máu
+    QString bloodType = ui->txtBloodType->text().trimmed();
+    if (bloodType.isEmpty()) {
+        QMessageBox::warning(this, "Lỗi", "Vui lòng nhập nhóm máu!");
+        ui->txtBloodType->setFocus();
+        return false;
+    }
+    QRegularExpression bloodTypeRegex("^(A|B|AB|O)[+-]$");
+    if (!bloodTypeRegex.match(bloodType).hasMatch()) {
+        QMessageBox::warning(this, "Lỗi", "Nhóm máu không hợp lệ! VD: A+, O-, AB+");
+        ui->txtBloodType->setFocus();
+        return false;
+    }
+
+    // Kiểm tra ngày sinh
+    QDate birthday = ui->dateEditBirthday->date();
+    QDate today = QDate::currentDate();
+    int age = today.year() - birthday.year();
+    if (birthday > today.addYears(-age)) age--;
+    if (age < 0) {
+        QMessageBox::warning(this, "Lỗi", "Ngày sinh không thể trong tương lai!");
+        ui->dateEditBirthday->setFocus();
+        return false;
+    }
+    if (age > 150) {
+        QMessageBox::warning(this, "Lỗi", "Ngày sinh không hợp lệ (quá 150 tuổi)!");
+        ui->dateEditBirthday->setFocus();
+        return false;
+    }
+
+    // Kiểm tra số điện thoại bệnh nhân
+    QString phone = ui->txtPhoneNumber->text().trimmed();
+    if (phone.isEmpty()) {
+        QMessageBox::warning(this, "Lỗi", "Vui lòng nhập số điện thoại bệnh nhân!");
+        ui->txtPhoneNumber->setFocus();
+        return false;
+    }
+    QRegularExpression phoneRegex("^[0-9]{10,11}$");
+    if (!phoneRegex.match(phone).hasMatch()) {
+        QMessageBox::warning(this, "Lỗi", "Số điện thoại phải có 10-11 chữ số!");
+        ui->txtPhoneNumber->setFocus();
+        return false;
+    }
+
+    // Kiểm tra số điện thoại mẹ (không bắt buộc)
+    QString phoneMother = ui->txtPhoneMother->text().trimmed();
+    if (!phoneMother.isEmpty() && !phoneRegex.match(phoneMother).hasMatch()) {
+        QMessageBox::warning(this, "Lỗi", "Số điện thoại mẹ phải có 10-11 chữ số!");
+        ui->txtPhoneMother->setFocus();
+        return false;
+    }
+
+    // Kiểm tra số điện thoại cha (không bắt buộc)
+    QString phoneFather = ui->txtPhoneFather->text().trimmed();
+    if (!phoneFather.isEmpty() && !phoneRegex.match(phoneFather).hasMatch()) {
+        QMessageBox::warning(this, "Lỗi", "Số điện thoại cha phải có 10-11 chữ số!");
+        ui->txtPhoneFather->setFocus();
+        return false;
+    }
+
+    // Kiểm tra email (không bắt buộc)
+    QString email = ui->txtEmail->text().trimmed();
+    if (!email.isEmpty()) {
+        QRegularExpression emailRegex("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+        if (!emailRegex.match(email).hasMatch()) {
+            QMessageBox::warning(this, "Lỗi", "Email không đúng định dạng!\nVD: benhnhan@gmail.com");
+            ui->txtEmail->setFocus();
+            return false;
+        }
+    }
+
+    // Kiểm tra CCCD
+    QString cccd = ui->txtCCCD->text().trimmed();
+    if (cccd.isEmpty()) {
+        QMessageBox::warning(this, "Lỗi", "Vui lòng nhập số CCCD!");
+        ui->txtCCCD->setFocus();
+        return false;
+    }
+    QRegularExpression cccdRegex("^[0-9]{12}$");
+    if (!cccdRegex.match(cccd).hasMatch()) {
+        QMessageBox::warning(this, "Lỗi", "Số CCCD phải có đúng 12 chữ số!");
+        ui->txtCCCD->setFocus();
+        return false;
+    }
+
+    return true;
+}
+
+
 void AddEditPatientDialog::populateUI(const Patient& patient) {
     if (patient.getID() > 0) {
         // Chế độ Sửa
@@ -88,7 +199,6 @@ void AddEditPatientDialog::populateUI(const Patient& patient) {
         ui->dateEditBirthday->setDate(QDate::currentDate().addYears(-10));
     }
 }
-
 Patient AddEditPatientDialog::getPatientData() const {
     // Lấy dữ liệu từ UI
     QString name = ui->txtName->text().trimmed();
@@ -103,45 +213,18 @@ Patient AddEditPatientDialog::getPatientData() const {
     QString insuranceID = ui->txtInsuranceID->text().trimmed();
     QString CCCD = ui->txtCCCD->text().trimmed();
     QString email = ui->txtEmail->text().trimmed();
-
-    // Số điện thoại cha mẹ
     QString phoneMother = ui->txtPhoneMother->text().trimmed();
     QString phoneFather = ui->txtPhoneFather->text().trimmed();
 
-    try {
-        Utils::validName(name.toStdString());
-        Utils::validPhoneNumber(phoneNumber.toStdString());
-        Utils::validBloodType(bloodType.toStdString());
-        Date dob(qDate.day(), qDate.month(), qDate.year());
-        Utils::validDate(dob);
-        if (!genderStr.isEmpty()) {
-            Utils::validGender(genderStr.toStdString()[0]);
-        }
-        // Validation cho CCCD và Email nếu cần
-        Utils::validCCCD(CCCD.toStdString());
-        Utils::validEmail(email.toStdString());
-
-        // Validation cho số điện thoại cha mẹ (không bắt buộc)
-        if (!phoneMother.isEmpty()) {
-            Utils::validPhoneNumber(phoneMother.toStdString());
-        }
-        if (!phoneFather.isEmpty()) {
-            Utils::validPhoneNumber(phoneFather.toStdString());
-        }
-    } catch (const std::exception& e) {
-        throw std::runtime_error("Validation failed in getPatientData: " + std::string(e.what()));
-    }
+    Date birthday(qDate.day(), qDate.month(), qDate.year());
+    char gender = genderStr.isEmpty() ? 'M' : genderStr.toStdString()[0];
 
     if (currentPatient.getID() > 0) {
         // Chế độ SỬA
         Patient updatedPatient = currentPatient;
-
         updatedPatient.setName(name.toStdString());
-        if (!genderStr.isEmpty()) {
-            updatedPatient.setGender(genderStr.toStdString()[0]);
-        }
-        Date newBirthday(qDate.day(), qDate.month(), qDate.year());
-        updatedPatient.setBirthday(newBirthday);
+        updatedPatient.setGender(gender);
+        updatedPatient.setBirthday(birthday);
         updatedPatient.setBloodType(bloodType.toStdString());
         updatedPatient.setAllergies(allergies.toStdString());
         updatedPatient.setChronicDiseases(chronicDiseases.toStdString());
@@ -153,21 +236,13 @@ Patient AddEditPatientDialog::getPatientData() const {
         updatedPatient.setEmail(email.toStdString());
         updatedPatient.setPhoneMother(phoneMother.toStdString());
         updatedPatient.setPhoneFather(phoneFather.toStdString());
-
         return updatedPatient;
     } else {
         // Chế độ THÊM MỚI
-        std::string birthday =
-            QString("%1/%2/%3")
-                .arg(qDate.day())
-                .arg(qDate.month())
-                .arg(qDate.year())
-                .toStdString();
-
         Patient newPatient(
             name.toStdString(),
-            genderStr.isEmpty() ? 'M' : genderStr.toStdString()[0],
-            birthday,
+            gender,
+            QString("%1/%2/%3").arg(qDate.day()).arg(qDate.month()).arg(qDate.year()).toStdString(),
             phoneNumber.toStdString(),
             CCCD.toStdString(),
             email.toStdString(),
@@ -177,10 +252,9 @@ Patient AddEditPatientDialog::getPatientData() const {
             chronicDiseases.toStdString(),
             nameMother.toStdString(),
             nameFather.toStdString(),
-            phoneMother.toStdString(),    // Số điện thoại mẹ
-            phoneFather.toStdString()     // Số điện thoại cha
-            );
-
+            phoneMother.toStdString(),
+            phoneFather.toStdString()
+        );
         return newPatient;
     }
 }
@@ -206,91 +280,9 @@ void AddEditPatientDialog::setupDatePicker() {
 
 void AddEditPatientDialog::on_buttonBox_accepted()
 {
-    try {
-        // 1. Kiểm tra tên
-        QString nameText = ui->txtName->text().trimmed();
-        if (nameText.isEmpty()) {
-            throw std::invalid_argument("Tên không được để trống!");
-        }
-        Utils::validName(nameText.toStdString());
-
-        // 2. Kiểm tra số điện thoại bệnh nhân
-        QString phoneText = ui->txtPhoneNumber->text().trimmed();
-        if (phoneText.isEmpty()) {
-            throw std::invalid_argument("Số điện thoại bệnh nhân không được để trống!");
-        }
-        Utils::validPhoneNumber(phoneText.toStdString());
-
-        // 3. Kiểm tra số điện thoại mẹ (không bắt buộc)
-        QString phoneMotherText = ui->txtPhoneMother->text().trimmed();
-        if (!phoneMotherText.isEmpty()) {
-            Utils::validPhoneNumber(phoneMotherText.toStdString());
-        }
-
-        // 4. Kiểm tra số điện thoại cha (không bắt buộc)
-        QString phoneFatherText = ui->txtPhoneFather->text().trimmed();
-        if (!phoneFatherText.isEmpty()) {
-            Utils::validPhoneNumber(phoneFatherText.toStdString());
-        }
-
-        // 5. Kiểm tra email
-        QString emailText = ui->txtEmail->text().trimmed();
-        if (!emailText.isEmpty()) {
-            Utils::validEmail(emailText.toStdString());
-        }
-
-        // 6. Kiểm tra nhóm máu
-        QString bloodTypeText = ui->txtBloodType->text().trimmed();
-        if (bloodTypeText.isEmpty()) {
-            throw std::invalid_argument("Nhóm máu không được để trống!");
-        }
-        Utils::validBloodType(bloodTypeText.toStdString());
-
-        // ✅ 7. Kiểm tra ngày sinh
-        QDate qDate = ui->dateEditBirthday->date();
-        if (!qDate.isValid()) {
-            throw std::invalid_argument("Ngày sinh không hợp lệ!");
-        }
-
-        // Kiểm tra tuổi
-        QDate today = QDate::currentDate();
-        int age = today.year() - qDate.year();
-        if (qDate > today.addYears(-age)) age--;
-
-        if (age < 0) {
-            throw std::invalid_argument("Ngày sinh không thể trong tương lai!");
-        }
-        if (age > 150) {
-            throw std::invalid_argument("Ngày sinh không hợp lệ (quá 150 tuổi)!");
-        }
-
-        Date dob(qDate.day(), qDate.month(), qDate.year());
-        Utils::validDate(dob);
-
-        // 8. Kiểm tra giới tính
-        QString genderText = ui->comboGender->currentText().trimmed();
-        if (genderText.isEmpty()) {
-            throw std::invalid_argument("Vui lòng chọn giới tính!");
-        }
-        Utils::validGender(genderText.toStdString()[0]);
-
-        // 9. Kiểm tra CCCD
-        QString cccdText = ui->txtCCCD->text().trimmed();
-        if (cccdText.isEmpty()) {
-            throw std::invalid_argument("Số CCCD không được để trống!");
-        }
-        Utils::validCCCD(cccdText.toStdString());
-
-        // ✅ TẤT CẢ VALIDATION PASS → CHỈ KHI ĐÓ MỚI ACCEPT
+    if (validateForm()) {
+        qDebug() << "[DIALOG] Form validated, accepting dialog";
         accept();
-
-    } catch (const std::invalid_argument& e) {
-        // ❌ Hiển thị lỗi và KHÔNG accept dialog
-        QMessageBox::warning(this, "Lỗi Nhập Liệu", QString::fromStdString(e.what()));
-        // KHÔNG gọi accept() → Dialog vẫn mở, user có thể sửa
-
-    } catch (const std::exception& e) {
-        QMessageBox::critical(this, "Lỗi", QString::fromStdString(e.what()));
     }
 }
 
