@@ -35,6 +35,7 @@ private:
     void setupDatePicker();
     bool m_dragging;
     QPoint m_dragPosition;
+    bool validateForm();
 };
 
 #endif // ADDEDITPATIENTDIALOG_H
