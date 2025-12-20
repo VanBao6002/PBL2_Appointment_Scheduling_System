@@ -52,6 +52,7 @@ void AdminWindow::showNoPermissionMessage() const {
 #include "doctordetaildialog.h"
 #include "userdetaildialog.h"
 #include "medicalrecorddetaildialog.h"
+#include "appointmentdetaildialog.h"
 #include "person.h"
 #include "appointmentManager.h"
 #include "patientManager.h"
@@ -145,6 +146,7 @@ AdminWindow::AdminWindow(QWidget *parent)
     ui->btnSortAZUser->setText("🔼 A → Z");
     ui->btnSortZAUser->setText("🔽 Z → A");
 
+    setupAppointmentTable();
     ui->mainStack->setCurrentWidget(ui->page_appointment);
     loadAppointmentData(currentAppointmentPage);
 
@@ -783,7 +785,7 @@ void AdminWindow::loadAppointmentData(int page, const QString& searchText)
                     << doctorName
                     << QString::fromStdString(appt.getDate().toString())
                     << QString::fromStdString(appt.getStartTime())
-                    << QString::fromStdString(appt.getEndTime())                
+                    << QString::fromStdString(appt.getEndTime())
                     << QString::fromStdString(Appointment::statusToString(appt.getStatus()));
 
         bool match = false;
@@ -814,7 +816,7 @@ void AdminWindow::loadAppointmentData(int page, const QString& searchText)
 
     updateAppointmentPaginationUI();
 
-    // Đổ dữ liệu vào bảng
+    // Đổ dữ liệu vào bảng - tăng thêm 1 cột cho Tuỳ chọn
     ui->tableAppointment->setRowCount(0);
     int startIdx = (currentAppointmentPage - 1) * itemsPerPage;
     int endIdx = qMin(startIdx + itemsPerPage, totalItems);
@@ -835,12 +837,103 @@ void AdminWindow::loadAppointmentData(int page, const QString& searchText)
             doctorName = QString::fromStdString(DoctorManager::getInstance().getDoctorByID(appt.getDoctorID()).getName());
         } catch (...) {}
 
-        ui->tableAppointment->setItem(rowIdx, 0, new QTableWidgetItem(QString::number(appt.getID())));
-        ui->tableAppointment->setItem(rowIdx, 1, new QTableWidgetItem(patientName));
-        ui->tableAppointment->setItem(rowIdx, 2, new QTableWidgetItem(doctorName));
-        ui->tableAppointment->setItem(rowIdx, 3, new QTableWidgetItem(QString::fromStdString(appt.getDate().toString())));
-        ui->tableAppointment->setItem(rowIdx, 4, new QTableWidgetItem(QString::fromStdString(appt.getStartTime())));
-        ui->tableAppointment->setItem(rowIdx, 5, new QTableWidgetItem(QString::fromStdString(Appointment::statusToString(appt.getStatus()))));
+        // Cột 0: ID (căn giữa)
+        QTableWidgetItem* idItem = new QTableWidgetItem(QString::number(appt.getID()));
+        idItem->setTextAlignment(Qt::AlignCenter);
+        ui->tableAppointment->setItem(rowIdx, 0, idItem);
+
+        // Cột 1: Bệnh nhân (căn trái)
+        QTableWidgetItem* patientNameItem = new QTableWidgetItem(patientName);
+        patientNameItem->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+        ui->tableAppointment->setItem(rowIdx, 1, patientNameItem);
+
+        // Cột 2: Bác sĩ (căn trái)
+        QTableWidgetItem* doctorNameItem = new QTableWidgetItem(doctorName);
+        doctorNameItem->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+        ui->tableAppointment->setItem(rowIdx, 2, doctorNameItem);
+
+        // Cột 3: Ngày hẹn (căn giữa)
+        QTableWidgetItem* dateItem = new QTableWidgetItem(QString::fromStdString(appt.getDate().toString()));
+        dateItem->setTextAlignment(Qt::AlignCenter);
+        ui->tableAppointment->setItem(rowIdx, 3, dateItem);
+
+        // Cột 4: Giờ bắt đầu (căn giữa)
+        QTableWidgetItem* startTimeItem = new QTableWidgetItem(QString::fromStdString(appt.getStartTime()));
+        startTimeItem->setTextAlignment(Qt::AlignCenter);
+        ui->tableAppointment->setItem(rowIdx, 4, startTimeItem);
+
+        // Cột 5: Giờ kết thúc (căn giữa)
+        QTableWidgetItem* endTimeItem = new QTableWidgetItem(QString::fromStdString(appt.getEndTime()));
+        endTimeItem->setTextAlignment(Qt::AlignCenter);
+        ui->tableAppointment->setItem(rowIdx, 5, endTimeItem);
+
+        // Cột 6: Trạng thái (căn giữa) - dùng đúng các giá trị enum từ appointment.h
+        QString statusStr = QString::fromStdString(Appointment::statusToString(appt.getStatus()));
+        QTableWidgetItem* statusItem = new QTableWidgetItem(statusStr);
+        statusItem->setTextAlignment(Qt::AlignCenter);
+
+        // Thêm màu nền tùy theo trạng thái (dùng đúng các giá trị enum)
+        if (appt.getStatus() == Appointment::Status::Occupied) {
+            statusItem->setBackground(QBrush(QColor(76, 175, 80, 50))); // Xanh lá nhạt - Đã chiếm dụng
+        } else if (appt.getStatus() == Appointment::Status::Canceled) {
+            statusItem->setBackground(QBrush(QColor(244, 67, 54, 50))); // Đỏ nhạt - Đã hủy
+        } else if (appt.getStatus() == Appointment::Status::Scheduled) {
+            statusItem->setBackground(QBrush(QColor(255, 193, 7, 50))); // Vàng nhạt - Đã lên lịch
+        }
+
+        ui->tableAppointment->setItem(rowIdx, 6, statusItem);
+
+        // Cột 7: Tuỳ chọn - Thêm 2 nút "Xem chi tiết" và "Xoá"
+        QWidget* actionWidget = new QWidget();
+        QHBoxLayout* layout = new QHBoxLayout(actionWidget);
+        layout->setContentsMargins(5, 2, 5, 2);
+        layout->setSpacing(5);
+
+        // Button "Xem chi tiết"
+        QPushButton* btnViewDetail = new QPushButton("Xem chi tiết");
+        btnViewDetail->setProperty("appointmentID", appt.getID());
+        btnViewDetail->setStyleSheet(R"(
+            QPushButton {
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                    stop:0 #2196F3, stop:1 #1976D2);
+                color: white;
+                border: none;
+                padding: 8px 15px;
+                border-radius: 6px;
+                font-weight: 600;
+            }
+            QPushButton:hover {
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                    stop:0 #1976D2, stop:1 #1565C0);
+            }
+        )");
+        connect(btnViewDetail, &QPushButton::clicked, this, &AdminWindow::on_btnViewAppointmentDetail_clicked);
+
+        // Button "Xoá"
+        QPushButton* btnDelete = new QPushButton("Xoá");
+        btnDelete->setProperty("appointmentID", appt.getID());
+        btnDelete->setStyleSheet(R"(
+            QPushButton {
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                    stop:0 #f44336, stop:1 #d32f2f);
+                color: white;
+                border: none;
+                padding: 8px 15px;
+                border-radius: 6px;
+                font-weight: 600;
+            }
+            QPushButton:hover {
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                    stop:0 #d32f2f, stop:1 #c62828);
+            }
+        )");
+        connect(btnDelete, &QPushButton::clicked, this, &AdminWindow::on_btnRemoveAppointment_clicked);
+
+        layout->addWidget(btnViewDetail);
+        layout->addWidget(btnDelete);
+        actionWidget->setLayout(layout);
+
+        ui->tableAppointment->setCellWidget(rowIdx, 7, actionWidget);
     }
 }
 
@@ -1032,8 +1125,56 @@ void AdminWindow::loadUserData(int page, const QString& searchText) {
     updateUserPaginationUI();
 }
 
+void AdminWindow::setupAppointmentTable() {
+    // ✅ Thêm cột Tuỳ chọn
+    ui->tableAppointment->setColumnCount(8);
+
+    // ✅ Đặt tên các cột (có thêm cột Tuỳ chọn)
+    QStringList headers;
+    headers << "ID Cuộc hẹn" << "Bệnh nhân" << "Bác sĩ" << "Ngày hẹn"
+            << "Giờ bắt đầu" << "Giờ kết thúc" << "Trạng thái" << "Tuỳ chọn";
+    ui->tableAppointment->setHorizontalHeaderLabels(headers);
+
+    QHeaderView* header = ui->tableAppointment->horizontalHeader();
+
+    header->setSectionResizeMode(0, QHeaderView::Fixed);
+    ui->tableAppointment->setColumnWidth(0, 100);
+
+    header->setSectionResizeMode(1, QHeaderView::Stretch);
+    ui->tableAppointment->setColumnWidth(1, 150);
+
+    header->setSectionResizeMode(2, QHeaderView::Stretch);
+    ui->tableAppointment->setColumnWidth(2, 150);
+
+    header->setSectionResizeMode(3, QHeaderView::Fixed);
+    ui->tableAppointment->setColumnWidth(3, 120);
+
+    header->setSectionResizeMode(4, QHeaderView::Fixed);
+    ui->tableAppointment->setColumnWidth(4, 100);
+
+    header->setSectionResizeMode(5, QHeaderView::Fixed);
+    ui->tableAppointment->setColumnWidth(5, 100);
+
+    header->setSectionResizeMode(6, QHeaderView::Fixed);
+    ui->tableAppointment->setColumnWidth(6, 120);
+
+    header->setSectionResizeMode(7, QHeaderView::Fixed);
+    ui->tableAppointment->setColumnWidth(7, 200);
+
+    // Các thiết lập khác...
+    ui->tableAppointment->verticalHeader()->setSectionResizeMode(QHeaderView::Fixed);
+    ui->tableAppointment->verticalHeader()->setDefaultSectionSize(75);
+    ui->tableAppointment->setSelectionBehavior(QAbstractItemView::SelectRows);
+    ui->tableAppointment->setSelectionMode(QAbstractItemView::SingleSelection);
+    ui->tableAppointment->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    ui->tableAppointment->setAlternatingRowColors(true);
+    ui->tableAppointment->verticalHeader()->setVisible(false);
+    header->setDefaultAlignment(Qt::AlignCenter);
+
+    qDebug() << "[TABLE SETUP] Appointment table configured successfully with Action column";
+}
+
 void AdminWindow::setupPatientTable() {
-    // ✅ Chỉ còn 7 cột (bỏ Email)
     ui->tablePatient->setColumnCount(8);
 
     // ✅ Đặt tên các cột (không có Email)
@@ -1617,6 +1758,8 @@ void AdminWindow::on_appointmentManagerButton_clicked()
     if (!hasAppointmentAccess()) { showNoPermissionMessage(); return; }
     setActiveSidebarButton(ui->appointmentManagerButton);
     ui->mainStack->setCurrentWidget(ui->page_appointment);
+
+    setupAppointmentTable();  // Thêm dòng này
     loadAppointmentData(1, "");
 }
 
@@ -1696,10 +1839,13 @@ void AdminWindow::on_logoutButton_clicked()
     }
 }
 
-void AdminWindow::on_btnAddAppointment_clicked()
-{
-    if (!hasAppointmentAccess(true)) { showNoPermissionMessage(); return; }
-    qDebug() << "page_appointment: + Thêm cuộc hẹn mới clicked.";
+void AdminWindow::on_btnAddAppointment_clicked() {
+    if (!hasAppointmentAccess(true)) {
+        showNoPermissionMessage();
+        return;
+    }
+
+    qDebug() << "Thêm cuộc hẹn mới clicked.";
 
     AddAppointmentDialog addDialog(this);
 
@@ -1707,14 +1853,48 @@ void AdminWindow::on_btnAddAppointment_clicked()
         try {
             Appointment newAppt = addDialog.getAppointmentData();
 
+            // Kiểm tra lại trước khi thêm
+            if (newAppt.getDoctorID() <= 0 || newAppt.getPatientID() <= 0) {
+                QMessageBox::critical(this, "Lỗi", "Dữ liệu cuộc hẹn không hợp lệ!");
+                return;
+            }
+
+            // Kiểm tra bác sĩ và bệnh nhân tồn tại
+            try {
+                DoctorManager::getInstance().getDoctorByID(newAppt.getDoctorID());
+                PatientManager::getInstance().getPatientByID(newAppt.getPatientID());
+            } catch (const std::exception& e) {
+                QMessageBox::critical(this, "Lỗi",
+                                      QString("Không tìm thấy bác sĩ hoặc bệnh nhân: %1").arg(e.what()));
+                return;
+            }
+
+            // Thêm appointment
             AppointmentManager::getInstance().addAppointment(newAppt);
 
-            QMessageBox::information(this, "Thành công", "Cuộc hẹn đã được thêm và lưu.");
+            // Lưu file
+            AppointmentManager::getInstance().saveToFile(Config::APPOINTMENT_PATH);
 
+            QMessageBox::information(this, "Thành công",
+                                     QString("Đã thêm cuộc hẹn mới:\n"
+                                             "ID: %1\n"
+                                             "Bệnh nhân: %2\n"
+                                             "Bác sĩ: %3\n"
+                                             "Ngày: %4\n"
+                                             "Giờ: %5 - %6")
+                                         .arg(newAppt.getID())
+                                         .arg(newAppt.getPatientID())
+                                         .arg(newAppt.getDoctorID())
+                                         .arg(QString::fromStdString(newAppt.getDate().toString()))
+                                         .arg(QString::fromStdString(newAppt.getStartTime()))
+                                         .arg(QString::fromStdString(newAppt.getEndTime())));
+
+            // Tải lại dữ liệu
             loadAppointmentData(currentAppointmentPage, ui->txtSearchAppointment->text().trimmed());
 
         } catch (const std::exception& e) {
-            QMessageBox::critical(this, "Lỗi Thêm Cuộc Hẹn", QString("Không thể thêm cuộc hẹn: %1").arg(e.what()));
+            QMessageBox::critical(this, "Lỗi Thêm Cuộc Hẹn",
+                                  QString("Không thể thêm cuộc hẹn:\n%1").arg(e.what()));
             qDebug() << "Error adding appointment: " << e.what();
         }
     } else {
@@ -1732,11 +1912,66 @@ void AdminWindow::on_btnSearchAppointment_clicked()
 }
 
 void AdminWindow::on_btnRemoveAppointment_clicked() {
-    QMessageBox::information(this, "Thông báo", "Chức năng Xóa Lịch Hẹn chưa được triển khai.");
+    if (!hasAppointmentAccess(true)) { showNoPermissionMessage(); return; }
+
+    // Lấy appointment ID từ hàng được chọn
+    if (!ui->tableAppointment->selectionModel()->hasSelection()) {
+        QMessageBox::warning(this, "Cảnh báo", "Vui lòng chọn một cuộc hẹn để xóa.");
+        return;
+    }
+
+    int selectedRow = ui->tableAppointment->selectionModel()->selectedRows().first().row();
+    int appointmentID = ui->tableAppointment->item(selectedRow, 0)->text().toInt();
+
+    QMessageBox::StandardButton reply;
+    reply = QMessageBox::question(this, "Xác nhận xóa",
+                                  "Bạn có chắc chắn muốn xóa cuộc hẹn ID: " + QString::number(appointmentID) + " không?",
+                                  QMessageBox::Yes|QMessageBox::No);
+    if (reply == QMessageBox::Yes) {
+        try {
+            AppointmentManager::getInstance().removeAppointment(appointmentID);
+            QMessageBox::information(this, "Thành công", "Đã xóa cuộc hẹn ID: " + QString::number(appointmentID));
+
+            loadAppointmentData(currentAppointmentPage, ui->txtSearchAppointment->text().trimmed());
+        } catch (const std::exception& e) {
+            QMessageBox::critical(this, "Lỗi Xóa Cuộc Hẹn", QString::fromStdString(e.what()));
+        }
+    }
 }
 
 void AdminWindow::on_btnEditAppointment_clicked() {
-    QMessageBox::information(this, "Thông báo", "Chức năng Sửa Lịch Hẹn chưa được triển khai.");
+    if (!hasAppointmentAccess(true)) { showNoPermissionMessage(); return; }
+
+    if (!ui->tableAppointment->selectionModel()->hasSelection()) {
+        QMessageBox::warning(this, "Cảnh báo", "Vui lòng chọn một cuộc hẹn để chỉnh sửa.");
+        return;
+    }
+
+    int selectedRow = ui->tableAppointment->selectionModel()->selectedRows().first().row();
+    int appointmentID = ui->tableAppointment->item(selectedRow, 0)->text().toInt();
+
+    try {
+        const Appointment& appointmentToEdit = AppointmentManager::getInstance().getAppointmentByID(appointmentID);
+
+        AddAppointmentDialog editDialog(appointmentToEdit, this);
+        editDialog.setEditMode(true);
+
+        if (editDialog.exec() == QDialog::Accepted) {
+            Appointment updatedAppt = editDialog.getAppointmentData();
+
+            // Cập nhật appointment
+            AppointmentManager::getInstance().editAppointment(appointmentID, updatedAppt);
+
+            QMessageBox::information(this, "Thành công",
+                                     QString("Đã cập nhật cuộc hẹn ID: %1").arg(appointmentID));
+
+            // Tải lại dữ liệu
+            loadAppointmentData(currentAppointmentPage, ui->txtSearchAppointment->text().trimmed());
+        }
+
+    } catch (const std::exception& e) {
+        QMessageBox::critical(this, "Lỗi", QString::fromStdString(e.what()));
+    }
 }
 
 void AdminWindow::on_btnNextPage_Appointment_clicked()
@@ -1784,6 +2019,25 @@ void AdminWindow::on_btnPage_Appointment_3_clicked()
     if (pageNum > 0 && pageNum <= totalAppointmentPages) {
         currentAppointmentPage = pageNum;
         loadAppointmentData(currentAppointmentPage, ui->txtSearchAppointment->text().trimmed());
+    }
+}
+
+void AdminWindow::on_btnViewAppointmentDetail_clicked() {
+    QPushButton* btn = qobject_cast<QPushButton*>(sender());
+    if (!btn) return;
+
+    int appointmentID = btn->property("appointmentID").toInt();
+    qDebug() << "[VIEW DETAIL] Appointment ID:" << appointmentID;
+
+    try {
+        const Appointment& appointment = AppointmentManager::getInstance().getAppointmentByID(appointmentID);
+
+        // Sử dụng AppointmentDetailDialog
+        AppointmentDetailDialog detailDialog(appointment, this);
+        detailDialog.exec();
+
+    } catch (const std::exception& e) {
+        QMessageBox::critical(this, "Lỗi", QString("Không thể xem chi tiết: %1").arg(e.what()));
     }
 }
 
@@ -2547,247 +2801,336 @@ void AdminWindow::setActiveSidebarButton(QPushButton* activeButton)
 
 void AdminWindow::applyModernStyles()
 {
-    // Main Window Background
+    // ✨💫 PREMIUM GRADIENT THEME - Sinh động, Sang trọng, Hiện đại
+
+    // Main Window - Gradient nền tinh tế
     this->setStyleSheet(R"(
         QMainWindow {
-            background: #f5f7fa;
+            background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+                stop:0 #f5f5f0, stop:0.5 #faf9f7, stop:1 #f0f0eb);
         }
     )");
 
-    // Modern Sidebar Styling
+    // 🎨✨ STUNNING SIDEBAR - Multi-layer gradients
     ui->sidebarWidget->setStyleSheet(R"(
         QWidget#sidebarWidget {
-            background: #0d47a1;
-            border-right: 2px solid #0a3d8f;
+            background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                stop:0 #1a2530, stop:0.3 #2c3e50, stop:0.7 #34495e, stop:1 #2c3e50);
+            border-right: 2px solid qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                stop:0 rgba(52, 152, 219, 0.3), stop:1 rgba(142, 68, 173, 0.2));
         }
 
         QLabel#lblSystemTitle {
-            color: white;
+            color: #ecf0f1;
             font-size: 14pt;
-            font-weight: bold;
-            padding: 20px 15px;
-            background: rgba(0, 0, 0, 0.1);
-            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+            font-weight: 600;
+            padding: 22px 15px;
+            background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+                stop:0 rgba(52, 152, 219, 0.15),
+                stop:0.5 rgba(142, 68, 173, 0.1),
+                stop:1 rgba(52, 152, 219, 0.15));
+            border-bottom: 2px solid qlineargradient(x1:0, y1:0, x2:1, y2:0,
+                stop:0 rgba(52, 152, 219, 0.4), stop:1 rgba(142, 68, 173, 0.3));
+            letter-spacing: 0.8px;
         }
 
-        /* Style cho các button sidebar */
         QPushButton {
-            color: white;
+            color: #bdc3c7;
             background: transparent;
             border: none;
-            padding: 12px 20px;
+            padding: 15px 20px;
             text-align: left;
-            font-size: 11pt;
-            font-weight: 600;
-            margin: 2px 10px;
-            border-radius: 6px;
+            font-size: 10.5pt;
+            font-weight: 500;
+            margin: 4px 12px;
+            border-radius: 10px;
+            letter-spacing: 0.4px;
         }
 
         QPushButton:hover {
-            background: rgba(255, 255, 255, 0.15);
+            background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+                stop:0 rgba(52, 152, 219, 0.2),
+                stop:0.5 rgba(155, 89, 182, 0.15),
+                stop:1 rgba(52, 152, 219, 0.1));
+            color: #ecf0f1;
+            border-left: 3px solid rgba(52, 152, 219, 0.5);
         }
 
         QPushButton[active="true"] {
-            background: rgba(255, 255, 255, 0.2);
-            border-left: 4px solid #FFD700;
-            font-weight: bold;
+            background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+                stop:0 rgba(52, 152, 219, 0.3),
+                stop:0.5 rgba(155, 89, 182, 0.2),
+                stop:1 rgba(52, 152, 219, 0.25));
+            color: #5dade2;
+            border-left: 4px solid qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                stop:0 #3498db, stop:1 #9b59b6);
+            font-weight: 600;
         }
 
         QPushButton#logoutButton {
-            background: #d32f2f;
-            margin-top: 20px;
-            font-weight: 600;
+            background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+                stop:0 #c0392b, stop:0.5 #e74c3c, stop:1 #c0392b);
+            color: white;
+            margin: 20px 12px 10px 12px;
             text-align: center;
+            font-weight: 600;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         QPushButton#logoutButton:hover {
-            background: #b71c1c;
+            background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+                stop:0 #a93226, stop:0.5 #d62c1a, stop:1 #a93226);
         }
     )");
 
-    // Content Area Modern Styling - QUAN TRỌNG: Thêm màu chữ rõ ràng
+    // 🎯✨ DYNAMIC CONTENT AREA - Glass morphism & Gradients
     ui->contentAreaWidget->setStyleSheet(R"(
         QWidget#contentAreaWidget {
-            background: #ffffff;
-            border-radius: 8px;
-            margin: 10px;
-            border: 1px solid #e0e0e0;
+            background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+                stop:0 rgba(255, 255, 255, 0.95),
+                stop:0.5 rgba(253, 253, 251, 0.98),
+                stop:1 rgba(255, 255, 255, 0.95));
+            border-radius: 15px;
+            margin: 12px;
+            border: 2px solid qlineargradient(x1:0, y1:0, x2:1, y2:1,
+                stop:0 rgba(52, 152, 219, 0.2),
+                stop:0.5 rgba(155, 89, 182, 0.15),
+                stop:1 rgba(52, 152, 219, 0.2));
         }
 
-        /* Tiêu đề trang */
+        /* 💎 STUNNING PAGE HEADERS - Multi-gradient */
         QLabel[styleSheet*="font-size: 18pt"],
         QLabel[styleSheet*="font-size: 24pt"] {
-            color: #1565c0;
-            font-size: 20pt;
-            font-weight: bold;
-            padding: 15px;
-            background: linear-gradient(to right, #e3f2fd, #f8f9fa);
-            border-radius: 8px;
-            border-bottom: 3px solid #2196f3;
-            margin: 10px;
+            color: transparent;
+            background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+                stop:0 rgba(248, 249, 250, 0.8),
+                stop:0.2 rgba(52, 152, 219, 0.05),
+                stop:0.5 rgba(155, 89, 182, 0.03),
+                stop:0.8 rgba(52, 152, 219, 0.05),
+                stop:1 rgba(248, 249, 250, 0.8));
+            background-clip: text;
+            -webkit-background-clip: text;
+            font-size: 19pt;
+            font-weight: 600;
+            padding: 20px 22px;
+            border-radius: 12px;
+            border: 2px solid transparent;
+            border-image: linear-gradient(90deg,
+                rgba(52, 152, 219, 0.3),
+                rgba(155, 89, 182, 0.2),
+                rgba(52, 152, 219, 0.3)) 1;
+            margin: 12px;
+            letter-spacing: 0.6px;
         }
 
-        /* QUAN TRỌNG: Nút chung trong content area - MÀU CHỮ TRẮNG RÕ RÀNG */
+        /* 🎨 GRADIENT BUTTONS - Vibrant & Premium */
         QPushButton {
-            background: #2196f3;
+            background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+                stop:0 #7f8c8d, stop:0.5 #95a5a6, stop:1 #7f8c8d);
             color: white !important;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 6px;
-            font-weight: bold;
-            font-size: 10pt;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 9.5pt;
             min-height: 40px;
             min-width: 120px;
+            letter-spacing: 0.4px;
         }
 
         QPushButton:hover {
-            background: #1976d2;
+            background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+                stop:0 #6c7a7b, stop:0.5 #7f8c8d, stop:1 #6c7a7b);
             color: white !important;
+            border: 1px solid rgba(255, 255, 255, 0.3);
         }
 
         QPushButton:pressed {
-            background: #1565c0;
-            color: white !important;
+            background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+                stop:0 #5a6869, stop:0.5 #6c7a7b, stop:1 #5a6869);
         }
 
-        /* Nút THÊM - màu xanh lá */
+        /* 🌿 Nút THÊM - Emerald gradient */
         QPushButton[text*="THÊM"] {
-            background: #4caf50;
+            background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+                stop:0 #1abc9c, stop:0.3 #16a085, stop:0.7 #27ae60, stop:1 #229954);
             color: white !important;
+            border: 1px solid rgba(255, 255, 255, 0.25);
         }
 
         QPushButton[text*="THÊM"]:hover {
-            background: #388e3c;
-            color: white !important;
+            background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+                stop:0 #16a085, stop:0.3 #138d75, stop:0.7 #229954, stop:1 #1e8449);
+            border: 1px solid rgba(255, 255, 255, 0.35);
         }
 
-        /* Nút TÌM KIẾM - màu cam */
+        /* 🔥 Nút TÌM KIẾM - Sunset gradient */
         QPushButton[text*="TÌM KIẾM"] {
-            background: #ff9800;
+            background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+                stop:0 #e67e22, stop:0.3 #d35400, stop:0.7 #e74c3c, stop:1 #c0392b);
             color: white !important;
+            border: 1px solid rgba(255, 255, 255, 0.25);
         }
 
         QPushButton[text*="TÌM KIẾM"]:hover {
-            background: #f57c00;
-            color: white !important;
+            background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+                stop:0 #d35400, stop:0.3 #ba4a00, stop:0.7 #c0392b, stop:1 #a93226);
+            border: 1px solid rgba(255, 255, 255, 0.35);
         }
 
-        /* Nút SẮP XẾP - màu tím */
+        /* 💜 Nút SẮP XẾP - Purple haze gradient */
         QPushButton[text*="SẮP XẾP"] {
-            background: #9c27b0;
+            background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+                stop:0 #9b59b6, stop:0.3 #8e44ad, stop:0.7 #7d3c98, stop:1 #6c3483);
             color: white !important;
+            border: 1px solid rgba(255, 255, 255, 0.25);
         }
 
         QPushButton[text*="SẮP XẾP"]:hover {
-            background: #7b1fa2;
-            color: white !important;
+            background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+                stop:0 #8e44ad, stop:0.3 #7d3c98, stop:0.7 #6c3483, stop:1 #5b2c6f);
+            border: 1px solid rgba(255, 255, 255, 0.35);
         }
 
-        /* Nút có icon sắp xếp */
+        /* 🔷 Nút icon sắp xếp - Blue steel gradient */
         QPushButton[text*="🔼"],
         QPushButton[text*="🔽"] {
-            background: #673ab7;
+            background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+                stop:0 #5d6d7e, stop:0.5 #4a5568, stop:1 #34495e);
             color: white !important;
-            font-size: 11pt;
+            font-size: 10.5pt;
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         QPushButton[text*="🔼"]:hover,
         QPushButton[text*="🔽"]:hover {
-            background: #5e35b1;
-            color: white !important;
+            background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+                stop:0 #4a5568, stop:0.5 #3a4556, stop:1 #2c3e50);
+            border: 1px solid rgba(255, 255, 255, 0.3);
         }
 
-        /* Nút phân trang */
+        /* 📄 Nút phân trang - Silver gradient */
         QPushButton[text*="Trang"],
         QPushButton[text*="<"],
         QPushButton[text*=">"] {
-            background: #78909c;
+            background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+                stop:0 #95a5a6, stop:0.5 #7f8c8d, stop:1 #95a5a6);
             color: white !important;
             min-width: 100px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         QPushButton[text*="Trang"]:hover,
         QPushButton[text*="<"]:hover,
         QPushButton[text*=">"]:hover {
-            background: #546e7a;
-            color: white !important;
+            background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+                stop:0 #7f8c8d, stop:0.5 #6c7a7b, stop:1 #7f8c8d);
+            border: 1px solid rgba(255, 255, 255, 0.3);
         }
 
-        /* Nút số trang */
+        /* 🔢 Nút số trang - Glass morphism */
         QPushButton:has-text[0-9] {
-            background: #b0bec5;
-            color: #263238 !important;
+            background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                stop:0 rgba(236, 240, 241, 0.9),
+                stop:1 rgba(255, 255, 255, 0.8));
+            color: #2c3e50 !important;
             min-width: 40px;
-            font-weight: normal;
+            font-weight: 500;
+            border: 1.5px solid rgba(52, 152, 219, 0.2);
         }
 
         QPushButton:has-text[0-9]:hover {
-            background: #90a4ae;
-            color: #263238 !important;
+            background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                stop:0 rgba(213, 219, 219, 0.95),
+                stop:1 rgba(236, 240, 241, 0.9));
+            border: 1.5px solid rgba(52, 152, 219, 0.4);
         }
 
-        /* Nút số trang active */
+        /* ⭐ Nút số trang active - Ocean gradient */
         QPushButton[active="true"] {
-            background: #2196f3 !important;
+            background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+                stop:0 #3498db, stop:0.3 #2980b9, stop:0.7 #1abc9c, stop:1 #16a085) !important;
             color: white !important;
-            font-weight: bold;
+            font-weight: 600;
+            border: 1px solid rgba(255, 255, 255, 0.3);
         }
 
-        /* LineEdit */
+        /* 📝 LineEdit - Glass input with gradient border */
         QLineEdit {
-            padding: 10px 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 6px;
-            background: white;
+            padding: 12px 18px;
+            border: 2px solid transparent;
+            border-image: linear-gradient(135deg,
+                rgba(52, 152, 219, 0.3),
+                rgba(155, 89, 182, 0.2),
+                rgba(52, 152, 219, 0.3)) 1;
+            border-radius: 10px;
+            background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                stop:0 rgba(255, 255, 255, 0.95),
+                stop:1 rgba(248, 249, 250, 0.9));
             font-size: 10pt;
-            color: #263238;
+            color: #2c3e50;
             min-height: 40px;
-            selection-background-color: #2196f3;
+            selection-background-color: #3498db;
             selection-color: white;
         }
 
         QLineEdit:focus {
-            border: 2px solid #2196f3;
-            background: #f8f9fa;
+            border-image: linear-gradient(135deg,
+                rgba(52, 152, 219, 0.6),
+                rgba(155, 89, 182, 0.4),
+                rgba(52, 152, 219, 0.6)) 1;
+            background: rgba(255, 255, 255, 1);
         }
 
         QLineEdit::placeholder {
-            color: #90a4ae;
+            color: #95a5a6;
             font-style: italic;
         }
 
-        /* Table */
+        /* 📊 Table - Premium data display */
         QTableWidget {
-            background: white;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            gridline-color: #e0e0e0;
-            selection-background-color: #e3f2fd;
-            selection-color: #1565c0;
-            color: #263238;
-            font-size: 10pt;
-            alternate-background-color: #f8f9fa;
+            background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                stop:0 rgba(255, 255, 255, 0.98),
+                stop:1 rgba(248, 249, 250, 0.95));
+            border: 2px solid qlineargradient(x1:0, y1:0, x2:1, y2:0,
+                stop:0 rgba(52, 152, 219, 0.2),
+                stop:0.5 rgba(155, 89, 182, 0.15),
+                stop:1 rgba(52, 152, 219, 0.2));
+            border-radius: 12px;
+            gridline-color: rgba(236, 240, 241, 0.5);
+            selection-background-color: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+                stop:0 rgba(52, 152, 219, 0.15),
+                stop:1 rgba(155, 89, 182, 0.1));
+            selection-color: #2c3e50;
+            color: #34495e;
+            font-size: 9.5pt;
+            alternate-background-color: rgba(250, 250, 250, 0.5);
         }
 
         QTableWidget::item {
-            padding: 8px 4px;
-            border-bottom: 1px solid #f0f0f0;
+            padding: 11px 7px;
+            border-bottom: 1px solid rgba(236, 240, 241, 0.3);
         }
 
         QTableWidget::item:selected {
-            background: #e3f2fd;
-            color: #1565c0;
-            font-weight: bold;
+            background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+                stop:0 rgba(52, 152, 219, 0.18),
+                stop:0.5 rgba(155, 89, 182, 0.12),
+                stop:1 rgba(52, 152, 219, 0.18));
+            color: #2c3e50;
+            font-weight: 500;
         }
 
         QHeaderView::section {
-            background: #1565c0;
-            color: white;
-            padding: 12px 4px;
+            background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+                stop:0 #2c3e50, stop:0.3 #34495e, stop:0.7 #2c3e50, stop:1 #1a252f);
+            color: #ecf0f1;
+            padding: 14px 7px;
             border: none;
-            font-weight: bold;
-            font-size: 10pt;
-            border-right: 1px solid #0d47a1;
+            font-weight: 600;
+            font-size: 9.5pt;
+            border-right: 1px solid rgba(236, 240, 241, 0.15);
+            letter-spacing: 0.4px;
         }
 
         QHeaderView::section:last {
@@ -2795,65 +3138,78 @@ void AdminWindow::applyModernStyles()
         }
 
         QHeaderView::section:hover {
-            background: #0d47a1;
+            background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+                stop:0 #1a252f, stop:0.3 #2c3e50, stop:0.7 #34495e, stop:1 #2c3e50);
         }
 
-        /* Label thông tin */
+        /* 🏷️ Labels - Gradient text */
         QLabel {
-            color: #546e7a;
+            color: #5d6d7e;
             background: transparent;
             font-size: 10pt;
             font-weight: 500;
         }
 
         QLabel[text*="TextLabel"] {
-            color: #37474f;
+            color: #34495e;
             font-weight: 600;
-            font-size: 11pt;
+            font-size: 10.5pt;
         }
 
-        /* Toolbar */
+        /* 🛠️ Toolbar - Glass effect */
         QWidget[toolbar] {
-            background: #f8f9fa;
-            border-radius: 8px;
-            padding: 10px;
-            border: 2px solid #e3f2fd;
-            margin: 5px;
+            background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+                stop:0 rgba(255, 255, 255, 0.7),
+                stop:0.5 rgba(253, 253, 251, 0.8),
+                stop:1 rgba(255, 255, 255, 0.7));
+            border-radius: 12px;
+            padding: 14px;
+            border: 1.5px solid qlineargradient(x1:0, y1:0, x2:1, y2:0,
+                stop:0 rgba(52, 152, 219, 0.15),
+                stop:0.5 rgba(155, 89, 182, 0.1),
+                stop:1 rgba(52, 152, 219, 0.15));
+            margin: 10px;
         }
     )");
-//
-    // Style pagination buttons - Đảm bảo màu chữ rõ ràng
+
+    // 📄 Pagination buttons - Ocean wave gradient
     QString paginationStyle = R"(
         QPushButton {
             min-width: 40px;
             min-height: 40px;
-            border-radius: 6px;
-            background: #78909c;
+            border-radius: 10px;
+            background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+                stop:0 #95a5a6, stop:0.5 #7f8c8d, stop:1 #95a5a6);
             color: white !important;
-            border: none;
+            border: 1px solid rgba(255, 255, 255, 0.2);
             font-weight: 600;
-            font-size: 10pt;
-            margin: 2px;
+            font-size: 9.5pt;
+            margin: 3px;
         }
 
         QPushButton:hover:enabled {
-            background: #546e7a;
+            background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+                stop:0 #7f8c8d, stop:0.5 #6c7a7b, stop:1 #7f8c8d);
             color: white !important;
+            border: 1px solid rgba(255, 255, 255, 0.3);
         }
 
         QPushButton:disabled {
-            background: #cfd8dc;
-            color: #90a4ae !important;
+            background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                stop:0 #d5dbdb, stop:1 #bdc3c7);
+            color: #95a5a6 !important;
+            border: 1px solid rgba(149, 165, 166, 0.2);
         }
 
         QPushButton[active="true"] {
-            background: #2196f3 !important;
+            background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+                stop:0 #3498db, stop:0.3 #2980b9, stop:0.7 #1abc9c, stop:1 #16a085) !important;
             color: white !important;
-            font-weight: bold;
+            font-weight: 600;
+            border: 1px solid rgba(255, 255, 255, 0.3);
         }
     )";
 
-    // Apply to all pagination buttons
     QStringList paginationButtons = {
         "btnPrevPage_Appointment", "btnNextPage_Appointment", "btnPage_Appointment_1", "btnPage_Appointment_2", "btnPage_Appointment_3",
         "btnPrevPage_Patient", "btnNextPage_Patient", "btnPage_Patient_1", "btnPage_Patient_2", "btnPage_Patient_3",
@@ -2869,6 +3225,5 @@ void AdminWindow::applyModernStyles()
         }
     }
 
-    // Thiết lập active cho button sidebar ban đầu
     setActiveSidebarButton(ui->appointmentManagerButton);
 }

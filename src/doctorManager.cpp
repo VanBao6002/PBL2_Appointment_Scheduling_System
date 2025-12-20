@@ -100,7 +100,7 @@ void DoctorManager::loadFromFile(const std::string& path) {
     doctorTable.clear();
     log.clear();
     IDHandler<Doctor>::resetIDTable(); 
-    IDHandler<Doctor>::resetCCCDTable();
+    IDHandler<Person>::resetCCCDTable();
 
     // check active path, propriate data
     nlohmann::json jArr = Utils::readJsonFromFile(path);
@@ -109,28 +109,56 @@ void DoctorManager::loadFromFile(const std::string& path) {
         return;
     }
 
-    // start reading and load to memory
+    // ===== FIX: Parse trực tiếp vào doctorTable, KHÔNG tạo biến tạm =====
     int maxID = 0;
     for (const auto& jDoctor : jArr) {
-    try {
-        Doctor doctor;
-        doctor.fromJson(jDoctor);
-        int ID = doctor.getID();
-        if (doctorTable.count(ID)) {
-            qWarning() << "[WARNING] Duplicate Doctor ID in file:" << ID << "- Skipping";
-            continue;
+        try {
+            // Tạo doctor object tạm để parse
+            Doctor tempDoctor;
+            tempDoctor.fromJson(jDoctor);
+            int ID = tempDoctor.getID();
+            
+            if (doctorTable.count(ID)) {
+                qWarning() << "[WARNING] Duplicate Doctor ID in file:" << ID << "- Skipping";
+                continue;
+            }
+
+            // ===== QUAN TRỌNG: Move vào doctorTable, không copy =====
+            // Điều này tránh gọi destructor của tempDoctor
+            doctorTable[ID] = std::move(tempDoctor);
+            
+            if (ID > maxID) maxID = ID;
+        } catch (const std::exception& e) {
+            qWarning() << "[ERROR] Failed to load doctor record:" << e.what();
         }
-        if (!IDHandler<Doctor>::checkDuplicateID(static_cast<size_t>(ID))) {
-            IDHandler<Doctor>::registerID(static_cast<size_t>(ID));
-        }
-        if (!IDHandler<Person>::checkDuplicateCCCD(doctor.getCCCD())) {
-            IDHandler<Person>::registerCCCD(doctor.getCCCD());
-        }
-        doctorTable[ID] = doctor;
-        if (ID > maxID) maxID = ID;
-    } catch (const std::exception& e) {
-        qWarning() << "[ERROR] Failed to load doctor record:" << e.what();
     }
+    
+    // ===== Re-register tất cả ID và CCCD từ doctorTable =====
+    IDHandler<Doctor>::resetIDTable();
+    IDHandler<Person>::resetCCCDTable();
+
+    for (const auto& pair : doctorTable) {
+        const Doctor& storedDoc = pair.second;
+        
+        // Đăng ký lại ID
+        try {
+            if (!IDHandler<Doctor>::checkDuplicateID(static_cast<size_t>(storedDoc.getID()))) {
+                IDHandler<Doctor>::registerID(static_cast<size_t>(storedDoc.getID()));
+                qDebug() << "[REGISTER] Doctor ID:" << storedDoc.getID() << "registered successfully";
+            }
+        } catch (const std::exception& e) {
+            qWarning() << "[ERROR] Failed to register Doctor ID" << storedDoc.getID() << ":" << e.what();
+        }
+
+        // Đăng ký lại CCCD
+        try {
+            if (!IDHandler<Person>::checkDuplicateCCCD(storedDoc.getCCCD())) {
+                IDHandler<Person>::registerCCCD(storedDoc.getCCCD());
+                qDebug() << "[REGISTER] CCCD:" << QString::fromStdString(storedDoc.getCCCD()) << "registered successfully";
+            }
+        } catch (const std::exception& e) {
+            qWarning() << "[ERROR] Failed to register CCCD:" << e.what();
+        }
     }
     
     // Set current ID > maxID
@@ -139,6 +167,14 @@ void DoctorManager::loadFromFile(const std::string& path) {
     }
     
     qDebug() << "[INFO] Loaded" << doctorTable.size() << "doctors from file";
+    
+    // ===== VERIFY: In ra tất cả ID đã đăng ký =====
+    qDebug() << "[VERIFY] Checking registered Doctor IDs:";
+    for (const auto& pair : doctorTable) {
+        int id = pair.first;
+        bool isRegistered = IDHandler<Doctor>::checkDuplicateID(static_cast<size_t>(id));
+        qDebug() << "  Doctor ID" << id << "registered:" << (isRegistered ? "YES" : "NO");
+    }
 }
 
 void DoctorManager::saveToFile(const std::string& path){

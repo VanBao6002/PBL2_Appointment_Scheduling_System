@@ -1,5 +1,31 @@
 [
     {
+        "CCCD": "121212121212",
+        "ID": 10,
+        "allergies": [
+            "Khong"
+        ],
+        "birthday": {
+            "day": 5,
+            "month": 12,
+            "year": 2000
+        },
+        "bloodType": "B-",
+        "chronicDiseases": [
+            "Khong"
+        ],
+        "email": "momixi@gmail.com",
+        "gender": "F",
+        "insuranceID": "12121212",
+        "medicalRecordIDs": [],
+        "name": "Mo Mixi",
+        "nameFather": "Di Mixo",
+        "nameMother": "Do Mixi",
+        "phoneFather": "0123443512",
+        "phoneMother": "0123432234",
+        "phoneNumber": "0123123123"
+    },
+    {
         "CCCD": "123412341234",
         "ID": 5,
         "allergies": [],
@@ -90,30 +116,6 @@
         "phoneFather": "Trống",
         "phoneMother": "Trống",
         "phoneNumber": "0967676767"
-    },
-    {
-        "CCCD": "123456654321",
-        "ID": 1,
-        "allergies": [
-            "Penicillin"
-        ],
-        "birthday": {
-            "day": 19,
-            "month": 12,
-            "year": 2015
-        },
-        "bloodType": "A+",
-        "chronicDiseases": [],
-        "email": "bongbongbangbang@gmail.com",
-        "gender": "M",
-        "insuranceID": "12344321",
-        "medicalRecordIDs": [],
-        "name": "Rô thị bóng",
-        "nameFather": "bong me",
-        "nameMother": "bong cha",
-        "phoneFather": "",
-        "phoneMother": "",
-        "phoneNumber": "0909876543"
     },
     {
         "CCCD": "123412341234",

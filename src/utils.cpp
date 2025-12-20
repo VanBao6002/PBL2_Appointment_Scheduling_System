@@ -213,7 +213,7 @@ void Utils::validGender(char gender) {
 void Utils::validDate(const Date &date) {
     std::time_t t = std::time(nullptr);
     std::tm* currentTime = std::localtime(&t);
-    int currentYear = currentTime->tm_year + 1900;
+    int currentYear = currentTime->tm_year + 2000;
     int lowerYearLimit = currentYear - 200;
     
     // Đảm bảo không sử dụng date trực tiếp trong phép cộng chuỗi

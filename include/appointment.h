@@ -40,7 +40,7 @@ class Appointment{
         Appointment(Appointment&& other) noexcept;
         Appointment& operator=(Appointment&& other) noexcept;
         
-
+        void setID(int ID_); 
         void setDate(const std::string& date_);
         void setStartTime(const std::string &startTime_);
         void setEndTime(const std::string &endTime_);
@@ -54,6 +54,7 @@ class Appointment{
         int getDoctorID() const;
         int getPatientID() const;
         const Date& getDate() const;
+        std::string getRoom() const {return room;}
         std::string getStartTime() const {return startTime;}
         std::string getEndTime() const {return endTime;}
         std::string getDuration() const {
@@ -73,7 +74,4 @@ class Appointment{
         static std::string statusToString(Status status);
         nlohmann::json toJson() const;
         void fromJson(const nlohmann::json &j);
-    
-    private:
-        void setID(int ID_); 
 };

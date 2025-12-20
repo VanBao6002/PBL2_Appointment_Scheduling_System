@@ -1,76 +1,44 @@
 [
     {
-        "CCCD": "987654321112",
-        "ID": 2,
-        "birthday": {
-            "day": 19,
-            "month": 12,
-            "year": 1995
-        },
-        "description": "",
-        "doctorStatus": "Active",
-        "email": "leoleomes@gmail.com",
-        "gender": "M",
-        "name": "Leo leo méc si",
-        "patientIDs": [],
-        "phoneNumber": "0932123456",
-        "room": "102",
-        "specialization": "Lão khoa",
-        "workingSchedule": {
-            "Chủ nhật": [
-                {
-                    "EndTime": "20:00",
-                    "StartTime": "13:00"
-                }
-            ],
-            "Thứ 2": [
-                {
-                    "EndTime": "18:00",
-                    "StartTime": "07:00"
-                }
-            ],
-            "Thứ 4": [
-                {
-                    "EndTime": "20:00",
-                    "StartTime": "10:30"
-                }
-            ]
-        }
-    },
-    {
-        "CCCD": "123456789101",
+        "CCCD": "012312312312",
         "ID": 1,
         "birthday": {
-            "day": 19,
+            "day": 21,
             "month": 12,
             "year": 1995
         },
         "description": "",
         "doctorStatus": "Active",
-        "email": "rogay@gmail.com",
+        "email": "mixibucac@gmail.com",
         "gender": "M",
-        "name": "Rô nân đô",
+        "name": "Do Mixi",
         "patientIDs": [],
-        "phoneNumber": "0905123456",
-        "room": "101",
+        "phoneNumber": "0123456789",
+        "room": "202",
         "specialization": "Lão khoa",
         "workingSchedule": {
             "Thứ 2": [
                 {
                     "EndTime": "17:00",
-                    "StartTime": "07:00"
-                }
-            ],
-            "Thứ 3": [
-                {
-                    "EndTime": "14:00",
                     "StartTime": "08:00"
                 }
             ],
             "Thứ 4": [
                 {
-                    "EndTime": "21:00",
-                    "StartTime": "14:00"
+                    "EndTime": "17:00",
+                    "StartTime": "08:00"
+                }
+            ],
+            "Thứ 5": [
+                {
+                    "EndTime": "17:00",
+                    "StartTime": "08:00"
+                }
+            ],
+            "Thứ 7": [
+                {
+                    "EndTime": "17:00",
+                    "StartTime": "08:00"
                 }
             ]
         }
