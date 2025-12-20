@@ -1,3 +1,41 @@
+
+#include "adminwindow.h"
+#include "userManager.h"
+#include <QMessageBox>
+
+bool AdminWindow::hasAppointmentAccess(bool write) const {
+    const User& user = UserManager::getInstance().getUserByID(userID);
+    if (user.getRole() == User::Role::ADMIN) return true;
+    if (user.getRole() == User::Role::ASSISTANT) return true;
+    return false;
+}
+bool AdminWindow::hasPatientAccess(bool write) const {
+    const User& user = UserManager::getInstance().getUserByID(userID);
+    if (user.getRole() == User::Role::ADMIN) return true;
+    if (user.getRole() == User::Role::ASSISTANT) return true;
+    return false;
+}
+bool AdminWindow::hasDoctorAccess(bool write) const {
+    const User& user = UserManager::getInstance().getUserByID(userID);
+    if (user.getRole() == User::Role::ADMIN) return true;
+    if (user.getRole() == User::Role::ASSISTANT) return !write;
+    return false;
+}
+bool AdminWindow::hasUserAccess(bool write) const {
+    const User& user = UserManager::getInstance().getUserByID(userID);
+    if (user.getRole() == User::Role::ADMIN) return true;
+    return false;
+}
+bool AdminWindow::hasMedicalRecordAccess(bool write) const {
+    const User& user = UserManager::getInstance().getUserByID(userID);
+    if (user.getRole() == User::Role::ADMIN) return true;
+    if (user.getRole() == User::Role::ASSISTANT) return !write;
+    return false;
+}
+void AdminWindow::showNoPermissionMessage() const {
+    QMessageBox::warning(nullptr, "Cảnh báo", "Bạn không có quyền truy cập vào chức năng này.");
+}
+
 #include "adminwindow.h"
 #include "addeditpatientdialog.h"
 #include "addeditdoctordialog.h"
@@ -1576,6 +1614,7 @@ void AdminWindow::updateUserPaginationUI() {
 
 void AdminWindow::on_appointmentManagerButton_clicked()
 {
+    if (!hasAppointmentAccess()) { showNoPermissionMessage(); return; }
     setActiveSidebarButton(ui->appointmentManagerButton);
     ui->mainStack->setCurrentWidget(ui->page_appointment);
     loadAppointmentData(1, "");
@@ -1583,6 +1622,7 @@ void AdminWindow::on_appointmentManagerButton_clicked()
 
 void AdminWindow::on_patientManagerButton_clicked()
 {
+    if (!hasPatientAccess()) { showNoPermissionMessage(); return; }
     setActiveSidebarButton(ui->patientManagerButton);
     ui->mainStack->setCurrentWidget(ui->page_patient);
 
@@ -1599,6 +1639,7 @@ void AdminWindow::on_patientManagerButton_clicked()
 
 void AdminWindow::on_doctorManagerButton_clicked()
 {
+    if (!hasDoctorAccess()) { showNoPermissionMessage(); return; }
     setActiveSidebarButton(ui->doctorManagerButton);
     ui->mainStack->setCurrentWidget(ui->page_doctor);
 
@@ -1616,6 +1657,7 @@ void AdminWindow::on_doctorManagerButton_clicked()
 
 void AdminWindow::on_userManagerButton_clicked()
 {
+    if (!hasUserAccess()) { showNoPermissionMessage(); return; }
     setActiveSidebarButton(ui->userManagerButton);
     ui->mainStack->setCurrentWidget(ui->page_user);
 
@@ -1632,6 +1674,7 @@ void AdminWindow::on_userManagerButton_clicked()
 
 void AdminWindow::on_medicalRecordButton_clicked()
 {
+    if (!hasMedicalRecordAccess()) { showNoPermissionMessage(); return; }
     setActiveSidebarButton(ui->medicalRecordButton);
     ui->mainStack->setCurrentWidget(ui->page_medicalRecord);
 
@@ -1655,6 +1698,7 @@ void AdminWindow::on_logoutButton_clicked()
 
 void AdminWindow::on_btnAddAppointment_clicked()
 {
+    if (!hasAppointmentAccess(true)) { showNoPermissionMessage(); return; }
     qDebug() << "page_appointment: + Thêm cuộc hẹn mới clicked.";
 
     AddAppointmentDialog addDialog(this);
@@ -1680,6 +1724,7 @@ void AdminWindow::on_btnAddAppointment_clicked()
 
 void AdminWindow::on_btnSearchAppointment_clicked()
 {
+    if (!hasAppointmentAccess(true)) { showNoPermissionMessage(); return; }
     qDebug() << "page_appointment: TÌM KIẾM clicked.";
     QString searchText = ui->txtSearchAppointment->text().trimmed();
     currentAppointmentPage = 1;
@@ -1696,6 +1741,7 @@ void AdminWindow::on_btnEditAppointment_clicked() {
 
 void AdminWindow::on_btnNextPage_Appointment_clicked()
 {
+    if (!hasAppointmentAccess(true)) { showNoPermissionMessage(); return; }
     if (currentAppointmentPage < totalAppointmentPages) {
         currentAppointmentPage++;
         loadAppointmentData(currentAppointmentPage, ui->txtSearchAppointment->text().trimmed());
@@ -1704,6 +1750,7 @@ void AdminWindow::on_btnNextPage_Appointment_clicked()
 
 void AdminWindow::on_btnPrevPage_Appointment_clicked()
 {
+    if (!hasPatientAccess(true)) { showNoPermissionMessage(); return; }
     if (currentAppointmentPage > 1) {
         currentAppointmentPage--;
         loadAppointmentData(currentAppointmentPage, ui->txtSearchAppointment->text().trimmed());
@@ -1712,6 +1759,7 @@ void AdminWindow::on_btnPrevPage_Appointment_clicked()
 
 void AdminWindow::on_btnPage_Appointment_1_clicked()
 {
+    if (!hasPatientAccess(true)) { showNoPermissionMessage(); return; }
     int pageNum = ui->btnPage_Appointment_1->text().toInt();
     if (pageNum > 0 && pageNum <= totalAppointmentPages) {
         currentAppointmentPage = pageNum;
@@ -1721,6 +1769,7 @@ void AdminWindow::on_btnPage_Appointment_1_clicked()
 
 void AdminWindow::on_btnPage_Appointment_2_clicked()
 {
+    if (!hasPatientAccess(true)) { showNoPermissionMessage(); return; }
     int pageNum = ui->btnPage_Appointment_2->text().toInt();
     if (pageNum > 0 && pageNum <= totalAppointmentPages) {
         currentAppointmentPage = pageNum;
@@ -1730,6 +1779,7 @@ void AdminWindow::on_btnPage_Appointment_2_clicked()
 
 void AdminWindow::on_btnPage_Appointment_3_clicked()
 {
+    if (!hasDoctorAccess(true)) { showNoPermissionMessage(); return; }
     int pageNum = ui->btnPage_Appointment_3->text().toInt();
     if (pageNum > 0 && pageNum <= totalAppointmentPages) {
         currentAppointmentPage = pageNum;
@@ -1896,6 +1946,7 @@ void AdminWindow::on_btnSearchPatient_clicked() {
 
 void AdminWindow::on_btnNextPage_Patient_clicked()
 {
+    if (!hasDoctorAccess(true)) { showNoPermissionMessage(); return; }
     if (currentPatientPage < totalPatientPages) {
         currentPatientPage++;
         loadPatientData(currentPatientPage, ui->txtSearchPatient->text().trimmed());
@@ -1904,6 +1955,7 @@ void AdminWindow::on_btnNextPage_Patient_clicked()
 
 void AdminWindow::on_btnPrevPage_Patient_clicked()
 {
+    if (!hasDoctorAccess(true)) { showNoPermissionMessage(); return; }
     if (currentPatientPage > 1) {
         currentPatientPage--;
         loadPatientData(currentPatientPage, ui->txtSearchPatient->text().trimmed());
@@ -1912,6 +1964,7 @@ void AdminWindow::on_btnPrevPage_Patient_clicked()
 
 void AdminWindow::on_btnPage_Patient_1_clicked()
 {
+    if (!hasMedicalRecordAccess(true)) { showNoPermissionMessage(); return; }
     int pageNum = ui->btnPage_Patient_1->text().toInt();
     if (pageNum > 0 && pageNum <= totalPatientPages) {
         currentPatientPage = pageNum;
@@ -1921,6 +1974,7 @@ void AdminWindow::on_btnPage_Patient_1_clicked()
 
 void AdminWindow::on_btnPage_Patient_2_clicked()
 {
+    if (!hasMedicalRecordAccess(true)) { showNoPermissionMessage(); return; }
     int pageNum = ui->btnPage_Patient_2->text().toInt();
     if (pageNum > 0 && pageNum <= totalPatientPages) {
         currentPatientPage = pageNum;
@@ -1930,6 +1984,7 @@ void AdminWindow::on_btnPage_Patient_2_clicked()
 
 void AdminWindow::on_btnPage_Patient_3_clicked()
 {
+    if (!hasMedicalRecordAccess(true)) { showNoPermissionMessage(); return; }
     int pageNum = ui->btnPage_Patient_3->text().toInt();
     if (pageNum > 0 && pageNum <= totalPatientPages) {
         currentPatientPage = pageNum;
@@ -1954,10 +2009,10 @@ void AdminWindow::on_btnSortZAPatient_clicked() {
 }
 
 void AdminWindow::on_btnAddDoctor_clicked() {
+    if (!hasDoctorAccess(true)) { showNoPermissionMessage(); return; }
     qDebug() << "Dialog add doctor opened";
     AddEditDoctorDialog dialog(this);
     dialog.setDialogTitle("Thêm Bác Sĩ Mới");
-
     if (dialog.exec() == QDialog::Accepted) {
         try {
             qDebug() << "Dialog accepted, getting data...";
@@ -1983,6 +2038,7 @@ void AdminWindow::on_btnAddDoctor_clicked() {
 }
 
 void AdminWindow::on_btnRemoveDoctor_clicked() {
+    if (!hasDoctorAccess(true)) { showNoPermissionMessage(); return; }
     QPushButton* btn = qobject_cast<QPushButton*>(sender());
     int doctorID = 0;
 
@@ -2015,6 +2071,7 @@ void AdminWindow::on_btnRemoveDoctor_clicked() {
 }
 
 void AdminWindow::on_btnEditDoctor_clicked() {
+    if (!hasDoctorAccess(true)) { showNoPermissionMessage(); return; }
     QMessageBox::information(this, "Thông báo", "Chức năng Sửa Lịch Hẹn chưa được triển khai.");
 }
 
@@ -2022,6 +2079,7 @@ void AdminWindow::on_btnEditDoctor_clicked() {
 #include "doctordetaildialog.h"
 
 void AdminWindow::on_btnViewDoctorDetail_clicked() {
+    if (!hasDoctorAccess()) { showNoPermissionMessage(); return; }
     QPushButton* btn = qobject_cast<QPushButton*>(sender());
     if (!btn) return;
 
@@ -2041,6 +2099,7 @@ void AdminWindow::on_btnViewDoctorDetail_clicked() {
 }
 
 void AdminWindow::on_btnSearchDoctor_clicked() {
+    if (!hasDoctorAccess()) { showNoPermissionMessage(); return; }
     qDebug() << "page_doctor: TÌM KIẾM clicked.";
 
     QString searchText = ui->txtSearchDoctor->text().trimmed();
@@ -2050,6 +2109,7 @@ void AdminWindow::on_btnSearchDoctor_clicked() {
 
 void AdminWindow::on_btnNextPage_Doctor_clicked()
 {
+    if (!hasUserAccess(true)) { showNoPermissionMessage(); return; }
     if (currentDoctorPage < totalDoctorPages) {
         currentDoctorPage++;
         loadDoctorData(currentDoctorPage, ui->txtSearchDoctor->text().trimmed());
@@ -2058,6 +2118,7 @@ void AdminWindow::on_btnNextPage_Doctor_clicked()
 
 void AdminWindow::on_btnPrevPage_Doctor_clicked()
 {
+    if (!hasUserAccess(true)) { showNoPermissionMessage(); return; }
     if (currentDoctorPage > 1) {
         currentDoctorPage--;
         loadDoctorData(currentDoctorPage, ui->txtSearchDoctor->text().trimmed());
@@ -2114,6 +2175,7 @@ void AdminWindow::on_btnSortZADoctor_clicked() {
 }
 
 void AdminWindow::on_btnAddMedicalRecord_clicked() {
+    if (!hasMedicalRecordAccess(true)) { showNoPermissionMessage(); return; }
     qDebug() << "page_medicalRecord: + Thêm hồ sơ bệnh án mới clicked.";
 
     AddEditMedicalRecordDialog addDialog(this);
@@ -2176,10 +2238,12 @@ void AdminWindow::on_btnAddMedicalRecord_clicked() {
 }
 
 void AdminWindow::on_btnEditMedicalRecord_clicked() {
+    if (!hasMedicalRecordAccess(true)) { showNoPermissionMessage(); return; }
     QMessageBox::information(this, "Thông báo", "Chức năng Sửa Hồ Sơ Bệnh Án chưa được triển khai.");
 }
 
 void AdminWindow::on_btnRemoveMedicalRecord_clicked() {
+    if (!hasMedicalRecordAccess(true)) { showNoPermissionMessage(); return; }
     QPushButton* btn = qobject_cast<QPushButton*>(sender());
     int recordID = 0;
 
@@ -2207,6 +2271,7 @@ void AdminWindow::on_btnRemoveMedicalRecord_clicked() {
 }
 
 void AdminWindow::on_btnSearchMedicalRecord_clicked() {
+    if (!hasMedicalRecordAccess()) { showNoPermissionMessage(); return; }
     qDebug() << "page_medicalRecord: TÌM KIẾM clicked.";
 
     QString searchText = ui->txtSearchMedicalRecord->text().trimmed();
@@ -2215,6 +2280,7 @@ void AdminWindow::on_btnSearchMedicalRecord_clicked() {
 }
 
 void AdminWindow::on_btnViewMedicalRecordDetail_clicked() {
+    if (!hasMedicalRecordAccess()) { showNoPermissionMessage(); return; }
     QPushButton* btn = qobject_cast<QPushButton*>(sender());
     if (!btn) return;
 
