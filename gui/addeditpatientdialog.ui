@@ -50,7 +50,7 @@ QPushButton:pressed {
     background-color: #3D8B40;
 }
 /* ButtonBox - nút Cancel (màu đỏ) */
-QDialogButtonBox QPushButton[text="Cancel"] {
+QDialogButtonBox QPushButton[text=&quot;Cancel&quot;] {
     background-color: #f44336;
     color: white;
     border: none;
@@ -59,14 +59,14 @@ QDialogButtonBox QPushButton[text="Cancel"] {
     font-weight: bold;
     min-width: 80px;
 }
-QDialogButtonBox QPushButton[text="Cancel"]:hover {
+QDialogButtonBox QPushButton[text=&quot;Cancel&quot;]:hover {
     background-color: #d32f2f;
 }
-QDialogButtonBox QPushButton[text="Cancel"]:pressed {
+QDialogButtonBox QPushButton[text=&quot;Cancel&quot;]:pressed {
     background-color: #b71c1c;
 }
 /* ButtonBox - nút OK (màu xanh) */
-QDialogButtonBox QPushButton[text="OK"] {
+QDialogButtonBox QPushButton[text=&quot;OK&quot;] {
     background-color: #4CAF50;
     color: white;
     border: none;
@@ -75,10 +75,10 @@ QDialogButtonBox QPushButton[text="OK"] {
     font-weight: bold;
     min-width: 80px;
 }
-QDialogButtonBox QPushButton[text="OK"]:hover {
+QDialogButtonBox QPushButton[text=&quot;OK&quot;]:hover {
     background-color: #45A049;
 }
-QDialogButtonBox QPushButton[text="OK"]:pressed {
+QDialogButtonBox QPushButton[text=&quot;OK&quot;]:pressed {
     background-color: #3D8B40;
 }</string>
   </property>
@@ -505,22 +505,6 @@ QGroupBox::title {
  </widget>
  <resources/>
  <connections>
-  <connection>
-   <sender>buttonBox</sender>
-   <signal>accepted()</signal>
-   <receiver>AddEditPatientDialog</receiver>
-   <slot>accept()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>20</x>
-     <y>20</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>20</x>
-     <y>20</y>
-    </hint>
-   </hints>
-  </connection>
   <connection>
    <sender>buttonBox</sender>
    <signal>rejected()</signal>

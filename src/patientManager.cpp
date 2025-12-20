@@ -4,14 +4,9 @@
 
 void PatientManager::addPatient(const Patient &pat_) {
     int ID_ = pat_.getID();
-    
-    // ✅ Kiểm tra ID có tồn tại trong table không
     if (patientTable.find(ID_) != patientTable.end()){
         throw std::invalid_argument("Adding failed. Patient ID " + std::to_string(pat_.getID()) + " already exists.");
     }
-    
-    // ✅ KHÔNG copy lại, chỉ lưu trực tiếp reference
-    // Nếu phải lưu, hãy sử dụng move để tránh copy constructor
     patientTable[ID_] = pat_;
     CCCDToID[pat_.getCCCD()] = ID_;
 

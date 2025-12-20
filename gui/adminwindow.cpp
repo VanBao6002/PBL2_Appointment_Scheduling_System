@@ -1666,6 +1666,7 @@ void AdminWindow::on_btnAddAppointment_clicked()
             AppointmentManager::getInstance().addAppointment(newAppt);
 
             QMessageBox::information(this, "Thành công", "Cuộc hẹn đã được thêm và lưu.");
+
             loadAppointmentData(currentAppointmentPage, ui->txtSearchAppointment->text().trimmed());
 
         } catch (const std::exception& e) {
@@ -1745,8 +1746,6 @@ void AdminWindow::on_btnAddPatient_clicked() {
         try {
             qDebug() << "Dialog accepted, getting data...";
             Patient newPatient = dialog.getPatientData();
-
-            qDebug() << "Patient data retrieved, ID:" << newPatient.getID();
 
             PatientManager::getInstance().addPatient(newPatient);
 

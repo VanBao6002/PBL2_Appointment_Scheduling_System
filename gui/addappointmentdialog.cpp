@@ -123,14 +123,7 @@ void AddAppointmentDialog::updateAvailableTimeSlot(const QStringList& inputSlots
     if (!calendar) return;
 
     QDate selectedDate = calendar->selectedDate();
-    if (!selectedDate.isValid() || selectedDoctorID < 0) return;
-
-    Doctor doctor;
-    try {
-        doctor = DoctorManager::getInstance().getDoctorByID(selectedDoctorID);
-    } catch (...) {
-        return;
-    }
+    if (!selectedDate.isValid()) return;
 
     // Get weekday name in 'Thứ N' format to match JSON
     QString weekdayName = "Thứ " + QString::number(selectedDate.dayOfWeek());
@@ -141,7 +134,7 @@ void AddAppointmentDialog::updateAvailableTimeSlot(const QStringList& inputSlots
 
     // Get all intervals for the day
     auto intervals = TimeInterval::getIntervalsWithBooking(
-        weekdayName.toStdString(), doctor.getWorkingSchedule(), bookedSlots
+        weekdayName.toStdString(), DoctorManager::getInstance().getDoctorByID(selectedDoctorID).getWorkingSchedule(), bookedSlots
     );
 
     // Prepare available slots
@@ -355,12 +348,7 @@ void AddAppointmentDialog::populateDoctorCards() {
 }
 
 Appointment AddAppointmentDialog::getAppointmentData() const {
-        qDebug() << "[DEBUG][getAppointmentData] Entered function. selectedDoctorID:" << selectedDoctorID;
-    int doctorID = selectedDoctorID;
-    if (doctorID < 0) {
-        throw std::runtime_error("No doctor selected.");
-    }
-    int patientID = selectedPatient.getID();
+    qDebug() << "[DEBUG][getAppointmentData] Entered function. selectedDoctorID:" << selectedDoctorID;
 
     QWidget* page2 = ui->stackedWidget->findChild<QWidget*>("page_2");
     QDate qDate = page2 ? page2->findChild<QCalendarWidget*>("calendarWidget")->selectedDate() : QDate();
@@ -370,31 +358,57 @@ Appointment AddAppointmentDialog::getAppointmentData() const {
     std::string room = DoctorManager::getInstance().getDoctorByID(selectedDoctorID).getRoom();
     std::string statusStr = ui->cmbStatus->currentText().toStdString();
     Appointment::Status status = Appointment::statusFromString(statusStr);
-    return Appointment(doctorID, patientID, apptDate.toString(),
-                      qStartTime.toStdString(), qEndTime.toStdString(),
-                      room, statusStr);
 
-        qDebug() << "[DEBUG][getAppointmentData] Exited function.";
+
+    if (!IDHandler<Doctor>::checkDuplicateID(selectedDoctorID)) {
+        IDHandler<Doctor>::registerID(selectedDoctorID);
+    }
+    if (!IDHandler<Patient>::checkDuplicateID(selectedPatientID)) {
+        IDHandler<Patient>::registerID(selectedPatientID);
+    }
+    return Appointment(selectedDoctorID, selectedPatientID, apptDate.toString(), qStartTime.toStdString(), qEndTime.toStdString(), room, statusStr);
+
 }
 
 void AddAppointmentDialog::on_searchButton_clicked() {
     QString Qcccd = ui->txtCCCD->text().trimmed();
     std::string cccd = Qcccd.toStdString();
     if (isPatientExisted(cccd)) {
-        selectedPatient = PatientManager::getInstance().getPatientByCCCD(cccd);
-        // Set patient data to the dialog fields as needed
-        // ...
+        selectedPatientID = PatientManager::getInstance().getPatientByCCCD(cccd).getID();
         ui->stackedWidget->setCurrentIndex(1); // Go to page 1
-    } else {    
+    } else {
         AddEditPatientDialog dlg(this);
         if (dlg.exec() == QDialog::Accepted) {
-            selectedPatient = dlg.getPatientData();
-            ui->stackedWidget->setCurrentIndex(1); // Go to page 1
+            Patient newPatient = dlg.getPatientData();
+            try {
+                PatientManager::getInstance().getPatientByID(newPatient.getID());
+            } catch (...) {
+                PatientManager::getInstance().addPatient(newPatient);
+            }
+            selectedPatientID = newPatient.getID();
+            // Set CCCD field to new patient's CCCD and block signals to prevent retrigger
+            bool oldBlock = ui->txtCCCD->blockSignals(true);
+            ui->txtCCCD->setText(QString::fromStdString(newPatient.getCCCD()));
+            ui->txtCCCD->blockSignals(oldBlock);
+            // Only set page if not already on page 1
+            if (ui->stackedWidget->currentIndex() != 1) {
+                ui->stackedWidget->setCurrentIndex(1); // Go to page 1
+            }
         }
     }
 }
 
 void AddAppointmentDialog::on_cancelButton_clicked() {
+    // If a new patient was created in this dialog session, remove them from PatientManager and unregister their ID
+    if (selectedPatientID > 0) {
+        try {
+            Patient patient = PatientManager::getInstance().getPatientByID(selectedPatientID);
+            PatientManager::getInstance().removePatient(selectedPatientID);
+            IDHandler<Patient>::unregisterID(selectedPatientID);
+        } catch (...) {
+            // Patient not found, nothing to remove
+        }
+    }
     reject();
 }
 

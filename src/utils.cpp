@@ -352,10 +352,9 @@ void Utils::validPassword(const std::string &password_){
 void Utils::validRoom(const std::string &room_){
     static std::unordered_set<std::string> roomTable = []{
         std::unordered_set<std::string> set;
-        // Giả định Config::ROOM_PATH tồn tại
         std::ifstream file(Config::ROOM_PATH); 
         std::string line;
-        while (std::getline(file, line)) set.insert(line);
+        while (std::getline(file, line)) set.insert(Utils::trimmed(line));
         return set;
     }();
     if (roomTable.find(room_) == roomTable.end()){

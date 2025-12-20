@@ -88,19 +88,12 @@ void AddEditDoctorDialog::setupDatePicker() {
 // ============================================
 QStringList AddEditDoctorDialog::loadRoomList() {
     QStringList rooms;
-
-    // Load từ file room.json
-    QFile file("room.json");
-    if (file.open(QIODevice::ReadOnly)) {
-        QByteArray data = file.readAll();
-        QJsonDocument doc = QJsonDocument::fromJson(data);
-        if (doc.isObject()) {
-            QJsonObject obj = doc.object();
-            if (obj.contains("rooms") && obj["rooms"].isArray()) {
-                QJsonArray roomArray = obj["rooms"].toArray();
-                for (const QJsonValue& value : roomArray) {
-                    rooms.append(value.toString());
-                }
+    QFile file(Config::ROOM_PATH);
+    if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        while (!file.atEnd()) {
+            QString line = file.readLine().trimmed();
+            if (!line.isEmpty()) {
+                rooms.append(line);
             }
         }
         file.close();
