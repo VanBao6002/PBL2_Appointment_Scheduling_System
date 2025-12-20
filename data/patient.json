@@ -180,5 +180,27 @@
         "phoneFather": "Trống",
         "phoneMother": "Trống",
         "phoneNumber": "0123456789"
+    },
+    {
+        "CCCD": "123412341234",
+        "ID": 9,
+        "allergies": [],
+        "birthday": {
+            "day": 20,
+            "month": 12,
+            "year": 2015
+        },
+        "bloodType": "A+",
+        "chronicDiseases": [],
+        "email": "asd@gmail.com",
+        "gender": "M",
+        "insuranceID": "123141",
+        "medicalRecordIDs": [],
+        "name": "asd",
+        "nameFather": "Trống",
+        "nameMother": "Trống",
+        "phoneFather": "Trống",
+        "phoneMother": "Trống",
+        "phoneNumber": "0123456789"
     }
 ]

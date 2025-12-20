@@ -75,11 +75,13 @@ void loginwindow::on_loginButton_clicked()
             this->hide();
             if (loggedInUser.getRole() == User::Role::ADMIN) {
                 AdminWindow *adminWindow = new AdminWindow(this);
+                adminWindow->setUserID(loggedInUser.getID());
                 adminWindow->show();
                 qDebug() << "Admin login successful.";
             } else if(loggedInUser.getRole() == User::Role::ASSISTANT){
-                AssistantWindow *assistantWindow = new AssistantWindow(this);
-                assistantWindow->show();
+                AdminWindow *adminWindow = new AdminWindow(this);
+                adminWindow->setUserID(loggedInUser.getID());
+                adminWindow->show();
                 qDebug() << "Assistant login successful.";
             } else {
                 QMessageBox::critical(nullptr, "Lỗi Vai Trò", "Vai trò người dùng không hợp lệ hoặc không được hỗ trợ.");
