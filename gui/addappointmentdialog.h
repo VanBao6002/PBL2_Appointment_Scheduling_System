@@ -39,12 +39,11 @@ private:
 
 private:
     Ui::AddAppointmentDialog *ui;
-    Patient selectedPatient;
+    int selectedPatientID = -1;
+    int selectedDoctorID = -1;
     QList<QPushButton*> timeSlotButtons;
     QString selectedTimeSlot;
     QButtonGroup* doctorButtonGroup = nullptr;
-    int selectedDoctorID = -1;
-
 };
 
 #endif // ADDAPPOINTMENTDIALOG_H

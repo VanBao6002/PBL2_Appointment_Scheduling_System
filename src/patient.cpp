@@ -175,20 +175,36 @@ void Patient::setChronicDiseases(const std::string &chronicDiseases_) {
 }
 
 void Patient::setNameMother(const std::string &nameMother_) {
+    if (nameMother_.empty()) {
+        nameMother = "Trống";
+        return;
+    }
     Utils::validName(Utils::trimmed(nameMother_));
     nameMother = Utils::trimmed(nameMother_);
 }
 
 void Patient::setNameFather(const std::string &nameFather_) {
+    if (nameFather_.empty()) {
+        nameFather = "Trống";
+        return;
+    }
     Utils::validName(Utils::trimmed(nameFather_));
     nameFather = Utils::trimmed(nameFather_);
 }
 
 void Patient::setPhoneMother(const std::string &phoneMother_) {
+    if (phoneMother_.empty()) {
+        phoneMother = "Trống";
+        return;
+    }
     phoneMother = Utils::trimmed(phoneMother_);
 }
 
 void Patient::setPhoneFather(const std::string &phoneFather_) {
+    if (phoneFather_.empty()) {
+        phoneFather = "Trống";
+        return;
+    }
     phoneFather = Utils::trimmed(phoneFather_);
 }
 
