@@ -102,11 +102,7 @@ Patient& Patient::operator=(Patient&& other) noexcept {
 }
 
 Patient::~Patient(){
-    if (ID > 0) {
-        try {
-            IDHandler<Patient>::unregisterID(ID);
-        } catch (...) {}
-    }
+
 }
 
 void Patient::addMedicalRecord(int recordID) {

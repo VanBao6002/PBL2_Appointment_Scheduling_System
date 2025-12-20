@@ -31,6 +31,7 @@ private slots:
     void on_btnEditAppointment_clicked();
     void on_btnSearchAppointment_clicked();
     void on_btnRemoveAppointment_clicked();
+    void on_btnViewAppointmentDetail_clicked();
 
     void on_btnNextPage_Appointment_clicked();
     void on_btnPrevPage_Appointment_clicked();
@@ -137,6 +138,12 @@ private:
     int itemsPerPage;
     bool isPatientSortAscending = true;
 
+    enum class AppointmentSortMode {
+        BY_ID_ASC,
+        BY_NAME_ASC,
+        BY_NAME_DESC
+    };
+
     enum class PatientSortMode {
         BY_ID_ASC,
         BY_NAME_ASC,
@@ -165,7 +172,9 @@ private:
     PatientSortMode currentPatientSortMode = PatientSortMode::BY_ID_ASC;
     MedicalRecordSortMode currentMedicalRecordSortMode = MedicalRecordSortMode::BY_ID_ASC;
     UserSortMode currentUserSortMode = UserSortMode::BY_ID_ASC;
+    AppointmentSortMode currentAppointmentSortMoed = AppointmentSortMode::BY_ID_ASC;
 
+    void setupAppointmentTable();
     void setupPatientTable();
     void setupDoctorTable();
     void setupUserTable();

@@ -2,24 +2,20 @@
 #include <QDebug>
 
 void AppointmentManager::addAppointment(const Appointment &apt_) {
-        qDebug() << "[DEBUG][addAppointment] Entered function.";
+    qDebug() << "[DEBUG][addAppointment] Entered function.";
     int ID_ = apt_.getID();
     if (appointmentTable.find(ID_) != appointmentTable.end()) {
         throw std::invalid_argument("Adding failed. Appointment ID " + std::to_string(apt_.getID()) + " already exists.");
     }
-    bool doctorExists = true;
-    bool patientExists = true;
-    try {
-        DoctorManager::getInstance().getDoctorByID(apt_.getDoctorID());
-    } catch (...) { doctorExists = false; }
-
-    try {
-        PatientManager::getInstance().getPatientByID(apt_.getPatientID());
-    } catch (...) { patientExists = false; }
-
-    if (!doctorExists || !patientExists) {
-        throw std::invalid_argument("Lỗi, ID Bác sĩ hoặc Bệnh nhân không tồn tại!");
+    
+    // SỬA ĐỔI: Sử dụng IDHandler để kiểm tra sự tồn tại của Doctor và Patient ID
+    if (!IDHandler<Doctor>::checkDuplicateID(apt_.getDoctorID())) {
+        throw std::invalid_argument("Lỗi, ID Bác sĩ không tồn tại!");
     }
+    if (!IDHandler<Patient>::checkDuplicateID(apt_.getPatientID())) {
+        throw std::invalid_argument("Lỗi, ID Bệnh nhân không tồn tại!");
+    }
+    
     appointmentTable[ID_] = apt_;
     log[ID_] += " Added on: " + Utils::getDateTime();
 }
@@ -28,6 +24,15 @@ void AppointmentManager::editAppointment(int ID_, const Appointment &newAppointm
     if (appointmentTable.find(ID_) == appointmentTable.end()) {
         throw std::invalid_argument("Editing failed. Appointment ID " + std::to_string(newAppointment.getID()) + " not found.");
     }
+    
+    // SỬA ĐỔI: Kiểm tra Doctor và Patient ID mới
+    if (!IDHandler<Doctor>::checkDuplicateID(newAppointment.getDoctorID())) {
+        throw std::invalid_argument("Lỗi, ID Bác sĩ không tồn tại!");
+    }
+    if (!IDHandler<Patient>::checkDuplicateID(newAppointment.getPatientID())) {
+        throw std::invalid_argument("Lỗi, ID Bệnh nhân không tồn tại!");
+    }
+    
     appointmentTable[ID_] = newAppointment;
     log[ID_] += " Edited on: " + Utils::getDateTime();
 }
@@ -131,7 +136,6 @@ void AppointmentManager::loadFromFile(const std::string& path) {
     
     qDebug() << "[INFO] Loaded" << appointmentTable.size() << "appointments from file";
 }
-
 
 void AppointmentManager::saveToFile(const std::string& path){
     try {

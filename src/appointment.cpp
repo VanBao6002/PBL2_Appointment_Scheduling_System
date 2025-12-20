@@ -22,7 +22,6 @@ Appointment::Appointment(int doctorID, int patientID, const std::string& date_, 
 }
 
 Appointment::~Appointment(){
-    IDHandler<Appointment>::unregisterID(ID);
 }
 
 // Copy Constructor

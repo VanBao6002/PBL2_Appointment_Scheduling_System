@@ -19,11 +19,7 @@ Doctor::Doctor(const std::string& name_, char gender_, const std::string& birthd
     IDHandler<Doctor>::registerID(ID);
 }
 
-Doctor::~Doctor(){
-    if (ID > 0) {
-        IDHandler<Doctor>::unregisterID(ID);
-    }
-}
+Doctor::~Doctor(){}
 
 // Copy Constructor - Only copy ID, do not generate new one
 Doctor::Doctor(const Doctor& other)

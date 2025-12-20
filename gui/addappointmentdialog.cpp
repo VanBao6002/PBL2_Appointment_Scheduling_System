@@ -8,9 +8,11 @@
 #include <QDebug>
 #include <QLayoutItem>
 #include <QLayout>
+#include <Qt>
 #include <QButtonGroup>
 #include <QCalendarWidget>
 #include <QListWidget>
+#include <qtimer.h>
 #include "doctorManager.h"
 #include "patientManager.h"
 #include "appointmentManager.h"
@@ -21,81 +23,482 @@
 
 AddAppointmentDialog::AddAppointmentDialog(QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::AddAppointmentDialog)
+    ui(new Ui::AddAppointmentDialog),
+    isNewPatient(false),
+    selectedDoctorID(-1),
+    selectedPatientID(-1),
+    cmbStatus(nullptr),
+    editMode(false),
+    appointmentID(-1),
+    lastSelectedDate(QDate())
+
 {
     ui->setupUi(this);
+    setWindowFlags(Qt::FramelessWindowHint);
+
+    qDebug() << "[DEBUG] AddAppointmentDialog created. Initial doctor ID:" << selectedDoctorID;
+
+    // Áp dụng style
+    applyStyle();
+
+    // Cài đặt kết nối
+    setupConnections();
+
+    // Cài đặt title
+    setDialogTitle("Thêm Cuộc Hẹn Mới");
+
+    // Khởi tạo status combo box
     setupStatusComboBox();
 
-    // Connect searchButton
-    QPushButton* searchButton = ui->stackedWidget->findChild<QPushButton*>("searchButton");
-    if (searchButton) {
-        connect(searchButton, &QPushButton::clicked, this, &AddAppointmentDialog::on_searchButton_clicked);
+    setupSpecializationComboBox();
+
+    // Khởi tạo danh sách bác sĩ
+    populateDoctorCards();
+}
+
+AddAppointmentDialog::AddAppointmentDialog(const Appointment& appointment, QWidget *parent) :
+    QDialog(parent),
+    ui(new Ui::AddAppointmentDialog),
+    isNewPatient(false),
+    selectedDoctorID(-1),
+    selectedPatientID(-1),
+    cmbStatus(nullptr),
+    editMode(true),
+    appointmentID(appointment.getID()),
+    lastSelectedDate(QDate())
+{
+    ui->setupUi(this);
+    setWindowFlags(Qt::FramelessWindowHint);
+
+    // Áp dụng style
+    applyStyle();
+
+    // Cài đặt kết nối
+    setupConnections();
+
+    // Tải dữ liệu appointment
+    loadAppointmentData(appointment);
+
+    // Cài đặt title
+    setDialogTitle("Chỉnh Sửa Cuộc Hẹn - ID: " + QString::number(appointmentID));
+}
+
+// Hàm tải dữ liệu appointment cho chế độ chỉnh sửa
+void AddAppointmentDialog::loadAppointmentData(const Appointment& appointment) {
+    // Đặt ID bệnh nhân và bác sĩ
+    selectedPatientID = appointment.getPatientID();
+    selectedDoctorID = appointment.getDoctorID();
+
+    // Tìm thông tin bệnh nhân
+    try {
+        Patient patient = PatientManager::getInstance().getPatientByID(selectedPatientID);
+        ui->txtCCCD->setText(QString::fromStdString(patient.getCCCD()));
+        ui->txtCCCD->setEnabled(false); // Không cho phép thay đổi CCCD khi chỉnh sửa
+    } catch (...) {
+        QMessageBox::warning(this, "Lỗi", "Không tìm thấy thông tin bệnh nhân!");
     }
 
-    // Connect backToPage0Button (on page_1)
-    QPushButton* backToPage0Button = ui->stackedWidget->findChild<QPushButton*>("backToPage0Button");
-    if (backToPage0Button) {
-        connect(backToPage0Button, &QPushButton::clicked, this, [this]() {
-            ui->stackedWidget->setCurrentIndex(0);
-        });
-    }
+    // Chuyển đến trang chọn bác sĩ
+    ui->stackedWidget->setCurrentIndex(1);
 
-    // Connect backToPage1Button (on page_2)
-    QPushButton* backToPage1Button = ui->stackedWidget->findChild<QPushButton*>("backToPage1Button");
-    if (backToPage1Button) {
-        connect(backToPage1Button, &QPushButton::clicked, this, [this]() {
-            ui->stackedWidget->setCurrentIndex(1);
-        });
-    }
-
-    // Connect nextToPage3Button (on page_2)
-    QPushButton* nextToPage3Button = ui->stackedWidget->findChild<QPushButton*>("nextToPage3Button");
-    if (nextToPage3Button) {
-        connect(nextToPage3Button, &QPushButton::clicked, this, [this]() {
-            ui->stackedWidget->setCurrentIndex(3);
-        });
-    }
-
-    // Connect backToPage2Button (on page_3)
-    QPushButton* backToPage2Button = ui->stackedWidget->findChild<QPushButton*>("backToPage2button");
-    if (backToPage2Button) {
-        connect(backToPage2Button, &QPushButton::clicked, this, [this]() {
-            ui->stackedWidget->setCurrentIndex(2);
-        });
-    }
-
-    // Connect cancelButton (on dialog)
-    QPushButton* cancelButton = ui->stackedWidget->findChild<QPushButton*>("cancelButton");
-    if (cancelButton) {
-        connect(cancelButton, &QPushButton::clicked, this, &AddAppointmentDialog::on_cancelButton_clicked);
-    }
-
-    // Connect confirmButton (on page_3)
-    QPushButton* confirmButton = ui->stackedWidget->findChild<QPushButton*>("confirmButton");
-    if (confirmButton) {
-        connect(confirmButton, &QPushButton::clicked, this, &AddAppointmentDialog::on_confirmButton_clicked);
-    }
-
-    // --- Specialization ComboBox setup ---
-    QWidget* page1 = ui->stackedWidget->findChild<QWidget*>("page_1");
-    QComboBox* cmbSpecialization = page1 ? page1->findChild<QComboBox*>("cmbSpecialization") : nullptr;
-    if (cmbSpecialization) {
-        cmbSpecialization->clear();
-        QSet<QString> specializations;
-        auto& doctorManager = DoctorManager::getInstance();
-        for (const auto& pair : doctorManager.getAllDoctors()) {
-            specializations.insert(QString::fromStdString(pair.second.getSpecialization()));
-        }
-        cmbSpecialization->addItems(specializations.values());
-        connect(cmbSpecialization, &QComboBox::currentTextChanged, this, [this]() {
-            populateDoctorCards();
-        });
-        if (cmbSpecialization->count() > 0)
-            cmbSpecialization->setCurrentIndex(0);
-    }
+    // Cập nhật danh sách bác sĩ và chọn bác sĩ hiện tại
     populateDoctorCards();
 
-    ui->stackedWidget->setCurrentIndex(0);
+    // Chọn bác sĩ trong danh sách
+    QTimer::singleShot(100, this, [this, appointment]() {
+        // Tìm và chọn bác sĩ trong danh sách
+        if (doctorButtonGroup) {
+            QAbstractButton* doctorBtn = doctorButtonGroup->button(appointment.getDoctorID());
+            if (doctorBtn) {
+                doctorBtn->click();
+
+                // Cập nhật calendar với ngày đã chọn
+                QWidget* page2 = ui->stackedWidget->findChild<QWidget*>("page_2");
+                if (page2) {
+                    QCalendarWidget* calendar = page2->findChild<QCalendarWidget*>("calendarWidget");
+                    if (calendar) {
+                        QDate apptDate(appointment.getDate().getYear(),
+                                       appointment.getDate().getMonth(),
+                                       appointment.getDate().getDay());
+                        calendar->setSelectedDate(apptDate);
+
+                        // Cập nhật time slot
+                        updateAvailableCalendarDaysAndTimeSlots(selectedDoctorID);
+
+                        // Chọn time slot trong danh sách
+                        QTimer::singleShot(200, this, [this, appointment]() {
+                            QWidget* page2 = ui->stackedWidget->findChild<QWidget*>("page_2");
+                            if (page2) {
+                                QListWidget* listTimeSlots = page2->findChild<QListWidget*>("listTimeSlots");
+                                if (listTimeSlots) {
+                                    QString targetSlot = QString::fromStdString(appointment.getStartTime() + " - " + appointment.getEndTime());
+                                    for (int i = 0; i < listTimeSlots->count(); ++i) {
+                                        if (listTimeSlots->item(i)->text() == targetSlot) {
+                                            listTimeSlots->setCurrentRow(i);
+                                            break;
+                                        }
+                                    }
+                                }
+
+                                // Cập nhật trạng thái
+                                QComboBox* statusCombo = page2->findChild<QComboBox*>("cmbStatus");
+                                if (statusCombo) {
+                                    QString statusStr = QString::fromStdString(Appointment::statusToString(appointment.getStatus()));
+                                    int index = statusCombo->findText(statusStr, Qt::MatchFixedString);
+                                    if (index >= 0) {
+                                        statusCombo->setCurrentIndex(index);
+                                    }
+                                }
+                            }
+                        });
+                    }
+                }
+            }
+        }
+    });
+}
+
+// Hàm áp dụng style cho dialog
+void AddAppointmentDialog::applyStyle() {
+    this->setStyleSheet(R"(
+        /* ===== DIALOG BACKGROUND ===== */
+        QDialog {
+            background-color: #f5f5f5;
+        }
+
+        /* ===== LABELS - ĐẢM BẢO HIỂN THỊ RÕ RÀNG ===== */
+        QLabel {
+            color: #2c3e50;
+            background-color: transparent;
+            border: none;
+            font-weight: 600;
+            font-size: 11pt;
+            padding: 2px;
+        }
+
+        /* ===== TITLE LABELS ===== */
+        QLabel[text*="TÌM KIẾM"],
+        QLabel[text*="CHỌN BÁC SĨ"],
+        QLabel[text*="CHỌN NGÀY"],
+        QLabel[text*="XÁC NHẬN"] {
+            color: #1a252f;
+            font-size: 18pt;
+            font-weight: bold;
+            background: white;
+            border: 2px solid #3498db;
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        /* ===== GROUPBOX ===== */
+        QGroupBox {
+            font-weight: bold;
+            font-size: 11pt;
+            color: #2c3e50;
+            border: 2px solid #bdc3c7;
+            border-radius: 8px;
+            margin-top: 15px;
+            padding-top: 15px;
+            background-color: white;
+        }
+
+        QGroupBox::title {
+            subcontrol-origin: margin;
+            left: 15px;
+            padding: 5px 10px;
+            background-color: white;
+            color: #2c3e50;
+            border: 1px solid #bdc3c7;
+            border-radius: 4px;
+        }
+
+        /* ===== BUTTONS ===== */
+        QPushButton {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 10pt;
+            min-width: 100px;
+            min-height: 35px;
+        }
+
+        QPushButton:hover {
+            background-color: #2980b9;
+        }
+
+        QPushButton:pressed {
+            background-color: #1f6391;
+        }
+
+        QPushButton:disabled {
+            background-color: #bdc3c7;
+            color: #7f8c8d;
+        }
+
+        /* ===== SPECIFIC BUTTONS ===== */
+        QPushButton[text*="Tìm kiếm"],
+        QPushButton[text*="Chọn bác sĩ"] {
+            background-color: #27ae60;
+        }
+
+        QPushButton[text*="Tìm kiếm"]:hover,
+        QPushButton[text*="Chọn bác sĩ"]:hover {
+            background-color: #229954;
+        }
+
+        QPushButton[text*="Quay lại"] {
+            background-color: #95a5a6;
+        }
+
+        QPushButton[text*="Quay lại"]:hover {
+            background-color: #7f8c8d;
+        }
+
+        QPushButton[text*="Hủy"],
+        QPushButton[text*="Cancel"] {
+            background-color: #e74c3c;
+        }
+
+        QPushButton[text*="Hủy"]:hover,
+        QPushButton[text*="Cancel"]:hover {
+            background-color: #c0392b;
+        }
+
+        QPushButton[text*="Xác nhận"],
+        QPushButton[text*="Tiếp theo"] {
+            background-color: #27ae60;
+            font-size: 11pt;
+            padding: 12px 30px;
+        }
+
+        QPushButton[text*="Xác nhận"]:hover,
+        QPushButton[text*="Tiếp theo"]:hover {
+            background-color: #229954;
+        }
+
+        /* ===== LINE EDIT ===== */
+        QLineEdit {
+            border: 2px solid #bdc3c7;
+            border-radius: 5px;
+            padding: 10px;
+            font-size: 11pt;
+            background-color: white;
+            color: #2c3e50;
+        }
+
+        QLineEdit:focus {
+            border: 2px solid #3498db;
+            background-color: #ffffff;
+        }
+
+        QLineEdit::placeholder {
+            color: #95a5a6;
+            font-style: italic;
+        }
+
+        /* ===== COMBOBOX ===== */
+        QComboBox {
+            border: 2px solid #bdc3c7;
+            border-radius: 5px;
+            padding: 8px;
+            background-color: white;
+            font-size: 11pt;
+            color: #2c3e50;
+            min-height: 30px;
+        }
+
+        QComboBox:focus {
+            border: 2px solid #3498db;
+        }
+
+        QComboBox::drop-down {
+            border: none;
+            width: 30px;
+        }
+
+        QComboBox::down-arrow {
+            image: none;
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+            border-top: 8px solid #2c3e50;
+            margin-right: 5px;
+        }
+
+        QComboBox QAbstractItemView {
+            background-color: white;
+            color: #2c3e50;
+            selection-background-color: #3498db;
+            selection-color: white;
+            border: 1px solid #bdc3c7;
+        }
+
+        /* ===== CALENDAR WIDGET - IMPROVED ===== */
+        QCalendarWidget {
+            background-color: white;
+            border: 2px solid #3498db;
+            border-radius: 8px;
+        }
+
+        /* Calendar Navigation Bar */
+        QCalendarWidget QWidget#qt_calendar_navigationbar {
+            background-color: #3498db;
+            min-height: 60px;
+        }
+
+        /* Month/Year buttons */
+        QCalendarWidget QToolButton {
+            background-color: #2980b9;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 8px;
+            font-weight: bold;
+            font-size: 11pt;
+            margin: 5px;
+        }
+
+        QCalendarWidget QToolButton:hover {
+            background-color: #1f6391;
+        }
+
+        QCalendarWidget QToolButton::menu-indicator {
+            image: none;
+        }
+
+        /* Previous/Next Month Arrows */
+        QCalendarWidget QToolButton#qt_calendar_prevmonth,
+        QCalendarWidget QToolButton#qt_calendar_nextmonth {
+            background-color: transparent;
+            qproperty-icon: none;
+            min-width: 40px;
+            max-width: 40px;
+        }
+
+        QCalendarWidget QToolButton#qt_calendar_prevmonth {
+            qproperty-text: "◀";
+        }
+
+        QCalendarWidget QToolButton#qt_calendar_nextmonth {
+            qproperty-text: "▶";
+        }
+
+        /* Header (Days of week) */
+        QCalendarWidget QWidget {
+            alternate-background-color: white;
+        }
+
+        QCalendarWidget QAbstractItemView:enabled {
+            background-color: white;
+            color: #2c3e50;
+            font-size: 11pt;
+            selection-background-color: #3498db;
+            selection-color: white;
+        }
+
+        /* Weekend days */
+        QCalendarWidget QAbstractItemView:enabled[class="weekend"] {
+            color: #e74c3c;
+        }
+
+        /* Month dropdown menu */
+        QCalendarWidget QMenu {
+            background-color: white;
+            border: 1px solid #bdc3c7;
+        }
+
+        QCalendarWidget QSpinBox {
+            background-color: white;
+            color: #2c3e50;
+            border: 1px solid #bdc3c7;
+            border-radius: 3px;
+            padding: 5px;
+            font-size: 11pt;
+        }
+
+        /* ===== LIST WIDGET (Time Slots) ===== */
+        QListWidget {
+            border: 2px solid #bdc3c7;
+            border-radius: 8px;
+            background-color: white;
+            font-size: 11pt;
+            padding: 5px;
+        }
+
+        QListWidget::item {
+            padding: 12px;
+            border-bottom: 1px solid #ecf0f1;
+            color: #2c3e50;
+            background-color: white;
+        }
+
+        QListWidget::item:hover {
+            background-color: #e8f5e9;
+        }
+
+        QListWidget::item:selected {
+            background-color: #27ae60;
+            color: white;
+            font-weight: bold;
+            border-left: 4px solid #229954;
+        }
+
+        QListWidget::item:disabled {
+            color: #bdc3c7;
+            background-color: #f5f5f5;
+            text-decoration: line-through;
+        }
+
+        /* ===== SCROLL AREA ===== */
+        QScrollArea {
+            border: none;
+            background-color: transparent;
+        }
+
+        /* ===== SCROLL BARS ===== */
+        QScrollBar:vertical {
+            border: none;
+            background: #ecf0f1;
+            width: 12px;
+            margin: 0px;
+            border-radius: 6px;
+        }
+
+        QScrollBar::handle:vertical {
+            background: #95a5a6;
+            border-radius: 6px;
+            min-height: 30px;
+        }
+
+        QScrollBar::handle:vertical:hover {
+            background: #7f8c8d;
+        }
+
+        QScrollBar::add-line:vertical,
+        QScrollBar::sub-line:vertical {
+            height: 0px;
+        }
+
+        QScrollBar:horizontal {
+            border: none;
+            background: #ecf0f1;
+            height: 12px;
+            margin: 0px;
+            border-radius: 6px;
+        }
+
+        QScrollBar::handle:horizontal {
+            background: #95a5a6;
+            border-radius: 6px;
+            min-width: 30px;
+        }
+
+        QScrollBar::handle:horizontal:hover {
+            background: #7f8c8d;
+        }
+    )");
 }
 
 AddAppointmentDialog::~AddAppointmentDialog()
@@ -188,78 +591,186 @@ void AddAppointmentDialog::updateAvailableCalendarDaysAndTimeSlots(int doctorID)
         return;
     }
 
+    // ===== RESET TẤT CẢ FORMAT TRƯỚC =====
+    QTextCharFormat defaultFormat;
+    defaultFormat.setBackground(Qt::white);
+    defaultFormat.setForeground(Qt::black);
+
+    QDate minDate = QDate::currentDate();
+    QDate maxDate = minDate.addDays(Config::MAGIC_MARKED_AVAILABLE_WORKING_DAYS_NUMBER);
+
+    for (QDate date = minDate; date <= maxDate; date = date.addDays(1)) {
+        calendar->setDateTextFormat(date, defaultFormat);
+    }
+
+    // ===== TẠO FORMAT CHO WORKING DAYS =====
+    QTextCharFormat workingDayFormat;
+    workingDayFormat.setBackground(QColor(46, 204, 113, 100)); // Xanh lá nhạt
+    workingDayFormat.setForeground(Qt::white);
+    workingDayFormat.setFontWeight(QFont::Bold);
+
+    QTextCharFormat todayFormat;
+    todayFormat.setBackground(QColor(52, 152, 219)); // Xanh dương
+    todayFormat.setForeground(Qt::white);
+    todayFormat.setFontWeight(QFont::Bold);
+
+    QTextCharFormat selectedFormat;
+    selectedFormat.setBackground(QColor(231, 76, 60)); // Đỏ
+    selectedFormat.setForeground(Qt::white);
+    selectedFormat.setFontWeight(QFont::Bold);
+
     QSet<QDate> workingDays;
     const auto& daysVec = doctor.getWorkingSchedule().getDays();
     QDate today = QDate::currentDate();
 
+    // ===== ĐÁNH DẤU WORKING DAYS =====
     for (int i = 0; i < Config::MAGIC_MARKED_AVAILABLE_WORKING_DAYS_NUMBER; ++i) {
         QDate date = today.addDays(i);
         QString weekdayName = "Thứ " + QString::number(date.dayOfWeek());
+
         for (const auto& dayStr : daysVec) {
             if (weekdayName.compare(QString::fromStdString(dayStr), Qt::CaseInsensitive) == 0) {
                 workingDays.insert(date);
+
+                if (date == today) {
+                    calendar->setDateTextFormat(date, todayFormat);
+                } else {
+                    calendar->setDateTextFormat(date, workingDayFormat);
+                }
                 break;
             }
         }
     }
 
-    // Mark working days on calendar (using QTextCharFormat)
-    QTextCharFormat fmt;
-    fmt.setBackground(Qt::green);
-    for (const QDate& d : workingDays) {
-        calendar->setDateTextFormat(d, fmt);
+    // ===== THÊM LEGEND (HƯỚNG DẪN) =====
+    QWidget* legendWidget = page2->findChild<QWidget*>("legendWidget");
+    if (!legendWidget) {
+        legendWidget = new QWidget(page2);
+        legendWidget->setObjectName("legendWidget");
+
+        QHBoxLayout* legendLayout = new QHBoxLayout(legendWidget);
+        legendLayout->setContentsMargins(10, 5, 10, 5);
+
+        // Ngày hôm nay
+        QLabel* todayIcon = new QLabel("⬤");
+        todayIcon->setStyleSheet("color: #3498db; font-size: 14pt;");
+        QLabel* todayLabel = new QLabel("Hôm nay");
+        todayLabel->setStyleSheet("color: #2c3e50; font-size: 10pt;");
+
+        // Ngày làm việc
+        QLabel* workingIcon = new QLabel("⬤");
+        workingIcon->setStyleSheet("color: #2ecc71; font-size: 14pt;");
+        QLabel* workingLabel = new QLabel("Ngày làm việc");
+        workingLabel->setStyleSheet("color: #2c3e50; font-size: 10pt;");
+
+        // Ngày đã chọn
+        QLabel* selectedIcon = new QLabel("⬤");
+        selectedIcon->setStyleSheet("color: #e74c3c; font-size: 14pt;");
+        QLabel* selectedLabel = new QLabel("Đã chọn");
+        selectedLabel->setStyleSheet("color: #2c3e50; font-size: 10pt;");
+
+        legendLayout->addWidget(todayIcon);
+        legendLayout->addWidget(todayLabel);
+        legendLayout->addSpacing(20);
+        legendLayout->addWidget(workingIcon);
+        legendLayout->addWidget(workingLabel);
+        legendLayout->addSpacing(20);
+        legendLayout->addWidget(selectedIcon);
+        legendLayout->addWidget(selectedLabel);
+        legendLayout->addStretch();
+
+        // Thêm vào layout của page2
+        QVBoxLayout* mainLayout = qobject_cast<QVBoxLayout*>(page2->layout());
+        if (mainLayout) {
+            // Tìm vị trí của groupBoxDate để insert legend sau nó
+            for (int i = 0; i < mainLayout->count(); ++i) {
+                QLayoutItem* item = mainLayout->itemAt(i);
+                if (item && item->layout()) {
+                    QHBoxLayout* hbox = qobject_cast<QHBoxLayout*>(item->layout());
+                    if (hbox) {
+                        mainLayout->insertWidget(i + 1, legendWidget);
+                        break;
+                    }
+                }
+            }
+        }
     }
 
-    // Disconnect previous connections to avoid duplicate slots
+    // ===== DISCONNECT PREVIOUS CONNECTIONS =====
     disconnect(calendar, nullptr, nullptr, nullptr);
 
-    // Connect calendar selection to update time slots
-    connect(calendar, &QCalendarWidget::selectionChanged, this, [this, doctorID, calendar, daysVec]() {
-        QDate selected = calendar->selectedDate();
-        QString weekdayName = "Thứ " + QString::number(selected.dayOfWeek());
+    // ===== CONNECT CALENDAR SELECTION =====
+    // SỬA LỖI 1: Capture tất cả biến cần thiết trong lambda
+    connect(calendar, &QCalendarWidget::selectionChanged, this,
+            [this, doctorID, calendar, daysVec, selectedFormat, today, todayFormat, workingDays, workingDayFormat]() {
 
-        // Check if selected day is a working day
-        bool isWorkingDay = false;
-        for (const auto& dayStr : daysVec) {
-            if (weekdayName.compare(QString::fromStdString(dayStr), Qt::CaseInsensitive) == 0) {
-                isWorkingDay = true;
-                break;
-            }
-        }
-        if (!isWorkingDay) {
-            updateAvailableTimeSlot(QStringList(), QSet<QString>());
-            return;
-        }
+                QDate selected = calendar->selectedDate();
+                QString weekdayName = "Thứ " + QString::number(selected.dayOfWeek());
 
-        Doctor doctor;
-        try {
-            doctor = DoctorManager::getInstance().getDoctorByID(doctorID);
-        } catch (...) {
-            updateAvailableTimeSlot(QStringList(), QSet<QString>());
-            return;
-        }
+                // ✅ RESET NGÀY TRƯỚC VỀ FORMAT GỐC
+                if (lastSelectedDate.isValid() && lastSelectedDate != selected) {
+                    if (lastSelectedDate == today) {
+                        calendar->setDateTextFormat(lastSelectedDate, todayFormat);
+                    } else if (workingDays.contains(lastSelectedDate)) {
+                        calendar->setDateTextFormat(lastSelectedDate, workingDayFormat);
+                    }
+                }
 
-        // Get booked slots for this doctor and date (implement as needed)
-        std::vector<std::pair<std::string, std::string>> bookedSlots;
-        bookedSlots = AppointmentManager::getInstance().getBookedSlotsForDoctorDate(selectedDoctorID, selected.toString("dd-MM-yyyy").toStdString());
+                // Highlight ngày được chọn
+                calendar->setDateTextFormat(selected, selectedFormat);
+                lastSelectedDate = selected;
 
-        // Get all intervals for the day
-        auto intervals = TimeInterval::getIntervalsWithBooking(
-            weekdayName.toStdString(), doctor.getWorkingSchedule(), bookedSlots
-        );
+                // Kiểm tra ngày làm việc
+                bool isWorkingDay = false;
+                for (const auto& dayStr : daysVec) {
+                    if (weekdayName.compare(QString::fromStdString(dayStr), Qt::CaseInsensitive) == 0) {
+                        isWorkingDay = true;
+                        break;
+                    }
+                }
 
-        // Prepare available slots
-        QStringList allSlots;
-        for (const auto& [start, end, isBooked] : intervals) {
-            if (!isBooked)
-                allSlots.append(QString::fromStdString(start + " - " + end));
-        }
+                if (!isWorkingDay) {
+                    QMessageBox::information(this, "Thông báo",
+                                             "Bác sĩ không làm việc vào " + weekdayName + " này.\n"
+                                                                                          "Vui lòng chọn ngày làm việc khác (được đánh dấu màu xanh lá).");
+                    updateAvailableTimeSlot(QStringList(), QSet<QString>());
+                    return;
+                }
 
-        updateAvailableTimeSlot(allSlots, QSet<QString>());
-    });
+                Doctor doctor;
+                try {
+                    doctor = DoctorManager::getInstance().getDoctorByID(doctorID);
+                } catch (...) {
+                    updateAvailableTimeSlot(QStringList(), QSet<QString>());
+                    return;
+                }
 
-    // Initial trigger for current selection
-    calendar->selectionChanged();
+                // Lấy booked slots
+                std::vector<std::pair<std::string, std::string>> bookedSlots;
+                bookedSlots = AppointmentManager::getInstance().getBookedSlotsForDoctorDate(
+                    doctorID, selected.toString("dd-MM-yyyy").toStdString());
+
+                // Lấy intervals
+                auto intervals = TimeInterval::getIntervalsWithBooking(
+                    weekdayName.toStdString(), doctor.getWorkingSchedule(), bookedSlots);
+
+                // Chuẩn bị available slots
+                QStringList allSlots;
+                for (const auto& [start, end, isBooked] : intervals) {
+                    if (!isBooked)
+                        allSlots.append(QString::fromStdString(start + " - " + end));
+                }
+
+                updateAvailableTimeSlot(allSlots, QSet<QString>());
+            });
+
+    // ===== TRIGGER INITIAL SELECTION =====
+    if (!workingDays.isEmpty()) {
+        QDate firstWorkingDay = *workingDays.begin();
+        calendar->setSelectedDate(firstWorkingDay);
+        // Kích hoạt sự kiện selectionChanged
+        calendar->selectionChanged();
+    }
 }
 
 
@@ -299,8 +810,12 @@ bool AddAppointmentDialog::isPatientExisted(const std::string& cccd) {
 
 void AddAppointmentDialog::populateDoctorCards() {
     QWidget* doctorListWidget = ui->stackedWidget->findChild<QWidget*>("doctorListWidget");
-    if (!doctorListWidget) return;
+    if (!doctorListWidget) {
+        qDebug() << "[ERROR] doctorListWidget not found!";
+        return;
+    }
 
+    // Clear old layout
     QLayout* oldLayout = doctorListWidget->layout();
     if (oldLayout) {
         QLayoutItem* item;
@@ -319,169 +834,526 @@ void AddAppointmentDialog::populateDoctorCards() {
     QWidget* page1 = ui->stackedWidget->findChild<QWidget*>("page_1");
     QComboBox* cmbSpecialization = page1 ? page1->findChild<QComboBox*>("cmbSpecialization") : nullptr;
     QString selectedSpecialization = cmbSpecialization ? cmbSpecialization->currentText() : QString();
+
+    qDebug() << "[DEBUG] Selected specialization:" << selectedSpecialization;
+
+    bool showAll = selectedSpecialization.isEmpty() ||
+                   selectedSpecialization == "-- Tất cả chuyên khoa --";
+
+    int doctorCount = 0;
+
+    // In danh sách tất cả bác sĩ để debug
+    qDebug() << "[DEBUG] All doctors in manager:";
+    for (const auto& pair : doctorManager.getAllDoctors()) {
+        const Doctor& doc = pair.second;
+        qDebug() << "  ID:" << doc.getID()
+                 << ", Name:" << QString::fromStdString(doc.getName())
+                 << ", Status:" << static_cast<int>(doc.getStatus())
+                 << ", Specialization:" << QString::fromStdString(doc.getSpecialization());
+    }
+
     for (const auto& pair : doctorManager.getAllDoctors()) {
         const Doctor& doctor = pair.second;
-        if (doctor.getStatus() != Doctor::Status::Active ||
-            QString::fromStdString(doctor.getSpecialization()) != selectedSpecialization) {
+
+        // Chỉ filter theo status và specialization
+        if (doctor.getStatus() != Doctor::Status::Active) {
+            qDebug() << "[DEBUG] Skipping doctor ID" << doctor.getID() << "- Not Active";
             continue;
         }
 
+        if (!showAll && QString::fromStdString(doctor.getSpecialization()) != selectedSpecialization) {
+            qDebug() << "[DEBUG] Skipping doctor ID" << doctor.getID() << "- Specialization mismatch";
+            continue;
+        }
+
+        doctorCount++;
+        qDebug() << "[DEBUG] Adding doctor to UI:" << doctor.getID()
+                 << "-" << QString::fromStdString(doctor.getName());
+
+        // Tạo card cho bác sĩ
         QWidget* card = new QWidget;
+        card->setStyleSheet(R"(
+            QWidget {
+                background-color: white;
+                border: 2px solid #e0e0e0;
+                border-radius: 10px;
+                padding: 15px;
+                margin: 5px;
+            }
+            QWidget:hover {
+                border: 2px solid #4CAF50;
+            }
+        )");
+
         QVBoxLayout* vbox = new QVBoxLayout(card);
 
+        // Tên bác sĩ
         QLabel* name = new QLabel(QString::fromStdString(doctor.getName()));
-        QLabel* desc = new QLabel(QString::fromStdString(doctor.getDescription())); 
-        QPushButton* selectBtn = new QPushButton("Select");
+        name->setStyleSheet("font-size: 14pt; font-weight: bold; color: #2c3e50;");
+
+        // Chuyên khoa
+        QLabel* spec = new QLabel("Chuyên khoa: " + QString::fromStdString(doctor.getSpecialization()));
+        spec->setStyleSheet("font-size: 11pt; color: #7f8c8d;");
+
+        // Phòng
+        QLabel* room = new QLabel("Phòng: " + QString::fromStdString(doctor.getRoom()));
+        room->setStyleSheet("font-size: 10pt; color: #95a5a6;");
+
+        // Mô tả
+        QString desc = QString::fromStdString(doctor.getDescription());
+        if (!desc.isEmpty()) {
+            QLabel* description = new QLabel(desc);
+            description->setWordWrap(true);
+            description->setStyleSheet("font-size: 10pt; color: #7f8c8d; margin-top: 5px;");
+            vbox->addWidget(description);
+        }
+
+        // Button chọn
+        QPushButton* selectBtn = new QPushButton("Chọn bác sĩ này");
         selectBtn->setCheckable(true);
+        selectBtn->setStyleSheet(R"(
+            QPushButton {
+                background-color: #4CAF50;
+                color: white;
+                border: none;
+                padding: 10px;
+                border-radius: 5px;
+                font-weight: bold;
+                margin-top: 10px;
+            }
+            QPushButton:hover {
+                background-color: #45a049;
+            }
+            QPushButton:checked {
+                background-color: #2196F3;
+            }
+        )");
+
+        // Lưu doctor ID vào property của button
+        selectBtn->setProperty("doctorID", doctor.getID());
 
         vbox->addWidget(name);
-        vbox->addWidget(desc);
+        vbox->addWidget(spec);
+        vbox->addWidget(room);
         vbox->addWidget(selectBtn);
 
         doctorButtonGroup->addButton(selectBtn, doctor.getID());
         layout->addWidget(card);
 
-        connect(selectBtn, &QPushButton::clicked, this, [this, selectBtn]() {
-            selectedDoctorID = doctorButtonGroup->id(selectBtn);
-            // Move to the next page (e.g., time slot selection)
+        // SỬA LỖI: Sử dụng doctor object từ capture list
+        connect(selectBtn, &QPushButton::clicked, this, [this, doctor]() {  // Capture doctor object
+            selectedDoctorID = doctor.getID();  // Lấy ID trực tiếp
+            qDebug() << "[DEBUG] Selected doctor ID:" << selectedDoctorID;
+
+            // Chuyển sang trang chọn ngày giờ
             ui->stackedWidget->setCurrentIndex(2);
-            // Initialize calendar and time slots for the selected doctor
+
+            // Khởi tạo calendar và time slots
             updateAvailableCalendarDaysAndTimeSlots(selectedDoctorID);
         });
+    }
+
+    layout->addStretch(); // Đẩy các card lên trên
+
+    qDebug() << "[DEBUG] Total doctors displayed:" << doctorCount;
+
+    if (doctorCount == 0) {
+        QLabel* noDataLabel = new QLabel("Không có bác sĩ nào khả dụng với chuyên khoa này.");
+        noDataLabel->setAlignment(Qt::AlignCenter);
+        noDataLabel->setStyleSheet("font-size: 12pt; color: #e74c3c; padding: 50px;");
+        layout->addWidget(noDataLabel);
     }
 }
 
 Appointment AddAppointmentDialog::getAppointmentData() const {
-    qDebug() << "[DEBUG][getAppointmentData] Entered function. selectedDoctorID:" << selectedDoctorID;
+    qDebug() << "[DEBUG][getAppointmentData] Entered function.";
+    qDebug() << "Doctor ID:" << selectedDoctorID;
+    qDebug() << "Patient ID:" << selectedPatientID;
 
+    // Kiểm tra xem bác sĩ có tồn tại không
+    if (selectedDoctorID <= 0) {
+        qDebug() << "[ERROR] Invalid Doctor ID!";
+        throw std::runtime_error("Invalid Doctor ID");
+    }
+
+    // Lấy thông tin từ UI
     QWidget* page2 = ui->stackedWidget->findChild<QWidget*>("page_2");
-    QDate qDate = page2 ? page2->findChild<QCalendarWidget*>("calendarWidget")->selectedDate() : QDate();
+    QDate qDate = page2 ? page2->findChild<QCalendarWidget*>("calendarWidget")->selectedDate() : QDate::currentDate();
+
+    // Định dạng ngày
     Date apptDate(qDate.day(), qDate.month(), qDate.year());
     QString qStartTime = selectedTimeSlot.section(" - ", 0, 0);
     QString qEndTime = selectedTimeSlot.section(" - ", 1, 1);
-    std::string room = DoctorManager::getInstance().getDoctorByID(selectedDoctorID).getRoom();
-    std::string statusStr = ui->cmbStatus->currentText().toStdString();
-    Appointment::Status status = Appointment::statusFromString(statusStr);
 
+    // Lấy thông tin phòng từ bác sĩ
+    std::string room = "";
+    try {
+        Doctor doctor = DoctorManager::getInstance().getDoctorByID(selectedDoctorID);
+        room = doctor.getRoom();
+        qDebug() << "[DEBUG] Doctor found. Room:" << room.c_str();
+    } catch (const std::exception& e) {
+        qDebug() << "[ERROR] Doctor not found! ID:" << selectedDoctorID << "Error:" << e.what();
+        room = "Chưa xác định";
 
-    if (!IDHandler<Doctor>::checkDuplicateID(selectedDoctorID)) {
-        IDHandler<Doctor>::registerID(selectedDoctorID);
+        // In danh sách bác sĩ có sẵn để debug
+        auto allDoctors = DoctorManager::getInstance().getAllDoctors();
+        qDebug() << "[DEBUG] Available doctors:";
+        for (const auto& pair : allDoctors) {
+            qDebug() << "  ID:" << pair.first << ", Name:" << QString::fromStdString(pair.second.getName());
+        }
     }
-    if (!IDHandler<Patient>::checkDuplicateID(selectedPatientID)) {
-        IDHandler<Patient>::registerID(selectedPatientID);
-    }
-    return Appointment(selectedDoctorID, selectedPatientID, apptDate.toString(), qStartTime.toStdString(), qEndTime.toStdString(), room, statusStr);
 
+    // Lấy trạng thái
+    std::string statusStr = selectedStatus.toStdString();
+    if (statusStr.empty()) {
+        statusStr = "Scheduled";
+    }
+
+    qDebug() << "Date:" << apptDate.toString().c_str();
+    qDebug() << "Time:" << qStartTime << "-" << qEndTime;
+    qDebug() << "Room:" << room.c_str();
+    qDebug() << "Status:" << statusStr.c_str();
+
+    // Tạo appointment mới hoặc cập nhật
+    if (editMode && appointmentID > 0) {
+        // Chế độ chỉnh sửa
+        Appointment updatedAppt(selectedDoctorID, selectedPatientID,
+                                apptDate.toString(),
+                                qStartTime.toStdString(),
+                                qEndTime.toStdString(),
+                                room,
+                                statusStr);
+        updatedAppt.setID(appointmentID); // Giữ nguyên ID
+        return updatedAppt;
+    } else {
+        // Chế độ thêm mới
+        Appointment newAppt(selectedDoctorID, selectedPatientID,
+                            apptDate.toString(),
+                            qStartTime.toStdString(),
+                            qEndTime.toStdString(),
+                            room,
+                            statusStr);
+        return newAppt;
+    }
 }
 
 void AddAppointmentDialog::on_searchButton_clicked() {
     QString Qcccd = ui->txtCCCD->text().trimmed();
     std::string cccd = Qcccd.toStdString();
+
+    if (cccd.empty()) {
+        QMessageBox::warning(this, "Thiếu thông tin", "Vui lòng nhập CCCD!");
+        return;
+    }
+
     if (isPatientExisted(cccd)) {
         selectedPatientID = PatientManager::getInstance().getPatientByCCCD(cccd).getID();
-        ui->stackedWidget->setCurrentIndex(1); // Go to page 1
+        isNewPatient = false; // Bệnh nhân đã tồn tại
+        ui->stackedWidget->setCurrentIndex(1);
     } else {
-        AddEditPatientDialog dlg(this);
-        if (dlg.exec() == QDialog::Accepted) {
-            Patient newPatient = dlg.getPatientData();
-            try {
-                PatientManager::getInstance().getPatientByID(newPatient.getID());
-            } catch (...) {
-                PatientManager::getInstance().addPatient(newPatient);
-            }
-            selectedPatientID = newPatient.getID();
-            // Set CCCD field to new patient's CCCD and block signals to prevent retrigger
-            bool oldBlock = ui->txtCCCD->blockSignals(true);
-            ui->txtCCCD->setText(QString::fromStdString(newPatient.getCCCD()));
-            ui->txtCCCD->blockSignals(oldBlock);
-            // Only set page if not already on page 1
-            if (ui->stackedWidget->currentIndex() != 1) {
-                ui->stackedWidget->setCurrentIndex(1); // Go to page 1
+        // Hỏi người dùng có muốn tạo bệnh nhân mới không
+        QMessageBox::StandardButton reply;
+        reply = QMessageBox::question(this, "Bệnh nhân không tồn tại",
+                                      "Không tìm thấy bệnh nhân với CCCD này.\nBạn có muốn tạo bệnh nhân mới?",
+                                      QMessageBox::Yes | QMessageBox::No);
+
+        if (reply == QMessageBox::Yes) {
+            AddEditPatientDialog dlg(this);
+            if (dlg.exec() == QDialog::Accepted) {
+                Patient newPatient = dlg.getPatientData();
+                try {
+                    // Kiểm tra xem đã tồn tại chưa
+                    PatientManager::getInstance().getPatientByID(newPatient.getID());
+                    QMessageBox::warning(this, "Lỗi", "Bệnh nhân đã tồn tại!");
+                    return;
+                } catch (...) {
+                    // Thêm bệnh nhân mới
+                    PatientManager::getInstance().addPatient(newPatient);
+                    selectedPatientID = newPatient.getID();
+                    isNewPatient = true; // Đánh dấu là bệnh nhân mới
+
+                    // Cập nhật CCCD field
+                    bool oldBlock = ui->txtCCCD->blockSignals(true);
+                    ui->txtCCCD->setText(QString::fromStdString(newPatient.getCCCD()));
+                    ui->txtCCCD->blockSignals(oldBlock);
+
+                    ui->stackedWidget->setCurrentIndex(1);
+                }
             }
         }
     }
 }
 
 void AddAppointmentDialog::on_cancelButton_clicked() {
-    // If a new patient was created in this dialog session, remove them from PatientManager and unregister their ID
-    if (selectedPatientID > 0) {
-        try {
-            Patient patient = PatientManager::getInstance().getPatientByID(selectedPatientID);
-            PatientManager::getInstance().removePatient(selectedPatientID);
-            IDHandler<Patient>::unregisterID(selectedPatientID);
-        } catch (...) {
-            // Patient not found, nothing to remove
+    // Chỉ xóa bệnh nhân nếu là bệnh nhân mới tạo trong phiên này
+    if (isNewPatient && selectedPatientID > 0) {
+        QMessageBox::StandardButton reply;
+        reply = QMessageBox::question(this, "Xác nhận",
+                                      "Bạn có chắc muốn hủy và xóa bệnh nhân mới vừa tạo?",
+                                      QMessageBox::Yes | QMessageBox::No);
+
+        if (reply == QMessageBox::Yes) {
+            try {
+                PatientManager::getInstance().removePatient(selectedPatientID);
+                IDHandler<Patient>::unregisterID(selectedPatientID);
+            } catch (...) {
+                // Bỏ qua nếu không xóa được
+            }
         }
     }
     reject();
 }
 
 void AddAppointmentDialog::on_confirmButton_clicked() {
-    // Check if time slot is still available
-    QWidget* page2 = ui->stackedWidget->findChild<QWidget*>("page_2");
-    QListWidget* listTimeSlots = page2 ? page2->findChild<QListWidget*>("listTimeSlots") : nullptr;
-    if (!listTimeSlots || selectedTimeSlot.isEmpty()) {
-        QMessageBox::warning(this, "Invalid Time Slot", "Please select a valid time slot.");
-        return;
-    }
-    bool slotAvailable = false;
-    for (int i = 0; i < listTimeSlots->count(); ++i) {
-        if (listTimeSlots->item(i)->text() == selectedTimeSlot) {
-            slotAvailable = true;
-            break;
-        }
-    }
-    if (!slotAvailable) {
-        QMessageBox::warning(this, "Time Slot Unavailable", "The selected time slot is no longer available.");
+    // Kiểm tra cơ bản
+    if (selectedDoctorID < 0) {
+        QMessageBox::warning(this, "Chưa chọn bác sĩ", "Vui lòng chọn bác sĩ!");
         return;
     }
 
-    // Check if doctor is selected
-    if (selectedDoctorID < 0) {
-        QMessageBox::warning(this, "Invalid Doctor", "Please select a doctor before confirming the appointment.");
+    // Kiểm tra xem bác sĩ có tồn tại không
+    try {
+        DoctorManager::getInstance().getDoctorByID(selectedDoctorID);
+        qDebug() << "[DEBUG] Doctor ID" << selectedDoctorID << "exists and is valid.";
+    } catch (const std::exception& e) {
+        QMessageBox::critical(this, "Lỗi",
+                              QString("Không tìm thấy bác sĩ với ID: %1\nLỗi: %2").arg(selectedDoctorID).arg(e.what()));
         return;
     }
-    // Prevent double booking for the same patient at the same date and time
-    QCalendarWidget* calendar = page2 ? page2->findChild<QCalendarWidget*>("calendarWidget") : nullptr;
-    QDate selectedDate = calendar ? calendar->selectedDate() : QDate();
+
+    if (selectedPatientID < 0) {
+        QMessageBox::warning(this, "Chưa có bệnh nhân", "Vui lòng tìm kiếm bệnh nhân!");
+        return;
+    }
+
+    // Lấy thông tin từ UI
+    QWidget* page2 = ui->stackedWidget->findChild<QWidget*>("page_2");
+    if (!page2) {
+        QMessageBox::warning(this, "Lỗi", "Không thể truy cập trang chọn ngày!");
+        return;
+    }
+
+    QCalendarWidget* calendar = page2->findChild<QCalendarWidget*>("calendarWidget");
+    QListWidget* listTimeSlots = page2->findChild<QListWidget*>("listTimeSlots");
+
+    if (!calendar || !listTimeSlots) {
+        QMessageBox::warning(this, "Lỗi", "Không tìm thấy calendar hoặc danh sách khung giờ!");
+        return;
+    }
+
+    QDate selectedDate = calendar->selectedDate();
+    if (!selectedDate.isValid()) {
+        QMessageBox::warning(this, "Chưa chọn ngày", "Vui lòng chọn ngày hẹn!");
+        return;
+    }
+
+    if (selectedTimeSlot.isEmpty() || listTimeSlots->currentRow() < 0) {
+        QMessageBox::warning(this, "Chưa chọn giờ", "Vui lòng chọn khung giờ hẹn!");
+        return;
+    }
+
+    // SỬA LỖI Ở ĐÂY: Kiểm tra item có bị disabled không (đã được đặt)
+    QListWidgetItem* currentItem = listTimeSlots->currentItem();
+    if (!currentItem || !(currentItem->flags() & Qt::ItemIsEnabled)) {
+        QMessageBox::warning(this, "Khung giờ đã đặt", "Khung giờ này đã được đặt. Vui lòng chọn khung giờ khác!");
+        return;
+    }
+
+    // Kiểm tra trùng lịch cho bệnh nhân
     std::string selectedDateStr = selectedDate.toString("dd-MM-yyyy").toStdString();
     std::string selectedStart = selectedTimeSlot.section(" - ", 0, 0).toStdString();
     std::string selectedEnd = selectedTimeSlot.section(" - ", 1, 1).toStdString();
 
-    // Check all appointments for this patient on this date
     const auto& allAppointments = AppointmentManager::getInstance().getAllAppointmentsMap();
     for (const auto& pair : allAppointments) {
         const Appointment& apt = pair.second;
-        if (apt.getPatientID() == selectedPatientID && apt.getDate().toString() == selectedDateStr) {
-            // Check for time overlap
+        if (apt.getPatientID() == selectedPatientID &&
+            apt.getDate().toString() == selectedDateStr) {
+
+            // Kiểm tra trùng thời gian
             if (!(apt.getEndTime() <= selectedStart || apt.getStartTime() >= selectedEnd)) {
-                QMessageBox::warning(this, "Double Booking", "Bệnh nhân đã có cuộc hẹn khác trong khung giờ này!");
+                QMessageBox::warning(this, "Trùng lịch hẹn",
+                                     QString("Bệnh nhân đã có cuộc hẹn khác:\n"
+                                             "Thời gian: %1 - %2\n"
+                                             "Bác sĩ: %3")
+                                         .arg(QString::fromStdString(apt.getStartTime()))
+                                         .arg(QString::fromStdString(apt.getEndTime()))
+                                         .arg(QString::number(apt.getDoctorID())));
                 return;
             }
         }
     }
 
-    // set booked for choosen time slot
-    Doctor doctor;
-    try {
-        doctor = DoctorManager::getInstance().getDoctorByID(selectedDoctorID);
-    } catch (const std::exception& e) {
-        QMessageBox::critical(this, "Doctor Not Found", "The selected doctor could not be found. Please select another doctor.");
-        return;
-    }
-    QString weekdayName = "Thứ " + QString::number(selectedDate.dayOfWeek());
-    std::vector<std::pair<std::string, std::string>> bookedSlots = AppointmentManager::getInstance().getBookedSlotsForDoctorDate(selectedDoctorID, selectedDateStr);
-    auto intervals = TimeInterval::getIntervalsWithBooking(
-        weekdayName.toStdString(), doctor.getWorkingSchedule(), bookedSlots
-    );
-
-    for (auto& interval : intervals) {
-        if (interval.start == selectedStart && interval.end == selectedEnd) {
-            interval.setBooked(true);
-            break;
-        }
-    }
+    // Mọi thứ đều OK
     accept();
 }
 
+void AddAppointmentDialog::on_cmbStatus_currentTextChanged(const QString &text) {
+    selectedStatus = text;
+}
+
+void AddAppointmentDialog::setupConnections() {
+    // Connect searchButton
+    QPushButton* searchButton = ui->stackedWidget->findChild<QPushButton*>("searchButton");
+    if (searchButton) {
+        connect(searchButton, &QPushButton::clicked, this, &AddAppointmentDialog::on_searchButton_clicked);
+    }
+
+    // Connect backToPage0Button
+    QPushButton* backToPage0Button = ui->stackedWidget->findChild<QPushButton*>("backToPage0Button");
+    if (backToPage0Button) {
+        connect(backToPage0Button, &QPushButton::clicked, this, [this]() {
+            ui->stackedWidget->setCurrentIndex(0);
+        });
+    }
+
+    // Connect backToPage1Button
+    QPushButton* backToPage1Button = ui->stackedWidget->findChild<QPushButton*>("backToPage1Button");
+    if (backToPage1Button) {
+        connect(backToPage1Button, &QPushButton::clicked, this, [this]() {
+            ui->stackedWidget->setCurrentIndex(1);
+        });
+    }
+
+    // Connect backToPage2Button
+    QPushButton* backToPage2Button = ui->stackedWidget->findChild<QPushButton*>("backToPage2button");
+    if (backToPage2Button) {
+        connect(backToPage2Button, &QPushButton::clicked, this, [this]() {
+            ui->stackedWidget->setCurrentIndex(2);
+        });
+    }
+
+    // Connect cancelButton
+    QPushButton* cancelButton = ui->stackedWidget->findChild<QPushButton*>("cancelButton");
+    if (cancelButton) {
+        connect(cancelButton, &QPushButton::clicked, this, &AddAppointmentDialog::on_cancelButton_clicked);
+    }
+
+    // Connect confirmButton
+    QPushButton* confirmButton = ui->stackedWidget->findChild<QPushButton*>("confirmButton");
+    if (confirmButton) {
+        connect(confirmButton, &QPushButton::clicked, this, &AddAppointmentDialog::on_confirmButton_clicked);
+    }
+
+    // Connect nextToPage3Button
+    QPushButton* nextToPage3Button = ui->stackedWidget->findChild<QPushButton*>("nextToPage3Button");
+    if (nextToPage3Button) {
+        connect(nextToPage3Button, &QPushButton::clicked, this, [this]() {
+            updateConfirmationPage();
+            ui->stackedWidget->setCurrentIndex(3);
+        });
+    }
+}
+
+// Hàm set title
+void AddAppointmentDialog::setDialogTitle(const QString& title) {
+    setWindowTitle(title);
+}
+
+// Hàm set edit mode
+void AddAppointmentDialog::setEditMode(bool isEdit) {
+    editMode = isEdit;
+}
+
+void AddAppointmentDialog::setupSpecializationComboBox() {
+    QWidget* page1 = ui->stackedWidget->findChild<QWidget*>("page_1");
+    if (!page1) return;
+
+    QComboBox* cmbSpecialization = page1->findChild<QComboBox*>("cmbSpecialization");
+    if (!cmbSpecialization) return;
+
+    // Lấy danh sách chuyên khoa từ tất cả bác sĩ
+    QSet<QString> specializations;
+    auto& doctorManager = DoctorManager::getInstance();
+
+    for (const auto& pair : doctorManager.getAllDoctors()) {
+        const Doctor& doctor = pair.second;
+        if (doctor.getStatus() == Doctor::Status::Active) {
+            specializations.insert(QString::fromStdString(doctor.getSpecialization()));
+        }
+    }
+
+    // Khởi tạo combobox
+    cmbSpecialization->clear();
+    cmbSpecialization->addItem("-- Tất cả chuyên khoa --"); // Option mặc định
+
+    QStringList sortedSpecializations = specializations.values();
+    sortedSpecializations.sort();
+    cmbSpecialization->addItems(sortedSpecializations);
+
+    // Kết nối signal để cập nhật danh sách bác sĩ khi chọn chuyên khoa khác
+    disconnect(cmbSpecialization, nullptr, this, nullptr); // Xóa connection cũ
+    connect(cmbSpecialization, QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this, &AddAppointmentDialog::populateDoctorCards);
+}
+
+void AddAppointmentDialog::mousePressEvent(QMouseEvent *event)
+{
+    if (event->button() == Qt::LeftButton) {
+        m_dragging = true;
+        m_dragPosition = event->globalPosition().toPoint() - frameGeometry().topLeft();
+        event->accept();
+    }
+}
+
+void AddAppointmentDialog::mouseMoveEvent(QMouseEvent *event)
+{
+    if (m_dragging && (event->buttons() & Qt::LeftButton)) {
+        move(event->globalPosition().toPoint() - m_dragPosition);
+        event->accept();
+    }
+}
+
+void AddAppointmentDialog::mouseReleaseEvent(QMouseEvent *event)
+{
+    m_dragging = false;
+    event->accept();
+}
+
+void AddAppointmentDialog::updateConfirmationPage() {
+    QWidget* page3 = ui->stackedWidget->findChild<QWidget*>("page_3");
+    if (!page3) return;
+
+    QLabel* lblPatientName = page3->findChild<QLabel*>("lblPatientName");
+    QLabel* lblDoctorName = page3->findChild<QLabel*>("lblDoctorName");
+    QLabel* lblDate = page3->findChild<QLabel*>("lblDate");
+    QLabel* lblTime = page3->findChild<QLabel*>("lblTime");
+    QLabel* lblStatus = page3->findChild<QLabel*>("lblStatus");
+
+    if (lblPatientName) {
+        try {
+            Patient patient = PatientManager::getInstance().getPatientByID(selectedPatientID);
+            lblPatientName->setText(QString::fromStdString(patient.getName() + " (ID: " + std::to_string(selectedPatientID) + ")"));
+        } catch (...) {
+            lblPatientName->setText("Không xác định");
+        }
+    }
+
+    if (lblDoctorName) {
+        try {
+            Doctor doctor = DoctorManager::getInstance().getDoctorByID(selectedDoctorID);
+            lblDoctorName->setText(QString::fromStdString(doctor.getName() + " - " + doctor.getSpecialization()));
+        } catch (...) {
+            lblDoctorName->setText("Không xác định");
+        }
+    }
+
+    if (lblDate) {
+        QWidget* page2 = ui->stackedWidget->findChild<QWidget*>("page_2");
+        if (page2) {
+            QCalendarWidget* calendar = page2->findChild<QCalendarWidget*>("calendarWidget");
+            if (calendar) {
+                lblDate->setText(calendar->selectedDate().toString("dd/MM/yyyy"));
+            }
+        }
+    }
+
+    if (lblTime) {
+        lblTime->setText(selectedTimeSlot.isEmpty() ? "Chưa chọn" : selectedTimeSlot);
+    }
+
+    if (lblStatus) {
+        lblStatus->setText(selectedStatus.isEmpty() ? "Scheduled" : selectedStatus);
+    }
+}
 

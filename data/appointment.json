@@ -1,1 +1,16 @@
-null
+[
+    {
+        "ID": 1,
+        "date": {
+            "day": 1,
+            "month": 1,
+            "year": 2026
+        },
+        "doctorID": 1,
+        "endTime": "14:00",
+        "patientID": 2,
+        "room": "202",
+        "startTime": "13:00",
+        "status": "Scheduled"
+    }
+]
