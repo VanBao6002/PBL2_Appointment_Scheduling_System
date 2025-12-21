@@ -2,6 +2,7 @@
 
 #include <QDialog>
 #include "prescription.h"
+#include <QMouseEvent>
 
 namespace Ui {
 class AddMedicinePrescriptionDialog;
@@ -18,6 +19,11 @@ public:
     Prescription::Medicine getMedicineData() const;
     void setMedicineData(const Prescription::Medicine& medicine);
 
+protected:
+    void mousePressEvent(QMouseEvent *event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
+
 private slots:
     void on_buttonBox_accepted();
     void on_buttonBox_rejected();
@@ -30,6 +36,9 @@ private:
     bool validateForm();
     void loadMedicinesFromJson();  // THÊM HÀM LOAD THUỐC
     void filterMedicines(const QString& searchText);  // THÊM HÀM LỌC
+
+    bool m_dragging = false;
+    QPoint m_dragPosition;
     
     struct MedicineInfo {  // THÊM STRUCT ĐỂ LƯU THÔNG TIN THUỐC
         int id;

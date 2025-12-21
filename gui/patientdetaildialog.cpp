@@ -10,6 +10,9 @@ PatientDetailDialog::PatientDetailDialog(const Patient& patient, QWidget *parent
     : QDialog(parent)
     , ui(new Ui::PatientDetailDialog)
     , m_patient(patient)
+    , patientID(patient.getID())
+    , editRequested(false)
+    , m_dragging(false)
 {
     ui->setupUi(this);
 
@@ -22,6 +25,52 @@ PatientDetailDialog::PatientDetailDialog(const Patient& patient, QWidget *parent
     int x = (screenGeometry.width() - width()) / 2;
     int y = (screenGeometry.height() - height()) / 2;
     move(x, y);
+
+    // ✅ Check if buttons exist in UI, if not create them
+    QPushButton* btnEdit = findChild<QPushButton*>("btnEdit");
+    QPushButton* btnClose = findChild<QPushButton*>("btnClose");
+
+    if (!btnEdit) {
+        // Create Edit button dynamically if not in UI
+        QWidget* bottomWidget = findChild<QWidget*>("widgetBottom");
+        if (bottomWidget && bottomWidget->layout()) {
+            QHBoxLayout* layout = qobject_cast<QHBoxLayout*>(bottomWidget->layout());
+            if (layout) {
+                btnEdit = new QPushButton("Chỉnh sửa");
+                btnEdit->setObjectName("btnEdit");
+                btnEdit->setMinimumSize(100, 40);
+                btnEdit->setStyleSheet(R"(
+                    QPushButton {
+                        background-color: #f39c12;
+                        color: white;
+                        border: none;
+                        padding: 8px 25px;
+                        border-radius: 3px;
+                        font-weight: bold;
+                        font-size: 14px;
+                        min-width: 100px;
+                    }
+                    QPushButton:hover {
+                        background-color: #e67e22;
+                    }
+                    QPushButton:pressed {
+                        background-color: #d35400;
+                    }
+                )");
+
+                // Insert before close button (at index 1, after first spacer)
+                layout->insertWidget(1, btnEdit);
+            }
+        }
+    }
+
+    // Connect signals
+    if (btnEdit) {
+        connect(btnEdit, &QPushButton::clicked, this, &PatientDetailDialog::on_btnEdit_clicked);
+    }
+    if (btnClose) {
+        connect(btnClose, &QPushButton::clicked, this, &QDialog::reject);
+    }
 
     // Populate data
     populateData();
@@ -86,7 +135,19 @@ void PatientDetailDialog::populateData()
 
 void PatientDetailDialog::on_btnClose_clicked()
 {
-    accept();
+    reject();  // Close without edit
+}
+
+void PatientDetailDialog::on_btnEdit_clicked()
+{
+    qDebug() << "[EDIT CLICKED] User requested to edit patient ID:" << patientID;
+    editRequested = true;
+    accept();  // Close and signal edit request
+}
+
+bool PatientDetailDialog::shouldEdit() const
+{
+    return editRequested;
 }
 
 void PatientDetailDialog::mousePressEvent(QMouseEvent *event)

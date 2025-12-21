@@ -772,6 +772,33 @@ QGroupBox::title {
        </spacer>
       </item>
       <item>
+       <widget class="QPushButton" name="btnEdit">
+        <property name="styleSheet">
+         <string notr="true">QPushButton {
+    background-color: #f39c12;
+    color: white;
+    border: none;
+    padding: 8px 25px;
+    border-radius: 3px;
+    font-weight: bold;
+    font-size: 14px;
+    min-width: 100px;
+}
+
+QPushButton:hover {
+    background-color: #e67e22;
+}
+
+QPushButton:pressed {
+    background-color: #d35400;
+}</string>
+        </property>
+        <property name="text">
+         <string>Chỉnh sửa</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QPushButton" name="btnClose">
         <property name="styleSheet">
          <string notr="true">QPushButton {
@@ -822,7 +849,7 @@ QPushButton:pressed {
    <sender>btnClose</sender>
    <signal>clicked()</signal>
    <receiver>AppointmentDetailDialog</receiver>
-   <slot>accept()</slot>
+   <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>454</x>
@@ -834,5 +861,24 @@ QPushButton:pressed {
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>btnEdit</sender>
+   <signal>clicked()</signal>
+   <receiver>AppointmentDetailDialog</receiver>
+   <slot>on_btnEdit_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>350</x>
+     <y>659</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>450</x>
+     <y>350</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
+ <slots>
+  <slot>on_btnEdit_clicked()</slot>
+ </slots>
 </ui>

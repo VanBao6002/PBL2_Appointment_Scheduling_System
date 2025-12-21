@@ -1,1 +1,40 @@
-null
+[
+    {
+        "ID": 1,
+        "bloodPressure": "36/36",
+        "bodyTemperature": 36.5,
+        "creationDate": "21/12/2025",
+        "diagnosis": "a",
+        "doctorID": 1,
+        "doctorNotes": "a",
+        "followUpDates": [
+            "23/12/2025",
+            "21/12/2025"
+        ],
+        "heartRate": 72,
+        "history": "21/12/2025",
+        "lastUpdated": "21/12/2025",
+        "patientID": 9,
+        "prescriptions": [
+            {
+                "ID": 5,
+                "additionalNotes": "",
+                "medicalRecordID": 0,
+                "medicines": [
+                    {
+                        "dosage": "10mg",
+                        "duration": 7,
+                        "frequency": 3,
+                        "instruction": "",
+                        "name": "Cetirizine"
+                    }
+                ],
+                "prescriptionDate": "21/12/2025",
+                "prescriptionStatus": "Active"
+            }
+        ],
+        "symptoms": "a",
+        "testResults": "a",
+        "treatment": "a"
+    }
+]

@@ -495,6 +495,34 @@ QGroupBox::title {
        </spacer>
       </item>
       <item>
+       <!-- THÊM NÚT CHỈNH SỬA -->
+       <widget class="QPushButton" name="btnEdit">
+        <property name="styleSheet">
+         <string notr="true">QPushButton {
+    background-color: #f39c12;
+    color: white;
+    border: none;
+    padding: 8px 25px;
+    border-radius: 3px;
+    font-weight: bold;
+    font-size: 14px;
+    min-width: 100px;
+}
+
+QPushButton:hover {
+    background-color: #e67e22;
+}
+
+QPushButton:pressed {
+    background-color: #d35400;
+}</string>
+        </property>
+        <property name="text">
+         <string>Chỉnh sửa</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QPushButton" name="btnClose">
         <property name="styleSheet">
          <string notr="true">QPushButton {
@@ -540,22 +568,4 @@ QPushButton:pressed {
   </layout>
  </widget>
  <resources/>
- <connections>
-  <connection>
-   <sender>btnClose</sender>
-   <signal>clicked()</signal>
-   <receiver>UserDetailDialog</receiver>
-   <slot>accept()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>330</x>
-     <y>509</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>350</x>
-     <y>300</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
 </ui>

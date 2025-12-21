@@ -13,6 +13,7 @@ AddMedicinePrescriptionDialog::AddMedicinePrescriptionDialog(QWidget *parent) :
     ui(new Ui::AddMedicinePrescriptionDialog)
 {
     ui->setupUi(this);
+    setWindowFlags(Qt::FramelessWindowHint);
     setWindowTitle("Thêm Thuốc Vào Đơn");
     setupUI();
     loadMedicinesFromJson();
@@ -267,4 +268,27 @@ void AddMedicinePrescriptionDialog::on_cmbMedicine_currentIndexChanged(int index
         
         qDebug() << "[MEDICINE] Selected:" << med.name;
     }
+}
+
+void AddMedicinePrescriptionDialog::mousePressEvent(QMouseEvent *event)
+{
+    if (event->button() == Qt::LeftButton) {
+        m_dragging = true;
+        m_dragPosition = event->globalPosition().toPoint() - frameGeometry().topLeft();
+        event->accept();
+    }
+}
+
+void AddMedicinePrescriptionDialog::mouseMoveEvent(QMouseEvent *event)
+{
+    if (m_dragging && (event->buttons() & Qt::LeftButton)) {
+        move(event->globalPosition().toPoint() - m_dragPosition);
+        event->accept();
+    }
+}
+
+void AddMedicinePrescriptionDialog::mouseReleaseEvent(QMouseEvent *event)
+{
+    m_dragging = false;
+    event->accept();
 }

@@ -81,6 +81,7 @@ class MedicalRecord{
         void setDoctorNotes(const std::string& notes);
         void addFollowUpDate(const std::string& date_);
         void setChangeHistory(const std::string& date_);
+        void updatePrescriptionsMedicalRecordID(int newMedicalRecordID);
         
         // Thêm prescription vào hồ sơ
         void addPrescription(const Prescription& prescription);

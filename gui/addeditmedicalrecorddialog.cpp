@@ -253,7 +253,10 @@ MedicalRecord AddEditMedicalRecordDialog::getMedicalRecordData() const {
     if (!medicines.empty()) {
         // Tạo prescription mới với danh sách thuốc
         Prescription prescription;
-        prescription.setMedicalRecordID(0); // Sẽ được set sau khi tạo medical record
+
+        // ✅ SỬA: Không set medicalRecordID ở đây, để MedicalRecordManager xử lý
+        // MedicalRecordManager sẽ cập nhật ID sau khi tạo medical record
+
         prescription.setDate(lastUpdated);
 
         // Thêm tất cả thuốc vào prescription

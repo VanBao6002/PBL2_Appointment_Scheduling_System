@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1000</width>
-    <height>900</height>
+    <height>1100</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -107,7 +107,7 @@ QGroupBox::title {
         <x>0</x>
         <y>0</y>
         <width>980</width>
-        <height>754</height>
+        <height>954</height>
        </rect>
       </property>
       <property name="styleSheet">
@@ -732,6 +732,118 @@ QGroupBox::title {
          </layout>
         </widget>
        </item>
+       <!-- THÊM PHẦN LỊCH TÁI KHÁM -->
+       <item>
+        <widget class="QGroupBox" name="groupFollowUp">
+         <property name="font">
+          <font>
+           <family>Arial</family>
+           <pointsize>11</pointsize>
+           <italic>false</italic>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QGroupBox {
+    font: bold 11pt &quot;Arial&quot;;
+    color: #2C3E50;
+    border: 1px solid #CCCCCC;
+    border-radius: 5px;
+    margin-top: 10px;
+    padding-top: 10px;
+    background-color: white;
+}
+
+QGroupBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top left;
+    border: 1px solid #CCCCCC;
+    border-radius: 5px;
+    left: 10px;
+    padding: 0 8px 0 8px;
+    background-color: white;
+}</string>
+         </property>
+         <property name="title">
+          <string>LỊCH TÁI KHÁM</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_5">
+          <item>
+           <widget class="QListWidget" name="listFollowUp">
+            <property name="styleSheet">
+             <string notr="true">QListWidget {
+    color: #2c3e50;
+    font-weight: bold;
+    padding: 5px;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 3px;
+}</string>
+            </property>
+            <property name="maximumHeight">
+             <number>100</number>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <!-- THÊM PHẦN ĐƠN THUỐC -->
+       <item>
+        <widget class="QGroupBox" name="groupPrescriptions">
+         <property name="font">
+          <font>
+           <family>Arial</family>
+           <pointsize>11</pointsize>
+           <italic>false</italic>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QGroupBox {
+    font: bold 11pt &quot;Arial&quot;;
+    color: #2C3E50;
+    border: 1px solid #CCCCCC;
+    border-radius: 5px;
+    margin-top: 10px;
+    padding-top: 10px;
+    background-color: white;
+}
+
+QGroupBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top left;
+    border: 1px solid #CCCCCC;
+    border-radius: 5px;
+    left: 10px;
+    padding: 0 8px 0 8px;
+    background-color: white;
+}</string>
+         </property>
+         <property name="title">
+          <string>ĐƠN THUỐC</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_6">
+          <item>
+           <widget class="QListWidget" name="listPrescriptions">
+            <property name="styleSheet">
+             <string notr="true">QListWidget {
+    color: #2c3e50;
+    font-weight: bold;
+    padding: 5px;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 3px;
+}</string>
+            </property>
+            <property name="maximumHeight">
+             <number>150</number>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
        <item>
         <spacer name="verticalSpacer">
          <property name="orientation">
@@ -764,6 +876,33 @@ QGroupBox::title {
          </size>
         </property>
        </spacer>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btnEdit">
+        <property name="styleSheet">
+         <string notr="true">QPushButton {
+    background-color: #f39c12;
+    color: white;
+    border: none;
+    padding: 8px 25px;
+    border-radius: 3px;
+    font-weight: bold;
+    font-size: 14px;
+    min-width: 100px;
+}
+
+QPushButton:hover {
+    background-color: #e67e22;
+}
+
+QPushButton:pressed {
+    background-color: #d35400;
+}</string>
+        </property>
+        <property name="text">
+         <string>Chỉnh sửa</string>
+        </property>
+       </widget>
       </item>
       <item>
        <widget class="QPushButton" name="btnClose">
@@ -811,22 +950,4 @@ QPushButton:pressed {
   </layout>
  </widget>
  <resources/>
- <connections>
-  <connection>
-   <sender>btnClose</sender>
-   <signal>clicked()</signal>
-   <receiver>MedicalRecordDetailDialog</receiver>
-   <slot>accept()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>475</x>
-     <y>829</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>500</x>
-     <y>450</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
 </ui>
