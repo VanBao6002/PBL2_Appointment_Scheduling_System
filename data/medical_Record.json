@@ -1,40 +1,39 @@
 [
     {
         "ID": 1,
-        "bloodPressure": "120/80",
-        "bodyTemperature": 36.5,
-        "creationDate": "21/12/2025",
-        "diagnosis": "HIV",
-        "doctorID": 1,
-        "doctorNotes": "Trống",
+        "bloodPressure": "110/90",
+        "bodyTemperature": 37.5,
+        "creationDate": "22/12/2025",
+        "diagnosis": "Viêm đường hô hấp",
+        "doctorID": 3,
+        "doctorNotes": "Không",
         "followUpDates": [
-            "23/12/2025",
-            "21/12/2025"
+            "24/12/2025"
         ],
-        "heartRate": 72,
-        "history": "21/12/2025",
-        "lastUpdated": "21/12/2025",
-        "patientID": 9,
+        "heartRate": 67,
+        "history": "22/12/2025",
+        "lastUpdated": "22/12/2025",
+        "patientID": 3,
         "prescriptions": [
             {
-                "ID": 5,
+                "ID": 1,
                 "additionalNotes": "",
-                "medicalRecordID": 0,
+                "medicalRecordID": 1,
                 "medicines": [
                     {
-                        "dosage": "10mg",
+                        "dosage": "500mg",
                         "duration": 7,
                         "frequency": 3,
                         "instruction": "",
-                        "name": "Cetirizine"
+                        "name": "Paracetamol"
                     }
                 ],
-                "prescriptionDate": "21/12/2025",
+                "prescriptionDate": "22/12/2025",
                 "prescriptionStatus": "Active"
             }
         ],
-        "symptoms": "Mệt mỏi, chóng mặt",
-        "testResults": "Dương tính",
-        "treatment": "Uống thuốc"
+        "symptoms": "Ho, sốt",
+        "testResults": "XB máu : WB 1200",
+        "treatment": "Nghỉ ngơi, uống thuốc theo đơn"
     }
 ]

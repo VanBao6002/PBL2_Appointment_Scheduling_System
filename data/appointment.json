@@ -1,19 +1,5 @@
 [
     {
-        "ID": 1,
-        "date": {
-            "day": 11,
-            "month": 1,
-            "year": 2026
-        },
-        "doctorID": 1,
-        "endTime": "09:00",
-        "patientID": 5,
-        "room": "202",
-        "startTime": "08:00",
-        "status": "Canceled"
-    },
-    {
         "ID": 2,
         "date": {
             "day": 9,
@@ -22,9 +8,23 @@
         },
         "doctorID": 3,
         "endTime": "09:00",
-        "patientID": 10,
-        "room": "302",
+        "patientID": 11,
+        "room": "202",
         "startTime": "08:00",
+        "status": "Scheduled"
+    },
+    {
+        "ID": 1,
+        "date": {
+            "day": 16,
+            "month": 1,
+            "year": 2026
+        },
+        "doctorID": 3,
+        "endTime": "10:00",
+        "patientID": 5,
+        "room": "202",
+        "startTime": "09:00",
         "status": "Scheduled"
     }
 ]
