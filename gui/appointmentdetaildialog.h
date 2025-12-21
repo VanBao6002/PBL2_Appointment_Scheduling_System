@@ -17,6 +17,9 @@ public:
     explicit AppointmentDetailDialog(const Appointment& appointment, QWidget *parent = nullptr);
     ~AppointmentDetailDialog();
 
+    // ✅ Method to check if edit was requested
+    bool shouldEdit() const;
+
 protected:
     void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
@@ -24,14 +27,20 @@ protected:
 
 private slots:
     void on_btnClose_clicked();
+    void on_btnEdit_clicked();
 
 private:
     Ui::AppointmentDetailDialog *ui;
-    const Appointment& m_appointment;
+    Appointment m_appointment;
+    int appointmentID;
+    bool editRequested;
+    
+    // For window dragging
     bool m_dragging = false;
     QPoint m_dragPosition;
 
     void populateData();
+    void applyStyles();
 };
 
 #endif // APPOINTMENTDETAILDIALOG_H

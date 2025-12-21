@@ -1,14 +1,15 @@
 #include "appointmentManager.h"
+#include <set>
 #include <QDebug>
 
 void AppointmentManager::addAppointment(const Appointment &apt_) {
     qDebug() << "[DEBUG][addAppointment] Entered function.";
     int ID_ = apt_.getID();
+
     if (appointmentTable.find(ID_) != appointmentTable.end()) {
         throw std::invalid_argument("Adding failed. Appointment ID " + std::to_string(apt_.getID()) + " already exists.");
     }
-    
-    // SỬA ĐỔI: Sử dụng IDHandler để kiểm tra sự tồn tại của Doctor và Patient ID
+
     if (!IDHandler<Doctor>::checkDuplicateID(apt_.getDoctorID())) {
         throw std::invalid_argument("Lỗi, ID Bác sĩ không tồn tại!");
     }
@@ -16,6 +17,10 @@ void AppointmentManager::addAppointment(const Appointment &apt_) {
         throw std::invalid_argument("Lỗi, ID Bệnh nhân không tồn tại!");
     }
     
+    if (checkDuplicateAppointment(apt_)){
+        throw std::invalid_argument("Lỗi, Lịch hẹn bị trùng lặp!");
+    }
+
     appointmentTable[ID_] = apt_;
     log[ID_] += " Added on: " + Utils::getDateTime();
 }
@@ -25,7 +30,6 @@ void AppointmentManager::editAppointment(int ID_, const Appointment &newAppointm
         throw std::invalid_argument("Editing failed. Appointment ID " + std::to_string(newAppointment.getID()) + " not found.");
     }
     
-    // SỬA ĐỔI: Kiểm tra Doctor và Patient ID mới
     if (!IDHandler<Doctor>::checkDuplicateID(newAppointment.getDoctorID())) {
         throw std::invalid_argument("Lỗi, ID Bác sĩ không tồn tại!");
     }
@@ -33,6 +37,10 @@ void AppointmentManager::editAppointment(int ID_, const Appointment &newAppointm
         throw std::invalid_argument("Lỗi, ID Bệnh nhân không tồn tại!");
     }
     
+    if (checkDuplicateAppointment(newAppointment)){
+        throw std::invalid_argument("Lỗi, Lịch hẹn bị trùng lặp!");
+    }
+
     appointmentTable[ID_] = newAppointment;
     log[ID_] += " Edited on: " + Utils::getDateTime();
 }
@@ -86,6 +94,74 @@ const std::vector<std::pair<std::string, std::string>>& AppointmentManager::getB
         }
     }
     return bookedSlots;
+}
+
+bool AppointmentManager::checkDuplicateAppointment(const Appointment &apt_){
+    for (const auto& pair : appointmentTable) {
+        const Appointment& existing = pair.second;
+        
+        // Check if doctor is already booked at this time
+        if (existing.getDoctorID() == apt_.getDoctorID() &&
+            existing.getDate() == apt_.getDate()) {
+            
+            // Check time overlap
+            std::string existingStart = existing.getStartTime();
+            std::string existingEnd = existing.getEndTime();
+            std::string newStart = apt_.getStartTime();
+            std::string newEnd = apt_.getEndTime();
+            
+            // If times overlap, reject
+            if (!(existingEnd <= newStart || existingStart >= newEnd)) {
+                return true;
+            }
+        }
+        
+        // Check if patient has conflicting appointment
+        if (existing.getPatientID() == apt_.getPatientID() &&
+            existing.getDate() == apt_.getDate()) {
+            
+            std::string existingStart = existing.getStartTime();
+            std::string existingEnd = existing.getEndTime();
+            std::string newStart = apt_.getStartTime();
+            std::string newEnd = apt_.getEndTime();
+            
+            if (!(existingEnd <= newStart || existingStart >= newEnd)) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+void AppointmentManager::removeDuplicates() {
+    std::set<std::string> seen;
+    std::vector<int> toRemove;
+    
+    for (const auto& pair : appointmentTable) {
+        const Appointment& apt = pair.second;
+        std::string key = std::to_string(apt.getPatientID()) + "_" +
+                         std::to_string(apt.getDoctorID()) + "_" +
+                         apt.getDate().toString() + "_" +
+                         apt.getStartTime();
+        
+        if (seen.count(key)) {
+            toRemove.push_back(apt.getID());
+            qDebug() << "[DUPLICATE] Found duplicate appointment ID:" << apt.getID();
+        } else {
+            seen.insert(key);
+        }
+    }
+    
+    for (int id : toRemove) {
+        appointmentTable.erase(id);
+        log.erase(id);
+        qDebug() << "[REMOVED] Duplicate appointment ID:" << id;
+    }
+    
+    if (!toRemove.empty()) {
+        saveToFile(Config::APPOINTMENT_PATH);
+        qDebug() << "[CLEANUP] Removed" << toRemove.size() << "duplicate appointments";
+    }
 }
 
 void AppointmentManager::loadFromFile(const std::string& path) {

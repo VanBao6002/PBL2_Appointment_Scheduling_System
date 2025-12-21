@@ -1,12 +1,9 @@
 #include "appointment.h"
 
-Appointment::Appointment(): doctorID(0), patientID(0), date(), startTime("00:00"), endTime("01:00") , room("00A"), status(Status::Scheduled) {
-    int ID = static_cast<int>(IDHandler<Appointment>::generateID());
-    setID(ID);
-    IDHandler<Appointment>::registerID(ID);
+Appointment::Appointment(): ID(0), doctorID(0), patientID(0), date(), startTime("00:00"), endTime("01:00") , room("00A"), status(Status::Scheduled) {;
 }
 
-Appointment::Appointment(int doctorID, int patientID, const std::string& date_, const std::string& startTime_, const std::string& endTime_, const std::string& room_, const std::string& status_) {
+Appointment::Appointment(int doctorID, int patientID, const std::string& date_, const std::string& startTime_, const std::string& endTime_, const std::string& room_, const std::string& status_) : ID(0) {
     
     setDoctorID(doctorID);
     setPatientID(patientID);
@@ -15,10 +12,6 @@ Appointment::Appointment(int doctorID, int patientID, const std::string& date_, 
     setEndTime(endTime_);
     setRoom(room_);
     setStatus(status_);
-
-    int ID = static_cast<int>(IDHandler<Appointment>::generateID());
-    setID(ID);
-    IDHandler<Appointment>::registerID(ID);
 }
 
 Appointment::~Appointment(){

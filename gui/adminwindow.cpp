@@ -1759,6 +1759,8 @@ void AdminWindow::on_appointmentManagerButton_clicked()
     setActiveSidebarButton(ui->appointmentManagerButton);
     ui->mainStack->setCurrentWidget(ui->page_appointment);
 
+    AppointmentManager::getInstance().removeDuplicates();
+
     setupAppointmentTable();  // Thêm dòng này
     loadAppointmentData(1, "");
 }
@@ -1959,13 +1961,19 @@ void AdminWindow::on_btnEditAppointment_clicked() {
         if (editDialog.exec() == QDialog::Accepted) {
             Appointment updatedAppt = editDialog.getAppointmentData();
 
-            // Cập nhật appointment
+            // ✅ Ensure ID hasn't changed
+            if (updatedAppt.getID() != appointmentID) {
+                qWarning() << "[WARNING] Appointment ID changed during edit! Restoring original ID.";
+                updatedAppt.setID(appointmentID);
+            }
+
+            // Update appointment
             AppointmentManager::getInstance().editAppointment(appointmentID, updatedAppt);
+            AppointmentManager::getInstance().saveToFile(Config::APPOINTMENT_PATH);
 
             QMessageBox::information(this, "Thành công",
                                      QString("Đã cập nhật cuộc hẹn ID: %1").arg(appointmentID));
 
-            // Tải lại dữ liệu
             loadAppointmentData(currentAppointmentPage, ui->txtSearchAppointment->text().trimmed());
         }
 
@@ -2024,7 +2032,10 @@ void AdminWindow::on_btnPage_Appointment_3_clicked()
 
 void AdminWindow::on_btnViewAppointmentDetail_clicked() {
     QPushButton* btn = qobject_cast<QPushButton*>(sender());
-    if (!btn) return;
+    if (!btn) {
+        qWarning() << "[ERROR] Could not get sender button";
+        return;
+    }
 
     int appointmentID = btn->property("appointmentID").toInt();
     qDebug() << "[VIEW DETAIL] Appointment ID:" << appointmentID;
@@ -2032,12 +2043,103 @@ void AdminWindow::on_btnViewAppointmentDetail_clicked() {
     try {
         const Appointment& appointment = AppointmentManager::getInstance().getAppointmentByID(appointmentID);
 
-        // Sử dụng AppointmentDetailDialog
+        // ✅ Show detail dialog first
         AppointmentDetailDialog detailDialog(appointment, this);
-        detailDialog.exec();
+        int result = detailDialog.exec();
+        
+        qDebug() << "[DETAIL DIALOG] Result:" << result << "| Edit requested:" << detailDialog.shouldEdit();
+
+        // ✅ Check if user clicked "Chỉnh sửa" button
+        if (result == QDialog::Accepted && detailDialog.shouldEdit()) {
+            qDebug() << "[OPENING EDIT DIALOG] For appointment ID:" << appointmentID;
+            
+            // ✅ Check write permission before allowing edit
+            if (!hasAppointmentAccess(true)) {
+                showNoPermissionMessage();
+                return;
+            }
+
+            // ✅ Open edit dialog with current appointment data
+            AddAppointmentDialog editDialog(appointment, this);
+            editDialog.setEditMode(true);
+            editDialog.setWindowTitle(QString("Chỉnh Sửa Cuộc Hẹn - ID: %1").arg(appointmentID));
+
+            if (editDialog.exec() == QDialog::Accepted) {
+                try {
+                    Appointment updatedAppt = editDialog.getAppointmentData();
+
+                    qDebug() << "[DEBUG] Appointment data from edit dialog:";
+                    qDebug() << "  ID:" << updatedAppt.getID();
+                    qDebug() << "  Patient ID:" << updatedAppt.getPatientID();
+                    qDebug() << "  Doctor ID:" << updatedAppt.getDoctorID();
+                    qDebug() << "  Date:" << QString::fromStdString(updatedAppt.getDate().toString());
+                    qDebug() << "  Start Time:" << QString::fromStdString(updatedAppt.getStartTime());
+                    qDebug() << "  End Time:" << QString::fromStdString(updatedAppt.getEndTime());
+                    qDebug() << "  Room:" << QString::fromStdString(updatedAppt.getRoom());
+                    qDebug() << "  Status:" << QString::fromStdString(Appointment::statusToString(updatedAppt.getStatus()));
+
+                    // ✅ CRITICAL: Preserve the original ID
+                    if (updatedAppt.getID() != appointmentID) {
+                        qWarning() << "[WARNING] Appointment ID changed during edit! Restoring original ID.";
+                        qWarning() << "  Original ID:" << appointmentID;
+                        qWarning() << "  New ID:" << updatedAppt.getID();
+                        // Force restore the correct ID
+                        // Adjust the constructor arguments to match the Appointment class definition
+                        updatedAppt.setID(appointmentID);
+                        qDebug() << "[DEBUG] After ID restoration:";
+                        qDebug() << "  ID:" << updatedAppt.getID();
+                        qDebug() << "  Start Time:" << QString::fromStdString(updatedAppt.getStartTime());
+                        qDebug() << "  End Time:" << QString::fromStdString(updatedAppt.getEndTime());
+                    }
+
+                    // ✅ Validate doctor and patient exist
+                    try {
+                        DoctorManager::getInstance().getDoctorByID(updatedAppt.getDoctorID());
+                        PatientManager::getInstance().getPatientByID(updatedAppt.getPatientID());
+                    } catch (const std::exception& e) {
+                        QMessageBox::critical(this, "Lỗi",
+                            QString("Không thể cập nhật: %1").arg(e.what()));
+                        return;
+                    }
+
+                    // ✅ Update appointment in manager
+                    AppointmentManager::getInstance().editAppointment(appointmentID, updatedAppt);
+                    
+                    // ✅ Save to file
+                    AppointmentManager::getInstance().saveToFile(Config::APPOINTMENT_PATH);
+
+                    QMessageBox::information(this, "Thành công",
+                        QString("Đã cập nhật cuộc hẹn ID: %1\n"
+                                "Bệnh nhân: %2\n"
+                                "Bác sĩ: %3\n"
+                                "Ngày: %4\n"
+                                "Giờ: %5 - %6")
+                            .arg(appointmentID)
+                            .arg(updatedAppt.getPatientID())
+                            .arg(updatedAppt.getDoctorID())
+                            .arg(QString::fromStdString(updatedAppt.getDate().toString()))
+                            .arg(QString::fromStdString(updatedAppt.getStartTime()))
+                            .arg(QString::fromStdString(updatedAppt.getEndTime())));
+
+                    // ✅ Reload current page data
+                    loadAppointmentData(currentAppointmentPage, ui->txtSearchAppointment->text().trimmed());
+
+                } catch (const std::exception& e) {
+                    QMessageBox::critical(this, "Lỗi Cập Nhật",
+                        QString("Không thể cập nhật cuộc hẹn:\n%1").arg(e.what()));
+                    qDebug() << "[ERROR] Failed to update appointment:" << e.what();
+                }
+            } else {
+                qDebug() << "[INFO] Edit dialog cancelled";
+            }
+        } else {
+            qDebug() << "[INFO] Detail dialog closed without edit request";
+        }
 
     } catch (const std::exception& e) {
-        QMessageBox::critical(this, "Lỗi", QString("Không thể xem chi tiết: %1").arg(e.what()));
+        QMessageBox::critical(this, "Lỗi", 
+            QString("Không thể xem chi tiết cuộc hẹn:\n%1").arg(e.what()));
+        qDebug() << "[ERROR] Failed to load appointment:" << e.what();
     }
 }
 

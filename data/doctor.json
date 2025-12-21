@@ -1,5 +1,81 @@
 [
     {
+        "CCCD": "676767676767",
+        "ID": 3,
+        "birthday": {
+            "day": 21,
+            "month": 12,
+            "year": 1995
+        },
+        "description": "",
+        "doctorStatus": "Active",
+        "email": "ronaldo@gmail.com",
+        "gender": "M",
+        "name": "ronaldo",
+        "patientIDs": [],
+        "phoneNumber": "67676767676",
+        "room": "302",
+        "specialization": "Lão khoa",
+        "workingSchedule": {
+            "Chủ nhật": [
+                {
+                    "EndTime": "17:00",
+                    "StartTime": "08:00"
+                }
+            ],
+            "Thứ 2": [
+                {
+                    "EndTime": "17:00",
+                    "StartTime": "08:00"
+                }
+            ],
+            "Thứ 5": [
+                {
+                    "EndTime": "17:00",
+                    "StartTime": "08:00"
+                }
+            ]
+        }
+    },
+    {
+        "CCCD": "232323232323",
+        "ID": 2,
+        "birthday": {
+            "day": 21,
+            "month": 12,
+            "year": 1995
+        },
+        "description": "",
+        "doctorStatus": "Active",
+        "email": "messi@gmail.com",
+        "gender": "M",
+        "name": "Messi",
+        "patientIDs": [],
+        "phoneNumber": "23232323232",
+        "room": "103",
+        "specialization": "Lão khoa",
+        "workingSchedule": {
+            "Chủ nhật": [
+                {
+                    "EndTime": "17:00",
+                    "StartTime": "08:00"
+                }
+            ],
+            "Thứ 3": [
+                {
+                    "EndTime": "17:00",
+                    "StartTime": "08:00"
+                }
+            ],
+            "Thứ 6": [
+                {
+                    "EndTime": "17:00",
+                    "StartTime": "08:00"
+                }
+            ]
+        }
+    },
+    {
         "CCCD": "012312312312",
         "ID": 1,
         "birthday": {

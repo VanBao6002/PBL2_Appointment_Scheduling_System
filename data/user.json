@@ -30,5 +30,21 @@
         "plainPassword": "12341234",
         "userRole": "ADMIN",
         "username": "admin"
+    },
+    {
+        "CCCD": "121212121212",
+        "ID": 4,
+        "birthday": "21/12/2005",
+        "creationDate": {
+            "day": 1,
+            "month": 1,
+            "year": 2000
+        },
+        "fullName": "bao",
+        "passwordHash": "689486176",
+        "phoneNumber": "12121212121",
+        "plainPassword": "adminadmin",
+        "userRole": "ADMIN",
+        "username": "admin"
     }
 ]
