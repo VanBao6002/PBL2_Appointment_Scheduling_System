@@ -1,44 +1,58 @@
 [
     {
-        "CCCD": "012312312312",
-        "ID": 1,
+        "CCCD": "565656565656",
+        "ID": 4,
         "birthday": {
-            "day": 21,
+            "day": 20,
             "month": 12,
             "year": 1995
         },
         "description": "",
         "doctorStatus": "Active",
-        "email": "mixibucac@gmail.com",
-        "gender": "F",
-        "name": "Do Mixi",
+        "email": "vanC@gmail.com",
+        "gender": "M",
+        "name": "Nguyên Văn C",
         "patientIDs": [],
-        "phoneNumber": "0123456789",
-        "room": "202",
+        "phoneNumber": "56565656560",
+        "room": "102",
         "specialization": "Lão khoa",
         "workingSchedule": {
             "Thứ 2": [
                 {
-                    "EndTime": "17:00",
-                    "StartTime": "08:00"
-                }
-            ],
-            "Thứ 4": [
-                {
-                    "EndTime": "17:00",
-                    "StartTime": "08:00"
+                    "EndTime": "18:00",
+                    "StartTime": "07:30"
                 }
             ],
             "Thứ 5": [
                 {
-                    "EndTime": "18:00",
-                    "StartTime": "08:00"
+                    "EndTime": "15:00",
+                    "StartTime": "06:00"
                 }
-            ],
-            "Thứ 7": [
+            ]
+        }
+    },
+    {
+        "CCCD": "898989898989",
+        "ID": 3,
+        "birthday": {
+            "day": 17,
+            "month": 1,
+            "year": 1997
+        },
+        "description": "",
+        "doctorStatus": "Active",
+        "email": "NguyenVanB@gmail.com",
+        "gender": "M",
+        "name": "Nguyễn Văn B",
+        "patientIDs": [],
+        "phoneNumber": "89898989890",
+        "room": "202",
+        "specialization": "Tim mạch",
+        "workingSchedule": {
+            "Thứ 5": [
                 {
-                    "EndTime": "17:00",
-                    "StartTime": "08:00"
+                    "EndTime": "17:30",
+                    "StartTime": "08:30"
                 }
             ]
         }
@@ -74,44 +88,6 @@
                 }
             ],
             "Thứ 6": [
-                {
-                    "EndTime": "17:00",
-                    "StartTime": "08:00"
-                }
-            ]
-        }
-    },
-    {
-        "CCCD": "676767676767",
-        "ID": 3,
-        "birthday": {
-            "day": 21,
-            "month": 12,
-            "year": 1995
-        },
-        "description": "",
-        "doctorStatus": "Active",
-        "email": "ronaldo@gmail.com",
-        "gender": "M",
-        "name": "ronaldo",
-        "patientIDs": [],
-        "phoneNumber": "67676767676",
-        "room": "302",
-        "specialization": "Lão khoa",
-        "workingSchedule": {
-            "Chủ nhật": [
-                {
-                    "EndTime": "17:00",
-                    "StartTime": "08:00"
-                }
-            ],
-            "Thứ 2": [
-                {
-                    "EndTime": "17:00",
-                    "StartTime": "08:00"
-                }
-            ],
-            "Thứ 5": [
                 {
                     "EndTime": "17:00",
                     "StartTime": "08:00"
