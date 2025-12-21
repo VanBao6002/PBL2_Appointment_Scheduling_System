@@ -2195,52 +2195,7 @@ void AdminWindow::on_btnEditPatient_clicked() {
     }
 }
 
-// void AdminWindow::on_btnViewPatientDetail_clicked() {
-//     QPushButton* btn = qobject_cast<QPushButton*>(sender());
-//     if (!btn) return;
 
-//     int patientID = btn->property("patientID").toInt();
-//     qDebug() << "[VIEW DETAIL] Patient ID:" << patientID;
-
-//     try {
-//         const Patient& patient = PatientManager::getInstance().getPatientByID(patientID);
-
-//         QString details = QString(
-//             "=== THÔNG TIN BỆNH NHÂN ===\n\n"
-//             "ID: %1\n"
-//             "Họ tên: %2\n"
-//             "Giới tính: %3\n"
-//             "Ngày sinh: %4\n"
-//             "Nhóm máu: %5\n"
-//             "Số điện thoại: %6\n"
-//             "Mã BHYT: %7\n"
-//             "Mẹ: %8\n"
-//             "Cha: %9\n"
-//         )
-//             .arg(patient.getID())
-//             .arg(QString::fromStdString(patient.getName()))
-//             .arg(QString(patient.getGender()))
-//             .arg(QString::fromStdString(patient.getBirthday().toString()))
-//             .arg(QString::fromStdString(patient.getBloodType()))
-//             .arg(QString::fromStdString(patient.getPhoneNumber()))
-//             .arg(QString::fromStdString(patient.getInsuranceID()))
-//             .arg(QString::fromStdString(patient.getNameMother()))
-//             .arg(QString::fromStdString(patient.getNameFather()));
-
-//         if (!patient.getAllergies().empty()) {
-//             details += "\nDị ứng: " + QString::fromStdString(Utils::join(patient.getAllergies(), ", "));
-//         }
-
-//         if (!patient.getChronicDiseases().empty()) {
-//             details += "\nBệnh nền: " + QString::fromStdString(Utils::join(patient.getChronicDiseases(), ", "));
-//         }
-
-//         QMessageBox::information(this, "Chi tiết Bệnh nhân", details);
-
-//     } catch (const std::exception& e) {
-//         QMessageBox::critical(this, "Lỗi", QString("Không thể xem chi tiết: %1").arg(e.what()));
-//     }
-// }
 void AdminWindow::on_btnViewPatientDetail_clicked() {
     QPushButton* btn = qobject_cast<QPushButton*>(sender());
     if (!btn) return;
@@ -2251,12 +2206,67 @@ void AdminWindow::on_btnViewPatientDetail_clicked() {
     try {
         const Patient& patient = PatientManager::getInstance().getPatientByID(patientID);
 
-        // Sử dụng dialog mới thay vì QMessageBox
+        // ✅ Show detail dialog first
         PatientDetailDialog detailDialog(patient, this);
-        detailDialog.exec();
+        int result = detailDialog.exec();
+
+        qDebug() << "[DETAIL DIALOG] Result:" << result << "| Edit requested:" << detailDialog.shouldEdit();
+
+        // ✅ Check if user clicked "Chỉnh sửa" button
+        if (result == QDialog::Accepted && detailDialog.shouldEdit()) {
+            qDebug() << "[OPENING EDIT DIALOG] For patient ID:" << patientID;
+
+            // ✅ Check write permission before allowing edit
+            if (!hasPatientAccess(true)) {
+                showNoPermissionMessage();
+                return;
+            }
+
+            // ✅ Open edit dialog with current patient data
+            AddEditPatientDialog editDialog(this, patient);
+            editDialog.setDialogTitle(QString("Chỉnh Sửa Bệnh Nhân - ID: %1").arg(patientID));
+
+            if (editDialog.exec() == QDialog::Accepted) {
+                try {
+                    Patient updatedPatient = editDialog.getPatientData();
+
+                    // ✅ Ensure ID hasn't changed
+                    if (updatedPatient.getID() != patientID) {
+                        qWarning() << "[WARNING] Patient ID changed during edit! Restoring original ID.";
+                        // Patient class might need a setID method or recreate with correct ID
+                    }
+
+                    // ✅ Update patient in manager
+                    PatientManager::getInstance().editPatient(patientID, updatedPatient);
+
+                    // ✅ Save to file
+                    PatientManager::getInstance().saveToFile(Config::PATIENT_PATH);
+
+                    QMessageBox::information(this, "Thành công",
+                                             QString("Đã cập nhật thông tin bệnh nhân ID: %1\n"
+                                                     "Họ tên: %2")
+                                                 .arg(patientID)
+                                                 .arg(QString::fromStdString(updatedPatient.getName())));
+
+                    // ✅ Reload current page data
+                    loadPatientData(currentPatientPage, ui->txtSearchPatient->text().trimmed());
+
+                } catch (const std::exception& e) {
+                    QMessageBox::critical(this, "Lỗi Cập Nhật",
+                                          QString("Không thể cập nhật bệnh nhân:\n%1").arg(e.what()));
+                    qDebug() << "[ERROR] Failed to update patient:" << e.what();
+                }
+            } else {
+                qDebug() << "[INFO] Edit dialog cancelled";
+            }
+        } else {
+            qDebug() << "[INFO] Detail dialog closed without edit request";
+        }
 
     } catch (const std::exception& e) {
-        QMessageBox::critical(this, "Lỗi", QString("Không thể xem chi tiết: %1").arg(e.what()));
+        QMessageBox::critical(this, "Lỗi",
+                              QString("Không thể xem chi tiết bệnh nhân:\n%1").arg(e.what()));
+        qDebug() << "[ERROR] Failed to load patient:" << e.what();
     }
 }
 
@@ -2426,16 +2436,17 @@ void AdminWindow::on_btnRemoveDoctor_clicked() {
     }
 }
 
-void AdminWindow::on_btnEditDoctor_clicked() {
-    if (!hasDoctorAccess(true)) { showNoPermissionMessage(); return; }
-    QMessageBox::information(this, "Thông báo", "Chức năng Sửa Lịch Hẹn chưa được triển khai.");
-}
+// void AdminWindow::on_btnEditDoctor_clicked() {
+//     if (!hasDoctorAccess(true)) { showNoPermissionMessage(); return; }
+//     QMessageBox::information(this, "Thông báo", "Chức năng Sửa Lịch Hẹn chưa được triển khai.");
+// }
 
 // Thêm include
 #include "doctordetaildialog.h"
 
 void AdminWindow::on_btnViewDoctorDetail_clicked() {
     if (!hasDoctorAccess()) { showNoPermissionMessage(); return; }
+
     QPushButton* btn = qobject_cast<QPushButton*>(sender());
     if (!btn) return;
 
@@ -2445,12 +2456,69 @@ void AdminWindow::on_btnViewDoctorDetail_clicked() {
     try {
         const Doctor& doctor = DoctorManager::getInstance().getDoctorByID(doctorID);
 
-        // Sử dụng DoctorDetailDialog thay vì QMessageBox
+        // ✅ Show detail dialog first
         DoctorDetailDialog detailDialog(doctor, this);
-        detailDialog.exec();
+        int result = detailDialog.exec();
+
+        qDebug() << "[DETAIL DIALOG] Result:" << result << "| Edit requested:" << detailDialog.shouldEdit();
+
+        // ✅ Check if user clicked "Chỉnh sửa" button
+        if (result == QDialog::Accepted && detailDialog.shouldEdit()) {
+            qDebug() << "[OPENING EDIT DIALOG] For doctor ID:" << doctorID;
+
+            // ✅ Check write permission before allowing edit
+            if (!hasDoctorAccess(true)) {
+                showNoPermissionMessage();
+                return;
+            }
+
+            // ✅ Open edit dialog with current doctor data
+            AddEditDoctorDialog editDialog(this, doctor);
+            editDialog.setDialogTitle(QString("Chỉnh Sửa Bác Sĩ - ID: %1").arg(doctorID));
+
+            if (editDialog.exec() == QDialog::Accepted) {
+                try {
+                    Doctor updatedDoctor = editDialog.getDoctorData();
+
+                    // ✅ Ensure ID hasn't changed
+                    if (updatedDoctor.getID() != doctorID) {
+                        qWarning() << "[WARNING] Doctor ID changed during edit! Restoring original ID.";
+                        // Doctor class might need a setID method or recreate with correct ID
+                    }
+
+                    // ✅ Update doctor in manager
+                    DoctorManager::getInstance().editDoctor(doctorID, updatedDoctor);
+
+                    // ✅ Save to file
+                    DoctorManager::getInstance().saveToFile(Config::DOCTOR_PATH);
+
+                    QMessageBox::information(this, "Thành công",
+                                             QString("Đã cập nhật thông tin bác sĩ ID: %1\n"
+                                                     "Họ tên: %2\n"
+                                                     "Chuyên khoa: %3")
+                                                 .arg(doctorID)
+                                                 .arg(QString::fromStdString(updatedDoctor.getName()))
+                                                 .arg(QString::fromStdString(updatedDoctor.getSpecialization())));
+
+                    // ✅ Reload current page data
+                    loadDoctorData(currentDoctorPage, ui->txtSearchDoctor->text().trimmed());
+
+                } catch (const std::exception& e) {
+                    QMessageBox::critical(this, "Lỗi Cập Nhật",
+                                          QString("Không thể cập nhật bác sĩ:\n%1").arg(e.what()));
+                    qDebug() << "[ERROR] Failed to update doctor:" << e.what();
+                }
+            } else {
+                qDebug() << "[INFO] Edit dialog cancelled";
+            }
+        } else {
+            qDebug() << "[INFO] Detail dialog closed without edit request";
+        }
 
     } catch (const std::exception& e) {
-        QMessageBox::critical(this, "Lỗi", QString("Không thể xem chi tiết: %1").arg(e.what()));
+        QMessageBox::critical(this, "Lỗi",
+                              QString("Không thể xem chi tiết bác sĩ:\n%1").arg(e.what()));
+        qDebug() << "[ERROR] Failed to load doctor:" << e.what();
     }
 }
 
@@ -2636,7 +2704,11 @@ void AdminWindow::on_btnSearchMedicalRecord_clicked() {
 }
 
 void AdminWindow::on_btnViewMedicalRecordDetail_clicked() {
-    if (!hasMedicalRecordAccess()) { showNoPermissionMessage(); return; }
+    if (!hasMedicalRecordAccess()) {
+        showNoPermissionMessage();
+        return;
+    }
+
     QPushButton* btn = qobject_cast<QPushButton*>(sender());
     if (!btn) return;
 
@@ -2646,12 +2718,85 @@ void AdminWindow::on_btnViewMedicalRecordDetail_clicked() {
     try {
         const MedicalRecord& record = MedicalRecordManager::getInstance().getMedicalRecordByID(recordID);
 
-        // Sử dụng dialog mới thay vì QMessageBox
+        // ✅ Show detail dialog first
         MedicalRecordDetailDialog detailDialog(record, this);
-        detailDialog.exec();
+        int result = detailDialog.exec();
+
+        qDebug() << "[DETAIL DIALOG] Result:" << result << "| Edit requested:" << detailDialog.shouldEdit();
+
+        // ✅ Check if user clicked "Chỉnh sửa" button
+        if (result == QDialog::Accepted && detailDialog.shouldEdit()) {
+            qDebug() << "[OPENING EDIT DIALOG] For medical record ID:" << recordID;
+
+            // ✅ Check write permission before allowing edit
+            if (!hasMedicalRecordAccess(true)) {
+                showNoPermissionMessage();
+                return;
+            }
+
+            // ✅ Open edit dialog with current medical record data
+            AddEditMedicalRecordDialog editDialog(this, record);
+            editDialog.setWindowTitle(QString("Chỉnh Sửa Hồ Sơ Bệnh Án - ID: %1").arg(recordID));
+
+            if (editDialog.exec() == QDialog::Accepted) {
+                try {
+                    MedicalRecord updatedRecord = editDialog.getMedicalRecordData();
+
+                    qDebug() << "[DEBUG] Medical record data from edit dialog:";
+                    qDebug() << "  ID:" << updatedRecord.getID();
+                    qDebug() << "  Patient ID:" << updatedRecord.getPatientID();
+                    qDebug() << "  Doctor ID:" << updatedRecord.getDoctorID();
+                    qDebug() << "  Diagnosis:" << QString::fromStdString(updatedRecord.getDiagnosis());
+
+                    // ✅ Ensure ID hasn't changed
+                    if (updatedRecord.getID() != recordID) {
+                        qWarning() << "[WARNING] Medical Record ID changed during edit! Restoring original ID.";
+                        // MedicalRecord class might need a setID method
+                    }
+
+                    // ✅ Validate patient and doctor exist
+                    try {
+                        PatientManager::getInstance().getPatientByID(updatedRecord.getPatientID());
+                        DoctorManager::getInstance().getDoctorByID(updatedRecord.getDoctorID());
+                    } catch (const std::exception& e) {
+                        QMessageBox::critical(this, "Lỗi",
+                                              QString("Không thể cập nhật: %1").arg(e.what()));
+                        return;
+                    }
+
+                    // ✅ Update medical record in manager
+                    MedicalRecordManager::getInstance().editMedicalRecord(recordID, updatedRecord);
+
+                    // ✅ Save to file
+                    MedicalRecordManager::getInstance().saveToFile(Config::MEDICAL_RECORD_PATH);
+
+                    QMessageBox::information(this, "Thành công",
+                                             QString("Đã cập nhật hồ sơ bệnh án ID: %1\n"
+                                                     "Bệnh nhân ID: %2\n"
+                                                     "Bác sĩ ID: %3")
+                                                 .arg(recordID)
+                                                 .arg(updatedRecord.getPatientID())
+                                                 .arg(updatedRecord.getDoctorID()));
+
+                    // ✅ Reload current page data
+                    loadMedicalRecordData(currentMedicalRecordPage, ui->txtSearchMedicalRecord->text().trimmed());
+
+                } catch (const std::exception& e) {
+                    QMessageBox::critical(this, "Lỗi Cập Nhật",
+                                          QString("Không thể cập nhật hồ sơ bệnh án:\n%1").arg(e.what()));
+                    qDebug() << "[ERROR] Failed to update medical record:" << e.what();
+                }
+            } else {
+                qDebug() << "[INFO] Edit dialog cancelled";
+            }
+        } else {
+            qDebug() << "[INFO] Detail dialog closed without edit request";
+        }
 
     } catch (const std::exception& e) {
-        QMessageBox::critical(this, "Lỗi", QString("Không thể xem chi tiết: %1").arg(e.what()));
+        QMessageBox::critical(this, "Lỗi",
+                              QString("Không thể xem chi tiết hồ sơ bệnh án:\n%1").arg(e.what()));
+        qDebug() << "[ERROR] Failed to load medical record:" << e.what();
     }
 }
 
@@ -2803,12 +2948,67 @@ void AdminWindow::on_btnViewUserDetail_clicked()
     try {
         const User& user = UserManager::getInstance().getUserByID(userID);
 
-        // Sử dụng UserDetailDialog
+        // ✅ Show detail dialog first
         UserDetailDialog detailDialog(user, this);
-        detailDialog.exec();
+        int result = detailDialog.exec();
+
+        qDebug() << "[DETAIL DIALOG] Result:" << result << "| Edit requested:" << detailDialog.shouldEdit();
+
+        // ✅ Check if user clicked "Chỉnh sửa" button
+        if (result == QDialog::Accepted && detailDialog.shouldEdit()) {
+            qDebug() << "[OPENING EDIT DIALOG] For user ID:" << userID;
+
+            // ✅ Check write permission before allowing edit
+            if (!hasUserAccess(true)) {
+                showNoPermissionMessage();
+                return;
+            }
+
+            // ✅ Open edit dialog with current user data
+            AddEditUserDialog editDialog(this, user);
+            editDialog.setDialogTitle(QString("Chỉnh Sửa Người Dùng - ID: %1").arg(userID));
+
+            if (editDialog.exec() == QDialog::Accepted) {
+                try {
+                    User updatedUser = editDialog.getUserData();
+
+                    // ✅ Ensure ID hasn't changed
+                    if (updatedUser.getID() != userID) {
+                        qWarning() << "[WARNING] User ID changed during edit! Restoring original ID.";
+                        // User class might need a setID method or recreate with correct ID
+                    }
+
+                    // ✅ Update user in manager
+                    UserManager::getInstance().editUser(userID, updatedUser);
+
+                    // ✅ Save to file
+                    UserManager::getInstance().saveToFile(Config::USER_PATH);
+
+                    QMessageBox::information(this, "Thành công",
+                                             QString("Đã cập nhật thông tin người dùng ID: %1\n"
+                                                     "Username: %2")
+                                                 .arg(userID)
+                                                 .arg(QString::fromStdString(updatedUser.getUsername())));
+
+                    // ✅ Reload current page data
+                    loadUserData(currentUserPage, ui->txtSearchUser->text().trimmed());
+
+                } catch (const std::exception& e) {
+                    QMessageBox::critical(this, "Lỗi Cập Nhật",
+                                          QString("Không thể cập nhật người dùng:\n%1").arg(e.what()));
+                    qDebug() << "[ERROR] Failed to update user:" << e.what();
+                }
+            } else {
+                qDebug() << "[INFO] Edit dialog cancelled";
+            }
+        } else {
+            qDebug() << "[INFO] Detail dialog closed without edit request";
+        }
 
     } catch (const std::exception& e) {
-        QMessageBox::critical(this, "Lỗi", QString("Không thể xem chi tiết: %1").arg(e.what()));
+        QMessageBox::critical(this, "Lỗi",
+                              QString("Không thể xem chi tiết người dùng:\n%1").arg(e.what()));
+        qDebug() << "[ERROR] Failed to load user:" << e.what();
     }
 }
 

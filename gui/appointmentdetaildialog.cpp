@@ -11,7 +11,7 @@ AppointmentDetailDialog::AppointmentDetailDialog(const Appointment& appointment,
     : QDialog(parent)
     , ui(new Ui::AppointmentDetailDialog)
     , m_appointment(appointment)
-    , appointmentID(appointment.getID())  
+    , appointmentID(appointment.getID())
     , editRequested(false)
 {
     ui->setupUi(this);
@@ -26,6 +26,10 @@ AppointmentDetailDialog::AppointmentDetailDialog(const Appointment& appointment,
     int x = (screenGeometry.width() - width()) / 2;
     int y = (screenGeometry.height() - height()) / 2;
     move(x, y);
+
+    // Connect signals (buttons are now in UI file)
+    connect(ui->btnEdit, &QPushButton::clicked, this, &AppointmentDetailDialog::on_btnEdit_clicked);
+    connect(ui->btnClose, &QPushButton::clicked, this, &QDialog::reject);
 
     // Populate data
     populateData();
@@ -112,102 +116,6 @@ void AppointmentDetailDialog::populateData()
 
     // Đặt title cho window
     setWindowTitle(QString("Chi Tiết Cuộc Hẹn - ID: %1").arg(m_appointment.getID()));
-
-    // ✅ Check if buttons already exist in UI file, if not create them
-    QPushButton* btnEdit = findChild<QPushButton*>("btnEdit");
-    QPushButton* btnClose = findChild<QPushButton*>("btnClose");
-    
-    if (!btnEdit || !btnClose) {
-        // Buttons don't exist in UI file, create them dynamically
-        QHBoxLayout* buttonLayout = new QHBoxLayout;
-        buttonLayout->addStretch();
-        
-        // Edit button
-        btnEdit = new QPushButton("Chỉnh sửa");
-        btnEdit->setObjectName("btnEdit");
-        btnEdit->setMinimumSize(120, 40);
-        btnEdit->setStyleSheet(R"(
-            QPushButton {
-                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                    stop:0 #f39c12, stop:1 #e67e22);
-                color: white;
-                border: none;
-                border-radius: 6px;
-                font-weight: bold;
-                font-size: 11pt;
-            }
-            QPushButton:hover {
-                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                    stop:0 #e67e22, stop:1 #d35400);
-            }
-        )");
-        
-        // Close button
-        btnClose = new QPushButton("Đóng");
-        btnClose->setObjectName("btnClose");
-        btnClose->setMinimumSize(120, 40);
-        btnClose->setStyleSheet(R"(
-            QPushButton {
-                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                    stop:0 #95a5a6, stop:1 #7f8c8d);
-                color: white;
-                border: none;
-                border-radius: 6px;
-                font-weight: bold;
-                font-size: 11pt;
-            }
-            QPushButton:hover {
-                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                    stop:0 #7f8c8d, stop:1 #6c7a7b);
-            }
-        )");
-        
-        buttonLayout->addWidget(btnEdit);
-        buttonLayout->addWidget(btnClose);
-        buttonLayout->addStretch();
-        
-        // Add to main layout
-        if (ui->verticalLayout) {
-            ui->verticalLayout->addLayout(buttonLayout);
-        }
-    } else {
-        // Buttons exist in UI file, just apply styles
-        btnEdit->setStyleSheet(R"(
-            QPushButton {
-                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                    stop:0 #f39c12, stop:1 #e67e22);
-                color: white;
-                border: none;
-                border-radius: 6px;
-                font-weight: bold;
-                font-size: 11pt;
-            }
-            QPushButton:hover {
-                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                    stop:0 #e67e22, stop:1 #d35400);
-            }
-        )");
-        
-        btnClose->setStyleSheet(R"(
-            QPushButton {
-                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                    stop:0 #95a5a6, stop:1 #7f8c8d);
-                color: white;
-                border: none;
-                border-radius: 6px;
-                font-weight: bold;
-                font-size: 11pt;
-            }
-            QPushButton:hover {
-                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                    stop:0 #7f8c8d, stop:1 #6c7a7b);
-            }
-        )");
-    }
-    
-    // Connect signals (whether buttons were found or created)
-    connect(btnEdit, &QPushButton::clicked, this, &AppointmentDetailDialog::on_btnEdit_clicked);
-    connect(btnClose, &QPushButton::clicked, this, &QDialog::reject);
 }
 
 void AppointmentDetailDialog::on_btnClose_clicked()

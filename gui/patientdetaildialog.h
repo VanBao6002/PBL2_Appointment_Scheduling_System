@@ -17,6 +17,9 @@ public:
     explicit PatientDetailDialog(const Patient& patient, QWidget *parent = nullptr);
     ~PatientDetailDialog();
 
+    // ✅ Method to check if edit was requested
+    bool shouldEdit() const;
+
 protected:
     void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
@@ -24,10 +27,15 @@ protected:
 
 private slots:
     void on_btnClose_clicked();
+    void on_btnEdit_clicked();
 
 private:
     Ui::PatientDetailDialog *ui;
     Patient m_patient;
+    int patientID;
+    bool editRequested;
+
+    // For window dragging
     bool m_dragging;
     QPoint m_dragPosition;
 

@@ -10,6 +10,7 @@ MedicalRecordDetailDialog::MedicalRecordDetailDialog(const MedicalRecord& record
     : QDialog(parent)
     , ui(new Ui::MedicalRecordDetailDialog)
     , m_record(record)
+    , editRequested(false)
 {
     ui->setupUi(this);
 
@@ -22,6 +23,10 @@ MedicalRecordDetailDialog::MedicalRecordDetailDialog(const MedicalRecord& record
     int x = (screenGeometry.width() - width()) / 2;
     int y = (screenGeometry.height() - height()) / 2;
     move(x, y);
+
+    // Connect signals
+    connect(ui->btnEdit, &QPushButton::clicked, this, &MedicalRecordDetailDialog::on_btnEdit_clicked);
+    connect(ui->btnClose, &QPushButton::clicked, this, &MedicalRecordDetailDialog::on_btnClose_clicked);
 
     // Populate data
     populateData();
@@ -72,13 +77,39 @@ void MedicalRecordDetailDialog::populateData()
     ui->lblTreatmentValue->setText(QString::fromStdString(m_record.getTreatment()));
     ui->lblDoctorNotesValue->setText(QString::fromStdString(m_record.getDoctorNotes()));
 
+    // THÊM PHẦN LỊCH TÁI KHÁM
+    ui->listFollowUp->clear();
+    for (const auto& date : m_record.getFollowUpDates()) {
+        ui->listFollowUp->addItem(QString::fromStdString(date.toString()));
+    }
+
+    // THÊM PHẦN ĐƠN THUỐC
+    ui->listPrescriptions->clear();
+    for (const auto& prescription : m_record.getPrescriptions()) {
+        for (const auto& medicine : prescription.getMedicines()) {
+            QString medInfo = QString("%1 - %2 (%3 lần/ngày, %4 ngày)")
+                                  .arg(QString::fromStdString(medicine.name))
+                                  .arg(QString::fromStdString(medicine.dosage))
+                                  .arg(medicine.frequency)
+                                  .arg(medicine.duration);
+            ui->listPrescriptions->addItem(medInfo);
+        }
+    }
+
     // Đặt title cho window
     setWindowTitle(QString("Chi Tiết Hồ Sơ Bệnh Án - ID: %1").arg(m_record.getID()));
 }
 
 void MedicalRecordDetailDialog::on_btnClose_clicked()
 {
-    accept();
+    reject();
+}
+
+void MedicalRecordDetailDialog::on_btnEdit_clicked()
+{
+    qDebug() << "[EDIT CLICKED] User requested to edit medical record ID:" << m_record.getID();
+    editRequested = true;
+    accept();  // Close and signal edit request
 }
 
 void MedicalRecordDetailDialog::mousePressEvent(QMouseEvent *event)
@@ -102,4 +133,9 @@ void MedicalRecordDetailDialog::mouseReleaseEvent(QMouseEvent *event)
 {
     m_dragging = false;
     event->accept();
+}
+
+bool MedicalRecordDetailDialog::shouldEdit() const
+{
+    return editRequested;
 }

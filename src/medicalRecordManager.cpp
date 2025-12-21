@@ -11,7 +11,14 @@ void MedicalRecordManager::addMedicalRecord(const MedicalRecord &record_) {
     if (medicalRecordTable.find(ID_) != medicalRecordTable.end()) {
         throw std::invalid_argument("Adding failed. MedicalRecord ID " + std::to_string(record_.getID()) + " already exists.");
     }
-    medicalRecordTable[ID_] = record_;
+    
+    // Tạo bản copy để sửa prescriptions
+    MedicalRecord record = record_;
+    
+    // Cập nhật medicalRecordID cho tất cả prescriptions
+    record.updatePrescriptionsMedicalRecordID(ID_);
+    
+    medicalRecordTable[ID_] = record;
     log[ID_] += " Added on: " + Utils::getDateTime();
     
     // ✅ Lưu file ngay sau khi thêm

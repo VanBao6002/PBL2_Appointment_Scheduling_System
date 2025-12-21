@@ -17,6 +17,8 @@ public:
     explicit UserDetailDialog(const User& user, QWidget *parent = nullptr);
     ~UserDetailDialog();
 
+    bool shouldEdit() const;
+
 protected:
     void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
@@ -24,12 +26,14 @@ protected:
 
 private slots:
     void on_btnClose_clicked();
+    void on_btnEdit_clicked();
 
 private:
     Ui::UserDetailDialog *ui;
     User m_user;
     bool m_dragging;
     QPoint m_dragPosition;
+    bool editRequested;
 
     void populateData();
 };

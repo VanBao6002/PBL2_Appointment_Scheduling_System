@@ -56,7 +56,7 @@ private slots:
 
     //slot cho page_Doctor
     void on_btnAddDoctor_clicked();
-    void on_btnEditDoctor_clicked();
+    // void on_btnEditDoctor_clicked();
     void on_btnRemoveDoctor_clicked();
     void on_btnSearchDoctor_clicked();
     void on_btnViewDoctorDetail_clicked();

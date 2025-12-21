@@ -10,6 +10,7 @@ UserDetailDialog::UserDetailDialog(const User& user, QWidget *parent)
     : QDialog(parent)
     , ui(new Ui::UserDetailDialog)
     , m_user(user)
+    , editRequested(false)
 {
     ui->setupUi(this);
 
@@ -22,6 +23,10 @@ UserDetailDialog::UserDetailDialog(const User& user, QWidget *parent)
     int x = (screenGeometry.width() - width()) / 2;
     int y = (screenGeometry.height() - height()) / 2;
     move(x, y);
+
+    // Thêm kết nối thủ công
+    connect(ui->btnClose, &QPushButton::clicked, this, &UserDetailDialog::on_btnClose_clicked);
+    connect(ui->btnEdit, &QPushButton::clicked, this, &UserDetailDialog::on_btnEdit_clicked);
 
     // Populate data
     populateData();
@@ -77,7 +82,14 @@ void UserDetailDialog::populateData()
 
 void UserDetailDialog::on_btnClose_clicked()
 {
-    accept();
+    reject();
+}
+
+void UserDetailDialog::on_btnEdit_clicked()
+{
+    qDebug() << "[EDIT CLICKED] User requested to edit user ID:" << m_user.getID();
+    editRequested = true;
+    accept();  // Close and signal edit request
 }
 
 void UserDetailDialog::mousePressEvent(QMouseEvent *event)
@@ -101,4 +113,9 @@ void UserDetailDialog::mouseReleaseEvent(QMouseEvent *event)
 {
     m_dragging = false;
     event->accept();
+}
+
+bool UserDetailDialog::shouldEdit() const
+{
+    return editRequested;
 }

@@ -1,19 +1,19 @@
 [
     {
-        "CCCD": "456456456456",
-        "ID": 3,
-        "birthday": "19/12/2005",
+        "CCCD": "121212121212",
+        "ID": 4,
+        "birthday": "21/12/2005",
         "creationDate": {
             "day": 1,
             "month": 1,
             "year": 2000
         },
-        "fullName": "Nô lệ A",
-        "passwordHash": "1352880372",
-        "phoneNumber": "0907676564",
-        "plainPassword": "nolenole",
-        "userRole": "ASSISTANT",
-        "username": "noleA"
+        "fullName": "bao",
+        "passwordHash": "689486176",
+        "phoneNumber": "12121212121",
+        "plainPassword": "adminadmin",
+        "userRole": "ADMIN",
+        "username": "admin"
     },
     {
         "CCCD": "012345678910",
@@ -32,19 +32,19 @@
         "username": "admin"
     },
     {
-        "CCCD": "121212121212",
-        "ID": 4,
-        "birthday": "21/12/2005",
+        "CCCD": "456456456456",
+        "ID": 3,
+        "birthday": "19/12/2005",
         "creationDate": {
             "day": 1,
             "month": 1,
             "year": 2000
         },
-        "fullName": "bao",
-        "passwordHash": "689486176",
-        "phoneNumber": "12121212121",
-        "plainPassword": "adminadmin",
-        "userRole": "ADMIN",
-        "username": "admin"
+        "fullName": "Nô lệ A",
+        "passwordHash": "1352811180",
+        "phoneNumber": "0907676564",
+        "plainPassword": "nolelele",
+        "userRole": "ASSISTANT",
+        "username": "noleA"
     }
 ]

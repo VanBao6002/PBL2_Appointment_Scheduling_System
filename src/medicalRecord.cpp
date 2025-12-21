@@ -249,6 +249,13 @@ void MedicalRecord::setChangeHistory(const std::string& date_) {
     history = Date::fromString(Utils::trimmed(date_));
 }
 
+// medicalRecord.h - Thêm vào class MedicalRecord (phần public)
+void MedicalRecord::updatePrescriptionsMedicalRecordID(int newMedicalRecordID) {
+    for (auto& prescription : prescriptions) {
+        prescription.setMedicalRecordID(newMedicalRecordID);
+    }
+}
+
 nlohmann::json MedicalRecord::toJson() const {
     nlohmann::json j;
     j["ID"] = ID;
