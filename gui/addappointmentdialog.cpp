@@ -966,75 +966,51 @@ void AddAppointmentDialog::populateDoctorCards() {
 }
 
 Appointment AddAppointmentDialog::getAppointmentData() const {
-    qDebug() << "[DEBUG][getAppointmentData] Entered function.";
-    qDebug() << "Doctor ID:" << selectedDoctorID;
-    qDebug() << "Patient ID:" << selectedPatientID;
-
-    // Kiểm tra xem bác sĩ có tồn tại không
-    if (selectedDoctorID <= 0) {
-        qDebug() << "[ERROR] Invalid Doctor ID!";
-        throw std::runtime_error("Invalid Doctor ID");
-    }
-
-    // Lấy thông tin từ UI
+     qDebug() << "[DEBUG][getAppointmentData] Entered function.";
+    
+    // Get data from UI
     QWidget* page2 = ui->stackedWidget->findChild<QWidget*>("page_2");
     QDate qDate = page2 ? page2->findChild<QCalendarWidget*>("calendarWidget")->selectedDate() : QDate::currentDate();
-
-    // Định dạng ngày
     Date apptDate(qDate.day(), qDate.month(), qDate.year());
     QString qStartTime = selectedTimeSlot.section(" - ", 0, 0);
     QString qEndTime = selectedTimeSlot.section(" - ", 1, 1);
-
-    // Lấy thông tin phòng từ bác sĩ
+    
+    // Get room from doctor
     std::string room = "";
     try {
         Doctor doctor = DoctorManager::getInstance().getDoctorByID(selectedDoctorID);
         room = doctor.getRoom();
-        qDebug() << "[DEBUG] Doctor found. Room:" << room.c_str();
     } catch (const std::exception& e) {
-        qDebug() << "[ERROR] Doctor not found! ID:" << selectedDoctorID << "Error:" << e.what();
         room = "Chưa xác định";
-
-        // In danh sách bác sĩ có sẵn để debug
-        auto allDoctors = DoctorManager::getInstance().getAllDoctors();
-        qDebug() << "[DEBUG] Available doctors:";
-        for (const auto& pair : allDoctors) {
-            qDebug() << "  ID:" << pair.first << ", Name:" << QString::fromStdString(pair.second.getName());
-        }
     }
-
-    // Lấy trạng thái
+    
+    // Get status
     std::string statusStr = selectedStatus.toStdString();
     if (statusStr.empty()) {
         statusStr = "Scheduled";
     }
-
-    qDebug() << "Date:" << apptDate.toString().c_str();
-    qDebug() << "Time:" << qStartTime << "-" << qEndTime;
-    qDebug() << "Room:" << room.c_str();
-    qDebug() << "Status:" << statusStr.c_str();
-
-    // Tạo appointment mới hoặc cập nhật
+    
+    // Create appointment WITHOUT auto-generated ID
+    Appointment appt(selectedDoctorID, selectedPatientID,
+                     apptDate.toString(),
+                     qStartTime.toStdString(),
+                     qEndTime.toStdString(),
+                     room,
+                     statusStr);
+    
     if (editMode && appointmentID > 0) {
-        // Chế độ chỉnh sửa
-        Appointment updatedAppt(selectedDoctorID, selectedPatientID,
-                                apptDate.toString(),
-                                qStartTime.toStdString(),
-                                qEndTime.toStdString(),
-                                room,
-                                statusStr);
-        updatedAppt.setID(appointmentID); // Giữ nguyên ID
-        return updatedAppt;
+        // ✅ EDIT MODE: Reuse existing ID
+        appt.setID(appointmentID);
+        qDebug() << "[EDIT MODE] Reusing appointment ID:" << appointmentID;
     } else {
-        // Chế độ thêm mới
-        Appointment newAppt(selectedDoctorID, selectedPatientID,
-                            apptDate.toString(),
-                            qStartTime.toStdString(),
-                            qEndTime.toStdString(),
-                            room,
-                            statusStr);
-        return newAppt;
+        // ✅ ADD MODE: Generate new ID
+        int newID = static_cast<int>(IDHandler<Appointment>::generateID());
+        appt.setID(newID);
+        IDHandler<Appointment>::registerID(newID);
+        qDebug() << "[ADD MODE] Generated new appointment ID:" << newID;
     }
+    
+    return appt;
 }
 
 void AddAppointmentDialog::on_searchButton_clicked() {
@@ -1105,13 +1081,13 @@ void AddAppointmentDialog::on_cancelButton_clicked() {
 }
 
 void AddAppointmentDialog::on_confirmButton_clicked() {
-    // Kiểm tra cơ bản
+    // Basic checks
     if (selectedDoctorID < 0) {
         QMessageBox::warning(this, "Chưa chọn bác sĩ", "Vui lòng chọn bác sĩ!");
         return;
     }
 
-    // Kiểm tra xem bác sĩ có tồn tại không
+    // Verify doctor exists
     try {
         DoctorManager::getInstance().getDoctorByID(selectedDoctorID);
         qDebug() << "[DEBUG] Doctor ID" << selectedDoctorID << "exists and is valid.";
@@ -1126,7 +1102,7 @@ void AddAppointmentDialog::on_confirmButton_clicked() {
         return;
     }
 
-    // Lấy thông tin từ UI
+    // Get UI elements
     QWidget* page2 = ui->stackedWidget->findChild<QWidget*>("page_2");
     if (!page2) {
         QMessageBox::warning(this, "Lỗi", "Không thể truy cập trang chọn ngày!");
@@ -1152,39 +1128,101 @@ void AddAppointmentDialog::on_confirmButton_clicked() {
         return;
     }
 
-    // SỬA LỖI Ở ĐÂY: Kiểm tra item có bị disabled không (đã được đặt)
+    // ✅ CHECK 1: Verify time slot is enabled (not already booked)
     QListWidgetItem* currentItem = listTimeSlots->currentItem();
     if (!currentItem || !(currentItem->flags() & Qt::ItemIsEnabled)) {
-        QMessageBox::warning(this, "Khung giờ đã đặt", "Khung giờ này đã được đặt. Vui lòng chọn khung giờ khác!");
+        QMessageBox::warning(this, "Khung giờ đã đặt", 
+            "Khung giờ này đã được đặt. Vui lòng chọn khung giờ khác!");
         return;
     }
 
-    // Kiểm tra trùng lịch cho bệnh nhân
+    // Parse selected time
     std::string selectedDateStr = selectedDate.toString("dd-MM-yyyy").toStdString();
     std::string selectedStart = selectedTimeSlot.section(" - ", 0, 0).toStdString();
     std::string selectedEnd = selectedTimeSlot.section(" - ", 1, 1).toStdString();
 
     const auto& allAppointments = AppointmentManager::getInstance().getAllAppointmentsMap();
+
+    // ✅ CHECK 2: Verify DOCTOR is available (no double-booking)
     for (const auto& pair : allAppointments) {
         const Appointment& apt = pair.second;
-        if (apt.getPatientID() == selectedPatientID &&
+        
+        // Skip if it's the same appointment we're editing
+        if (editMode && apt.getID() == appointmentID) {
+            continue;
+        }
+        
+        // Check if DOCTOR is already booked at this time
+        if (apt.getDoctorID() == selectedDoctorID &&
             apt.getDate().toString() == selectedDateStr) {
-
-            // Kiểm tra trùng thời gian
+            
+            // Check time overlap
             if (!(apt.getEndTime() <= selectedStart || apt.getStartTime() >= selectedEnd)) {
-                QMessageBox::warning(this, "Trùng lịch hẹn",
-                                     QString("Bệnh nhân đã có cuộc hẹn khác:\n"
-                                             "Thời gian: %1 - %2\n"
-                                             "Bác sĩ: %3")
-                                         .arg(QString::fromStdString(apt.getStartTime()))
-                                         .arg(QString::fromStdString(apt.getEndTime()))
-                                         .arg(QString::number(apt.getDoctorID())));
+                try {
+                    Patient conflictingPatient = PatientManager::getInstance().getPatientByID(apt.getPatientID());
+                    QMessageBox::warning(this, "Bác sĩ đã có lịch hẹn",
+                                         QString("Bác sĩ đã có cuộc hẹn với bệnh nhân khác:\n"
+                                                 "Bệnh nhân: %1 (ID: %2)\n"
+                                                 "Thời gian: %3 - %4\n"
+                                                 "Trạng thái: %5\n\n"
+                                                 "Vui lòng chọn khung giờ khác!")
+                                             .arg(QString::fromStdString(conflictingPatient.getName()))
+                                             .arg(apt.getPatientID())
+                                             .arg(QString::fromStdString(apt.getStartTime()))
+                                             .arg(QString::fromStdString(apt.getEndTime()))
+                                             .arg(QString::fromStdString(Appointment::statusToString(apt.getStatus()))));
+                } catch (...) {
+                    QMessageBox::warning(this, "Bác sĩ đã có lịch hẹn",
+                                         QString("Bác sĩ đã có cuộc hẹn khác:\n"
+                                                 "Thời gian: %1 - %2\n\n"
+                                                 "Vui lòng chọn khung giờ khác!")
+                                             .arg(QString::fromStdString(apt.getStartTime()))
+                                             .arg(QString::fromStdString(apt.getEndTime())));
+                }
                 return;
             }
         }
     }
 
-    // Mọi thứ đều OK
+    // ✅ CHECK 3: Verify PATIENT doesn't have conflicting appointments
+    for (const auto& pair : allAppointments) {
+        const Appointment& apt = pair.second;
+        
+        // Skip if it's the same appointment we're editing
+        if (editMode && apt.getID() == appointmentID) {
+            continue;
+        }
+        
+        if (apt.getPatientID() == selectedPatientID &&
+            apt.getDate().toString() == selectedDateStr) {
+
+            // Check time overlap
+            if (!(apt.getEndTime() <= selectedStart || apt.getStartTime() >= selectedEnd)) {
+                try {
+                    Doctor conflictingDoctor = DoctorManager::getInstance().getDoctorByID(apt.getDoctorID());
+                    QMessageBox::warning(this, "Trùng lịch hẹn",
+                                         QString("Bệnh nhân đã có cuộc hẹn khác:\n"
+                                                 "Bác sĩ: %1 (ID: %2)\n"
+                                                 "Thời gian: %3 - %4\n"
+                                                 "Trạng thái: %5")
+                                             .arg(QString::fromStdString(conflictingDoctor.getName()))
+                                             .arg(apt.getDoctorID())
+                                             .arg(QString::fromStdString(apt.getStartTime()))
+                                             .arg(QString::fromStdString(apt.getEndTime()))
+                                             .arg(QString::fromStdString(Appointment::statusToString(apt.getStatus()))));
+                } catch (...) {
+                    QMessageBox::warning(this, "Trùng lịch hẹn",
+                                         QString("Bệnh nhân đã có cuộc hẹn khác:\n"
+                                                 "Thời gian: %1 - %2")
+                                             .arg(QString::fromStdString(apt.getStartTime()))
+                                             .arg(QString::fromStdString(apt.getEndTime())));
+                }
+                return;
+            }
+        }
+    }
+
+    // All checks passed
     accept();
 }
 

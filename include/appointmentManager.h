@@ -48,6 +48,8 @@ public:
     const std::unordered_map<int, std::string>& getAllLog() const;
     const std::string& getIDLog(int ID_) const;
 
+    bool checkDuplicateAppointment(const Appointment &apt_);
+    void removeDuplicates();
     // loader
     void loadFromFile(const std::string& path);
     void saveToFile(const std::string& path);
