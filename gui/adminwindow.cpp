@@ -105,6 +105,11 @@ AdminWindow::AdminWindow(QWidget *parent)
     connect(ui->btnPage_Appointment_1, &QPushButton::clicked, this, &AdminWindow::on_btnPage_Appointment_1_clicked);
     connect(ui->btnPage_Appointment_2, &QPushButton::clicked, this, &AdminWindow::on_btnPage_Appointment_2_clicked);
     connect(ui->btnPage_Appointment_3, &QPushButton::clicked, this, &AdminWindow::on_btnPage_Appointment_3_clicked);
+    connect(ui->btnSortAZAppointment, &QPushButton::clicked, this, &AdminWindow::on_btnSortAZAppointment_clicked);
+    connect(ui->btnSortZAAppointment, &QPushButton::clicked, this, &AdminWindow::on_btnSortZAAppointment_clicked);
+
+    ui->btnSortAZAppointment->setText("🔼 A → Z");
+    ui->btnSortZAAppointment->setText("🔽 Z → A");
 
     //Patient
     connect(ui->btnSortAZPatient, &QPushButton::clicked, this, &AdminWindow::on_btnSortAZPatient_clicked);
@@ -804,6 +809,44 @@ void AdminWindow::loadAppointmentData(int page, const QString& searchText)
         if (match) {
             filteredAppointments.push_back(appt);
         }
+    }
+
+    switch (currentAppointmentSortMode) {
+    case AppointmentSortMode::BY_ID_ASC:
+        std::sort(filteredAppointments.begin(), filteredAppointments.end(),
+                  [](const Appointment& a, const Appointment& b) {
+                      return a.getID() < b.getID();
+                  });
+        qDebug() << "[SORT] Applied: Appointment ID Ascending";
+        break;
+
+    case AppointmentSortMode::BY_NAME_ASC:
+        std::sort(filteredAppointments.begin(), filteredAppointments.end(),
+                  [](const Appointment& a, const Appointment& b) {
+                      try {
+                          std::string nameA = Utils::toLower(PatientManager::getInstance().getPatientByID(a.getPatientID()).getName());
+                          std::string nameB = Utils::toLower(PatientManager::getInstance().getPatientByID(b.getPatientID()).getName());
+                          return nameA < nameB;
+                      } catch (...) {
+                          return a.getID() < b.getID();
+                      }
+                  });
+        qDebug() << "[SORT] Applied: Appointment Patient Name A-Z";
+        break;
+
+    case AppointmentSortMode::BY_NAME_DESC:
+        std::sort(filteredAppointments.begin(), filteredAppointments.end(),
+                  [](const Appointment& a, const Appointment& b) {
+                      try {
+                          std::string nameA = Utils::toLower(PatientManager::getInstance().getPatientByID(a.getPatientID()).getName());
+                          std::string nameB = Utils::toLower(PatientManager::getInstance().getPatientByID(b.getPatientID()).getName());
+                          return nameA > nameB;
+                      } catch (...) {
+                          return a.getID() < b.getID();
+                      }
+                  });
+        qDebug() << "[SORT] Applied: Appointment Patient Name Z-A";
+        break;
     }
 
     // Tính toán phân trang
@@ -1761,7 +1804,13 @@ void AdminWindow::on_appointmentManagerButton_clicked()
 
     AppointmentManager::getInstance().removeDuplicates();
 
-    setupAppointmentTable();  // Thêm dòng này
+    // Reset sort về ID Ascending khi chuyển sang trang appointment
+    currentAppointmentSortMode = AppointmentSortMode::BY_ID_ASC;
+    ui->btnSortAZAppointment->setStyleSheet("");
+    ui->btnSortZAAppointment->setStyleSheet("");
+    ui->txtSearchAppointment->clear();
+
+    setupAppointmentTable();
     loadAppointmentData(1, "");
 }
 
@@ -2028,6 +2077,30 @@ void AdminWindow::on_btnPage_Appointment_3_clicked()
         currentAppointmentPage = pageNum;
         loadAppointmentData(currentAppointmentPage, ui->txtSearchAppointment->text().trimmed());
     }
+}
+
+void AdminWindow::on_btnSortAZAppointment_clicked() {
+    if (!hasAppointmentAccess()) { showNoPermissionMessage(); return; }
+    qDebug() << "[SORT] Appointment Button A-Z clicked";
+
+    currentAppointmentSortMode = AppointmentSortMode::BY_NAME_ASC;
+
+    ui->btnSortAZAppointment->setStyleSheet("background-color: #4CAF50; color: white; font-weight: bold;");
+    ui->btnSortZAAppointment->setStyleSheet("");
+
+    loadAppointmentData(currentAppointmentPage, ui->txtSearchAppointment->text().trimmed());
+}
+
+void AdminWindow::on_btnSortZAAppointment_clicked() {
+    if (!hasAppointmentAccess()) { showNoPermissionMessage(); return; }
+    qDebug() << "[SORT] Appointment Button Z-A clicked";
+
+    currentAppointmentSortMode = AppointmentSortMode::BY_NAME_DESC;
+
+    ui->btnSortZAAppointment->setStyleSheet("background-color: #4CAF50; color: white; font-weight: bold;");
+    ui->btnSortAZAppointment->setStyleSheet("");
+
+    loadAppointmentData(currentAppointmentPage, ui->txtSearchAppointment->text().trimmed());
 }
 
 void AdminWindow::on_btnViewAppointmentDetail_clicked() {

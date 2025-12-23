@@ -41,10 +41,7 @@ public:
     void setCCCD(const std::string &CCCD_);
     void setEmail(const std::string &email_);
     
-    // converter
     virtual nlohmann::json toJson() const = 0;
     virtual void fromJson(const nlohmann::json &j) = 0;
 
-// protected:
-//     void setID(int ID_);
 };

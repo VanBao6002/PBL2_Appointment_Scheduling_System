@@ -1,33 +1,17 @@
 [
     {
-        "CCCD": "010101010101",
-        "ID": 2,
-        "birthday": "22/12/2005",
+        "CCCD": "012345678910",
+        "ID": 3,
+        "birthday": "24/12/2005",
         "creationDate": {
             "day": 1,
             "month": 1,
             "year": 2000
         },
-        "fullName": "NGUYEN VAN D",
-        "passwordHash": "3423912579",
-        "phoneNumber": "01010101011",
-        "plainPassword": "nhanvien",
-        "userRole": "ASSISTANT",
-        "username": "nhanvien"
-    },
-    {
-        "CCCD": "121212121212",
-        "ID": 1,
-        "birthday": "21/12/2005",
-        "creationDate": {
-            "day": 1,
-            "month": 1,
-            "year": 2000
-        },
-        "fullName": "bao",
-        "passwordHash": "689486176",
-        "phoneNumber": "12121212121",
-        "plainPassword": "adminadmin",
+        "fullName": "Anh Dep Trai",
+        "passwordHash": "2338835314",
+        "phoneNumber": "0123456789",
+        "plainPassword": "123123123",
         "userRole": "ADMIN",
         "username": "admin"
     }

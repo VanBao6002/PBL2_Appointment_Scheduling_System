@@ -16,13 +16,13 @@ class Patient : public Person {
 private:
     std::string insuranceID;
     std::string bloodType;
-    std::vector<std::string> allergies; // Dị ứng
-    std::vector<std::string> chronicDiseases; // Bệnh nền
+    std::vector<std::string> allergies;
+    std::vector<std::string> chronicDiseases;
     std::string nameMother;
     std::string nameFather;
     std::string phoneMother;
     std::string phoneFather;
-    std::vector<int> medicalRecordIDs; // Chỉ lưu ID hồ sơ bệnh án (để MedicalRecordManager quản lý chi tiết)
+    std::vector<int> medicalRecordIDs;
 
 public:
     Patient();

@@ -1,87 +1,29 @@
 [
     {
-        "CCCD": "565656565656",
-        "ID": 4,
+        "CCCD": "091111111111",
+        "ID": 7,
         "birthday": {
-            "day": 20,
+            "day": 24,
             "month": 12,
             "year": 1995
         },
         "description": "",
         "doctorStatus": "Active",
-        "email": "vanC@gmail.com",
+        "email": "bacsi1@gmail.com",
         "gender": "M",
-        "name": "Nguyên Văn C",
+        "name": "Phạm Thanh A",
         "patientIDs": [],
-        "phoneNumber": "56565656560",
-        "room": "102",
+        "phoneNumber": "0911111111",
+        "room": "201",
         "specialization": "Lão khoa",
         "workingSchedule": {
             "Thứ 2": [
-                {
-                    "EndTime": "18:00",
-                    "StartTime": "07:30"
-                }
-            ],
-            "Thứ 5": [
-                {
-                    "EndTime": "15:00",
-                    "StartTime": "06:00"
-                }
-            ]
-        }
-    },
-    {
-        "CCCD": "898989898989",
-        "ID": 3,
-        "birthday": {
-            "day": 17,
-            "month": 1,
-            "year": 1997
-        },
-        "description": "",
-        "doctorStatus": "Active",
-        "email": "NguyenVanB@gmail.com",
-        "gender": "M",
-        "name": "Nguyễn Văn B",
-        "patientIDs": [],
-        "phoneNumber": "89898989890",
-        "room": "202",
-        "specialization": "Tim mạch",
-        "workingSchedule": {
-            "Thứ 5": [
-                {
-                    "EndTime": "17:30",
-                    "StartTime": "08:30"
-                }
-            ]
-        }
-    },
-    {
-        "CCCD": "232323232323",
-        "ID": 2,
-        "birthday": {
-            "day": 21,
-            "month": 12,
-            "year": 1995
-        },
-        "description": "",
-        "doctorStatus": "Active",
-        "email": "messi@gmail.com",
-        "gender": "M",
-        "name": "Messi",
-        "patientIDs": [],
-        "phoneNumber": "23232323232",
-        "room": "103",
-        "specialization": "Lão khoa",
-        "workingSchedule": {
-            "Chủ nhật": [
                 {
                     "EndTime": "17:00",
                     "StartTime": "08:00"
                 }
             ],
-            "Thứ 3": [
+            "Thứ 4": [
                 {
                     "EndTime": "17:00",
                     "StartTime": "08:00"

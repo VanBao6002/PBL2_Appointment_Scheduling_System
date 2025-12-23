@@ -39,8 +39,6 @@ class PatientManager{
         const std::string& getIDLog(int ID_) const;
         const Patient& getPatientByCCCD(const std::string& CCCD) const;
 
-
-        // loader
         void loadFromFile(const std::string& path);
         void saveToFile(const std::string& path);
 };

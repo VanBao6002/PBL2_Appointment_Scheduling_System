@@ -11,12 +11,10 @@ MedicalRecord::MedicalRecord() : patientID(0), doctorID(0), creationDate(Date())
 
 MedicalRecord::MedicalRecord(int patientID_, int doctorID_, const std::string& creationDate_, const std::string& lastUpdated_, const std::string& diagnosis_, const std::string& symptoms_, const std::string& testResults_, const std::string& bloodPressure_, int heartRate_, float bodyTemperature_, const std::string& treatment_, const std::string& doctorNotes_, const std::vector<Date>& followUpDates_, const std::vector<Prescription>& prescriptions_, const std::string& changeHistory_) {
 
-    // ✅ QUAN TRỌNG: Khởi tạo ID TRƯỚC
     int ID = static_cast<int>(IDHandler<MedicalRecord>::generateID());
     this->ID = ID;
     IDHandler<MedicalRecord>::registerID(ID);
 
-    // ✅ SAU ĐÓ mới set các giá trị khác (có validation)
     setPatientID(patientID_);
     setDoctorID(doctorID_);
     setCreationDate(creationDate_);
@@ -38,7 +36,6 @@ MedicalRecord::~MedicalRecord(){
     IDHandler<MedicalRecord>::unregisterID(ID);
 }
 
-// Copy Constructor
 MedicalRecord::MedicalRecord(const MedicalRecord& other)
     : patientID(other.patientID),
       doctorID(other.doctorID),
@@ -55,12 +52,11 @@ MedicalRecord::MedicalRecord(const MedicalRecord& other)
       followUpDates(other.followUpDates),
       prescriptions(other.prescriptions),
       history(other.history),
-      ID(other.ID) // Copy ID, do not register
+      ID(other.ID) 
 {
-    // Do not register ID again
+
 }
 
-// Copy Assignment Operator
 MedicalRecord& MedicalRecord::operator=(const MedicalRecord& other) {
     if (this != &other) {
         patientID = other.patientID;
@@ -78,12 +74,11 @@ MedicalRecord& MedicalRecord::operator=(const MedicalRecord& other) {
         followUpDates = other.followUpDates;
         prescriptions = other.prescriptions;
         history = other.history;
-        ID = other.ID; // Copy ID, do not register
+        ID = other.ID; 
     }
     return *this;
 }
 
-// Move Constructor
 MedicalRecord::MedicalRecord(MedicalRecord&& other) noexcept
     : patientID(std::move(other.patientID)),
       doctorID(std::move(other.doctorID)),
@@ -100,12 +95,11 @@ MedicalRecord::MedicalRecord(MedicalRecord&& other) noexcept
       followUpDates(std::move(other.followUpDates)),
       prescriptions(std::move(other.prescriptions)),
       history(std::move(other.history)),
-      ID(other.ID) // Move ID, do not register
+      ID(other.ID)
 {
     other.ID = 0;
 }
 
-// Move Assignment Operator
 MedicalRecord& MedicalRecord::operator=(MedicalRecord&& other) noexcept {
     if (this != &other) {
         patientID = std::move(other.patientID);
@@ -123,7 +117,7 @@ MedicalRecord& MedicalRecord::operator=(MedicalRecord&& other) noexcept {
         followUpDates = std::move(other.followUpDates);
         prescriptions = std::move(other.prescriptions);
         history = std::move(other.history);
-        ID = other.ID; // Move ID, do not register
+        ID = other.ID;
         other.ID = 0;
     }
     return *this;
@@ -187,16 +181,11 @@ void MedicalRecord::setID(int ID_) {
 
 void MedicalRecord::setPatientID(int patientID_) {
     Utils::validID(patientID_);
-    
-    // ✅ CHỈ LƯU, KHÔNG VALIDATE Ở ĐÂY
-    // Validation sẽ được thực hiện ở tầng Manager
     patientID = patientID_;
 }
 
 void MedicalRecord::setDoctorID(int doctorID_) {
     Utils::validID(doctorID_);
-    
-    // ✅ CHỈ LƯU, KHÔNG VALIDATE Ở ĐÂY
     doctorID = doctorID_;
 }
 
@@ -249,7 +238,6 @@ void MedicalRecord::setChangeHistory(const std::string& date_) {
     history = Date::fromString(Utils::trimmed(date_));
 }
 
-// medicalRecord.h - Thêm vào class MedicalRecord (phần public)
 void MedicalRecord::updatePrescriptionsMedicalRecordID(int newMedicalRecordID) {
     for (auto& prescription : prescriptions) {
         prescription.setMedicalRecordID(newMedicalRecordID);

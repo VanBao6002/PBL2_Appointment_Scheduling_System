@@ -15,7 +15,7 @@
 bool Utils::isExpired(const Date& prescriptionDate, int duration) {
     std::time_t t = std::time(nullptr);
     std::tm* currentTime = std::localtime(&t);
-    Date currentDate(currentTime->tm_mday, // Đã sửa thứ tự: day
+    Date currentDate(currentTime->tm_mday, 
                     currentTime->tm_mon + 1, 
                     currentTime->tm_year + 1900);
     Date expiryDate = prescriptionDate;
@@ -82,18 +82,15 @@ double Utils::calculateTotalCost() {
 }
 
 std::string Utils::getDateTime() {
-    char buffer[20]; // "DD-MM-YYYY HH:MM:SS" + null terminator
+    char buffer[20]; 
     std::time_t t = std::time(nullptr);
     std::tm* currentDateTime = std::localtime(&t);
-    // Thay đổi định dạng: %d-%m-%Y %H:%M:%S
     std::strftime(buffer, sizeof(buffer), "%d-%m-%Y %H:%M:%S", currentDateTime); 
     return std::string(buffer);
 }
 
 std::string Utils::hashFunc(const std::string &password_){
     if (password_.empty()) return "";
-
-    // Simple consistent hash
     unsigned int hash = 0;
     const int PRIME = 31;
 
@@ -125,9 +122,9 @@ std::string Utils::generatePrescriptionText(int prescriptionID, const Date& pres
     ss << "Medication list:\n";
     ss << "---------------------------------------------\n";
     for (const auto& med : medicines) {
-        ss << "- " << med.first << "\n";  // Tên thuốc
-        ss << "  Dosage frequency: " << med.second.first << " times per day\n";  // Tần suất
-        ss << "  Duration of treatment: " << med.second.second << " days\n\n";  // Thời gian
+        ss << "- " << med.first << "\n"; 
+        ss << "  Dosage frequency: " << med.second.first << " times per day\n"; 
+        ss << "  Duration of treatment: " << med.second.second << " days\n\n"; 
     }
 
     if (!additionalNotes.empty()) {
@@ -135,8 +132,8 @@ std::string Utils::generatePrescriptionText(int prescriptionID, const Date& pres
     }
 
     ss << "=============================================\n";
-    ss << "Printed on: " << getDateTime() << "\n"; // Ngày in đơn
-    ss << "Doctor's signature:\n\n"; // Chữ ký bác sĩ
+    ss << "Printed on: " << getDateTime() << "\n"; 
+    ss << "Doctor's signature:\n\n"; 
 
     return ss.str();
 }
@@ -209,19 +206,15 @@ void Utils::validGender(char gender) {
     }
 }
 
-// ✅ ĐÃ SỬA: validDate để sử dụng .toString() và chi tiết hơn
 void Utils::validDate(const Date &date) {
     std::time_t t = std::time(nullptr);
     std::tm* currentTime = std::localtime(&t);
     int currentYear = currentTime->tm_year + 2000;
     int lowerYearLimit = currentYear - 200;
-    
-    // Đảm bảo không sử dụng date trực tiếp trong phép cộng chuỗi
     if (date.month < 1 || date.month > 12){
         throw std::invalid_argument("Invalid month: " + date.toString());
     }
 
-    // Kiểm tra ngày hợp lệ
     try {
         int maxDay = Date::getDaysInMonth(date.month, date.year);
         if (date.day < 1 || date.day > maxDay){
@@ -289,7 +282,6 @@ void Utils::validSpecialization(const std::string &specialization_){
             std::cout << "[INFO] Loaded " << set.size() << " specializations." << std::endl;
         } catch (const std::exception& e) {
             std::cerr << "[ERROR] Cannot load specializations: " << e.what() << std::endl;
-            // Fallback
             set = {"Cardiology", "Neurology", "Pediatrics"};
         }
         return set;
@@ -304,7 +296,6 @@ void Utils::validBloodType(const std::string &bloodType_) {
     static std::unordered_set<std::string> validTypes = [](){
         std::unordered_set<std::string> set;
         try {
-            // ✅ Đọc từ JSON
             nlohmann::json j = Utils::readJsonFromFile(Config::BLOOD_TYPE_PATH);
             
             if (j.contains("bloodTypes") && j["bloodTypes"].is_array()) {
@@ -318,7 +309,6 @@ void Utils::validBloodType(const std::string &bloodType_) {
             
         } catch (const std::exception& e) {
             std::cerr << "[ERROR] Cannot load blood types: " << e.what() << std::endl;
-            // ✅ Fallback: Thêm giá trị mặc định
             set = {"A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"};
             std::cerr << "[FALLBACK] Using default blood types." << std::endl;
         }
@@ -337,7 +327,6 @@ void Utils::validUserName(const std::string &username_) {
         throw std::invalid_argument("Username must not be empty or only whitespace.");
     }
     
-    // Chỉ kiểm tra độ dài, không kiểm tra nội dung
     if (trimmedUsername.size() < 4 || trimmedUsername.size() > 20) {
         throw std::invalid_argument("Username: " + trimmedUsername + " is not valid. Must be 4-20 characters.");
     }
@@ -397,7 +386,6 @@ void Utils::validPrescription(const Prescription &prescription_) {
 }
 
 void Utils::validEmail(const std::string& email) {
-    // Trim khoảng trắng 2 đầu
     std::string e = Utils::trimmed(email);
     const std::regex pattern(
         R"(^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$)"
@@ -413,12 +401,10 @@ void Utils::validCCCD(const std::string& CCCD) {
     }
 }
 
-// ======================= CONVERTOR =======================
 
 void Utils::writeJsonToFile(const std::string& filePath, const nlohmann::json& j){
     std::string fullPath = filePath;
 #ifdef DATA_DIR
-    // If filePath is not absolute, prepend DATA_DIR
     if (!filePath.empty() && filePath[0] != '/' && (filePath.size() < 2 || filePath[1] != ':')) {
         fullPath = std::string(DATA_DIR) + "/" + filePath;
     }
@@ -439,7 +425,6 @@ void Utils::writeJsonToFile(const std::string& filePath, const nlohmann::json& j
 nlohmann::json Utils::readJsonFromFile(const std::string& filePath){
     std::string fullPath = filePath;
 #ifdef DATA_DIR
-    // If filePath is not absolute, prepend DATA_DIR
     if (!filePath.empty() && filePath[0] != '/' && (filePath.size() < 2 || filePath[1] != ':')) {
         fullPath = std::string(DATA_DIR) + "/" + filePath;
     }
@@ -460,7 +445,6 @@ void Utils::writeTextToFile(const std::string& filePath, const std::string& text
         std::cerr << "Error: Could not open file \"" << filePath << "\" for writing.\n";
         return;
     }
-    // Ghi từng dòng
     std::stringstream ss(text);
     std::string line;
     while (std::getline(ss, line)) {
@@ -479,7 +463,6 @@ std::string Utils::readTextFromFile(const std::string& filePath){
     return ss.str();
 }
 
-// Load medicine prices from JSON
 std::unordered_map<std::string, double> Utils::loadMedicinePrices() {
     std::unordered_map<std::string, double> prices;
     
@@ -500,7 +483,6 @@ std::unordered_map<std::string, double> Utils::loadMedicinePrices() {
         
     } catch (const std::exception& e) {
         qWarning() << "[ERROR] Cannot load medicine prices:" << e.what();
-        // Fallback prices
         prices["Paracetamol"] = 5000;
         prices["Ibuprofen"] = 8000;
         prices["Amoxicillin"] = 12000;
@@ -509,7 +491,6 @@ std::unordered_map<std::string, double> Utils::loadMedicinePrices() {
     return prices;
 }
 
-// Get medicine info from JSON
 std::vector<std::pair<std::string, double>> Utils::getAllMedicinesWithPrices() {
     std::vector<std::pair<std::string, double>> result;
     
@@ -533,7 +514,6 @@ std::vector<std::pair<std::string, double>> Utils::getAllMedicinesWithPrices() {
     return result;
 }
 
-// Search medicine by name or category
 std::vector<nlohmann::json> Utils::searchMedicines(const std::string& searchText) {
     std::vector<nlohmann::json> results;
     

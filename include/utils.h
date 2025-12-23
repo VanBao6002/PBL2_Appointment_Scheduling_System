@@ -41,8 +41,6 @@ public:
     static std::vector<std::pair<std::string, double>> getAllMedicinesWithPrices();
     static std::vector<nlohmann::json> searchMedicines(const std::string& searchText);
 
-
-    //validicator
     static void validName(const std::string &name);
     static void validGender(char gender);
     static void validDate(const Date &date);
@@ -58,7 +56,6 @@ public:
     static void validEmail(const std::string& email);
     static void validCCCD(const std::string& CCCD);
     
-    //convertor
     static void writeJsonToFile(const std::string& filePath, const nlohmann::json& j);
     static nlohmann::json readJsonFromFile(const std::string& filePath);
 

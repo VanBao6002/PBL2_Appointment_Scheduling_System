@@ -34,7 +34,6 @@ std::unordered_set<std::string> Core::loadSpecializations(){
         }
     } catch (const std::exception& e) {
         std::cerr << "[ERROR] Cannot load specializations data: " << e.what() << std::endl;
-        // Fallback
         specializationTable = {"Da liễu", "Mắt", "Răng hàm mặt"};
     }
     return specializationTable;
@@ -52,7 +51,6 @@ std::unordered_set<std::string> Core::loadRooms(){
 
     } catch (const std::exception& e) {
         std::cerr << "[ERROR] Cannot load rooms data: " << e.what() << std::endl;
-        // Fallback
         roomsTable = {"101", "102", "103"};
     }
     return roomsTable;

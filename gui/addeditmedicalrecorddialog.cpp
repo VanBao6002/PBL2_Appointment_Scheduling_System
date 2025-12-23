@@ -15,7 +15,6 @@ AddEditMedicalRecordDialog::AddEditMedicalRecordDialog(QWidget *parent) :
     setupValidators();
     populatePatientCombo();
     populateDoctorCombo();
-    setupConnections();
     qDebug() << "[DIALOG] AddEditMedicalRecordDialog opened in ADD mode";
 }
 
@@ -31,7 +30,6 @@ AddEditMedicalRecordDialog::AddEditMedicalRecordDialog(QWidget *parent, const Me
     setupValidators();
     populatePatientCombo();
     populateDoctorCombo();
-    setupConnections();
     loadMedicalRecordData(recordToEdit);
     qDebug() << "[DIALOG] AddEditMedicalRecordDialog opened in EDIT mode for ID:" << editingRecordID;
 }
@@ -76,11 +74,6 @@ void AddEditMedicalRecordDialog::setupUI() {
     ui->txtBloodPressure->setPlaceholderText("VD: 120/80");
     ui->txtTreatment->setPlaceholderText("VD: Nghỉ ngơi, uống thuốc theo đơn");
     ui->txtDoctorNotes->setPlaceholderText("Ghi chú của bác sĩ...");
-}
-
-void AddEditMedicalRecordDialog::setupConnections() {
-    connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &AddEditMedicalRecordDialog::on_buttonBox_accepted);
-    connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &AddEditMedicalRecordDialog::on_buttonBox_rejected);
 }
 
 void AddEditMedicalRecordDialog::setupValidators() {
@@ -180,7 +173,7 @@ void AddEditMedicalRecordDialog::loadMedicalRecordData(const MedicalRecord& reco
 }
 
 bool AddEditMedicalRecordDialog::validateForm() {
-    // Check diagnosis
+    // ✅ 1. Kiểm tra chẩn đoán (bắt buộc)
     QString diagnosis = ui->txtDiagnosis->text().trimmed();
     if (diagnosis.isEmpty()) {
         QMessageBox::warning(this, "Lỗi", "Vui lòng nhập chẩn đoán!");
@@ -188,18 +181,62 @@ bool AddEditMedicalRecordDialog::validateForm() {
         return false;
     }
 
-    // Check blood pressure format
-    QString bp = ui->txtBloodPressure->text().trimmed();
-    if (!bp.isEmpty()) {
-        QRegularExpression bpRegex("^\\d{2,3}/\\d{2,3}$");
-        if (!bpRegex.match(bp).hasMatch()) {
-            QMessageBox::warning(this, "Lỗi", "Huyết áp không đúng định dạng (VD: 120/80)");
-            ui->txtBloodPressure->setFocus();
-            return false;
-        }
+    // ✅ 2. Kiểm tra triệu chứng (bắt buộc)
+    QString symptoms = ui->txtSymptoms->toPlainText().trimmed();
+    if (symptoms.isEmpty()) {
+        QMessageBox::warning(this, "Lỗi", "Vui lòng nhập triệu chứng!");
+        ui->txtSymptoms->setFocus();
+        return false;
     }
 
-    // Check dates
+    // ✅ 3. Kiểm tra kết quả xét nghiệm (bắt buộc)
+    QString testResults = ui->txtTestResults->toPlainText().trimmed();
+    if (testResults.isEmpty()) {
+        QMessageBox::warning(this, "Lỗi", "Vui lòng nhập kết quả xét nghiệm!");
+        ui->txtTestResults->setFocus();
+        return false;
+    }
+
+    // ✅ 4. Kiểm tra huyết áp (bắt buộc và đúng format)
+    QString bp = ui->txtBloodPressure->text().trimmed();
+    if (bp.isEmpty()) {
+        QMessageBox::warning(this, "Lỗi", "Vui lòng nhập huyết áp!");
+        ui->txtBloodPressure->setFocus();
+        return false;
+    }
+
+    QRegularExpression bpRegex("^\\d{2,3}/\\d{2,3}$");
+    if (!bpRegex.match(bp).hasMatch()) {
+        QMessageBox::warning(this, "Lỗi", "Huyết áp không đúng định dạng (VD: 120/80)");
+        ui->txtBloodPressure->setFocus();
+        return false;
+    }
+
+    // ✅ 5. Kiểm tra phương pháp điều trị (bắt buộc)
+    QString treatment = ui->txtTreatment->toPlainText().trimmed();
+    if (treatment.isEmpty()) {
+        QMessageBox::warning(this, "Lỗi", "Vui lòng nhập phương pháp điều trị!");
+        ui->txtTreatment->setFocus();
+        return false;
+    }
+
+    // ✅ 6. Kiểm tra ghi chú của bác sĩ (bắt buộc)
+    QString doctorNotes = ui->txtDoctorNotes->toPlainText().trimmed();
+    if (doctorNotes.isEmpty()) {
+        QMessageBox::warning(this, "Lỗi", "Vui lòng nhập ghi chú của bác sĩ!");
+        ui->txtDoctorNotes->setFocus();
+        return false;
+    }
+
+    // ✅ 7. Kiểm tra đơn thuốc (bắt buộc phải có ít nhất 1 thuốc)
+    if (medicines.empty()) {
+        QMessageBox::warning(this, "Lỗi",
+                             "Vui lòng thêm ít nhất một loại thuốc vào đơn!\n\n"
+                             "Nhấn nút 'Thêm thuốc' để thêm thuốc vào đơn.");
+        return false;
+    }
+
+    // ✅ 8. Kiểm tra dates
     QDate creation = ui->dateCreation->date();
     QDate updated = ui->dateLastUpdated->date();
 
@@ -248,15 +285,10 @@ MedicalRecord AddEditMedicalRecordDialog::getMedicalRecordData() const {
         followUpDates.push_back(Date::fromString(dateStr.toStdString()));
     }
 
-    // Prescriptions (empty for now, will be added separately)
     std::vector<Prescription> prescriptions;
     if (!medicines.empty()) {
         // Tạo prescription mới với danh sách thuốc
         Prescription prescription;
-
-        // ✅ SỬA: Không set medicalRecordID ở đây, để MedicalRecordManager xử lý
-        // MedicalRecordManager sẽ cập nhật ID sau khi tạo medical record
-
         prescription.setDate(lastUpdated);
 
         // Thêm tất cả thuốc vào prescription
@@ -295,7 +327,6 @@ void AddEditMedicalRecordDialog::setDialogTitle(const QString& title) {
     setWindowTitle(title);
 }
 
-// SLOTS
 void AddEditMedicalRecordDialog::on_buttonBox_accepted() {
     if (validateForm()) {
         qDebug() << "[DIALOG] Form validated, accepting dialog";

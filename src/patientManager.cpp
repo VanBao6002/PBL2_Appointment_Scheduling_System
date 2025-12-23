@@ -40,7 +40,6 @@ bool PatientManager::isPatientExist(int patientID) const {
     return IDHandler<Patient>::checkDuplicateID(static_cast<size_t>(patientID));
 }
 
-// Getters
 const Patient& PatientManager::getPatientByID(int ID_) const{
     if (patientTable.find(ID_) == patientTable.end()){
         throw std::invalid_argument("Failed getting. Patient ID " + std::to_string(ID_) + " not found.");
@@ -82,19 +81,15 @@ const Patient& PatientManager::getPatientByCCCD(const std::string& CCCD) const {
 }
 
 void PatientManager::loadFromFile(const std::string& path) {
-    // clean data before loading
     patientTable.clear();
     log.clear();
     IDHandler<Patient>::resetIDTable(); 
-
-    // check active path, propriate data
     nlohmann::json jArr = Utils::readJsonFromFile(path);
     if (jArr.empty() || !jArr.is_array()) {
         qDebug() << "[INFO] Patient file is empty or invalid format";
         return;
     }
 
-    // start reading and load to memory
     int maxID = 0;
     for (const auto& jPatient : jArr) {
     try {
@@ -118,8 +113,6 @@ void PatientManager::loadFromFile(const std::string& path) {
         qWarning() << "[ERROR] Failed to load patient record:" << e.what();
     }
     }
-    
-    // Set current ID > maxID
     if (maxID >= 0) {
         IDHandler<Patient>::setCurrentID(static_cast<size_t>(maxID));
     }
@@ -137,6 +130,6 @@ void PatientManager::saveToFile(const std::string& path){
         
     } catch (const std::exception& e) {
         std::cerr << "[ERROR] Failed to save patients data: " << e.what() << std::endl;
-        throw; // rethrow for caller (UI layer) show message
+        throw;
     }
 }

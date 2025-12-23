@@ -20,15 +20,12 @@ public:
     int getMonth() const { return month; }
     int getYear() const { return year; }
 
-    // Chuyển đối tượng Date thành chuỗi định dạng "DD/MM/YYYY"
     std::string toString() const {
-        char buffer[11]; // "DD/MM/YYYY" + null terminator
-        // Đã sửa lỗi: tham số thứ ba phải là year
+        char buffer[11];
         std::snprintf(buffer, sizeof(buffer), "%02d/%02d/%04d", day, month, year);
         return std::string(buffer);
     }
 
-    // Tạo đối tượng Date từ chuỗi định dạng "DD/MM/YYYY"
     static Date fromString(const std::string& str) {
         int d,m,y;
         char sep1, sep2;
@@ -73,7 +70,6 @@ public:
         }
     }
 
-    // Overloaded Operators for I/O (Sử dụng định dạng D M Y)
     friend std::ostream& operator<<(std::ostream& os, const Date& d) {
         os << d.day << ' ' << d.month << ' ' << d.year;
         return os;

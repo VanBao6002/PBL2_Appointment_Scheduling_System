@@ -29,12 +29,11 @@ class MedicalRecordManager {
         void removeMedicalRecord(int ID_);
 
         const MedicalRecord& getMedicalRecordByID(int ID_) const;
-        const std::unordered_map<int, MedicalRecord>& getAllMedicalRecords() const; // return list of all MedicalRecords
+        const std::unordered_map<int, MedicalRecord>& getAllMedicalRecords() const; 
 
         const std::unordered_map<int, std::string>& getAllLog() const;
         const std::string& getIDLog(int ID_) const;
 
-        // loader
         void loadFromFile(const std::string& path);
         void saveToFile(const std::string& path);
 };

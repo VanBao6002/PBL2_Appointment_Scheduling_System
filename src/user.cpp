@@ -8,7 +8,6 @@ User::User(const std::string &userRole_, const std::string &username_, const std
     setRole(userRole_);
     setUsername(username_);
     
-    // Lưu cả plain và hash
     std::string trimmedPwd = Utils::trimmed(userPassword_);
     Utils::validPassword(trimmedPwd);
     
@@ -18,14 +17,12 @@ User::User(const std::string &userRole_, const std::string &username_, const std
     int ID = static_cast<int>(IDHandler<User>::generateID());
     setID(ID);
     IDHandler<User>::registerID(ID);
-    
-    // Thông tin cá nhân
+
     fullName = Utils::trimmed(fullName_);
     CCCD = Utils::trimmed(cccd_);
     phoneNumber = Utils::trimmed(phone_);
     birthday = Utils::trimmed(birthday_);
     
-    // Ngày tạo là ngày hiện tại
     auto now = std::chrono::system_clock::now();
     std::time_t now_c = std::chrono::system_clock::to_time_t(now);
     std::tm* now_tm = std::localtime(&now_c);
@@ -35,28 +32,26 @@ User::User(const std::string &userRole_, const std::string &username_, const std
 }
 
 User::~User(){
-    if (ID != 0) {  // Chỉ unregister nếu ID hợp lệ
+    if (ID != 0) {
         IDHandler<User>::unregisterID(ID);
     }
 }
 
-// Copy Constructor - Copy ID, do not generate/register new one
 User::User(const User& other)
     : ID(other.ID),
       userRole(other.userRole),
       username(other.username),
       passwordHash(other.passwordHash),
       plainPassword(other.plainPassword),
-      fullName(other.fullName),           // ✅ THÊM
-      phoneNumber(other.phoneNumber),     // ✅ THÊM
-      CCCD(other.CCCD),                   // ✅ THÊM
-      birthday(other.birthday),           // ✅ THÊM
-      creationDate(other.creationDate)    // ✅ THÊM
+      fullName(other.fullName),         
+      phoneNumber(other.phoneNumber),   
+      CCCD(other.CCCD),                  
+      birthday(other.birthday),         
+      creationDate(other.creationDate)   
 {
-    // Do not register ID again (ownership stays with original)
+    
 }
 
-// Copy Assignment Operator - Copy fields, do not register/unregister ID
 User& User::operator=(const User& other)
 {
     if (this != &other) {
@@ -65,36 +60,30 @@ User& User::operator=(const User& other)
         username = other.username;
         passwordHash = other.passwordHash;
         plainPassword = other.plainPassword;
-        
-        // ✅ THÊM CÁC DÒNG NÀY
         fullName = other.fullName;
         phoneNumber = other.phoneNumber;
         CCCD = other.CCCD;
         birthday = other.birthday;
         creationDate = other.creationDate;
-        
-        // Do not register/unregister ID
     }
     return *this;
 }
 
-// Move Constructor - Move fields, transfer ID, clear other's ID
 User::User(User&& other) noexcept
     : ID(other.ID),
       userRole(std::move(other.userRole)),
       username(std::move(other.username)),
       passwordHash(std::move(other.passwordHash)),
       plainPassword(std::move(other.plainPassword)),
-      fullName(std::move(other.fullName)),           // ✅ THÊM
-      phoneNumber(std::move(other.phoneNumber)),     // ✅ THÊM
-      CCCD(std::move(other.CCCD)),                   // ✅ THÊM
-      birthday(std::move(other.birthday)),           // ✅ THÊM
-      creationDate(std::move(other.creationDate))    // ✅ THÊM
+      fullName(std::move(other.fullName)),         
+      phoneNumber(std::move(other.phoneNumber)),  
+      CCCD(std::move(other.CCCD)),                   
+      birthday(std::move(other.birthday)),           
+      creationDate(std::move(other.creationDate))
 {
     other.ID = 0;
 }
 
-// Move Assignment Operator - Move fields, transfer ID, clear other's ID
 User& User::operator=(User&& other) noexcept
 {
     if (this != &other) {
@@ -103,11 +92,11 @@ User& User::operator=(User&& other) noexcept
         username = std::move(other.username);
         passwordHash = std::move(other.passwordHash);
         plainPassword = std::move(other.plainPassword);
-        fullName = std::move(other.fullName);           // ✅ THÊM
-        phoneNumber = std::move(other.phoneNumber);     // ✅ THÊM
-        CCCD = std::move(other.CCCD);                   // ✅ THÊM
-        birthday = std::move(other.birthday);           // ✅ THÊM
-        creationDate = std::move(other.creationDate);   // ✅ THÊM
+        fullName = std::move(other.fullName);           
+        phoneNumber = std::move(other.phoneNumber);     
+        CCCD = std::move(other.CCCD);                 
+        birthday = std::move(other.birthday);        
+        creationDate = std::move(other.creationDate);  
         other.ID = 0;
     }
     return *this;
@@ -196,7 +185,7 @@ void User::fromJson(const nlohmann::json &j) {
     if (j.contains("plainPassword")) {
         plainPassword = j.at("plainPassword").get<std::string>();
     } else {
-        plainPassword = "";  // Nếu file cũ không có plainPassword
+        plainPassword = "";
     }
     if (j.contains("fullName")) fullName = j.at("fullName").get<std::string>();
     if (j.contains("phoneNumber")) phoneNumber = j.at("phoneNumber").get<std::string>();

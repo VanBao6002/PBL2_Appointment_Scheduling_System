@@ -12,18 +12,12 @@ void MedicalRecordManager::addMedicalRecord(const MedicalRecord &record_) {
         throw std::invalid_argument("Adding failed. MedicalRecord ID " + std::to_string(record_.getID()) + " already exists.");
     }
     
-    // Tạo bản copy để sửa prescriptions
     MedicalRecord record = record_;
-    
-    // Cập nhật medicalRecordID cho tất cả prescriptions
     record.updatePrescriptionsMedicalRecordID(ID_);
     
     medicalRecordTable[ID_] = record;
     log[ID_] += " Added on: " + Utils::getDateTime();
-    
-    // ✅ Lưu file ngay sau khi thêm
     saveToFile(Config::MEDICAL_RECORD_PATH);
-    
     qDebug() << "[INFO] Medical Record" << ID_ << "added and saved successfully";
 }
 
@@ -34,7 +28,6 @@ void MedicalRecordManager::editMedicalRecord(int ID_, const MedicalRecord &newMe
     medicalRecordTable[ID_] = newMedicalRecord;
     log[ID_] += " Edited on: " + Utils::getDateTime();
     
-    // ✅ Lưu file ngay sau khi sửa
     saveToFile(Config::MEDICAL_RECORD_PATH);
 }
 
@@ -45,7 +38,6 @@ void MedicalRecordManager::removeMedicalRecord(int ID_) {
     medicalRecordTable.erase(ID_);
     log.erase(ID_);
     
-    // ✅ Lưu file ngay sau khi xóa
     saveToFile(Config::MEDICAL_RECORD_PATH);
 }
 
@@ -72,19 +64,16 @@ const std::string& MedicalRecordManager::getIDLog(int ID_) const {
 }
 
 void MedicalRecordManager::loadFromFile(const std::string& path) {
-    // clean data before loading
     medicalRecordTable.clear();
     log.clear();
     IDHandler<MedicalRecord>::resetIDTable(); 
 
-    // check active path, propriate data
     nlohmann::json jArr = Utils::readJsonFromFile(path);
     if (jArr.empty() || !jArr.is_array()) {
         qDebug() << "[INFO] Records file is empty or invalid format";
         return;
     }
 
-    // start reading and load to memory
     int maxID = 0;
     for (const auto& jmedRecord : jArr) {
     try {
@@ -105,7 +94,6 @@ void MedicalRecordManager::loadFromFile(const std::string& path) {
     }
     }
     
-    // Set current ID > maxID
     if (maxID >= 0) {
         IDHandler<MedicalRecord>::setCurrentID(static_cast<size_t>(maxID));
     }
@@ -124,6 +112,6 @@ void MedicalRecordManager::saveToFile(const std::string& path){
         
     } catch (const std::exception& e) {
         std::cerr << "[ERROR] Failed to save medicalRecord data: " << e.what() << std::endl;
-        throw; // rethrow for caller (UI layer) show message
+        throw;
     }
 }

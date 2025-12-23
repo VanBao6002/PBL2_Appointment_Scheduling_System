@@ -30,7 +30,6 @@ Prescription::~Prescription(){
     IDHandler<Prescription>::unregisterID(ID);
 }
 
-// Copy Constructor - Only copy ID, do not generate new one
 Prescription::Prescription(const Prescription& other)
     : medicalRecordID(other.medicalRecordID),
       prescriptionDate(other.prescriptionDate),
@@ -39,10 +38,9 @@ Prescription::Prescription(const Prescription& other)
       prescriptionStatus(other.prescriptionStatus),
       ID(other.ID)
 {
-    // Do not register new ID, just copy
+
 }
 
-// Copy Assignment Operator - Copy ID safely, do not generate new one
 Prescription& Prescription::operator=(const Prescription& other) {
     if (this != &other) {
         medicalRecordID = other.medicalRecordID;
@@ -55,7 +53,6 @@ Prescription& Prescription::operator=(const Prescription& other) {
     return *this;
 }
 
-// Move Constructor - Move ID, do not generate new one
 Prescription::Prescription(Prescription&& other) noexcept
     : medicalRecordID(std::move(other.medicalRecordID)),
       prescriptionDate(std::move(other.prescriptionDate)),
@@ -67,7 +64,6 @@ Prescription::Prescription(Prescription&& other) noexcept
     other.ID = 0;
 }
 
-// Move Assignment Operator - Move ID safely, do not generate new one
 Prescription& Prescription::operator=(Prescription&& other) noexcept {
     if (this != &other) {
         medicalRecordID = std::move(other.medicalRecordID);
@@ -104,7 +100,6 @@ void Prescription::setID(int ID_){
     ID = ID_;
 }
 void Prescription::setMedicalRecordID(int medicalRecordID_) {
-    // Không kiểm tra khi ID = 0 (tạo mới)
     if (medicalRecordID_ != 0 && !IDHandler<MedicalRecord>::checkDuplicateID(medicalRecordID_)) {
         throw std::invalid_argument("MedicalRecord ID not found.");
     }
@@ -123,13 +118,12 @@ void Prescription::setStatus(const std::string& status_){
     prescriptionStatus = statusFromString(Utils::trimmed(status_));
 }
 
-// Quản lý thuốc trong đơn
 void Prescription::addMedicine(const std::string& name, 
                             const std::string& dosage,
                             int frequency,
                             int duration,
                             const std::string& instruction) {
-    for (auto& m : medicines) { // tránh trùng tên thuốc trong cùng đơn
+    for (auto& m : medicines) {
         if (m.name == name) {
             m.dosage = dosage;
             m.frequency = frequency;
@@ -196,7 +190,6 @@ nlohmann::json Prescription::toJson() const {
     
     return j;
 }
-// Deserialize Prescription from JSON
 void Prescription::fromJson(const nlohmann::json &j) {
     if (j.contains("ID")) ID = j.at("ID").get<int>();
     if (j.contains("medicalRecordID")) medicalRecordID = j.at("medicalRecordID").get<int>();

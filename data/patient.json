@@ -1,182 +1,24 @@
 [
     {
-        "CCCD": "343434343434",
-        "ID": 11,
+        "CCCD": "012345678910",
+        "ID": 13,
         "allergies": [],
         "birthday": {
-            "day": 22,
+            "day": 24,
             "month": 12,
             "year": 2015
         },
-        "bloodType": "A+",
+        "bloodType": "A-",
         "chronicDiseases": [],
-        "email": "vd@gmail.com",
+        "email": "benhnhan1@gmail.com",
         "gender": "M",
-        "insuranceID": "343141",
+        "insuranceID": "123123",
         "medicalRecordIDs": [],
-        "name": "asdasda",
-        "nameFather": "asdasdasdaasdaasdasda",
-        "nameMother": "asdasda",
-        "phoneFather": "Trống",
-        "phoneMother": "Trống",
-        "phoneNumber": "78787878780"
-    },
-    {
-        "CCCD": "121212121212",
-        "ID": 10,
-        "allergies": [
-            "Khong"
-        ],
-        "birthday": {
-            "day": 5,
-            "month": 12,
-            "year": 2000
-        },
-        "bloodType": "B-",
-        "chronicDiseases": [
-            "Khong"
-        ],
-        "email": "momixi@gmail.com",
-        "gender": "F",
-        "insuranceID": "12121212",
-        "medicalRecordIDs": [],
-        "name": "Mo Mixi",
-        "nameFather": "Di Mixo",
-        "nameMother": "Do Mixi",
-        "phoneFather": "0123443512",
-        "phoneMother": "0123432234",
-        "phoneNumber": "0123123123"
-    },
-    {
-        "CCCD": "123412341234",
-        "ID": 5,
-        "allergies": [],
-        "birthday": {
-            "day": 20,
-            "month": 12,
-            "year": 2015
-        },
-        "bloodType": "O+",
-        "chronicDiseases": [],
-        "email": "sad@gmail.com",
-        "gender": "M",
-        "insuranceID": "123412",
-        "medicalRecordIDs": [],
-        "name": "asdas asdas",
+        "name": "Nguyên Văn A",
         "nameFather": "Trống",
         "nameMother": "Trống",
         "phoneFather": "Trống",
         "phoneMother": "Trống",
-        "phoneNumber": "0123456789"
-    },
-    {
-        "CCCD": "123412341234",
-        "ID": 4,
-        "allergies": [],
-        "birthday": {
-            "day": 20,
-            "month": 12,
-            "year": 2015
-        },
-        "bloodType": "O+",
-        "chronicDiseases": [],
-        "email": "ads@gmail.com",
-        "gender": "M",
-        "insuranceID": "231231",
-        "medicalRecordIDs": [],
-        "name": "asdasd",
-        "nameFather": "Trống",
-        "nameMother": "Trống",
-        "phoneFather": "Trống",
-        "phoneMother": "Trống",
-        "phoneNumber": "0123456789"
-    },
-    {
-        "CCCD": "123412341234",
-        "ID": 6,
-        "allergies": [],
-        "birthday": {
-            "day": 20,
-            "month": 12,
-            "year": 2015
-        },
-        "bloodType": "A+",
-        "chronicDiseases": [],
-        "email": "asdas@gmail.com",
-        "gender": "M",
-        "insuranceID": "123124",
-        "medicalRecordIDs": [],
-        "name": "asdasd",
-        "nameFather": "Trống",
-        "nameMother": "Trống",
-        "phoneFather": "Trống",
-        "phoneMother": "Trống",
-        "phoneNumber": "0123456789"
-    },
-    {
-        "CCCD": "123412341234",
-        "ID": 7,
-        "allergies": [],
-        "birthday": {
-            "day": 20,
-            "month": 12,
-            "year": 2015
-        },
-        "bloodType": "A+",
-        "chronicDiseases": [],
-        "email": "asd@gmail.com",
-        "gender": "M",
-        "insuranceID": "1231241",
-        "medicalRecordIDs": [],
-        "name": "asda asd",
-        "nameFather": "Trống",
-        "nameMother": "Trống",
-        "phoneFather": "Trống",
-        "phoneMother": "Trống",
-        "phoneNumber": "0123456789"
-    },
-    {
-        "CCCD": "123412341234",
-        "ID": 8,
-        "allergies": [],
-        "birthday": {
-            "day": 20,
-            "month": 12,
-            "year": 2015
-        },
-        "bloodType": "O+",
-        "chronicDiseases": [],
-        "email": "asd@gmail.com",
-        "gender": "M",
-        "insuranceID": "123124",
-        "medicalRecordIDs": [],
-        "name": "adasd",
-        "nameFather": "Trống",
-        "nameMother": "Trống",
-        "phoneFather": "Trống",
-        "phoneMother": "Trống",
-        "phoneNumber": "0123456789"
-    },
-    {
-        "CCCD": "123412341234",
-        "ID": 9,
-        "allergies": [],
-        "birthday": {
-            "day": 20,
-            "month": 12,
-            "year": 2015
-        },
-        "bloodType": "A+",
-        "chronicDiseases": [],
-        "email": "asd@gmail.com",
-        "gender": "M",
-        "insuranceID": "123141",
-        "medicalRecordIDs": [],
-        "name": "asd",
-        "nameFather": "Trống",
-        "nameMother": "Trống",
-        "phoneFather": "Trống",
-        "phoneMother": "Trống",
-        "phoneNumber": "0123456789"
+        "phoneNumber": "0111111111"
     }
 ]

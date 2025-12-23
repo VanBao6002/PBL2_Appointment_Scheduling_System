@@ -38,21 +38,16 @@ AddAppointmentDialog::AddAppointmentDialog(QWidget *parent) :
 
     qDebug() << "[DEBUG] AddAppointmentDialog created. Initial doctor ID:" << selectedDoctorID;
 
-    // Áp dụng style
     applyStyle();
 
-    // Cài đặt kết nối
     setupConnections();
 
-    // Cài đặt title
     setDialogTitle("Thêm Cuộc Hẹn Mới");
 
-    // Khởi tạo status combo box
     setupStatusComboBox();
 
     setupSpecializationComboBox();
 
-    // Khởi tạo danh sách bác sĩ
     populateDoctorCards();
 }
 
@@ -70,35 +65,27 @@ AddAppointmentDialog::AddAppointmentDialog(const Appointment& appointment, QWidg
     ui->setupUi(this);
     setWindowFlags(Qt::FramelessWindowHint);
 
-    // Áp dụng style
     applyStyle();
 
-    // Cài đặt kết nối
     setupConnections();
 
-    // Tải dữ liệu appointment
     loadAppointmentData(appointment);
 
-    // Cài đặt title
     setDialogTitle("Chỉnh Sửa Cuộc Hẹn - ID: " + QString::number(appointmentID));
 }
 
-// Hàm tải dữ liệu appointment cho chế độ chỉnh sửa
 void AddAppointmentDialog::loadAppointmentData(const Appointment& appointment) {
-    // Đặt ID bệnh nhân và bác sĩ
     selectedPatientID = appointment.getPatientID();
     selectedDoctorID = appointment.getDoctorID();
 
-    // Tìm thông tin bệnh nhân
     try {
         Patient patient = PatientManager::getInstance().getPatientByID(selectedPatientID);
         ui->txtCCCD->setText(QString::fromStdString(patient.getCCCD()));
-        ui->txtCCCD->setEnabled(false); // Không cho phép thay đổi CCCD khi chỉnh sửa
+        ui->txtCCCD->setEnabled(false);
     } catch (...) {
         QMessageBox::warning(this, "Lỗi", "Không tìm thấy thông tin bệnh nhân!");
     }
 
-    // Chuyển đến trang chọn bác sĩ
     ui->stackedWidget->setCurrentIndex(1);
 
     // Cập nhật danh sách bác sĩ và chọn bác sĩ hiện tại
@@ -158,7 +145,6 @@ void AddAppointmentDialog::loadAppointmentData(const Appointment& appointment) {
     });
 }
 
-// Hàm áp dụng style cho dialog
 void AddAppointmentDialog::applyStyle() {
     this->setStyleSheet(R"(
         /* ===== DIALOG BACKGROUND ===== */
@@ -1231,12 +1217,6 @@ void AddAppointmentDialog::on_cmbStatus_currentTextChanged(const QString &text) 
 }
 
 void AddAppointmentDialog::setupConnections() {
-    // Connect searchButton
-    QPushButton* searchButton = ui->stackedWidget->findChild<QPushButton*>("searchButton");
-    if (searchButton) {
-        connect(searchButton, &QPushButton::clicked, this, &AddAppointmentDialog::on_searchButton_clicked);
-    }
-
     // Connect backToPage0Button
     QPushButton* backToPage0Button = ui->stackedWidget->findChild<QPushButton*>("backToPage0Button");
     if (backToPage0Button) {
@@ -1259,18 +1239,6 @@ void AddAppointmentDialog::setupConnections() {
         connect(backToPage2Button, &QPushButton::clicked, this, [this]() {
             ui->stackedWidget->setCurrentIndex(2);
         });
-    }
-
-    // Connect cancelButton
-    QPushButton* cancelButton = ui->stackedWidget->findChild<QPushButton*>("cancelButton");
-    if (cancelButton) {
-        connect(cancelButton, &QPushButton::clicked, this, &AddAppointmentDialog::on_cancelButton_clicked);
-    }
-
-    // Connect confirmButton
-    QPushButton* confirmButton = ui->stackedWidget->findChild<QPushButton*>("confirmButton");
-    if (confirmButton) {
-        connect(confirmButton, &QPushButton::clicked, this, &AddAppointmentDialog::on_confirmButton_clicked);
     }
 
     // Connect nextToPage3Button
