@@ -21,7 +21,6 @@ Doctor::Doctor(const std::string& name_, char gender_, const std::string& birthd
 
 Doctor::~Doctor(){}
 
-// Copy Constructor - Only copy ID, do not generate new one
 Doctor::Doctor(const Doctor& other)
         : Person(other),
             specialization(other.specialization),
@@ -34,7 +33,6 @@ Doctor::Doctor(const Doctor& other)
     ID = other.ID;
 }
 
-// Copy Assignment Operator - Safe ID handling, do not generate new ID
 Doctor& Doctor::operator=(const Doctor& other)
 {
     if (this != &other) {
@@ -50,7 +48,6 @@ Doctor& Doctor::operator=(const Doctor& other)
     return *this;
 }
 
-// Move Constructor - Move ID, do not generate new one
 Doctor::Doctor(Doctor&& other) noexcept
         : Person(std::move(other)),
             specialization(std::move(other.specialization)),
@@ -64,7 +61,6 @@ Doctor::Doctor(Doctor&& other) noexcept
     other.ID = 0;
 }
 
-// Move Assignment Operator - Move ID safely, do not generate new one
 Doctor& Doctor::operator=(Doctor&& other) noexcept
 {
     if (this != &other) {

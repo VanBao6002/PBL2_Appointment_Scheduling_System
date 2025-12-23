@@ -13,7 +13,6 @@
 
 
 struct WorkingSchedule {
-    // "Day" / "StartTime" / "EndTime"
     std::unordered_map<std::string, std::vector<std::pair<std::string, std::string>>> schedule;
 
     nlohmann::json toJson() const {
@@ -42,7 +41,6 @@ struct WorkingSchedule {
         }
     }
 
-    // Returns a vector of all days in the schedule
     std::vector<std::string> getDays() const {
         std::vector<std::string> days;
         for (const auto& [day, _] : schedule) {
@@ -66,8 +64,8 @@ class Doctor : public Person{
         enum class Status {Active, OnLeave, Retired};
 
     private:
-        std::string specialization; // Chuyên Khoa
-        std::unordered_set<int> patientIDs; // ID bệnh nhân được bác sĩ đảm nhận
+        std::string specialization;
+        std::unordered_set<int> patientIDs;
         Status doctorStatus;
         std::string room;
         WorkingSchedule workingSchedule;
@@ -104,7 +102,6 @@ class Doctor : public Person{
         const WorkingSchedule& getWorkingSchedule() const {return workingSchedule;}
         std::string getDescription() const {return description;}
 
-        // convertor
         static std::string statusToString(Status status);
         static Doctor::Status statusFromString(const std::string& str);
         nlohmann::json toJson() const override;

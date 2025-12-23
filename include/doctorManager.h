@@ -34,12 +34,11 @@ class DoctorManager{
 
         const Doctor& getDoctorByID(int ID_) const;
         std::vector<Doctor> findDoctorsByName(const std::string& name) const;
-        const std::unordered_map<int, Doctor>& getAllDoctors() const; // return list of all doctors
-        const std::unordered_set<int>& getPatientsByDoctorID(int ID_) const; // return list of patients that being cared by that doctor
+        const std::unordered_map<int, Doctor>& getAllDoctors() const;
+        const std::unordered_set<int>& getPatientsByDoctorID(int ID_) const;
         const std::unordered_map<int, std::string>& getAllLog() const;
         const std::string& getIDLog(int ID_) const;
 
-        // loader
         void loadFromFile(const std::string& path);
         void saveToFile(const std::string& path);
 };

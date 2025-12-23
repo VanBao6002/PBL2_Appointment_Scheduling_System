@@ -32,6 +32,8 @@ private slots:
     void on_btnSearchAppointment_clicked();
     void on_btnRemoveAppointment_clicked();
     void on_btnViewAppointmentDetail_clicked();
+    void on_btnSortAZAppointment_clicked();
+    void on_btnSortZAAppointment_clicked();
 
     void on_btnNextPage_Appointment_clicked();
     void on_btnPrevPage_Appointment_clicked();
@@ -172,7 +174,7 @@ private:
     PatientSortMode currentPatientSortMode = PatientSortMode::BY_ID_ASC;
     MedicalRecordSortMode currentMedicalRecordSortMode = MedicalRecordSortMode::BY_ID_ASC;
     UserSortMode currentUserSortMode = UserSortMode::BY_ID_ASC;
-    AppointmentSortMode currentAppointmentSortMoed = AppointmentSortMode::BY_ID_ASC;
+    AppointmentSortMode currentAppointmentSortMode = AppointmentSortMode::BY_ID_ASC;
 
     void setupAppointmentTable();
     void setupPatientTable();

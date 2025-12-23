@@ -13,13 +13,11 @@ private:
     UserManager() = default;
 
 public:
-    // ✅ THÊM SINGLETON PATTERN
     static UserManager& getInstance() {
         static UserManager instance;
         return instance;
     }
     
-    // ✅ Xoá copy constructor và assignment operator
     UserManager(const UserManager&) = delete;
     UserManager& operator=(const UserManager&) = delete;
     
@@ -38,7 +36,6 @@ public:
     const std::unordered_map<int, std::string>& getAllLog() const;
     const std::string& getIDLog(int ID_) const; 
     
-    // loader
     void loadFromFile(const std::string& path);
     void saveToFile(const std::string& path);
 };

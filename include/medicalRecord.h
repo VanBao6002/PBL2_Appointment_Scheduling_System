@@ -15,20 +15,18 @@ class MedicalRecord{
         Date creationDate;
         Date lastUpdated;
         
-        // Thông tin y tế
-        std::string diagnosis;        // Chẩn đoán
-        std::string symptoms;         // Triệu chứng
-        std::string testResults;      // Kết quả xét nghiệm
-        std::string bloodPressure;    // Huyết áp
-        int heartRate;               // Nhịp tim
-        float bodyTemperature;       // Nhiệt độ cơ thể
+        std::string diagnosis;       
+        std::string symptoms;         
+        std::string testResults;      
+        std::string bloodPressure;    
+        int heartRate;           
+        float bodyTemperature;      
 
-        // Thông tin điều trị
-        std::string treatment;        // Phương pháp điều trị
-        std::string doctorNotes;      // Ghi chú của bác sĩ
-        std::vector<Date> followUpDates;  // Lịch tái khám
-        std::vector<Prescription> prescriptions; // Danh sách đơn thuốc
-        Date history; // Lịch sử thay đổi
+        std::string treatment;   
+        std::string doctorNotes; 
+        std::vector<Date> followUpDates; 
+        std::vector<Prescription> prescriptions; 
+        Date history; 
 
     public:
         MedicalRecord();
@@ -83,10 +81,8 @@ class MedicalRecord{
         void setChangeHistory(const std::string& date_);
         void updatePrescriptionsMedicalRecordID(int newMedicalRecordID);
         
-        // Thêm prescription vào hồ sơ
         void addPrescription(const Prescription& prescription);
 
-        // convertor
         nlohmann::json toJson() const;
         void fromJson(const nlohmann::json &j);
 };

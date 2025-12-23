@@ -17,7 +17,6 @@ Appointment::Appointment(int doctorID, int patientID, const std::string& date_, 
 Appointment::~Appointment(){
 }
 
-// Copy Constructor
 Appointment::Appointment(const Appointment& other)
     : doctorID(other.doctorID),
       patientID(other.patientID),
@@ -28,10 +27,9 @@ Appointment::Appointment(const Appointment& other)
       status(other.status),
       ID(other.ID)
 {
-    // Do NOT register new ID, just copy
+
 }
 
-// Copy Assignment Operator
 Appointment& Appointment::operator=(const Appointment& other)
 {
     if (this != &other) {
@@ -47,7 +45,6 @@ Appointment& Appointment::operator=(const Appointment& other)
     return *this;
 }
 
-// Move Constructor
 Appointment::Appointment(Appointment&& other) noexcept
     : doctorID(other.doctorID),
       patientID(other.patientID),
@@ -61,7 +58,6 @@ Appointment::Appointment(Appointment&& other) noexcept
     other.ID = 0;
 }
 
-// Move Assignment Operator
 Appointment& Appointment::operator=(Appointment&& other) noexcept
 {
     if (this != &other) {

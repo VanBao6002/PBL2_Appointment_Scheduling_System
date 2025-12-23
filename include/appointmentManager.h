@@ -9,12 +9,12 @@
 
 
 #include "appointment.h"
-#include "doctorManager.h" // Chắc chắn đã include
-#include "patientManager.h" // Chắc chắn đã include
-#include "userManager.h"    // Chắc chắn đã include
-#include "utils.h"          // Cần cho getIDLog và load/save toJson
-#include "IDHandler.h"      // Cần cho IDHandler
-#include "json.hpp"         // Cần cho toJson/fromJson
+#include "doctorManager.h"
+#include "patientManager.h"
+#include "userManager.h"
+#include "utils.h" 
+#include "IDHandler.h" 
+#include "json.hpp" 
 
 class AppointmentManager{
 private:
@@ -22,17 +22,15 @@ private:
     std::unordered_map<int, Appointment> appointmentTable;
 
 
-    AppointmentManager() = default; // Constructor private
-    AppointmentManager(const AppointmentManager&) = delete; // Xóa copy constructor
-    AppointmentManager& operator=(const AppointmentManager&) = delete; // Xóa copy assignment operator
+    AppointmentManager() = default;
+    AppointmentManager(const AppointmentManager&) = delete;
+    AppointmentManager& operator=(const AppointmentManager&) = delete;
 
 public:
-    // Phương thức tĩnh để lấy instance duy nhất
     static AppointmentManager& getInstance() {
-        static AppointmentManager instance; // Khởi tạo lần đầu tiên được gọi
+        static AppointmentManager instance;
         return instance;
     }
-    // --- HẾT MỚI ---
 
     ~AppointmentManager() = default;
 
@@ -41,16 +39,13 @@ public:
     void removeAppointment(int ID_);
     const std::vector<std::pair<std::string, std::string>>& getBookedSlotsForDoctorDate(int selectedDoctorID, const std::string& selectedDate);
     const Appointment& getAppointmentByID(int ID_) const;
-    // Chỉnh sửa: Trả về vector để dễ thao tác với QList và phân trang
     std::vector<Appointment> getAllAppointmentsAsVector() const; 
-    const std::unordered_map<int, Appointment>& getAllAppointmentsMap() const; // Giữ lại nếu cần map
-    
+    const std::unordered_map<int, Appointment>& getAllAppointmentsMap() const;
     const std::unordered_map<int, std::string>& getAllLog() const;
     const std::string& getIDLog(int ID_) const;
 
     bool checkDuplicateAppointment(const Appointment &apt_);
     void removeDuplicates();
-    // loader
     void loadFromFile(const std::string& path);
     void saveToFile(const std::string& path);
 };

@@ -8,21 +8,20 @@ class Prescription{
     public:
         enum class Status {Active, Inactive};
         struct Medicine {
-            std::string name;        // Tên thuốc
-            std::string dosage;      // Liều lượng (vd: "500mg")
-            int frequency;           // Số lần uống mỗi ngày
-            int duration;            // Số ngày uống
-            std::string instruction; // Hướng dẫn sử dụng (vd: "Uống sau ăn")
+            std::string name;       
+            std::string dosage;   
+            int frequency;         
+            int duration;         
+            std::string instruction;
         };
         
     private:
         int ID;
         int medicalRecordID;
-        Date prescriptionDate;    // Ngày kê đơn
-        // Thông tin về thuốc
-        std::vector<Medicine> medicines;  // Danh sách các thuốc trong đơn        
-        std::string additionalNotes;     // Ghi chú thêm của bác sĩ
-        Status prescriptionStatus;       // Đơn thuốc còn hiệu lực hay không
+        Date prescriptionDate; 
+        std::vector<Medicine> medicines;        
+        std::string additionalNotes;   
+        Status prescriptionStatus;  
 
     public:
         Prescription();
@@ -48,7 +47,6 @@ class Prescription{
         void setAdditionalNotes(const std::string& notes_);
         void setStatus(const std::string& status_);
 
-        // Quản lý thuốc trong đơn
         void addMedicine(const std::string& name, 
                         const std::string& dosage,
                         int frequency,
@@ -60,13 +58,11 @@ class Prescription{
         void updateMedicineDuration(const std::string& name, int newDuration);
         void updateMedicineInstruction(const std::string& name, const std::string& newInstruction);
         
-        // convertor
         static Prescription::Status statusFromString(const std::string& str);
         static std::string statusToString(Status status);
         nlohmann::json toJson() const;
         void fromJson(const nlohmann::json &j);
         
-        // helper
         Medicine* findMed(const std::string& name) {
             for (auto& m : medicines) {
                 if (m.name == name) return &m;

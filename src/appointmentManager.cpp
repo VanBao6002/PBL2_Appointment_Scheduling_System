@@ -100,23 +100,19 @@ bool AppointmentManager::checkDuplicateAppointment(const Appointment &apt_){
     for (const auto& pair : appointmentTable) {
         const Appointment& existing = pair.second;
         
-        // Check if doctor is already booked at this time
         if (existing.getDoctorID() == apt_.getDoctorID() &&
             existing.getDate() == apt_.getDate()) {
             
-            // Check time overlap
             std::string existingStart = existing.getStartTime();
             std::string existingEnd = existing.getEndTime();
             std::string newStart = apt_.getStartTime();
             std::string newEnd = apt_.getEndTime();
             
-            // If times overlap, reject
             if (!(existingEnd <= newStart || existingStart >= newEnd)) {
                 return true;
             }
         }
         
-        // Check if patient has conflicting appointment
         if (existing.getPatientID() == apt_.getPatientID() &&
             existing.getDate() == apt_.getDate()) {
             
@@ -165,19 +161,16 @@ void AppointmentManager::removeDuplicates() {
 }
 
 void AppointmentManager::loadFromFile(const std::string& path) {
-    // clean data before loading
     appointmentTable.clear();
     log.clear();
     IDHandler<Appointment>::resetIDTable(); 
 
-    // check active path, propriate data
     nlohmann::json jArr = Utils::readJsonFromFile(path);
     if (jArr.empty() || !jArr.is_array()) {
         qDebug() << "[INFO] Appointment file is empty or invalid format";
         return;
     }
 
-    // start reading and load to memory
     int maxID = 0;
     for (const auto& jApt : jArr) {
     try {
@@ -205,7 +198,6 @@ void AppointmentManager::loadFromFile(const std::string& path) {
     }
     }
     
-    // Set current ID > maxID
     if (maxID >= 0) {
         IDHandler<Appointment>::setCurrentID(static_cast<size_t>(maxID));
     }
@@ -223,6 +215,6 @@ void AppointmentManager::saveToFile(const std::string& path){
         
     } catch (const std::exception& e) {
         std::cerr << "[ERROR] Failed to save appointments data: " << e.what() << std::endl;
-        throw; // rethrow for caller (UI layer) show message
+        throw;
     }
 }

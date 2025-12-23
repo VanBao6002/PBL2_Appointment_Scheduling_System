@@ -19,20 +19,16 @@ void UserManager::editUser(int ID_, const User &newUser){
         throw std::invalid_argument("Editing failed. User ID " + std::to_string(newUser.getID()) + " not found.");
     }
     
-    // ✅ CẬP NHẬT: Sao chép tất cả thông tin, không chỉ ID
     User& existingUser = userTable[ID_];
     
-    // Sao chép thông tin cá nhân
     existingUser.setFullName(newUser.getFullName());
     existingUser.setPhoneNumber(newUser.getPhoneNumber());
     existingUser.setCCCD(newUser.getCCCD());
     existingUser.setBirthday(newUser.getBirthday());
     
-    // Sao chép thông tin tài khoản
     existingUser.setRole(User::roleToString(newUser.getRole()));
     existingUser.setUsername(newUser.getUsername());
     
-    // Chỉ cập nhật mật khẩu nếu có thay đổi
     if (newUser.getPlainPassword() != existingUser.getPlainPassword()) {
         existingUser.setPassword(newUser.getPlainPassword());
     }
@@ -68,7 +64,6 @@ void UserManager::changePassword(int ID_, const std::string& newPassword){
     if (userTable.find(ID_) == userTable.end()){
         throw std::invalid_argument("Cannot change password. User ID " + std::to_string(ID_) + " not found.");
     }
-    // ✅ Truyền password plain, không hash
     userTable[ID_].setPassword(newPassword); 
     log[ID_] += " Password changed on " + Utils::getDateTime();
 }
@@ -96,19 +91,15 @@ const std::string& UserManager::getIDLog(int ID_) const {
 }
 
 void UserManager::loadFromFile(const std::string& path) {
-    // clean data before loading
     userTable.clear();
     log.clear();
     IDHandler<User>::resetIDTable(); 
-
-    // check active path, propriate data
     nlohmann::json jArr = Utils::readJsonFromFile(path);
     if (jArr.empty() || !jArr.is_array()) {
         qDebug() << "[INFO] User file is empty or invalid format";
         return;
     }
 
-    // start reading and load to memory
     int maxID = 0;
     for (const auto& jUser : jArr) {
     try {
@@ -129,7 +120,6 @@ void UserManager::loadFromFile(const std::string& path) {
     }
     }
     
-    // Set current ID > maxID
     if (maxID >= 0) {
         IDHandler<User>::setCurrentID(static_cast<size_t>(maxID));
     }
@@ -148,6 +138,6 @@ void UserManager::saveToFile(const std::string& path){
         
     } catch (const std::exception& e) {
         std::cerr << "[ERROR] Failed to save doctors data: " << e.what() << std::endl;
-        throw; // rethrow for caller (UI layer) show message
+        throw; 
     }
 }

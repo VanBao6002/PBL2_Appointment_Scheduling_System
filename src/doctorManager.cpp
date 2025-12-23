@@ -8,7 +8,6 @@ void DoctorManager::addDoctor(const Doctor &doc_) {
     if (doctorTable.find(ID_) != doctorTable.end()) {
         throw std::invalid_argument("Adding failed. Doctor ID " + std::to_string(doc_.getID()) + " already exists.");
     }
-    // Debug output for working schedule
     qDebug() << "[MANAGER DEBUG] Saving doctor ID:" << ID_ << "with working schedule:";
     for (const auto& day : doc_.getWorkingSchedule().schedule) {
         QString dayStr = QString::fromStdString(day.first);
@@ -27,7 +26,6 @@ void DoctorManager::editDoctor(int ID_, const Doctor &newDoctor){
     if (doctorTable.find(ID_) == doctorTable.end()) {
         throw std::invalid_argument("Editing failed. Doctor ID " + std::to_string(newDoctor.getID()) + " not found.");
     }
-    // Debug output for working schedule
     qDebug() << "[MANAGER DEBUG] Editing doctor ID:" << ID_ << "with working schedule:";
     for (const auto& day : newDoctor.getWorkingSchedule().schedule) {
         QString dayStr = QString::fromStdString(day.first);
@@ -96,24 +94,20 @@ const std::string& DoctorManager::getIDLog(int ID_) const {
 }
 
 void DoctorManager::loadFromFile(const std::string& path) {
-    // clean data before loading
     doctorTable.clear();
     log.clear();
     IDHandler<Doctor>::resetIDTable(); 
     IDHandler<Person>::resetCCCDTable();
 
-    // check active path, propriate data
     nlohmann::json jArr = Utils::readJsonFromFile(path);
     if (jArr.empty() || !jArr.is_array()) {
         qDebug() << "[INFO] Doctor file is empty or invalid format";
         return;
     }
 
-    // ===== FIX: Parse trực tiếp vào doctorTable, KHÔNG tạo biến tạm =====
     int maxID = 0;
     for (const auto& jDoctor : jArr) {
         try {
-            // Tạo doctor object tạm để parse
             Doctor tempDoctor;
             tempDoctor.fromJson(jDoctor);
             int ID = tempDoctor.getID();
@@ -122,9 +116,6 @@ void DoctorManager::loadFromFile(const std::string& path) {
                 qWarning() << "[WARNING] Duplicate Doctor ID in file:" << ID << "- Skipping";
                 continue;
             }
-
-            // ===== QUAN TRỌNG: Move vào doctorTable, không copy =====
-            // Điều này tránh gọi destructor của tempDoctor
             doctorTable[ID] = std::move(tempDoctor);
             
             if (ID > maxID) maxID = ID;
@@ -133,14 +124,12 @@ void DoctorManager::loadFromFile(const std::string& path) {
         }
     }
     
-    // ===== Re-register tất cả ID và CCCD từ doctorTable =====
     IDHandler<Doctor>::resetIDTable();
     IDHandler<Person>::resetCCCDTable();
 
     for (const auto& pair : doctorTable) {
         const Doctor& storedDoc = pair.second;
         
-        // Đăng ký lại ID
         try {
             if (!IDHandler<Doctor>::checkDuplicateID(static_cast<size_t>(storedDoc.getID()))) {
                 IDHandler<Doctor>::registerID(static_cast<size_t>(storedDoc.getID()));
@@ -150,7 +139,6 @@ void DoctorManager::loadFromFile(const std::string& path) {
             qWarning() << "[ERROR] Failed to register Doctor ID" << storedDoc.getID() << ":" << e.what();
         }
 
-        // Đăng ký lại CCCD
         try {
             if (!IDHandler<Person>::checkDuplicateCCCD(storedDoc.getCCCD())) {
                 IDHandler<Person>::registerCCCD(storedDoc.getCCCD());
@@ -161,14 +149,12 @@ void DoctorManager::loadFromFile(const std::string& path) {
         }
     }
     
-    // Set current ID > maxID
     if (maxID >= 0) {
         IDHandler<Doctor>::setCurrentID(static_cast<size_t>(maxID));
     }
     
     qDebug() << "[INFO] Loaded" << doctorTable.size() << "doctors from file";
     
-    // ===== VERIFY: In ra tất cả ID đã đăng ký =====
     qDebug() << "[VERIFY] Checking registered Doctor IDs:";
     for (const auto& pair : doctorTable) {
         int id = pair.first;
@@ -187,6 +173,6 @@ void DoctorManager::saveToFile(const std::string& path){
         
     } catch (const std::exception& e) {
         std::cerr << "[ERROR] Failed to save doctors data: " << e.what() << std::endl;
-        throw; // rethrow for caller (UI layer) show message
+        throw;
     }
 }

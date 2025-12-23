@@ -95,18 +95,24 @@ bool AddEditPatientDialog::validateForm() {
 
     // Kiểm tra số điện thoại mẹ (không bắt buộc)
     QString phoneMother = ui->txtPhoneMother->text().trimmed();
-    if (!phoneMother.isEmpty() && !phoneRegex.match(phoneMother).hasMatch()) {
-        QMessageBox::warning(this, "Lỗi", "Số điện thoại mẹ phải có 10-11 chữ số!");
-        ui->txtPhoneMother->setFocus();
-        return false;
+    if (!phoneMother.isEmpty()) {
+        QRegularExpression phoneRegex("^[0-9]{10,11}$");
+        if (!phoneRegex.match(phoneMother).hasMatch()) {
+            QMessageBox::warning(this, "Lỗi", "Số điện thoại mẹ phải có 10-11 chữ số!");
+            ui->txtPhoneMother->setFocus();
+            return false;
+        }
     }
 
     // Kiểm tra số điện thoại cha (không bắt buộc)
     QString phoneFather = ui->txtPhoneFather->text().trimmed();
-    if (!phoneFather.isEmpty() && !phoneRegex.match(phoneFather).hasMatch()) {
-        QMessageBox::warning(this, "Lỗi", "Số điện thoại cha phải có 10-11 chữ số!");
-        ui->txtPhoneFather->setFocus();
-        return false;
+    if (!phoneFather.isEmpty()) {
+        QRegularExpression phoneRegex("^[0-9]{10,11}$");
+        if (!phoneRegex.match(phoneFather).hasMatch()) {
+            QMessageBox::warning(this, "Lỗi", "Số điện thoại cha phải có 10-11 chữ số!");
+            ui->txtPhoneFather->setFocus();
+            return false;
+        }
     }
 
     // Kiểm tra email (không bắt buộc)

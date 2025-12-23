@@ -55,7 +55,6 @@ public:
     const std::string& getBirthday() const { return birthday; }
     const Date& getCreationDate() const { return creationDate; }
 
-    // converters
     static Role roleFromString (const std::string& str);
     static std::string roleToString (Role role);
 
