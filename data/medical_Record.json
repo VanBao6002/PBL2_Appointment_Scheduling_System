@@ -1,1 +1,40 @@
-null
+[
+    {
+        "ID": 3,
+        "bloodPressure": "110/75",
+        "bodyTemperature": 36.5,
+        "creationDate": "23/07/2025",
+        "diagnosis": "Viêm đường hô hấp cấp",
+        "doctorID": 2,
+        "doctorNotes": "không",
+        "followUpDates": [
+            "31/12/2025",
+            "07/01/2026"
+        ],
+        "heartRate": 72,
+        "history": "24/12/2025",
+        "lastUpdated": "24/12/2025",
+        "patientID": 14,
+        "prescriptions": [
+            {
+                "ID": 2,
+                "additionalNotes": "",
+                "medicalRecordID": 3,
+                "medicines": [
+                    {
+                        "dosage": "1000mg",
+                        "duration": 11,
+                        "frequency": 6,
+                        "instruction": "UỐng trước khi ăn",
+                        "name": "Paracetamol"
+                    }
+                ],
+                "prescriptionDate": "24/12/2025",
+                "prescriptionStatus": "Active"
+            }
+        ],
+        "symptoms": "Ho, sốt, đau đầu",
+        "testResults": "WBC 120000",
+        "treatment": "Nghỉ ngơi, uống thuốc đầy đủ"
+    }
+]
