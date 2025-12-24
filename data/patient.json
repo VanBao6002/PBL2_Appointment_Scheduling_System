@@ -1,184 +1,5 @@
 [
     {
-        "CCCD": "012345678910",
-        "ID": 1,
-        "allergies": [],
-        "birthday": {
-            "day": 24,
-            "month": 12,
-            "year": 2015
-        },
-        "bloodType": "A-",
-        "chronicDiseases": [],
-        "email": "benhnhan1@gmail.com",
-        "gender": "M",
-        "insuranceID": "123123",
-        "medicalRecordIDs": [],
-        "name": "Nguyên Văn A",
-        "nameFather": "Trống",
-        "nameMother": "Trống",
-        "phoneFather": "Trống",
-        "phoneMother": "Trống",
-        "phoneNumber": "0111111111"
-    },
-    {
-        "CCCD": "012345678923",
-        "ID": 14,
-        "allergies": [
-            "Milk"
-        ],
-        "birthday": {
-            "day": 8,
-            "month": 6,
-            "year": 2007
-        },
-        "bloodType": "O-",
-        "chronicDiseases": [
-            "Arthritis"
-        ],
-        "email": "benhnhan14@gmail.com",
-        "gender": "F",
-        "insuranceID": "123136",
-        "medicalRecordIDs": [
-            1009
-        ],
-        "name": "Bùi Thị AK",
-        "nameFather": "Bùi Văn AL",
-        "nameMother": "Lê Thị AM",
-        "phoneFather": "0945678901",
-        "phoneMother": "0865432109",
-        "phoneNumber": "0141414141"
-    },
-    {
-        "CCCD": "012345678911",
-        "ID": 2,
-        "allergies": [
-            "Penicillin"
-        ],
-        "birthday": {
-            "day": 5,
-            "month": 7,
-            "year": 2010
-        },
-        "bloodType": "B+",
-        "chronicDiseases": [
-            "Asthma"
-        ],
-        "email": "benhnhan2@gmail.com",
-        "gender": "F",
-        "insuranceID": "123124",
-        "medicalRecordIDs": [
-            1001
-        ],
-        "name": "Trần Thị B",
-        "nameFather": "Trần Văn C",
-        "nameMother": "Nguyễn Thị D",
-        "phoneFather": "0123456789",
-        "phoneMother": "0987654321",
-        "phoneNumber": "0222222222"
-    },
-    {
-        "CCCD": "012345678924",
-        "ID": 15,
-        "allergies": [],
-        "birthday": {
-            "day": 19,
-            "month": 1,
-            "year": 2002
-        },
-        "bloodType": "A-",
-        "chronicDiseases": [],
-        "email": "benhnhan15@gmail.com",
-        "gender": "M",
-        "insuranceID": "123137",
-        "medicalRecordIDs": [],
-        "name": "Ngô Văn AN",
-        "nameFather": "Ngô Văn AO",
-        "nameMother": "Trần Thị AP",
-        "phoneFather": "0956789012",
-        "phoneMother": "0854321098",
-        "phoneNumber": "0151515151"
-    },
-    {
-        "CCCD": "012345678912",
-        "ID": 3,
-        "allergies": [],
-        "birthday": {
-            "day": 15,
-            "month": 3,
-            "year": 2005
-        },
-        "bloodType": "O+",
-        "chronicDiseases": [],
-        "email": "benhnhan3@gmail.com",
-        "gender": "M",
-        "insuranceID": "123125",
-        "medicalRecordIDs": [],
-        "name": "Lê Văn E",
-        "nameFather": "Lê Văn F",
-        "nameMother": "Phạm Thị G",
-        "phoneFather": "0234567890",
-        "phoneMother": "0976543210",
-        "phoneNumber": "0333333333"
-    },
-    {
-        "CCCD": "012345678925",
-        "ID": 16,
-        "allergies": [
-            "Soy"
-        ],
-        "birthday": {
-            "day": 27,
-            "month": 3,
-            "year": 2016
-        },
-        "bloodType": "B+",
-        "chronicDiseases": [
-            "COPD"
-        ],
-        "email": "benhnhan16@gmail.com",
-        "gender": "F",
-        "insuranceID": "123138",
-        "medicalRecordIDs": [
-            1010
-        ],
-        "name": "Phạm Thị AQ",
-        "nameFather": "Phạm Văn AR",
-        "nameMother": "Nguyễn Thị AS",
-        "phoneFather": "0967890123",
-        "phoneMother": "0843210987",
-        "phoneNumber": "0161616161"
-    },
-    {
-        "CCCD": "012345678913",
-        "ID": 4,
-        "allergies": [
-            "Seafood"
-        ],
-        "birthday": {
-            "day": 20,
-            "month": 11,
-            "year": 1998
-        },
-        "bloodType": "AB-",
-        "chronicDiseases": [
-            "Diabetes"
-        ],
-        "email": "benhnhan4@gmail.com",
-        "gender": "F",
-        "insuranceID": "123126",
-        "medicalRecordIDs": [
-            1002,
-            1003
-        ],
-        "name": "Phạm Thị H",
-        "nameFather": "Phạm Văn I",
-        "nameMother": "Đỗ Thị K",
-        "phoneFather": "0345678901",
-        "phoneMother": "0965432109",
-        "phoneNumber": "0444444444"
-    },
-    {
         "CCCD": "012345678922",
         "ID": 13,
         "allergies": [],
@@ -500,5 +321,184 @@
         "phoneFather": "0978901234",
         "phoneMother": "0832109876",
         "phoneNumber": "0171717171"
+    },
+    {
+        "CCCD": "012345678913",
+        "ID": 4,
+        "allergies": [
+            "Seafood"
+        ],
+        "birthday": {
+            "day": 20,
+            "month": 11,
+            "year": 1998
+        },
+        "bloodType": "AB-",
+        "chronicDiseases": [
+            "Diabetes"
+        ],
+        "email": "benhnhan4@gmail.com",
+        "gender": "F",
+        "insuranceID": "123126",
+        "medicalRecordIDs": [
+            1002,
+            1003
+        ],
+        "name": "Phạm Thị H",
+        "nameFather": "Phạm Văn I",
+        "nameMother": "Đỗ Thị K",
+        "phoneFather": "0345678901",
+        "phoneMother": "0965432109",
+        "phoneNumber": "0444444444"
+    },
+    {
+        "CCCD": "012345678925",
+        "ID": 16,
+        "allergies": [
+            "Soy"
+        ],
+        "birthday": {
+            "day": 27,
+            "month": 3,
+            "year": 2016
+        },
+        "bloodType": "B+",
+        "chronicDiseases": [
+            "COPD"
+        ],
+        "email": "benhnhan16@gmail.com",
+        "gender": "F",
+        "insuranceID": "123138",
+        "medicalRecordIDs": [
+            1010
+        ],
+        "name": "Phạm Thị AQ",
+        "nameFather": "Phạm Văn AR",
+        "nameMother": "Nguyễn Thị AS",
+        "phoneFather": "0967890123",
+        "phoneMother": "0843210987",
+        "phoneNumber": "0161616161"
+    },
+    {
+        "CCCD": "012345678912",
+        "ID": 3,
+        "allergies": [],
+        "birthday": {
+            "day": 15,
+            "month": 3,
+            "year": 2005
+        },
+        "bloodType": "O+",
+        "chronicDiseases": [],
+        "email": "benhnhan3@gmail.com",
+        "gender": "M",
+        "insuranceID": "123125",
+        "medicalRecordIDs": [],
+        "name": "Lê Văn E",
+        "nameFather": "Lê Văn F",
+        "nameMother": "Phạm Thị G",
+        "phoneFather": "0234567890",
+        "phoneMother": "0976543210",
+        "phoneNumber": "0333333333"
+    },
+    {
+        "CCCD": "012345678924",
+        "ID": 15,
+        "allergies": [],
+        "birthday": {
+            "day": 19,
+            "month": 1,
+            "year": 2002
+        },
+        "bloodType": "A-",
+        "chronicDiseases": [],
+        "email": "benhnhan15@gmail.com",
+        "gender": "M",
+        "insuranceID": "123137",
+        "medicalRecordIDs": [],
+        "name": "Ngô Văn AN",
+        "nameFather": "Ngô Văn AO",
+        "nameMother": "Trần Thị AP",
+        "phoneFather": "0956789012",
+        "phoneMother": "0854321098",
+        "phoneNumber": "0151515151"
+    },
+    {
+        "CCCD": "012345678911",
+        "ID": 2,
+        "allergies": [
+            "Penicillin"
+        ],
+        "birthday": {
+            "day": 5,
+            "month": 7,
+            "year": 2010
+        },
+        "bloodType": "B+",
+        "chronicDiseases": [
+            "Asthma"
+        ],
+        "email": "benhnhan2@gmail.com",
+        "gender": "F",
+        "insuranceID": "123124",
+        "medicalRecordIDs": [
+            1001
+        ],
+        "name": "Trần Thị B",
+        "nameFather": "Trần Văn C",
+        "nameMother": "Nguyễn Thị D",
+        "phoneFather": "0123456789",
+        "phoneMother": "0987654321",
+        "phoneNumber": "0222222222"
+    },
+    {
+        "CCCD": "012345678923",
+        "ID": 14,
+        "allergies": [
+            "Milk"
+        ],
+        "birthday": {
+            "day": 8,
+            "month": 6,
+            "year": 2007
+        },
+        "bloodType": "O-",
+        "chronicDiseases": [
+            "Arthritis"
+        ],
+        "email": "benhnhan14@gmail.com",
+        "gender": "F",
+        "insuranceID": "123136",
+        "medicalRecordIDs": [
+            1009
+        ],
+        "name": "Bùi Thị AK",
+        "nameFather": "Bùi Văn AL",
+        "nameMother": "Lê Thị AM",
+        "phoneFather": "0945678901",
+        "phoneMother": "0865432109",
+        "phoneNumber": "0141414141"
+    },
+    {
+        "CCCD": "012345678910",
+        "ID": 1,
+        "allergies": [],
+        "birthday": {
+            "day": 24,
+            "month": 12,
+            "year": 2015
+        },
+        "bloodType": "A-",
+        "chronicDiseases": [],
+        "email": "benhnhan1@gmail.com",
+        "gender": "M",
+        "insuranceID": "123123",
+        "medicalRecordIDs": [],
+        "name": "Nguyên Văn A",
+        "nameFather": "Trống",
+        "nameMother": "Trống",
+        "phoneFather": "Trống",
+        "phoneMother": "Trống",
+        "phoneNumber": "0111111111"
     }
 ]

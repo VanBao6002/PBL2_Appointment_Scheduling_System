@@ -12,6 +12,7 @@ void UserManager::addUser(const User  &user){
     }
     userTable[ID_] = user;
     log[ID_] += " Added on: " + Utils::getDateTime();
+    
 }
 
 void UserManager::editUser(int ID_, const User &newUser){
