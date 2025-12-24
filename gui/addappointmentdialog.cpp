@@ -504,7 +504,7 @@ void AddAppointmentDialog::setupStatusComboBox() {
     cmbStatus->addItem("Cancelled");
 }
 
-void AddAppointmentDialog::updateAvailableTimeSlot(const QStringList& inputSlots, const QSet<QString>& occupiedSlots) {
+void AddAppointmentDialog::updateAvailableTimeSlot(const QStringList& availableSlots, const QSet<QString>& occupiedSlots) {
     QWidget* page2 = ui->stackedWidget->findChild<QWidget*>("page_2");
     if (!page2) return;
 
@@ -517,50 +517,72 @@ void AddAppointmentDialog::updateAvailableTimeSlot(const QStringList& inputSlots
     // Get weekday name in 'Thứ N' format to match JSON
     QString weekdayName = "Thứ " + QString::number(selectedDate.dayOfWeek());
 
-    // Get booked slots for this doctor and date (implement this as needed)
+    // ✅ FIX: Get FRESH booked slots for this exact date
     std::vector<std::pair<std::string, std::string>> bookedSlots;
-    bookedSlots = AppointmentManager::getInstance().getBookedSlotsForDoctorDate(selectedDoctorID, selectedDate.toString("dd-MM-yyyy").toStdString());
+    bookedSlots = AppointmentManager::getInstance().getBookedSlotsForDoctorDate(
+        selectedDoctorID, selectedDate.toString("dd-MM-yyyy").toStdString());
 
-    // Get all intervals for the day
+    qDebug() << "[DEBUG] Date:" << selectedDate.toString("dd-MM-yyyy") 
+             << "| Booked slots count:" << bookedSlots.size();
+    
+    // Get all intervals for the day with booking status
     auto intervals = TimeInterval::getIntervalsWithBooking(
-        weekdayName.toStdString(), DoctorManager::getInstance().getDoctorByID(selectedDoctorID).getWorkingSchedule(), bookedSlots
+        weekdayName.toStdString(), 
+        DoctorManager::getInstance().getDoctorByID(selectedDoctorID).getWorkingSchedule(), 
+        bookedSlots
     );
 
-    // Prepare all slots and mark booked ones
+    // Populate list widget with ALL intervals, marking booked ones as disabled
     QListWidget* listTimeSlots = page2->findChild<QListWidget*>("listTimeSlots");
     if (listTimeSlots) {
         listTimeSlots->blockSignals(true);
         listTimeSlots->clear();
+        
         int firstAvailableRow = -1;
+        int rowCount = 0;
+        
         for (const auto& [start, end, isBooked] : intervals) {
             QString slotText = QString::fromStdString(start + " - " + end);
             QListWidgetItem* item = new QListWidgetItem(slotText);
+            
             if (isBooked) {
-                item->setFlags(item->flags() & ~Qt::ItemIsEnabled);
-                item->setForeground(Qt::gray);
+                // ✅ Mark booked slots as disabled
+                item->setFlags(item->flags() & ~Qt::ItemIsEnabled & ~Qt::ItemIsSelectable);
+                item->setForeground(QBrush(QColor(189, 195, 199))); // Gray
+                item->setBackground(QBrush(QColor(245, 245, 245))); // Light gray bg
+                
+                qDebug() << "[BOOKED]" << slotText;
             } else {
-                if (firstAvailableRow == -1) firstAvailableRow = listTimeSlots->count();
+                // ✅ Available slot
+                if (firstAvailableRow == -1) {
+                    firstAvailableRow = rowCount;
+                }
+                qDebug() << "[AVAILABLE]" << slotText;
             }
+            
             listTimeSlots->addItem(item);
+            rowCount++;
         }
+        
         listTimeSlots->blockSignals(false);
-        // Set selectedTimeSlot to first available slot if exists
+        
+        // ✅ Select first available slot
         if (firstAvailableRow != -1) {
             selectedTimeSlot = listTimeSlots->item(firstAvailableRow)->text();
             listTimeSlots->setCurrentRow(firstAvailableRow);
+            qDebug() << "[SELECTED]" << selectedTimeSlot;
         } else {
             selectedTimeSlot.clear();
+            qDebug() << "[NO SLOTS] No available slots for this date";
         }
-        // Connect signal to update selectedTimeSlot
-        static bool connected = false;
-        if (!connected) {
-            connect(listTimeSlots, &QListWidget::currentTextChanged, this, [this](const QString& text) {
-                selectedTimeSlot = text;
-            });
-            connected = true;
-        }
+        
+        // ✅ Connect signal to update selectedTimeSlot when user changes selection
+        disconnect(listTimeSlots, &QListWidget::currentTextChanged, nullptr, nullptr);
+        connect(listTimeSlots, &QListWidget::currentTextChanged, this, [this](const QString& text) {
+            selectedTimeSlot = text;
+            qDebug() << "[USER SELECTED]" << selectedTimeSlot;
+        });
     }
-
 }
 
 void AddAppointmentDialog::updateAvailableCalendarDaysAndTimeSlots(int doctorID) {
@@ -685,78 +707,72 @@ void AddAppointmentDialog::updateAvailableCalendarDaysAndTimeSlots(int doctorID)
     // ===== DISCONNECT PREVIOUS CONNECTIONS =====
     disconnect(calendar, nullptr, nullptr, nullptr);
 
-    // ===== CONNECT CALENDAR SELECTION =====
-    // SỬA LỖI 1: Capture tất cả biến cần thiết trong lambda
-    connect(calendar, &QCalendarWidget::selectionChanged, this,
-            [this, doctorID, calendar, daysVec, selectedFormat, today, todayFormat, workingDays, workingDayFormat]() {
+    // In updateAvailableCalendarDaysAndTimeSlots function, replace the calendar selection changed connection:
 
-                QDate selected = calendar->selectedDate();
-                QString weekdayName = "Thứ " + QString::number(selected.dayOfWeek());
+connect(calendar, &QCalendarWidget::selectionChanged, this,
+        [this, doctorID, calendar, daysVec, selectedFormat, today, todayFormat, workingDays, workingDayFormat]() {
 
-                // ✅ RESET NGÀY TRƯỚC VỀ FORMAT GỐC
-                if (lastSelectedDate.isValid() && lastSelectedDate != selected) {
-                    if (lastSelectedDate == today) {
-                        calendar->setDateTextFormat(lastSelectedDate, todayFormat);
-                    } else if (workingDays.contains(lastSelectedDate)) {
-                        calendar->setDateTextFormat(lastSelectedDate, workingDayFormat);
-                    }
+            QDate selected = calendar->selectedDate();
+            QString weekdayName = "Thứ " + QString::number(selected.dayOfWeek());
+
+            // ✅ RESET NGÀY TRƯỚC VỀ FORMAT GỐC
+            if (lastSelectedDate.isValid() && lastSelectedDate != selected) {
+                if (lastSelectedDate == today) {
+                    calendar->setDateTextFormat(lastSelectedDate, todayFormat);
+                } else if (workingDays.contains(lastSelectedDate)) {
+                    calendar->setDateTextFormat(lastSelectedDate, workingDayFormat);
                 }
+            }
 
-                // Highlight ngày được chọn
-                calendar->setDateTextFormat(selected, selectedFormat);
-                lastSelectedDate = selected;
+            // Highlight ngày được chọn
+            calendar->setDateTextFormat(selected, selectedFormat);
+            lastSelectedDate = selected;
 
-                // Kiểm tra ngày làm việc
-                bool isWorkingDay = false;
-                for (const auto& dayStr : daysVec) {
-                    if (weekdayName.compare(QString::fromStdString(dayStr), Qt::CaseInsensitive) == 0) {
-                        isWorkingDay = true;
-                        break;
-                    }
+            // Kiểm tra ngày làm việc
+            bool isWorkingDay = false;
+            for (const auto& dayStr : daysVec) {
+                if (weekdayName.compare(QString::fromStdString(dayStr), Qt::CaseInsensitive) == 0) {
+                    isWorkingDay = true;
+                    break;
                 }
+            }
 
-                if (!isWorkingDay) {
-                    QMessageBox::information(this, "Thông báo",
-                                             "Bác sĩ không làm việc vào " + weekdayName + " này.\n"
-                                                                                          "Vui lòng chọn ngày làm việc khác (được đánh dấu màu xanh lá).");
-                    updateAvailableTimeSlot(QStringList(), QSet<QString>());
-                    return;
+            if (!isWorkingDay) {
+                QMessageBox::information(this, "Thông báo",
+                                         "Bác sĩ không làm việc vào " + weekdayName + " này.\n"
+                                                                                  "Vui lòng chọn ngày làm việc khác (được đánh dấu màu xanh lá).");
+                updateAvailableTimeSlot(QStringList(), QSet<QString>());
+                return;
+            }
+
+            Doctor doctor;
+            try {
+                doctor = DoctorManager::getInstance().getDoctorByID(doctorID);
+            } catch (...) {
+                updateAvailableTimeSlot(QStringList(), QSet<QString>());
+                return;
+            }
+
+            // ✅ FIX: Get booked slots using the correct date format
+            std::vector<std::pair<std::string, std::string>> bookedSlots;
+            bookedSlots = AppointmentManager::getInstance().getBookedSlotsForDoctorDate(
+                doctorID, selected.toString("dd-MM-yyyy").toStdString());
+
+            // ✅ FIX: Get intervals with proper booking status
+            auto intervals = TimeInterval::getIntervalsWithBooking(
+                weekdayName.toStdString(), doctor.getWorkingSchedule(), bookedSlots);
+
+            // ✅ FIX: Prepare all slots and mark booked ones correctly
+            QStringList availableSlots;
+            for (const auto& [start, end, isBooked] : intervals) {
+                if (!isBooked) {
+                    availableSlots.append(QString::fromStdString(start + " - " + end));
                 }
+            }
 
-                Doctor doctor;
-                try {
-                    doctor = DoctorManager::getInstance().getDoctorByID(doctorID);
-                } catch (...) {
-                    updateAvailableTimeSlot(QStringList(), QSet<QString>());
-                    return;
-                }
-
-                // Lấy booked slots
-                std::vector<std::pair<std::string, std::string>> bookedSlots;
-                bookedSlots = AppointmentManager::getInstance().getBookedSlotsForDoctorDate(
-                    doctorID, selected.toString("dd-MM-yyyy").toStdString());
-
-                // Lấy intervals
-                auto intervals = TimeInterval::getIntervalsWithBooking(
-                    weekdayName.toStdString(), doctor.getWorkingSchedule(), bookedSlots);
-
-                // Chuẩn bị available slots
-                QStringList allSlots;
-                for (const auto& [start, end, isBooked] : intervals) {
-                    if (!isBooked)
-                        allSlots.append(QString::fromStdString(start + " - " + end));
-                }
-
-                updateAvailableTimeSlot(allSlots, QSet<QString>());
-            });
-
-    // ===== TRIGGER INITIAL SELECTION =====
-    if (!workingDays.isEmpty()) {
-        QDate firstWorkingDay = *workingDays.begin();
-        calendar->setSelectedDate(firstWorkingDay);
-        // Kích hoạt sự kiện selectionChanged
-        calendar->selectionChanged();
-    }
+            // ✅ Update the time slot list
+            updateAvailableTimeSlot(availableSlots, QSet<QString>());
+        });
 }
 
 

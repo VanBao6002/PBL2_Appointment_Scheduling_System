@@ -170,33 +170,45 @@ void AdminWindow::loadPatientData(int page, const QString& searchText) {
     const auto& allPatients = PatientManager::getInstance().getAllPatientsTable();
     std::vector<Patient> filteredPatients;
 
-    // 2. Lọc CHỈ theo ID
+    // 2. Lọc theo ID hoặc CCCD (hoặc hiển thị tất cả nếu searchText rỗng)
     if (searchText.isEmpty()) {
         for (const auto& pair : allPatients) {
             filteredPatients.push_back(pair.second);
         }
     } else {
+        QString search = searchText.trimmed();
+        std::string searchStd = search.toStdString();
         bool isNumber = false;
-        int searchID = searchText.toInt(&isNumber);
+        int searchID = search.toInt(&isNumber);
 
-        if (!isNumber) {
-            QMessageBox::warning(this, "Cảnh báo", "Vui lòng nhập ID (số nguyên) để tìm kiếm!");
+        // Tìm theo ID nếu là số
+        if (isNumber) {
+            auto it = allPatients.find(searchID);
+            if (it != allPatients.end()) {
+                filteredPatients.push_back(it->second);
+            }
+        }
+
+        // Tìm theo CCCD
+        const auto& cccdToID = PatientManager::getInstance().getCCCDtoID();
+        auto cccdIt = cccdToID.find(searchStd);
+        if (cccdIt != cccdToID.end()) {
+            int patientID = cccdIt->second;
+            auto patientIt = allPatients.find(patientID);
+            if (patientIt != allPatients.end()) {
+                // Tránh trùng nếu ID và CCCD trỏ cùng 1 bệnh nhân
+                if (std::none_of(filteredPatients.begin(), filteredPatients.end(),
+                                 [patientID](const Patient& p) { return p.getID() == patientID; })) {
+                    filteredPatients.push_back(patientIt->second);
+                }
+            }
+        }
+
+        if (filteredPatients.empty()) {
+            QMessageBox::information(this, "Kết quả tìm kiếm",
+                                     QString("Không tìm thấy bệnh nhân với ID hoặc CCCD: %1").arg(search));
             for (const auto& pair : allPatients) {
                 filteredPatients.push_back(pair.second);
-            }
-        } else {
-            for (const auto& pair : allPatients) {
-                if (pair.second.getID() == searchID) {
-                    filteredPatients.push_back(pair.second);
-                }
-            }
-
-            if (filteredPatients.empty()) {
-                QMessageBox::information(this, "Kết quả tìm kiếm",
-                                         QString("Không tìm thấy bệnh nhân có ID: %1").arg(searchID));
-                for (const auto& pair : allPatients) {
-                    filteredPatients.push_back(pair.second);
-                }
             }
         }
     }
@@ -358,33 +370,45 @@ void AdminWindow::loadDoctorData(int page, const QString& searchText) {
     const auto& allDoctors = DoctorManager::getInstance().getAllDoctors();
     std::vector<Doctor> filteredDoctors;
 
-    // 2. Lọc CHỈ theo ID
+    // 2. Lọc theo ID hoặc CCCD (hoặc hiển thị tất cả nếu searchText rỗng)
     if (searchText.isEmpty()) {
         for (const auto& pair : allDoctors) {
             filteredDoctors.push_back(pair.second);
         }
     } else {
+        QString search = searchText.trimmed();
+        std::string searchStd = search.toStdString();
         bool isNumber = false;
-        int searchID = searchText.toInt(&isNumber);
+        int searchID = search.toInt(&isNumber);
 
-        if (!isNumber) {
-            QMessageBox::warning(this, "Cảnh báo", "Vui lòng nhập ID (số nguyên) để tìm kiếm!");
+        // Tìm theo ID nếu là số
+        if (isNumber) {
+            auto it = allDoctors.find(searchID);
+            if (it != allDoctors.end()) {
+                filteredDoctors.push_back(it->second);
+            }
+        }
+
+        // Tìm theo CCCD
+        const auto& cccdToID = DoctorManager::getInstance().getCCCDtoID();
+        auto cccdIt = cccdToID.find(searchStd);
+        if (cccdIt != cccdToID.end()) {
+            int doctorID = cccdIt->second;
+            auto doctorIt = allDoctors.find(doctorID);
+            if (doctorIt != allDoctors.end()) {
+                // Tránh trùng nếu ID và CCCD trỏ cùng 1 bệnh nhân
+                if (std::none_of(filteredDoctors.begin(), filteredDoctors.end(),
+                                 [doctorID](const Doctor& p) { return p.getID() == doctorID; })) {
+                    filteredDoctors.push_back(doctorIt->second);
+                }
+            }
+        }
+
+        if (filteredDoctors.empty()) {
+            QMessageBox::information(this, "Kết quả tìm kiếm",
+                                     QString("Không tìm thấy bệnh nhân với ID hoặc CCCD: %1").arg(search));
             for (const auto& pair : allDoctors) {
                 filteredDoctors.push_back(pair.second);
-            }
-        } else {
-            for (const auto& pair : allDoctors) {
-                if (pair.second.getID() == searchID) {
-                    filteredDoctors.push_back(pair.second);
-                }
-            }
-
-            if (filteredDoctors.empty()) {
-                QMessageBox::information(this, "Kết quả tìm kiếm",
-                                         QString("Không tìm thấy bác sĩ có ID: %1").arg(searchID));
-                for (const auto& pair : allDoctors) {
-                    filteredDoctors.push_back(pair.second);
-                }
             }
         }
     }
@@ -987,33 +1011,43 @@ void AdminWindow::loadUserData(int page, const QString& searchText) {
     const auto& allUsers = UserManager::getInstance().getAllUsers();
     std::vector<User> filteredUsers;
 
-    // 2. Lọc CHỈ theo ID
+    // 2. Lọc theo ID hoặc Username (hoặc hiển thị tất cả nếu searchText rỗng)
     if (searchText.isEmpty()) {
         for (const auto& pair : allUsers) {
             filteredUsers.push_back(pair.second);
         }
     } else {
+        // Use Utils::trimmed for consistency
+        std::string searchStd = Utils::trimmed(searchText.toStdString());
         bool isNumber = false;
-        int searchID = searchText.toInt(&isNumber);
+        int searchID = QString::fromStdString(searchStd).toInt(&isNumber);
 
-        if (!isNumber) {
-            QMessageBox::warning(this, "Cảnh báo", "Vui lòng nhập ID (số nguyên) để tìm kiếm!");
+        // Tìm theo ID nếu là số
+        if (isNumber) {
+            auto it = allUsers.find(searchID);
+            if (it != allUsers.end()) {
+                filteredUsers.push_back(it->second);
+            }
+        }
+
+        // Tìm theo Username (không phân biệt hoa thường)
+        std::string searchLower = Utils::toLower(searchStd);
+        for (const auto& pair : allUsers) {
+            std::string username = Utils::toLower(Utils::trimmed(pair.second.getUsername()));
+            if (username.find(searchLower) != std::string::npos) {
+                // Tránh trùng nếu ID và username trỏ cùng 1 user
+                if (std::none_of(filteredUsers.begin(), filteredUsers.end(),
+                                 [id = pair.second.getID()](const User& u) { return u.getID() == id; })) {
+                    filteredUsers.push_back(pair.second);
+                }
+            }
+        }
+
+        if (filteredUsers.empty()) {
+            QMessageBox::information(this, "Kết quả tìm kiếm",
+                                     QString("Không tìm thấy người dùng với ID hoặc Username: %1").arg(QString::fromStdString(searchStd)));
             for (const auto& pair : allUsers) {
                 filteredUsers.push_back(pair.second);
-            }
-        } else {
-            for (const auto& pair : allUsers) {
-                if (pair.second.getID() == searchID) {
-                    filteredUsers.push_back(pair.second);
-                }
-            }
-
-            if (filteredUsers.empty()) {
-                QMessageBox::information(this, "Kết quả tìm kiếm",
-                                         QString("Không tìm thấy người dùng có ID: %1").arg(searchID));
-                for (const auto& pair : allUsers) {
-                    filteredUsers.push_back(pair.second);
-                }
             }
         }
     }

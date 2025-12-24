@@ -62,6 +62,10 @@ const std::unordered_map<int, Patient>& PatientManager::getAllPatientsTable() co
     return patientTable;
 }
 
+const std::unordered_map<std::string, int>& PatientManager::getCCCDtoID() const {
+    return CCCDToID;
+}
+
 const std::unordered_map<int, std::string>& PatientManager::getAllLog() const {
     return log;
 }
