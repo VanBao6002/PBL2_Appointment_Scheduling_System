@@ -1,31 +1,5 @@
 [
     {
-        "CCCD": "094444444444",
-        "ID": 4,
-        "birthday": {
-            "day": 30,
-            "month": 11,
-            "year": 1985
-        },
-        "description": "",
-        "doctorStatus": "Active",
-        "email": "bacsi4@gmail.com",
-        "gender": "F",
-        "name": "Trần Thị D",
-        "patientIDs": [],
-        "phoneNumber": "0944444444",
-        "room": "102",
-        "specialization": "Nội tiết",
-        "workingSchedule": {
-            "Thứ 4": [
-                {
-                    "EndTime": "17:00",
-                    "StartTime": "08:00"
-                }
-            ]
-        }
-    },
-    {
         "CCCD": "107777777777",
         "ID": 17,
         "birthday": {
@@ -47,6 +21,32 @@
                 {
                     "EndTime": "16:00",
                     "StartTime": "09:00"
+                }
+            ]
+        }
+    },
+    {
+        "CCCD": "094444444444",
+        "ID": 4,
+        "birthday": {
+            "day": 30,
+            "month": 11,
+            "year": 1985
+        },
+        "description": "",
+        "doctorStatus": "Active",
+        "email": "bacsi4@gmail.com",
+        "gender": "F",
+        "name": "Trần Thị D",
+        "patientIDs": [],
+        "phoneNumber": "0944444444",
+        "room": "102",
+        "specialization": "Nội tiết",
+        "workingSchedule": {
+            "Thứ 4": [
+                {
+                    "EndTime": "17:00",
+                    "StartTime": "08:00"
                 }
             ]
         }
