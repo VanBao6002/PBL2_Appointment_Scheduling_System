@@ -69,42 +69,42 @@
        <item>
         <widget class="QPushButton" name="appointmentManagerButton">
          <property name="text">
-          <string>QUẢN LÝ CUỘC HẸN</string>
+          <string>📅 QUẢN LÝ CUỘC HẸN</string>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QPushButton" name="doctorManagerButton">
          <property name="text">
-          <string>QUẢN LÝ BÁC SĨ</string>
+          <string> 👨‍⚕️ QUẢN LÝ BÁC SĨ</string>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QPushButton" name="patientManagerButton">
          <property name="text">
-          <string>QUẢN LÝ BỆNH NHÂN</string>
+          <string>🤕 QUẢN LÝ BỆNH NHÂN</string>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QPushButton" name="userManagerButton">
          <property name="text">
-          <string>QUẢN LÝ NGƯỜI DÙNG</string>
+          <string>👥 QUẢN LÝ NGƯỜI DÙNG</string>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QPushButton" name="medicalRecordButton">
          <property name="text">
-          <string>QUẢN LÝ HỒ SƠ Y TẾ</string>
+          <string>📋 QUẢN LÝ HỒ SƠ Y TẾ</string>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QPushButton" name="logoutButton">
          <property name="text">
-          <string>ĐĂNG XUẤT</string>
+          <string>⏻  ĐĂNG XUẤT</string>
          </property>
         </widget>
        </item>
@@ -127,15 +127,8 @@
     <item>
      <widget class="QWidget" name="contentAreaWidget" native="true">
       <layout class="QVBoxLayout" name="verticalLayout_2">
-       <!-- ================== THÊM MỚI: LABEL HIỂN THỊ THÔNG TIN NGƯỜI DÙNG ================== -->
        <item>
         <widget class="QLabel" name="lblLoggedInUser">
-         <property name="text">
-          <string>👤 Xin chào, Admin | Vai trò: ADMIN</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignmentFlag::AlignRight</set>
-         </property>
          <property name="styleSheet">
           <string notr="true">
             font-weight: bold;
@@ -153,10 +146,14 @@
             color: #2c3e50;
           </string>
          </property>
+         <property name="text">
+          <string>👤 Xin chào, Admin | Vai trò: ADMIN</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignmentFlag::AlignRight</set>
+         </property>
         </widget>
        </item>
-       <!-- ================== KẾT THÚC THÊM MỚI ================== -->
-
        <item>
         <widget class="QStackedWidget" name="mainStack">
          <property name="currentIndex">
