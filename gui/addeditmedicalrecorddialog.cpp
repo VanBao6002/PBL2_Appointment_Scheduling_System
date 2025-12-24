@@ -31,6 +31,10 @@ AddEditMedicalRecordDialog::AddEditMedicalRecordDialog(QWidget *parent, const Me
     populatePatientCombo();
     populateDoctorCombo();
     loadMedicalRecordData(recordToEdit);
+
+    // ✅ Trong chế độ EDIT: Set ngày cập nhật về ngày hiện tại
+    ui->dateLastUpdated->setDate(QDate::currentDate());
+
     qDebug() << "[DIALOG] AddEditMedicalRecordDialog opened in EDIT mode for ID:" << editingRecordID;
 }
 
@@ -48,10 +52,20 @@ void AddEditMedicalRecordDialog::setupUI() {
     ui->dateLastUpdated->setDisplayFormat("dd/MM/yyyy");
     ui->dateLastUpdated->setCalendarPopup(true);
     ui->dateLastUpdated->setDate(QDate::currentDate());
+    // ✅ Disable ngày cập nhật - không cho phép tương tác
+    ui->dateLastUpdated->setEnabled(false);
+    ui->dateLastUpdated->setStyleSheet(
+        "QDateEdit:disabled { "
+        "  background-color: #f0f0f0; "
+        "  color: #888888; "
+        "}"
+        );
 
     ui->dateFollowUp->setDisplayFormat("dd/MM/yyyy");
     ui->dateFollowUp->setCalendarPopup(true);
     ui->dateFollowUp->setDate(QDate::currentDate());
+    // ✅ Không cho phép chọn ngày trong quá khứ cho lịch tái khám
+    ui->dateFollowUp->setMinimumDate(QDate::currentDate());
 
     // Set proper labels
     ui->label_9->setText("Nhịp tim:");
@@ -130,8 +144,8 @@ void AddEditMedicalRecordDialog::loadMedicalRecordData(const MedicalRecord& reco
     Date cDate = record.getCreationDate();
     ui->dateCreation->setDate(QDate(cDate.getYear(), cDate.getMonth(), cDate.getDay()));
 
-    Date lDate = record.getLastUpdated();
-    ui->dateLastUpdated->setDate(QDate(lDate.getYear(), lDate.getMonth(), lDate.getDay()));
+    // ✅ KHÔNG load ngày cập nhật từ record cũ
+    // Ngày cập nhật sẽ được set tự động ở constructor về ngày hiện tại
 
     // Medical info
     ui->txtDiagnosis->setText(QString::fromStdString(record.getDiagnosis()));
@@ -154,19 +168,15 @@ void AddEditMedicalRecordDialog::loadMedicalRecordData(const MedicalRecord& reco
     medicines.clear();
 
     if (!record.getPrescriptions().empty()) {
-        // Lấy prescription đầu tiên
         const Prescription& firstPrescription = record.getPrescriptions()[0];
-        
-        // Lấy danh sách thuốc từ prescription
         medicines = firstPrescription.getMedicines();
-        
-        // Hiển thị trong list
+
         for (const auto& medicine : medicines) {
             QString medInfo = QString("%1 - %2 (%3 lần/ngày, %4 ngày)")
-                                .arg(QString::fromStdString(medicine.name))
-                                .arg(QString::fromStdString(medicine.dosage))
-                                .arg(medicine.frequency)
-                                .arg(medicine.duration);
+                                  .arg(QString::fromStdString(medicine.name))
+                                  .arg(QString::fromStdString(medicine.dosage))
+                                  .arg(medicine.frequency)
+                                  .arg(medicine.duration);
             ui->listPrescriptions->addItem(medInfo);
         }
     }
@@ -262,6 +272,7 @@ MedicalRecord AddEditMedicalRecordDialog::getMedicalRecordData() const {
                                    .arg(qCreation.year())
                                    .toStdString();
 
+    // ✅ Luôn sử dụng ngày hiện tại cho lastUpdated
     QDate qUpdated = ui->dateLastUpdated->date();
     std::string lastUpdated = QString("%1/%2/%3")
                                   .arg(qUpdated.day())
@@ -287,11 +298,9 @@ MedicalRecord AddEditMedicalRecordDialog::getMedicalRecordData() const {
 
     std::vector<Prescription> prescriptions;
     if (!medicines.empty()) {
-        // Tạo prescription mới với danh sách thuốc
         Prescription prescription;
         prescription.setDate(lastUpdated);
 
-        // Thêm tất cả thuốc vào prescription
         for (const auto& medicine : medicines) {
             prescription.addMedicine(
                 medicine.name,
@@ -302,7 +311,6 @@ MedicalRecord AddEditMedicalRecordDialog::getMedicalRecordData() const {
                 );
         }
 
-        // Thêm vào vector prescriptions
         prescriptions.push_back(prescription);
     }
 
@@ -370,35 +378,31 @@ void AddEditMedicalRecordDialog::on_btnRemoveFollowUp_clicked() {
 }
 
 void AddEditMedicalRecordDialog::on_btnAddPrescription_clicked() {
-    // Mở dialog thêm thuốc
     AddMedicinePrescriptionDialog dialog(this);
-    
+
     if (dialog.exec() == QDialog::Accepted) {
         try {
             Prescription::Medicine newMedicine = dialog.getMedicineData();
-            
-            // Kiểm tra trùng tên thuốc
+
             for (const auto& medicine : medicines) {
                 if (medicine.name == newMedicine.name) {
-                    QMessageBox::warning(this, "Cảnh báo", 
-                        QString("Thuốc '%1' đã có trong đơn!").arg(QString::fromStdString(newMedicine.name)));
+                    QMessageBox::warning(this, "Cảnh báo",
+                                         QString("Thuốc '%1' đã có trong đơn!").arg(QString::fromStdString(newMedicine.name)));
                     return;
                 }
             }
-            
-            // Thêm vào danh sách
+
             medicines.push_back(newMedicine);
-            
-            // Hiển thị trong list
+
             QString medInfo = QString("%1 - %2 (%3 lần/ngày, %4 ngày)")
                                   .arg(QString::fromStdString(newMedicine.name))
                                   .arg(QString::fromStdString(newMedicine.dosage))
                                   .arg(newMedicine.frequency)
                                   .arg(newMedicine.duration);
             ui->listPrescriptions->addItem(medInfo);
-            
+
             qDebug() << "[DIALOG] Added medicine:" << QString::fromStdString(newMedicine.name);
-            
+
         } catch (const std::exception& e) {
             QMessageBox::critical(this, "Lỗi", QString("Không thể thêm thuốc: %1").arg(e.what()));
         }
@@ -408,17 +412,14 @@ void AddEditMedicalRecordDialog::on_btnAddPrescription_clicked() {
 void AddEditMedicalRecordDialog::on_btnRemovePrescription_clicked() {
     QListWidgetItem* selected = ui->listPrescriptions->currentItem();
     if (selected) {
-        // Lấy tên thuốc từ item text (phần đầu trước dấu "-")
         QString itemText = selected->text();
         QString medicineName = itemText.split(" - ").first();
 
-        // Xóa khỏi danh sách medicines
         medicines.erase(std::remove_if(medicines.begin(), medicines.end(),
                                        [&medicineName](const Prescription::Medicine& med) {
                                            return QString::fromStdString(med.name) == medicineName;
                                        }), medicines.end());
 
-        // Xóa khỏi list widget
         delete ui->listPrescriptions->takeItem(ui->listPrescriptions->row(selected));
 
         qDebug() << "[DIALOG] Removed medicine:" << medicineName;
@@ -426,6 +427,7 @@ void AddEditMedicalRecordDialog::on_btnRemovePrescription_clicked() {
         QMessageBox::warning(this, "Cảnh báo", "Vui lòng chọn thuốc cần xóa!");
     }
 }
+
 void AddEditMedicalRecordDialog::on_btnSearchPatient_clicked() {
     QString searchText = ui->txtSearchPatient->text().trimmed();
     if (searchText.isEmpty()) {
