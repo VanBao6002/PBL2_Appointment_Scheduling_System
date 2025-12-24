@@ -1,5 +1,57 @@
 [
     {
+        "CCCD": "106666666666",
+        "ID": 16,
+        "birthday": {
+            "day": 3,
+            "month": 3,
+            "year": 1992
+        },
+        "description": "",
+        "doctorStatus": "Active",
+        "email": "bacsi16@gmail.com",
+        "gender": "F",
+        "name": "Phạm Thị Q",
+        "patientIDs": [],
+        "phoneNumber": "1066666666",
+        "room": "301",
+        "specialization": "Mắt",
+        "workingSchedule": {
+            "Thứ 2": [
+                {
+                    "EndTime": "17:00",
+                    "StartTime": "08:00"
+                }
+            ]
+        }
+    },
+    {
+        "CCCD": "100000000000",
+        "ID": 10,
+        "birthday": {
+            "day": 10,
+            "month": 10,
+            "year": 1991
+        },
+        "description": "",
+        "doctorStatus": "Active",
+        "email": "bacsi10@gmail.com",
+        "gender": "F",
+        "name": "Nguyễn Thị K",
+        "patientIDs": [],
+        "phoneNumber": "1000000000",
+        "room": "103",
+        "specialization": "Nhi khoa",
+        "workingSchedule": {
+            "Thứ 5": [
+                {
+                    "EndTime": "17:00",
+                    "StartTime": "08:00"
+                }
+            ]
+        }
+    },
+    {
         "CCCD": "110000000000",
         "ID": 20,
         "birthday": {
@@ -369,58 +421,6 @@
                 {
                     "EndTime": "17:00",
                     "StartTime": "09:00"
-                }
-            ]
-        }
-    },
-    {
-        "CCCD": "100000000000",
-        "ID": 10,
-        "birthday": {
-            "day": 10,
-            "month": 10,
-            "year": 1991
-        },
-        "description": "",
-        "doctorStatus": "Active",
-        "email": "bacsi10@gmail.com",
-        "gender": "F",
-        "name": "Nguyễn Thị K",
-        "patientIDs": [],
-        "phoneNumber": "1000000000",
-        "room": "103",
-        "specialization": "Nhi khoa",
-        "workingSchedule": {
-            "Thứ 5": [
-                {
-                    "EndTime": "17:00",
-                    "StartTime": "08:00"
-                }
-            ]
-        }
-    },
-    {
-        "CCCD": "106666666666",
-        "ID": 16,
-        "birthday": {
-            "day": 3,
-            "month": 3,
-            "year": 1992
-        },
-        "description": "",
-        "doctorStatus": "Active",
-        "email": "bacsi16@gmail.com",
-        "gender": "F",
-        "name": "Phạm Thị Q",
-        "patientIDs": [],
-        "phoneNumber": "1066666666",
-        "room": "301",
-        "specialization": "Mắt",
-        "workingSchedule": {
-            "Thứ 2": [
-                {
-                    "EndTime": "17:00",
-                    "StartTime": "08:00"
                 }
             ]
         }
