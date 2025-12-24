@@ -191,4 +191,14 @@ void User::fromJson(const nlohmann::json &j) {
     if (j.contains("phoneNumber")) phoneNumber = j.at("phoneNumber").get<std::string>();
     if (j.contains("CCCD")) CCCD = j.at("CCCD").get<std::string>();
     if (j.contains("birthday")) birthday = j.at("birthday").get<std::string>();
+    if (j.contains("creationDate")) {
+        Date date;
+        date.fromJson(j.at("creationDate"));
+        creationDate = date;
+    } else {
+        auto now = std::chrono::system_clock::now();
+        std::time_t now_c = std::chrono::system_clock::to_time_t(now);
+        std::tm* now_tm = std::localtime(&now_c);
+        creationDate = Date(now_tm->tm_mday, now_tm->tm_mon + 1, now_tm->tm_year + 1900);
+    }
 }
