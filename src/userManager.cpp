@@ -84,6 +84,15 @@ const std::unordered_map<int, std::string>& UserManager::getAllLog() const {
     return log;
 }
 
+bool UserManager::isUsernameExists(const std::string& username) const {
+    for (const auto& pair : userTable) {
+        if (pair.second.getUsername() == username) {
+            return true;
+        }
+    }
+    return false;
+}
+
 const std::string& UserManager::getIDLog(int ID_) const {
     if (log.find(ID_) == log.end()){
         throw std::invalid_argument("Failed getting log. User ID " +  std::to_string(ID_) + " is not found.");

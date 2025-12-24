@@ -110,11 +110,12 @@ private slots:
    
 
 public:
-    void setUserID(int id) { userID = id; }
+    void setUserID(int id) { userID = id; updateUserInfo(); }
     int getUserID() const { return userID; }
 private:
     Ui::AdminWindow *ui;
     int userID = 0;
+
     bool hasAppointmentAccess(bool write = false) const;
     bool hasPatientAccess(bool write = false) const;
     bool hasDoctorAccess(bool write = false) const;
@@ -190,6 +191,7 @@ private:
 
     void applyModernStyles();
     void setActiveSidebarButton(QPushButton* activeButton);
+    void updateUserInfo();
 
     protected:
 };
