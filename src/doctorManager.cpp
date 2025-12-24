@@ -71,6 +71,17 @@ const std::unordered_set<int>& DoctorManager::getPatientsByDoctorID(int ID_) con
     return doctorTable.at(ID_).getPatientIDs();
 }
 
+const std::unordered_map<std::string, int>& DoctorManager::getCCCDtoID() const {
+    return CCCDToID;
+}
+
+const Doctor& DoctorManager::getDoctorByCCCD(const std::string& CCCD) const {
+    if (doctorTable.find(CCCDToID.at(CCCD)) == doctorTable.end()){
+        throw std::invalid_argument("Failed getting. Patient CCCD " + CCCD + " not found.");
+    }
+    return doctorTable.at(CCCDToID.at(CCCD));
+}
+
 std::vector<Doctor> DoctorManager::findDoctorsByName(const std::string& name) const {
     std::vector<Doctor> result;
     for (const auto& pair : doctorTable) {
@@ -142,6 +153,7 @@ void DoctorManager::loadFromFile(const std::string& path) {
         try {
             if (!IDHandler<Person>::checkDuplicateCCCD(storedDoc.getCCCD())) {
                 IDHandler<Person>::registerCCCD(storedDoc.getCCCD());
+                CCCDToID[storedDoc.getCCCD()] = storedDoc.getID();
                 qDebug() << "[REGISTER] CCCD:" << QString::fromStdString(storedDoc.getCCCD()) << "registered successfully";
             }
         } catch (const std::exception& e) {

@@ -16,6 +16,7 @@ class DoctorManager{
     private:    
         std::unordered_map<int, std::string> log;
         std::unordered_map<int, Doctor> doctorTable;
+        std::unordered_map<std::string, int> CCCDToID;
 
         DoctorManager() = default;
         DoctorManager(const DoctorManager&) = delete;
@@ -38,6 +39,8 @@ class DoctorManager{
         const std::unordered_set<int>& getPatientsByDoctorID(int ID_) const;
         const std::unordered_map<int, std::string>& getAllLog() const;
         const std::string& getIDLog(int ID_) const;
+        const Doctor& getDoctorByCCCD(const std::string& CCCD) const;
+        const std::unordered_map<std::string, int>& getCCCDtoID() const;
 
         void loadFromFile(const std::string& path);
         void saveToFile(const std::string& path);

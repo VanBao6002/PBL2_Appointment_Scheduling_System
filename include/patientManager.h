@@ -38,7 +38,8 @@ class PatientManager{
         const std::unordered_map<int, std::string>& getAllLog() const;
         const std::string& getIDLog(int ID_) const;
         const Patient& getPatientByCCCD(const std::string& CCCD) const;
-
+        const std::unordered_map<std::string, int>& getCCCDtoID() const;
+        
         void loadFromFile(const std::string& path);
         void saveToFile(const std::string& path);
 };
