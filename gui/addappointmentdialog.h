@@ -74,4 +74,4 @@ protected:
     void mouseReleaseEvent(QMouseEvent *event) override;
 };
 
-#endif // ADDAPPOINTMENTDIALOG_H
+#endif

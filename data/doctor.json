@@ -1,5 +1,121 @@
 [
     {
+        "CCCD": "103333333333",
+        "ID": 13,
+        "birthday": {
+            "day": 8,
+            "month": 1,
+            "year": 1994
+        },
+        "description": "",
+        "doctorStatus": "Active",
+        "email": "bacsi13@gmail.com",
+        "gender": "M",
+        "name": "Phan Văn N",
+        "patientIDs": [],
+        "phoneNumber": "1033333333",
+        "room": "101",
+        "specialization": "Hô hấp",
+        "workingSchedule": {
+            "Thứ 4": [
+                {
+                    "EndTime": "16:00",
+                    "StartTime": "08:00"
+                }
+            ]
+        }
+    },
+    {
+        "CCCD": "108888888888",
+        "ID": 18,
+        "birthday": {
+            "day": 11,
+            "month": 11,
+            "year": 1996
+        },
+        "description": "",
+        "doctorStatus": "Active",
+        "email": "bacsi18@gmail.com",
+        "gender": "F",
+        "name": "Lý Thị S",
+        "patientIDs": [],
+        "phoneNumber": "1088888888",
+        "room": "202",
+        "specialization": "Phụ khoa",
+        "workingSchedule": {
+            "Thứ 4": [
+                {
+                    "EndTime": "17:00",
+                    "StartTime": "08:00"
+                }
+            ]
+        }
+    },
+    {
+        "CCCD": "091111111111",
+        "ID": 1,
+        "birthday": {
+            "day": 24,
+            "month": 12,
+            "year": 1995
+        },
+        "description": "",
+        "doctorStatus": "Active",
+        "email": "bacsi1@gmail.com",
+        "gender": "M",
+        "name": "Phạm Thanh A",
+        "patientIDs": [],
+        "phoneNumber": "0911111111",
+        "room": "101",
+        "specialization": "Lão khoa",
+        "workingSchedule": {
+            "Thứ 2": [
+                {
+                    "EndTime": "17:00",
+                    "StartTime": "08:00"
+                }
+            ],
+            "Thứ 4": [
+                {
+                    "EndTime": "17:00",
+                    "StartTime": "08:00"
+                }
+            ],
+            "Thứ 6": [
+                {
+                    "EndTime": "17:00",
+                    "StartTime": "08:00"
+                }
+            ]
+        }
+    },
+    {
+        "CCCD": "104444444444",
+        "ID": 14,
+        "birthday": {
+            "day": 19,
+            "month": 5,
+            "year": 1989
+        },
+        "description": "",
+        "doctorStatus": "Active",
+        "email": "bacsi14@gmail.com",
+        "gender": "F",
+        "name": "Nguyễn Thị O",
+        "patientIDs": [],
+        "phoneNumber": "1044444444",
+        "room": "203",
+        "specialization": "Tiêu hóa",
+        "workingSchedule": {
+            "Thứ 5": [
+                {
+                    "EndTime": "17:00",
+                    "StartTime": "08:00"
+                }
+            ]
+        }
+    },
+    {
         "CCCD": "107777777777",
         "ID": 17,
         "birthday": {
@@ -304,122 +420,6 @@
             "Thứ 5": [
                 {
                     "EndTime": "18:00",
-                    "StartTime": "08:00"
-                }
-            ]
-        }
-    },
-    {
-        "CCCD": "108888888888",
-        "ID": 18,
-        "birthday": {
-            "day": 11,
-            "month": 11,
-            "year": 1996
-        },
-        "description": "",
-        "doctorStatus": "Active",
-        "email": "bacsi18@gmail.com",
-        "gender": "F",
-        "name": "Lý Thị S",
-        "patientIDs": [],
-        "phoneNumber": "1088888888",
-        "room": "202",
-        "specialization": "Phụ khoa",
-        "workingSchedule": {
-            "Thứ 4": [
-                {
-                    "EndTime": "17:00",
-                    "StartTime": "08:00"
-                }
-            ]
-        }
-    },
-    {
-        "CCCD": "103333333333",
-        "ID": 13,
-        "birthday": {
-            "day": 8,
-            "month": 1,
-            "year": 1994
-        },
-        "description": "",
-        "doctorStatus": "Active",
-        "email": "bacsi13@gmail.com",
-        "gender": "M",
-        "name": "Phan Văn N",
-        "patientIDs": [],
-        "phoneNumber": "1033333333",
-        "room": "101",
-        "specialization": "Hô hấp",
-        "workingSchedule": {
-            "Thứ 4": [
-                {
-                    "EndTime": "16:00",
-                    "StartTime": "08:00"
-                }
-            ]
-        }
-    },
-    {
-        "CCCD": "104444444444",
-        "ID": 14,
-        "birthday": {
-            "day": 19,
-            "month": 5,
-            "year": 1989
-        },
-        "description": "",
-        "doctorStatus": "Active",
-        "email": "bacsi14@gmail.com",
-        "gender": "F",
-        "name": "Nguyễn Thị O",
-        "patientIDs": [],
-        "phoneNumber": "1044444444",
-        "room": "203",
-        "specialization": "Tiêu hóa",
-        "workingSchedule": {
-            "Thứ 5": [
-                {
-                    "EndTime": "17:00",
-                    "StartTime": "08:00"
-                }
-            ]
-        }
-    },
-    {
-        "CCCD": "091111111111",
-        "ID": 1,
-        "birthday": {
-            "day": 24,
-            "month": 12,
-            "year": 1995
-        },
-        "description": "",
-        "doctorStatus": "Active",
-        "email": "bacsi1@gmail.com",
-        "gender": "M",
-        "name": "Phạm Thanh A",
-        "patientIDs": [],
-        "phoneNumber": "0911111111",
-        "room": "101",
-        "specialization": "Lão khoa",
-        "workingSchedule": {
-            "Thứ 2": [
-                {
-                    "EndTime": "17:00",
-                    "StartTime": "08:00"
-                }
-            ],
-            "Thứ 4": [
-                {
-                    "EndTime": "17:00",
-                    "StartTime": "08:00"
-                }
-            ],
-            "Thứ 6": [
-                {
-                    "EndTime": "17:00",
                     "StartTime": "08:00"
                 }
             ]
