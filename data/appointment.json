@@ -1,1 +1,44 @@
-null
+[
+    {
+        "ID": 5,
+        "date": {
+            "day": 14,
+            "month": 1,
+            "year": 2026
+        },
+        "doctorID": 6,
+        "endTime": "10:00",
+        "patientID": 16,
+        "room": "302",
+        "startTime": "09:00",
+        "status": "Scheduled"
+    },
+    {
+        "ID": 3,
+        "date": {
+            "day": 10,
+            "month": 1,
+            "year": 2026
+        },
+        "doctorID": 6,
+        "endTime": "10:00",
+        "patientID": 4,
+        "room": "302",
+        "startTime": "09:00",
+        "status": "Scheduled"
+    },
+    {
+        "ID": 1,
+        "date": {
+            "day": 3,
+            "month": 1,
+            "year": 2026
+        },
+        "doctorID": 6,
+        "endTime": "13:00",
+        "patientID": 1,
+        "room": "302",
+        "startTime": "12:00",
+        "status": "Scheduled"
+    }
+]
