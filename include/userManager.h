@@ -35,6 +35,7 @@ public:
     const std::unordered_map<int, User>& getAllUsers() const; 
     const std::unordered_map<int, std::string>& getAllLog() const;
     const std::string& getIDLog(int ID_) const; 
+    bool isUsernameExists(const std::string& username) const;
     
     void loadFromFile(const std::string& path);
     void saveToFile(const std::string& path);

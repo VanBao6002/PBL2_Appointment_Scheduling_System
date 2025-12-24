@@ -3,6 +3,7 @@
 #include <QMouseEvent>
 #include <QDate>
 #include "utils.h"
+#include "userManager.h"
 
 AddEditUserDialog::AddEditUserDialog(QWidget *parent, const User& user) :
     QDialog(parent),
@@ -160,6 +161,24 @@ bool AddEditUserDialog::validateForm() {
         QMessageBox::warning(this, "Lỗi", "Tên người dùng phải có từ 4-20 ký tự!");
         ui->txtUsername->setFocus();
         return false;
+    }
+
+    // Kiểm tra username không được trùng (chỉ cho thêm mới hoặc khi đổi username khi sửa)
+    if (currentUser.getID() == 0) { // Thêm mới
+        if (UserManager::getInstance().isUsernameExists(username.toStdString())) {
+            QMessageBox::warning(this, "Lỗi", "Tên người dùng đã tồn tại! Vui lòng chọn tên khác.");
+            ui->txtUsername->setFocus();
+            return false;
+        }
+    } else { // Sửa
+        // Nếu username thay đổi so với username cũ
+        std::string oldUsername = currentUser.getUsername();
+        if (username.toStdString() != oldUsername && 
+            UserManager::getInstance().isUsernameExists(username.toStdString())) {
+            QMessageBox::warning(this, "Lỗi", "Tên người dùng đã tồn tại! Vui lòng chọn tên khác.");
+            ui->txtUsername->setFocus();
+            return false;
+        }
     }
 
     // Kiểm tra password (chỉ bắt buộc khi thêm mới hoặc khi muốn đổi mật khẩu)
