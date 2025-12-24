@@ -1,7 +1,143 @@
 [
     {
+        "CCCD": "106666666666",
+        "ID": 16,
+        "birthday": {
+            "day": 3,
+            "month": 3,
+            "year": 1992
+        },
+        "description": "",
+        "doctorStatus": "Active",
+        "email": "bacsi16@gmail.com",
+        "gender": "F",
+        "name": "Phạm Thị Q",
+        "patientIDs": [],
+        "phoneNumber": "1066666666",
+        "room": "216",
+        "specialization": "Mắt",
+        "workingSchedule": {
+            "Thứ 2": [
+                {
+                    "EndTime": "17:00",
+                    "StartTime": "08:00"
+                }
+            ]
+        }
+    },
+    {
+        "CCCD": "103333333333",
+        "ID": 13,
+        "birthday": {
+            "day": 8,
+            "month": 1,
+            "year": 1994
+        },
+        "description": "",
+        "doctorStatus": "Active",
+        "email": "bacsi13@gmail.com",
+        "gender": "M",
+        "name": "Phan Văn N",
+        "patientIDs": [],
+        "phoneNumber": "1033333333",
+        "room": "213",
+        "specialization": "Hô hấp",
+        "workingSchedule": {
+            "Thứ 4": [
+                {
+                    "EndTime": "16:00",
+                    "StartTime": "08:00"
+                }
+            ]
+        }
+    },
+    {
+        "CCCD": "110000000000",
+        "ID": 20,
+        "birthday": {
+            "day": 29,
+            "month": 9,
+            "year": 1997
+        },
+        "description": "",
+        "doctorStatus": "Active",
+        "email": "bacsi20@gmail.com",
+        "gender": "F",
+        "name": "Nguyễn Thị U",
+        "patientIDs": [],
+        "phoneNumber": "1100000000",
+        "room": "220",
+        "specialization": "Nhi khoa",
+        "workingSchedule": {
+            "Thứ 6": [
+                {
+                    "EndTime": "17:00",
+                    "StartTime": "08:00"
+                }
+            ]
+        }
+    },
+    {
+        "CCCD": "108888888888",
+        "ID": 18,
+        "birthday": {
+            "day": 11,
+            "month": 11,
+            "year": 1996
+        },
+        "description": "",
+        "doctorStatus": "Active",
+        "email": "bacsi18@gmail.com",
+        "gender": "F",
+        "name": "Lý Thị S",
+        "patientIDs": [],
+        "phoneNumber": "1088888888",
+        "room": "218",
+        "specialization": "Phụ khoa",
+        "workingSchedule": {
+            "Thứ 4": [
+                {
+                    "EndTime": "17:00",
+                    "StartTime": "08:00"
+                }
+            ]
+        }
+    },
+    {
+        "CCCD": "095555555555",
+        "ID": 5,
+        "birthday": {
+            "day": 12,
+            "month": 3,
+            "year": 1990
+        },
+        "description": "",
+        "doctorStatus": "Active",
+        "email": "bacsi5@gmail.com",
+        "gender": "M",
+        "name": "Phan Văn E",
+        "patientIDs": [],
+        "phoneNumber": "0955555555",
+        "room": "205",
+        "specialization": "Ngoại khoa",
+        "workingSchedule": {
+            "Thứ 2": [
+                {
+                    "EndTime": "18:00",
+                    "StartTime": "08:00"
+                }
+            ],
+            "Thứ 5": [
+                {
+                    "EndTime": "18:00",
+                    "StartTime": "08:00"
+                }
+            ]
+        }
+    },
+    {
         "CCCD": "091111111111",
-        "ID": 7,
+        "ID": 1,
         "birthday": {
             "day": 24,
             "month": 12,
@@ -33,6 +169,258 @@
                 {
                     "EndTime": "17:00",
                     "StartTime": "08:00"
+                }
+            ]
+        }
+    },
+    {
+        "CCCD": "104444444444",
+        "ID": 14,
+        "birthday": {
+            "day": 19,
+            "month": 5,
+            "year": 1989
+        },
+        "description": "",
+        "doctorStatus": "Active",
+        "email": "bacsi14@gmail.com",
+        "gender": "F",
+        "name": "Nguyễn Thị O",
+        "patientIDs": [],
+        "phoneNumber": "1044444444",
+        "room": "214",
+        "specialization": "Tiêu hóa",
+        "workingSchedule": {
+            "Thứ 5": [
+                {
+                    "EndTime": "17:00",
+                    "StartTime": "08:00"
+                }
+            ]
+        }
+    },
+    {
+        "CCCD": "092222222222",
+        "ID": 2,
+        "birthday": {
+            "day": 15,
+            "month": 5,
+            "year": 1988
+        },
+        "description": "",
+        "doctorStatus": "Active",
+        "email": "bacsi2@gmail.com",
+        "gender": "F",
+        "name": "Nguyễn Thị B",
+        "patientIDs": [],
+        "phoneNumber": "0922222222",
+        "room": "202",
+        "specialization": "Nhi khoa",
+        "workingSchedule": {
+            "Thứ 3": [
+                {
+                    "EndTime": "16:00",
+                    "StartTime": "09:00"
+                }
+            ],
+            "Thứ 5": [
+                {
+                    "EndTime": "16:00",
+                    "StartTime": "09:00"
+                }
+            ]
+        }
+    },
+    {
+        "CCCD": "094444444444",
+        "ID": 4,
+        "birthday": {
+            "day": 30,
+            "month": 11,
+            "year": 1985
+        },
+        "description": "",
+        "doctorStatus": "Active",
+        "email": "bacsi4@gmail.com",
+        "gender": "F",
+        "name": "Trần Thị D",
+        "patientIDs": [],
+        "phoneNumber": "0944444444",
+        "room": "204",
+        "specialization": "Nội tiết",
+        "workingSchedule": {
+            "Thứ 4": [
+                {
+                    "EndTime": "17:00",
+                    "StartTime": "08:00"
+                }
+            ]
+        }
+    },
+    {
+        "CCCD": "107777777777",
+        "ID": 17,
+        "birthday": {
+            "day": 25,
+            "month": 6,
+            "year": 1984
+        },
+        "description": "",
+        "doctorStatus": "Active",
+        "email": "bacsi17@gmail.com",
+        "gender": "M",
+        "name": "Ngô Văn R",
+        "patientIDs": [],
+        "phoneNumber": "1077777777",
+        "room": "217",
+        "specialization": "Ung bướu",
+        "workingSchedule": {
+            "Thứ 3": [
+                {
+                    "EndTime": "16:00",
+                    "StartTime": "09:00"
+                }
+            ]
+        }
+    },
+    {
+        "CCCD": "096666666666",
+        "ID": 6,
+        "birthday": {
+            "day": 7,
+            "month": 7,
+            "year": 1982
+        },
+        "description": "",
+        "doctorStatus": "Active",
+        "email": "bacsi6@gmail.com",
+        "gender": "F",
+        "name": "Đỗ Thị F",
+        "patientIDs": [],
+        "phoneNumber": "0966666666",
+        "room": "206",
+        "specialization": "Da liễu",
+        "workingSchedule": {
+            "Thứ 3": [
+                {
+                    "EndTime": "17:00",
+                    "StartTime": "09:00"
+                }
+            ],
+            "Thứ 6": [
+                {
+                    "EndTime": "17:00",
+                    "StartTime": "09:00"
+                }
+            ]
+        }
+    },
+    {
+        "CCCD": "098888888888",
+        "ID": 8,
+        "birthday": {
+            "day": 18,
+            "month": 2,
+            "year": 1993
+        },
+        "description": "",
+        "doctorStatus": "Active",
+        "email": "bacsi8@gmail.com",
+        "gender": "F",
+        "name": "Phạm Thị H",
+        "patientIDs": [],
+        "phoneNumber": "0988888888",
+        "room": "208",
+        "specialization": "Sản khoa",
+        "workingSchedule": {
+            "Thứ 4": [
+                {
+                    "EndTime": "17:00",
+                    "StartTime": "08:00"
+                }
+            ],
+            "Thứ 7": [
+                {
+                    "EndTime": "17:00",
+                    "StartTime": "08:00"
+                }
+            ]
+        }
+    },
+    {
+        "CCCD": "099999999999",
+        "ID": 9,
+        "birthday": {
+            "day": 5,
+            "month": 6,
+            "year": 1987
+        },
+        "description": "",
+        "doctorStatus": "Active",
+        "email": "bacsi9@gmail.com",
+        "gender": "M",
+        "name": "Lý Văn I",
+        "patientIDs": [],
+        "phoneNumber": "0999999999",
+        "room": "209",
+        "specialization": "Nội tổng quát",
+        "workingSchedule": {
+            "Thứ 3": [
+                {
+                    "EndTime": "16:00",
+                    "StartTime": "09:00"
+                }
+            ]
+        }
+    },
+    {
+        "CCCD": "100000000000",
+        "ID": 10,
+        "birthday": {
+            "day": 10,
+            "month": 10,
+            "year": 1991
+        },
+        "description": "",
+        "doctorStatus": "Active",
+        "email": "bacsi10@gmail.com",
+        "gender": "F",
+        "name": "Nguyễn Thị K",
+        "patientIDs": [],
+        "phoneNumber": "1000000000",
+        "room": "210",
+        "specialization": "Nhi khoa",
+        "workingSchedule": {
+            "Thứ 5": [
+                {
+                    "EndTime": "17:00",
+                    "StartTime": "08:00"
+                }
+            ]
+        }
+    },
+    {
+        "CCCD": "102222222222",
+        "ID": 12,
+        "birthday": {
+            "day": 22,
+            "month": 12,
+            "year": 1986
+        },
+        "description": "",
+        "doctorStatus": "Active",
+        "email": "bacsi12@gmail.com",
+        "gender": "F",
+        "name": "Lê Thị M",
+        "patientIDs": [],
+        "phoneNumber": "1022222222",
+        "room": "212",
+        "specialization": "Nội thần kinh",
+        "workingSchedule": {
+            "Thứ 3": [
+                {
+                    "EndTime": "17:00",
+                    "StartTime": "09:00"
                 }
             ]
         }
