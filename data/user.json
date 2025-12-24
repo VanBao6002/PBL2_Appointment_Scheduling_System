@@ -1,21 +1,5 @@
 [
     {
-        "CCCD": "014382482752",
-        "ID": 2,
-        "birthday": "24/12/2005",
-        "creationDate": {
-            "day": 24,
-            "month": 12,
-            "year": 2025
-        },
-        "fullName": "Pham Van Dong",
-        "passwordHash": "3902189248",
-        "phoneNumber": "0123123123",
-        "plainPassword": "trolytroly",
-        "userRole": "ASSISTANT",
-        "username": "troly"
-    },
-    {
         "CCCD": "012345678910",
         "ID": 1,
         "birthday": "24/12/2005",
@@ -30,5 +14,21 @@
         "plainPassword": "123123123",
         "userRole": "ADMIN",
         "username": "admin"
+    },
+    {
+        "CCCD": "014382482752",
+        "ID": 2,
+        "birthday": "24/12/2005",
+        "creationDate": {
+            "day": 1,
+            "month": 1,
+            "year": 2000
+        },
+        "fullName": "Pham Van Dong",
+        "passwordHash": "3902189248",
+        "phoneNumber": "0123123123",
+        "plainPassword": "trolytroly",
+        "userRole": "ASSISTANT",
+        "username": "troly"
     }
 ]
