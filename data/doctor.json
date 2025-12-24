@@ -1,5 +1,57 @@
 [
     {
+        "CCCD": "104444444444",
+        "ID": 14,
+        "birthday": {
+            "day": 19,
+            "month": 5,
+            "year": 1989
+        },
+        "description": "",
+        "doctorStatus": "Active",
+        "email": "bacsi14@gmail.com",
+        "gender": "F",
+        "name": "Nguyễn Thị O",
+        "patientIDs": [],
+        "phoneNumber": "1044444444",
+        "room": "203",
+        "specialization": "Tiêu hóa",
+        "workingSchedule": {
+            "Thứ 5": [
+                {
+                    "EndTime": "17:00",
+                    "StartTime": "08:00"
+                }
+            ]
+        }
+    },
+    {
+        "CCCD": "108888888888",
+        "ID": 18,
+        "birthday": {
+            "day": 11,
+            "month": 11,
+            "year": 1996
+        },
+        "description": "",
+        "doctorStatus": "Active",
+        "email": "bacsi18@gmail.com",
+        "gender": "F",
+        "name": "Lý Thị S",
+        "patientIDs": [],
+        "phoneNumber": "1088888888",
+        "room": "202",
+        "specialization": "Phụ khoa",
+        "workingSchedule": {
+            "Thứ 4": [
+                {
+                    "EndTime": "17:00",
+                    "StartTime": "08:00"
+                }
+            ]
+        }
+    },
+    {
         "CCCD": "094444444444",
         "ID": 4,
         "birthday": {
@@ -21,6 +73,32 @@
                 {
                     "EndTime": "17:00",
                     "StartTime": "08:00"
+                }
+            ]
+        }
+    },
+    {
+        "CCCD": "107777777777",
+        "ID": 17,
+        "birthday": {
+            "day": 25,
+            "month": 6,
+            "year": 1984
+        },
+        "description": "",
+        "doctorStatus": "Active",
+        "email": "bacsi17@gmail.com",
+        "gender": "M",
+        "name": "Ngô Văn R",
+        "patientIDs": [],
+        "phoneNumber": "1077777777",
+        "room": "103",
+        "specialization": "Ung bướu",
+        "workingSchedule": {
+            "Thứ 3": [
+                {
+                    "EndTime": "16:00",
+                    "StartTime": "09:00"
                 }
             ]
         }
@@ -88,32 +166,6 @@
                 }
             ],
             "Thứ 5": [
-                {
-                    "EndTime": "16:00",
-                    "StartTime": "09:00"
-                }
-            ]
-        }
-    },
-    {
-        "CCCD": "107777777777",
-        "ID": 17,
-        "birthday": {
-            "day": 25,
-            "month": 6,
-            "year": 1984
-        },
-        "description": "",
-        "doctorStatus": "Active",
-        "email": "bacsi17@gmail.com",
-        "gender": "M",
-        "name": "Ngô Văn R",
-        "patientIDs": [],
-        "phoneNumber": "1077777777",
-        "room": "103",
-        "specialization": "Ung bướu",
-        "workingSchedule": {
-            "Thứ 3": [
                 {
                     "EndTime": "16:00",
                     "StartTime": "09:00"
@@ -368,58 +420,6 @@
             "Thứ 5": [
                 {
                     "EndTime": "18:00",
-                    "StartTime": "08:00"
-                }
-            ]
-        }
-    },
-    {
-        "CCCD": "108888888888",
-        "ID": 18,
-        "birthday": {
-            "day": 11,
-            "month": 11,
-            "year": 1996
-        },
-        "description": "",
-        "doctorStatus": "Active",
-        "email": "bacsi18@gmail.com",
-        "gender": "F",
-        "name": "Lý Thị S",
-        "patientIDs": [],
-        "phoneNumber": "1088888888",
-        "room": "202",
-        "specialization": "Phụ khoa",
-        "workingSchedule": {
-            "Thứ 4": [
-                {
-                    "EndTime": "17:00",
-                    "StartTime": "08:00"
-                }
-            ]
-        }
-    },
-    {
-        "CCCD": "104444444444",
-        "ID": 14,
-        "birthday": {
-            "day": 19,
-            "month": 5,
-            "year": 1989
-        },
-        "description": "",
-        "doctorStatus": "Active",
-        "email": "bacsi14@gmail.com",
-        "gender": "F",
-        "name": "Nguyễn Thị O",
-        "patientIDs": [],
-        "phoneNumber": "1044444444",
-        "room": "203",
-        "specialization": "Tiêu hóa",
-        "workingSchedule": {
-            "Thứ 5": [
-                {
-                    "EndTime": "17:00",
                     "StartTime": "08:00"
                 }
             ]
