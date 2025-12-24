@@ -57,6 +57,7 @@ void AdminWindow::showNoPermissionMessage() const {
 #include "appointmentManager.h"
 #include "patientManager.h"
 #include "doctorManager.h"
+#include "userManager.h"
 #include "medicalRecordManager.h"
 #include "userManager.h"
 
@@ -154,6 +155,7 @@ AdminWindow::AdminWindow(QWidget *parent)
     setupAppointmentTable();
     ui->mainStack->setCurrentWidget(ui->page_appointment);
     loadAppointmentData(currentAppointmentPage);
+    updateUserInfo();
 
     qDebug() << "[INFO] AdminWindow initialized successfully";
 }
@@ -1827,6 +1829,7 @@ void AdminWindow::on_appointmentManagerButton_clicked()
     if (!hasAppointmentAccess()) { showNoPermissionMessage(); return; }
     setActiveSidebarButton(ui->appointmentManagerButton);
     ui->mainStack->setCurrentWidget(ui->page_appointment);
+    updateUserInfo();
 
     AppointmentManager::getInstance().removeDuplicates();
 
@@ -1845,6 +1848,7 @@ void AdminWindow::on_patientManagerButton_clicked()
     if (!hasPatientAccess()) { showNoPermissionMessage(); return; }
     setActiveSidebarButton(ui->patientManagerButton);
     ui->mainStack->setCurrentWidget(ui->page_patient);
+    updateUserInfo();
 
     currentPatientSortMode = PatientSortMode::BY_ID_ASC;
     ui->btnSortAZPatient->setStyleSheet("");
@@ -1862,6 +1866,7 @@ void AdminWindow::on_doctorManagerButton_clicked()
     if (!hasDoctorAccess()) { showNoPermissionMessage(); return; }
     setActiveSidebarButton(ui->doctorManagerButton);
     ui->mainStack->setCurrentWidget(ui->page_doctor);
+    updateUserInfo();
 
     currentDoctorSortMode = DoctorSortMode::BY_ID_ASC;
     ui->btnSortAZDoctor->setStyleSheet("");
@@ -1880,6 +1885,7 @@ void AdminWindow::on_userManagerButton_clicked()
     if (!hasUserAccess()) { showNoPermissionMessage(); return; }
     setActiveSidebarButton(ui->userManagerButton);
     ui->mainStack->setCurrentWidget(ui->page_user);
+    updateUserInfo();
 
     currentUserSortMode = UserSortMode::BY_ID_ASC;
     ui->btnSortAZUser->setStyleSheet("");
@@ -1897,6 +1903,7 @@ void AdminWindow::on_medicalRecordButton_clicked()
     if (!hasMedicalRecordAccess()) { showNoPermissionMessage(); return; }
     setActiveSidebarButton(ui->medicalRecordButton);
     ui->mainStack->setCurrentWidget(ui->page_medicalRecord);
+    updateUserInfo();
 
     currentMedicalRecordSortMode = MedicalRecordSortMode::BY_ID_ASC;
     ui->btnSortAZMedicalRecord->setStyleSheet("");
@@ -3627,4 +3634,54 @@ void AdminWindow::applyModernStyles()
     }
 
     setActiveSidebarButton(ui->appointmentManagerButton);
+}
+
+void AdminWindow::updateUserInfo() {
+    try {
+        const User& user = UserManager::getInstance().getUserByID(userID);
+        QString fullName = QString::fromStdString(user.getFullName());
+        QString role = QString::fromStdString(User::roleToString(user.getRole()));
+
+        QString displayText = QString("👤 <b>%1</b> | Vai trò: <b>%2</b>")
+                                  .arg(fullName)
+                                  .arg(role);
+
+        ui->lblLoggedInUser->setText(displayText);
+
+        if (user.getRole() == User::Role::ADMIN) {
+            ui->lblLoggedInUser->setStyleSheet(R"(
+                QLabel {
+                    color: #e74c3c;
+                    font-weight: bold;
+                    font-size: 11pt;
+                    padding: 5px 15px;
+                    background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+                        stop:0 rgba(231, 76, 60, 0.1),
+                        stop:1 rgba(192, 57, 43, 0.05));
+                    border-radius: 8px;
+                    border: 1px solid rgba(231, 76, 60, 0.2);
+                }
+            )");
+        } else if (user.getRole() == User::Role::ASSISTANT) {
+            ui->lblLoggedInUser->setStyleSheet(R"(
+                QLabel {
+                    color: #3498db;
+                    font-weight: bold;
+                    font-size: 11pt;
+                    padding: 5px 15px;
+                    background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+                        stop:0 rgba(52, 152, 219, 0.1),
+                        stop:1 rgba(41, 128, 185, 0.05));
+                    border-radius: 8px;
+                    border: 1px solid rgba(52, 152, 219, 0.2);
+                }
+            )");
+        }
+
+        qDebug() << "[USER INFO] Logged in as:" << fullName << "| Role:" << role;
+
+    } catch (const std::exception& e) {
+        ui->lblLoggedInUser->setText("⚠ Không thể tải thông tin người dùng");
+        qWarning() << "[ERROR] Failed to load user info:" << e.what();
+    }
 }
