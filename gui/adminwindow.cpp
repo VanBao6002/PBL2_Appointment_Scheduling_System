@@ -1169,10 +1169,8 @@ void AdminWindow::loadUserData(int page, const QString& searchText) {
 }
 
 void AdminWindow::setupAppointmentTable() {
-    // ✅ Thêm cột Tuỳ chọn
     ui->tableAppointment->setColumnCount(8);
 
-    // ✅ Đặt tên các cột (có thêm cột Tuỳ chọn)
     QStringList headers;
     headers << "ID Cuộc hẹn" << "Bệnh nhân" << "Bác sĩ" << "Ngày hẹn"
             << "Giờ bắt đầu" << "Giờ kết thúc" << "Trạng thái" << "Tuỳ chọn";
@@ -1202,9 +1200,8 @@ void AdminWindow::setupAppointmentTable() {
     ui->tableAppointment->setColumnWidth(6, 120);
 
     header->setSectionResizeMode(7, QHeaderView::Fixed);
-    ui->tableAppointment->setColumnWidth(7, 200);
+    ui->tableAppointment->setColumnWidth(7, 300);
 
-    // Các thiết lập khác...
     ui->tableAppointment->verticalHeader()->setSectionResizeMode(QHeaderView::Fixed);
     ui->tableAppointment->verticalHeader()->setDefaultSectionSize(75);
     ui->tableAppointment->setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -1219,8 +1216,6 @@ void AdminWindow::setupAppointmentTable() {
 
 void AdminWindow::setupPatientTable() {
     ui->tablePatient->setColumnCount(8);
-
-    // ✅ Đặt tên các cột (không có Email)
     QStringList headers;
     headers << "ID Bệnh nhân" << "Họ tên" << "Giới tính" << "Ngày sinh"
             << "CCCD" << "SĐT" << "Email" << "Tuỳ chọn";
@@ -1250,7 +1245,7 @@ void AdminWindow::setupPatientTable() {
     ui->tablePatient->setColumnWidth(6, 200);
 
     header->setSectionResizeMode(7, QHeaderView::Fixed);
-    ui->tablePatient->setColumnWidth(7, 200);
+    ui->tablePatient->setColumnWidth(7, 300);
 
     // Các thiết lập khác...
     ui->tablePatient->verticalHeader()->setSectionResizeMode(QHeaderView::Fixed);
@@ -1266,10 +1261,8 @@ void AdminWindow::setupPatientTable() {
 }
 
 void AdminWindow::setupDoctorTable() {
-    // ✅ Đặt 10 cột
     ui->tableDoctor->setColumnCount(10);
 
-    // ✅ Đặt tên các cột
     QStringList headers;
     headers << "ID Bác sĩ" << "Họ tên" << "Giới tính" << "Ngày sinh" << "CCCD"
             << "Chuyên khoa" << "Email" << "SĐT" << "Trạng thái" << "Tuỳ chọn";
@@ -1312,7 +1305,7 @@ void AdminWindow::setupDoctorTable() {
 
     // Cột 9: Tuỳ chọn (Fixed)
     header->setSectionResizeMode(9, QHeaderView::Fixed);
-    ui->tableDoctor->setColumnWidth(9, 200);
+    ui->tableDoctor->setColumnWidth(9, 300);
 
     // Các thiết lập khác
     ui->tableDoctor->verticalHeader()->setSectionResizeMode(QHeaderView::Fixed);
@@ -1365,7 +1358,7 @@ void AdminWindow::setupMedicalRecordTable() {
 
     // Cột 7: Tùy Chọn (Fixed)
     header->setSectionResizeMode(7, QHeaderView::Fixed);
-    ui->tableMedicalRecord->setColumnWidth(7, 200);
+    ui->tableMedicalRecord->setColumnWidth(7, 300);
 
     ui->tableMedicalRecord->verticalHeader()->setSectionResizeMode(QHeaderView::Fixed);
     ui->tableMedicalRecord->verticalHeader()->setDefaultSectionSize(75);
@@ -1380,7 +1373,6 @@ void AdminWindow::setupMedicalRecordTable() {
 }
 
 void AdminWindow::setupUserTable() {
-    // ✅ Tăng từ 5 lên 7 cột
     ui->tableUser->setColumnCount(7);
 
     QStringList headers;
@@ -1414,7 +1406,7 @@ void AdminWindow::setupUserTable() {
 
     // Cột 6: Tùy chọn (Fixed)
     header->setSectionResizeMode(6, QHeaderView::Fixed);
-    ui->tableUser->setColumnWidth(6, 200);
+    ui->tableUser->setColumnWidth(6, 300);
 
     ui->tableUser->verticalHeader()->setSectionResizeMode(QHeaderView::Fixed);
     ui->tableUser->verticalHeader()->setDefaultSectionSize(75);
